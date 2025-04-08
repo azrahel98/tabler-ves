@@ -1,0 +1,40 @@
+@baseUrl = http://127.0.0.1:8080
+@contentType = application/json
+@TokenHash = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwiZXhwIjoxNzQ1MDgyOTU4LCJsdmwiOjEsIm5vbWJyZSI6IlJhdWwgQ2hlcmNjYSBMb3BleiJ9.wrMHCvFmCVaboOkccBCV3GzIVpFcajY1jVTRcM6s-ss
+
+POST {{baseUrl}}/login/
+Content-Type: {{contentType}}
+
+{
+    "username": "rscl",
+    "password":"unodos",
+    "asdf":2
+}
+
+##########
+
+POST {{baseUrl}}/personal/cumpleaños
+Content-Type: {{contentType}}
+Token: {{TokenHash}}
+
+{
+    "mes":1,
+    "dia":2
+}
+
+##########
+
+POST {{baseUrl}}/personal/info
+Content-Type: {{contentType}}
+Token: {{TokenHash}}
+
+
+##########
+
+POST http://192.168.18.36:8080/personal/buscar
+Content-Type: {{contentType}}
+Token: {{TokenHash}}
+
+{
+"nombre":"castro"
+}

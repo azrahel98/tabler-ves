@@ -1,0 +1,88 @@
+<template>
+  <div class="card">
+    <div class="card-header">
+      <h3 class="card-title">Cumpleaños</h3>
+    </div>
+    <div class="limites">
+      <table class="table table-vcenter table-hover">
+        <tbody style="height: 100%">
+          <tr v-for="x in filteredInfo(info)" @click="getperfil(x.dni)">
+            <td class="w-100">
+              <a @click="getperfil(x.dni)" class="small text-reset">{{ x.nombre }}</a>
+            </td>
+            <td class="text-nowrap text-secondary fw-medium" v-if="istoday(x.nacimiento)">
+              <IconCalendar class="icon text-primary" />
+              {{ format(addDays(parseISO(x.nacimiento), 1), 'MMMM dd, yyyy') }}
+            </td>
+            <td class="text-nowrap text-secondary" v-else>
+              <IconCalendar class="icon icon-1" />
+              {{ format(addDays(parseISO(x.nacimiento), 1), 'MMMM dd, yyyy') }}
+            </td>
+            <td class="text-nowrap">
+              <a class="text-secondary">
+                <IconCake class="icon icon-1" />
+                {{ x.edad }}
+              </a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</template>
+
+<script lang="ts" setup>
+import { api } from '@api/axios'
+import { router } from '@router/router'
+import { IconCake, IconCalendar } from '@tabler/icons-vue'
+import { addDays, format, parseISO, startOfDay } from 'date-fns'
+import { onMounted, ref } from 'vue'
+
+const info = ref<Array<any>>([])
+
+onMounted(async () => {
+  try {
+    info.value = await (
+      await api.post('/dash/cumpleaños', {
+        mes: new Date().getMonth() + 1,
+        dia: 2
+      })
+    ).data
+  } catch (error) {
+    console.log(error)
+  }
+})
+
+const istoday = (x: string): boolean => {
+  const today = startOfDay(new Date())
+  const birthday = addDays(parseISO(x), 1)
+  return today.getDate() == birthday.getDate()
+}
+
+const filteredInfo = (data: Array<any>) => {
+  const today = startOfDay(new Date())
+  return data.filter((x) => {
+    const birthday = addDays(parseISO(x.nacimiento), 1)
+    return today.getDate() <= birthday.getDate()
+  })
+}
+
+const getperfil = async (dni: string) => {
+  await router.push({
+    name: 'perfil',
+    params: {
+      dni: dni.toString()
+    }
+  })
+}
+</script>
+
+<style lang="scss" scoped>
+.card {
+  height: 100%;
+  .limites {
+    overflow-y: auto;
+    max-height: 22vh;
+  }
+}
+</style>
