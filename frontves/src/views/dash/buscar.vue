@@ -10,7 +10,7 @@
 
           <div class="col-auto ms-auto d-print-none">
             <div class="d-flex">
-              <input type="search" @keyup.enter="buscar" v-model="nombre" class="form-control d-inline-block w-9 me-3" placeholder="Search user…" />
+              <input type="search" @keyup.enter="buscar" v-model="nombre" class="form-control d-inline-block w-9 me-3" placeholder="buscar ...." />
             </div>
           </div>
         </div>

@@ -7,7 +7,7 @@
         </div>
         <div class="col">
           <div class="font-weight-medium">{{ title }}</div>
-          <div class="text-secondary">{{ cantidad }} {{ descripcion }}</div>
+          <div class="text-secondary small">{{ cantidad }} {{ descripcion }}</div>
         </div>
         <span class="col-2 cursor-pointer" v-if="descarga">
           <IconDownload class="icon icon text-primary" @click="funcion()" />
