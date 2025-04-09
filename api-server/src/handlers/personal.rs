@@ -1,7 +1,7 @@
 use crate::{
     AppState,
     middleware::error::ApiError,
-    models::personal::{Perfil, Persona},
+    models::personal::{Perfil, Persona, Vinculos},
 };
 use actix_web::{
     HttpResponse, Responder,
@@ -80,6 +80,26 @@ pub async fn perfil_por_dni(
         key,
         key,
         key,
+        nombre.dni
+    )
+    .fetch_one(&data.db)
+    .await
+    .expect("REASON");
+
+    Ok(HttpResponse::Ok().json(trabajador))
+}
+
+pub async fn vinculos_por_dni(
+    data: web::Data<AppState>,
+    nombre: web::Json<PerfilDni>,
+) -> Result<impl Responder, ApiError> {
+    let key = std::env::var("DB_KEY").unwrap_or("*Asdf-Xasdfadf2eee".to_string());
+
+    let trabajador = sqlx::query_as!(
+        Vinculos,
+        r#"
+        select * from Vinculos_vigentes where dni = ? order by fecha_ingreso desc
+        "#,
         nombre.dni
     )
     .fetch_all(&data.db)

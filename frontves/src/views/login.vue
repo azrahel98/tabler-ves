@@ -93,7 +93,10 @@ const handleSubmit = async () => {
       })
       localStorage.clear()
       localStorage.setItem('jwt', r.data.token)
-      router.replace({ name: 'dashboard' })
+
+      router.replace({ name: 'dashboard' }).then(() => {
+        location.reload()
+      })
     }
     errors.value = valid.success ? null : valid.error?.format()
   } catch (error: any) {

@@ -31,6 +31,11 @@ const routes: RouteRecordRaw[] = [
         name: 'buscar',
         component: () => import('@views/dash/buscar.vue')
       },
+      {
+        path: '/perfil/:dni',
+        name: 'perfil',
+        component: () => import('@views/dash/perfil.vue')
+      },
    
     ]
   },

@@ -24,7 +24,9 @@ const nombreabrv = (nombrefull: string) => {
     <div class="card-body p-3 text-center">
       <span class="avatar avatar-lg mb-3 rounded">{{ nombreabrv(user.nombre) }}</span>
       <h4 class="m-0 mb-1">
-        <a href="#">{{ user.nombre }}</a>
+        <RouterLink :to="{ name: 'perfil', params: { dni: user.dni } }">
+          {{ user.nombre }}
+        </RouterLink>
       </h4>
       <div class="text-secondary small">{{ user.dni }}</div>
       <div class="mt-3">
@@ -34,11 +36,11 @@ const nombreabrv = (nombrefull: string) => {
       </div>
     </div>
     <div class="d-flex">
-      <a href="#" class="card-btn">
+      <a class="card-btn disabled">
         <IconMail class="icon me-2 text-muted icon-3" />
         Email</a
       >
-      <a href="#" class="card-btn">
+      <a class="card-btn disabled">
         <IconBrandWhatsapp class="icon text-muted me-3" />
 
         Call</a

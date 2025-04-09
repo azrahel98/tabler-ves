@@ -80,7 +80,7 @@ pub async fn info(data: web::Data<AppState>) -> Result<impl Responder, ApiError>
     )
     .fetch_all(&data.db)
     .await
-    .map_err(|e| ApiError::InternalError(2, "Error al obtener resumen por régimen".into()))?;
+    .map_err(|_e| ApiError::InternalError(2, "Error al obtener resumen por régimen".into()))?;
 
     let por_sexo = sqlx::query_as!(
         DataResumen,
@@ -96,7 +96,7 @@ pub async fn info(data: web::Data<AppState>) -> Result<impl Responder, ApiError>
     )
     .fetch_all(&data.db)
     .await
-    .map_err(|e| ApiError::InternalError(3, "Error al obtener resumen por sexo".into()))?;
+    .map_err(|_e| ApiError::InternalError(3, "Error al obtener resumen por sexo".into()))?;
 
     let por_sindicato = sqlx::query_as!(
         DataResumen,
@@ -113,7 +113,7 @@ pub async fn info(data: web::Data<AppState>) -> Result<impl Responder, ApiError>
     )
     .fetch_all(&data.db)
     .await
-    .map_err(|e| ApiError::InternalError(4, "Error al obtener resumen por sindicato".into()))?;
+    .map_err(|_e| ApiError::InternalError(4, "Error al obtener resumen por sindicato".into()))?;
 
     let response = ResumenResponse {
         total,
