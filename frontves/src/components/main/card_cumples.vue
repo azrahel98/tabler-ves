@@ -75,7 +75,7 @@ const filteredInfo = (data: Array<any>) => {
   height: 100%;
   .limites {
     overflow-y: auto;
-    max-height: 22vh;
+    max-height: 35vh;
   }
 }
 </style>

@@ -52,12 +52,13 @@
                   >
                     <IconCopyPlus class="icon" />
                   </button>
-                  <sindicato :id="x.id" />
+                  <!-- <sindicato :id="x.id" /> -->
                   <button class="btn btn-sm btn-outline-success" v-if="store.isAdmin">
                     <IconEdit class="icon" />
                   </button>
-                  <button class="btn btn-sm btn-outline-warning" v-if="store.isAdmin || !x.Doc_s" data-bs-toggle="modal" :data-bs-target="`#${x.id}`">
+                  <button class="btn btn-sm btn-outline-warning" v-if="store.isAdmin || !x.doc_salida" data-bs-toggle="modal" :data-bs-target="`#${x.id}`">
                     <IconX class="icon" />
+                    <Renuncia :id="x.id" v-if="!x.doc_salida" />
                   </button>
                 </div>
               </div>
@@ -66,7 +67,7 @@
                   <div class="row">
                     <div class="col-md-6 mb-2">
                       <p class="mb-1">
-                        <IconFileInfo class="icon text-info" /> Doc. ingreso: <strong>{{ x.Doc_i }} {{ x.numero_doc_ingreso }}</strong>
+                        <IconFileInfo class="icon text-info" /> Doc. ingreso: <strong>{{ x.doc_ingreso }} N° {{ x.numero_doc_ingreso }}</strong>
                       </p>
                       <p class="mb-1">
                         <IconFileInfo class="icon text-info" /> Descripción: <strong>{{ x.descrip_ingreso }}</strong>
@@ -107,6 +108,7 @@ import { format, addDays, parseISO } from 'date-fns'
 
 import { IconBriefcase, IconClipboardOff, IconCopyPlus, IconEdit, IconEyePlus, IconEyeX, IconFileInfo, IconTrashX, IconX } from '@tabler/icons-vue'
 import { userStore } from '../../store/user'
+import Renuncia from './modal/renuncia.vue'
 
 const store = userStore()
 

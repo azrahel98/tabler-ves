@@ -1,5 +1,5 @@
 <template>
-  <div class="page-wrapper py-lg-4">
+  <div class="page-wrapper pt-1">
     <div class="container-xl">
       <div class="px-4 pt-2">
         <div class="max-w-7xl mx-auto">
@@ -10,7 +10,7 @@
         </div>
       </div>
     </div>
-    <div class="page-body">
+    <div class="page-body mt-0">
       <div class="container-xl">
         <div class="card">
           <div class="card-header">
@@ -69,9 +69,8 @@
 
               <div class="tab-pane" :class="{ 'active show': activeTab === 'historial' }">
                 <div class="empty p-4">
-                  <div class="empty-icon">
-                    <IconAddressBook class="icon-lg" />
-                  </div>
+                  <IconAddressBook class="icon-lg" />
+
                   <p class="empty-title">Sección de Historial</p>
                   <p class="empty-subtitle text-muted">Aquí se mostrará el historial de la persona</p>
                 </div>
@@ -91,6 +90,8 @@ import { onMounted, ref } from 'vue'
 import Card_user from '@comp/perfi/card.vue'
 import Timeline from '@comp/perfi/timeline.vue'
 import Informacion from '@comp/perfi/information.vue'
+
+import { IconAddressBook, IconBriefcase } from '@tabler/icons-vue'
 
 const perfil = ref({})
 const vinculos = ref(<any>[])
@@ -114,6 +115,7 @@ onMounted(async () => {
 <style scoped lang="scss">
 .page-wrapper {
   display: flex;
+
   flex-direction: column;
   height: 100vh;
 
