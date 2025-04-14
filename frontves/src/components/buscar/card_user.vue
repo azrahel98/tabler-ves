@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { IconBrandWhatsapp, IconMail } from '@tabler/icons-vue'
-
 defineProps({
   user: { type: Object, required: true }
 })
@@ -22,7 +20,7 @@ const nombreabrv = (nombrefull: string) => {
 <template>
   <div class="card">
     <div class="card-body p-3 text-center">
-      <span class="avatar avatar-lg mb-3 rounded">{{ nombreabrv(user.nombre) }}</span>
+      <span class="avatar avatar-md mb-3 rounded">{{ nombreabrv(user.nombre) }}</span>
       <h4 class="m-0 mb-1">
         <RouterLink :to="{ name: 'perfil', params: { dni: user.dni } }">
           {{ user.nombre }}
@@ -34,17 +32,6 @@ const nombreabrv = (nombrefull: string) => {
           user.estado
         }}</span>
       </div>
-    </div>
-    <div class="d-flex">
-      <a class="card-btn disabled">
-        <IconMail class="icon me-2 text-muted icon-3" />
-        Email</a
-      >
-      <a class="card-btn disabled">
-        <IconBrandWhatsapp class="icon text-muted me-3" />
-
-        Call</a
-      >
     </div>
   </div>
 </template>

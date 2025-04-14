@@ -18,9 +18,9 @@
     </div>
     <div class="page-body">
       <div class="container-xl">
-        <div class="row row-cards">
-          <div class="col-md-6 col-lg-3" v-for="x in trabajadores" :key="x.dni">
-            <Card_user :user="x" />
+        <div class="row row-cards justify-content-center">
+          <div class="col-md-6 col-lg-2" v-for="x in trabajadores" :key="x.dni">
+            <Card_user class="card-user" :user="x" />
           </div>
         </div>
       </div>

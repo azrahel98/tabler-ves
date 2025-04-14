@@ -1,6 +1,6 @@
 <template>
   <li class="timeline-event text-start">
-    <div class="timeline-event-icon" :class="x.estado !== 'activo' ? 'bg-secondary' : 'bg-primary'">
+    <div class="timeline-event-icon" :class="[x.estado === 'inactivo' && !x.doc_salida ? 'bg-warning' : x.estado === 'inactivo' && x.doc_salida ? 'bg-secondary' : 'bg-primary']">
       <IconBriefcase class="icon text-white" />
     </div>
     <div class="card timeline-event-card">
@@ -14,10 +14,10 @@
             </span>
           </div>
           <div class="text-end">
-            <span class="badge bg-primary mb-1 d-block text-white">
+            <span class="badge fs-6 bg-primary mb-1 d-block text-white">
               {{ x.fecha_ingreso ? format(addDays(parseISO(x.fecha_ingreso), 0), 'yyyy/MM/dd') : 'Fecha no disponible' }}
             </span>
-            <span v-if="x.fecha_salida" class="badge bg-secondary d-block text-white">
+            <span v-if="x.fecha_salida" class="badge fs-6 bg-secondary d-block text-white">
               {{ x.fecha_salida ? format(addDays(parseISO(x.fecha_salida), 0), 'yyyy/MM/dd') : 'Fecha no disponible' }}
             </span>
           </div>
@@ -52,13 +52,11 @@
                   >
                     <IconCopyPlus class="icon" />
                   </button>
-                  <!-- <sindicato :id="x.id" /> -->
                   <button class="btn btn-sm btn-outline-success" v-if="store.isAdmin">
                     <IconEdit class="icon" />
                   </button>
-                  <button class="btn btn-sm btn-outline-warning" v-if="store.isAdmin || !x.doc_salida" data-bs-toggle="modal" :data-bs-target="`#${x.id}`">
+                  <button class="btn btn-sm btn-outline-warning" v-if="!x.doc_salida" data-bs-toggle="modal" :data-bs-target="`#${x.id}`">
                     <IconX class="icon" />
-                    <Renuncia :id="x.id" v-if="!x.doc_salida" />
                   </button>
                 </div>
               </div>
@@ -100,6 +98,7 @@
         </div>
       </div>
     </div>
+    <Renuncia :id="x.id" v-if="!x.doc_salida" />
   </li>
 </template>
 

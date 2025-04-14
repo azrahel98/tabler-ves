@@ -23,7 +23,7 @@ const nombreabrv = (nombrefull: string) => {
 <template>
   <div class="card">
     <div class="card-body p-3 text-center">
-      <span class="avatar avatar-lg mb-3 rounded">{{ nombreabrv(user.nombre) }}</span>
+      <span class="avatar avatar-md mb-3 rounded">{{ nombreabrv(user.nombre) }}</span>
       <h4 class="m-0 mb-1">
         <RouterLink :to="{ name: 'perfil', params: { dni: user.dni } }">
           {{ user.nombre }}
@@ -32,7 +32,7 @@ const nombreabrv = (nombrefull: string) => {
       <div class="text-secondary small">{{ user.dni }}</div>
       <div class="mt-3"></div>
       <div v-if="vinculo" class="text-center mt-2 lista small">
-        <span class="badge bg-primary text-white fw-bold px-2 align-middle">
+        <span class="badge bg-primary text-white fw-bold px-2 text-wrap align-middle">
           {{ vinculo.cargo }}
         </span>
 
@@ -50,11 +50,11 @@ const nombreabrv = (nombrefull: string) => {
           <IconMail class="icon me-2 text-muted icon-3" />
           Email</a
         >
-        <a class="card-btn" v-if="user.email">
+        <!-- <a class="card-btn" v-if="user.email">
           <IconBrandWhatsapp class="icon text-muted me-3" />
 
           Call</a
-        >
+        > -->
       </div>
     </div>
   </div>

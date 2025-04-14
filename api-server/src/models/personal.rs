@@ -1,5 +1,7 @@
 use chrono::NaiveDate;
+use serde::Deserialize;
 use serde::Serialize;
+use sqlx::FromRow;
 
 #[derive(Serialize)]
 pub struct Persona {
@@ -39,4 +41,40 @@ pub struct Vinculos {
     pub fecha_salida: Option<NaiveDate>,
     pub numero_doc_salida: Option<String>,
     pub sindicato: Option<String>,
+}
+
+#[derive(Debug, Serialize, Deserialize, FromRow)]
+pub struct Documento {
+    pub id: Option<i32>,
+    #[serde(rename = "tipoDocumento")]
+    pub tipo: Option<String>,
+    #[serde(rename = "numeroDocumento")]
+    pub numero: Option<i32>,
+    #[serde(rename = "añoDocumento")]
+    pub año: Option<i32>,
+    pub fecha: String,
+    #[serde(rename = "fechaValida")]
+    pub fecha_valida: Option<String>,
+    pub conv: Option<i64>,
+    pub descripcion: String,
+    pub funcion: Option<i64>,
+    pub sueldo: Option<f64>,
+}
+
+#[derive(Debug, Serialize, Deserialize, FromRow)]
+pub struct DatosBancarios {
+    pub id: i32,
+    pub numero_cuenta: String,
+    pub tipo_cuenta: String,
+    pub cci: Option<String>,
+    pub banco: String,
+    pub estado: i8,
+}
+
+#[derive(Debug, Serialize, Deserialize, FromRow)]
+pub struct GradoAcademico {
+    pub id: i32,
+    pub descripcion: Option<String>,
+    pub abrv: String,
+    pub dni: String,
 }

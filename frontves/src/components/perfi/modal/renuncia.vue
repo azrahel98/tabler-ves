@@ -1,29 +1,37 @@
 <template>
-  <div class="modal modal-md fade" ref="modal" :id="`${prop.id}`" tabindex="-1" aria-hidden="true">
+  <div :id="`${prop.id}`" class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    >
     <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h1 class="modal-title fs-5" id="exampleModalLabel">Registrar Renuncia</h1>
+      <div class="modal-content border-0 shadow">
+        <div class="modal-header bg-light">
+          <h1 class="modal-title fw-bold" id="resignationModalLabel">Registrar Renuncia</h1>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" />
         </div>
-        <div class="modal-body pt-2 pb-2">
+        <div class="modal-body p-4">
           <form @submit.prevent="renuncia(prop.id!)">
-            <div class="row row-gap-3">
-              <div class="col-md-6">
-                <label for="nombre" class="form-label">Tipo de Documento</label>
-                <select class="form-select" v-model="doc.tipoDocumento">
+            <div class="row g-3">
+              <div class="col-md-12">
+                <label class="form-check">
+                  <input class="form-check-input" v-model="doc.isnull" type="checkbox" />
+                  <span class="form-check-label"> Sin datos</span>
+                  <span class="form-check-description"> No hay documento para registrar </span>
+                </label>
+              </div>
+              <div class="col-md-6" v-if="!doc.isnull">
+                <label for="tipoDocumento" class="form-label text-secondary mb-1">Tipo de Documento</label>
+                <select class="form-select" id="tipoDocumento" v-model="doc.tipoDocumento">
                   <option value="Carta">Carta</option>
-                  <option value="Resolucion">Resolucion</option>
+                  <option value="Resolucion">Resolución</option>
                   <option value="Acta">Acta</option>
                   <option value="Doc.Adm">Doc.Adm</option>
                 </select>
               </div>
 
-              <div class="col-md-3">
-                <label for="telefono" class="form-label">Numero</label>
+              <div class="col-md-3" v-if="!doc.isnull">
+                <label for="numeroDocumento" class="form-label text-secondary mb-1">Numero</label>
                 <input
                   type="number"
-                  id="telefono"
+                  id="numeroDocumento"
                   v-model="doc.numeroDocumento"
                   class="form-control"
                   placeholder="##"
@@ -32,37 +40,58 @@
                 />
               </div>
 
-              <div class="col-md-3">
-                <label for="direccion" class="form-label">Año</label>
-                <input type="number" v-model="doc.añoDocumento" id="direccion" class="form-control" placeholder="202$" :class="errors?.añoDocumento ? 'is-invalid' : ''" required />
-              </div>
-
-              <div class="col-md-6">
-                <label for="cuenta" class="form-label">Fecha del Documento</label>
-                <input type="date" v-model="doc.fechaValida" id="date" class="form-control" :class="errors?.fechaValida ? 'is-invalid' : ''" placeholder="Fecha" required />
-              </div>
-
-              <div class="col-md-6">
-                <label for="email" class="form-label">Fecha Valida</label>
-                <input type="date" id="date" class="form-control" required v-model="doc.fecha" :class="errors?.fecha ? 'is-invalid' : ''" placeholder="Fecha" />
-                <span v-if="errors?.fecha" class="invalid-feedback fs-6" v-for="x in errors.fecha._errors">{{ x }}</span>
-              </div>
-              <div class="col-md-12">
-                <label for="text" class="form-label">Descripcion</label>
+              <div class="col-md-3" v-if="!doc.isnull">
+                <label for="añoDocumento" class="form-label text-secondary mb-1">Año</label>
                 <input
-                  type="text"
-                  id="text"
+                  type="number"
+                  id="añoDocumento"
+                  v-model="doc.añoDocumento"
                   class="form-control"
-                  :class="errors?.descripcion ? 'is-invalid' : ''"
-                  v-model="doc.descripcion"
-                  placeholder="Carta de Renuncia"
+                  placeholder="2024"
+                  :class="errors?.añoDocumento ? 'is-invalid' : ''"
                   required
                 />
+                <div v-if="errors?.añoDocumento" class="invalid-feedback small">
+                  <span v-for="(error, index) in errors.añoDocumento._errors" :key="index">{{ error }}</span>
+                </div>
+              </div>
+
+              <div :class="doc.isnull ? 'col-md-12' : 'col-md-6'">
+                <label for="fechaValida" class="form-label text-secondary mb-1">Fecha</label>
+                <input type="date" id="fechaValida" v-model="doc.fechaValida" class="form-control" :class="errors?.fechaValida ? 'is-invalid' : ''" required />
+                <div v-if="errors?.fechaValida" class="invalid-feedback small">
+                  <span v-for="(error, index) in errors.fechaValida._errors" :key="index">{{ error }}</span>
+                </div>
+              </div>
+
+              <div class="col-md-6" v-if="!doc.isnull">
+                <label for="fecha" class="form-label text-secondary mb-1">Fecha Documento</label>
+                <input type="date" id="fecha" v-model="doc.fecha" class="form-control" :class="errors?.fecha ? 'is-invalid' : ''" required />
+                <div v-if="errors?.fecha" class="invalid-feedback small">
+                  <span v-for="(error, index) in errors.fecha._errors" :key="index">{{ error }}</span>
+                </div>
+              </div>
+
+              <div class="col-12">
+                <label for="descripcion" class="form-label text-secondary mb-1">Descripción</label>
+                <input
+                  type="text"
+                  id="descripcion"
+                  v-model="doc.descripcion"
+                  class="form-control"
+                  placeholder="Carta de Renuncia"
+                  :class="errors?.descripcion ? 'is-invalid' : ''"
+                  required
+                />
+                <div v-if="errors?.descripcion" class="invalid-feedback small">
+                  <span v-for="(error, index) in errors.descripcion._errors" :key="index">{{ error }}</span>
+                </div>
               </div>
             </div>
 
-            <div class="pt-2 d-flex justify-content-end">
-              <button type="submit" class="btn btn-primary">Guardar</button>
+            <div class="d-flex justify-content-end mt-4 gap-3">
+              <button type="button" class="btn btn-outline-secondary small" data-bs-dismiss="modal">Cancelar</button>
+              <button type="submit" class="btn btn-primary small">Guardar</button>
             </div>
           </form>
         </div>
@@ -76,25 +105,32 @@ import { z } from 'zod'
 import { ref } from 'vue'
 import { isAfter, parseISO } from 'date-fns'
 import { router } from '@router/router'
+import { api } from '@api/axios'
 
 const doc = ref<any>({
   tipoDocumento: 'Carta',
+  numeroDocumento: null,
+  añoDocumento: 2024,
+  fechaValida: '',
   fecha: '',
   descripcion: '',
+  isnull: false,
   sueldo: 0
 })
 
 const prop = defineProps({
-  id: { type: Number, reuired: true }
+  id: { type: Number, required: true }
 })
 
 const schema_validate = z.object({
-  tipoDocumento: z.string().nonempty(),
-  numeroDocumento: z.number(),
-  añoDocumento: z.number().min(2024, 'El año debe ser mayor al 2024'),
-  fecha: z.string().date('La fecha no es valida'),
-  fechaValida: z.string().date('La fecha no es valida'),
-  descripcion: z.string().min(3, 'La descripcion debe tener al menos 5 caracteres')
+  tipoDocumento: z.string().nonempty().nullable(),
+  numeroDocumento: z.number().nullable(),
+  añoDocumento: z.number().min(2024, 'El año debe ser mayor o igual a 2024').nullable(),
+  fecha: z.string().refine((val) => !isNaN(Date.parse(val)), {
+    message: 'La fecha no es válida'
+  }),
+  fechaValida: z.string().nullable(),
+  descripcion: z.string().min(3, 'La descripción debe tener al menos 3 caracteres')
 })
 type schema_validateType = z.infer<typeof schema_validate>
 const errors = ref<z.ZodFormattedError<schema_validateType> | null>(null)
@@ -102,44 +138,20 @@ const errors = ref<z.ZodFormattedError<schema_validateType> | null>(null)
 const renuncia = async (id: number) => {
   errors.value = null
   const valid = schema_validate.safeParse(doc.value)
+  console.log(valid)
   if (!valid.success) {
     errors.value = valid.error.format()
   } else {
-    if (isAfter(parseISO(doc.value.fecha), parseISO(doc.value.fechaValida!))) {
-      errors.value = {
-        fechaValida: {
-          _errors: ['La fecha valida no puede ser menor a la fecha del documento']
-        },
-        _errors: []
-      }
-    } else {
-      //   await AddRenuncia(doc.value, id)
-      router.go(0)
-    }
+    await api.post('/personal/renuncia_por_vinculo', {
+      id: id,
+      tipoDocumento: doc.value.isnull ? 'Doc.Adm' : doc.value.tipoDocumento,
+      numeroDocumento: doc.value.isnull ? null : doc.value.numeroDocumento,
+      añoDocumento: doc.value.isnull ? null : doc.value.añoDocumento,
+      fechaValida: doc.value.isnull ? null : doc.value.fecha,
+      fecha: doc.value.fechaValida,
+      descripcion: doc.value.descripcion
+    })
+    // router.go(0)
   }
 }
 </script>
-
-<style lang="scss" scoped>
-label {
-  font-size: 0.82rem;
-}
-
-input,
-select {
-  font-size: 0.75rem;
-  text-align: center;
-  margin: 0;
-}
-
-span {
-  white-space: normal;
-  line-height: 1.5;
-  word-wrap: break-word;
-}
-
-label {
-  padding: 0;
-  margin: 0;
-}
-</style>
