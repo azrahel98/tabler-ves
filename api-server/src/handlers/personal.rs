@@ -1,7 +1,10 @@
 use crate::{
     AppState,
     middleware::error::ApiError,
-    models::personal::{DatosBancarios, Documento, GradoAcademico, Perfil, Persona, Vinculos},
+    models::personal::{
+        DatosBancarios, DatosBancariosResponse, Documento, GradoAcademico, Perfil, Persona,
+        Vinculos,
+    },
 };
 use actix_web::{
     HttpResponse, Responder,
@@ -164,7 +167,7 @@ pub async fn banco_por_dni(
         "#,
         dni.dni
     )
-    .fetch_one(&data.db)
+    .fetch_optional(&data.db)
     .await
     .expect("REASON");
 
@@ -181,9 +184,141 @@ pub async fn grado_por_dni(
         "#,
         dni.dni
     )
-    .fetch_one(&data.db)
+    .fetch_optional(&data.db)
     .await
     .expect("REASON");
 
     Ok(HttpResponse::Ok().json(datos))
+}
+
+pub async fn agregar_infobancaria(
+    data: web::Data<AppState>,
+    doc: web::Json<DatosBancariosResponse>,
+) -> Result<impl Responder, ApiError> {
+    let insert = sqlx::query(
+        r#"
+        insert into CuentaBancaria (dni_persona, numero_cuenta, tipo_cuenta, banco_id, cci,estado)
+        values (?, ?, ?, ?, ?,1)
+        "#,
+    )
+    .bind(&doc.dni)
+    .bind(&doc.numero_cuenta)
+    .bind(&doc.tipo_cuenta)
+    .bind(doc.banco)
+    .bind(&doc.cci)
+    .execute(&data.db)
+    .await;
+
+    match insert {
+        Ok(result) => {
+            Ok(HttpResponse::Ok().json(format!("Rows affected: {}", result.rows_affected())))
+        }
+        Err(e) => Err(ApiError::InternalError(3, format!("Database error: {}", e))),
+    }
+}
+
+pub async fn editar_datos_bancarios(
+    data: web::Data<AppState>,
+    doc: web::Json<DatosBancarios>,
+) -> Result<impl Responder, ApiError> {
+    let insert = sqlx::query(
+        r#"
+        update CuentaBancaria set numero_cuenta = ? , tipo_cuenta = ? , banco_id = ?, cci = ? , estado = ?
+        where id = ?
+        "#,
+    )
+    .bind(&doc.numero_cuenta)
+    .bind(&doc.tipo_cuenta)
+    .bind(&doc.banco)
+    .bind(&doc.cci)
+    .bind(doc.estado)
+    .bind(doc.id)
+    .execute(&data.db)
+    .await;
+
+    match insert {
+        Ok(result) => {
+            Ok(HttpResponse::Ok().json(format!("Rows affected: {}", result.rows_affected())))
+        }
+        Err(e) => Err(ApiError::InternalError(3, format!("Database error: {}", e))),
+    }
+}
+
+pub async fn agregar_gradoacademico(
+    data: web::Data<AppState>,
+    doc: web::Json<GradoAcademico>,
+) -> Result<impl Responder, ApiError> {
+    let insert = sqlx::query(
+        r#"
+        insert into GradoAcademico (descripcion, abrv, dni)
+        values (?, ?, ?)
+        "#,
+    )
+    .bind(&doc.descripcion)
+    .bind(&doc.abrv)
+    .bind(&doc.dni)
+    .execute(&data.db)
+    .await;
+
+    match insert {
+        Ok(result) => {
+            Ok(HttpResponse::Ok().json(format!("Rows affected: {}", result.rows_affected())))
+        }
+        Err(e) => Err(ApiError::InternalError(3, format!("Database error: {}", e))),
+    }
+}
+
+pub async fn editar_gradoacademico(
+    data: web::Data<AppState>,
+    doc: web::Json<GradoAcademico>,
+) -> Result<impl Responder, ApiError> {
+    let insert = sqlx::query(
+        r#"
+        update GradoAcademico set descripcion = ?, abrv = ?
+        where id = ? 
+        "#,
+    )
+    .bind(&doc.descripcion)
+    .bind(&doc.abrv)
+    .bind(doc.id)
+    .execute(&data.db)
+    .await;
+
+    match insert {
+        Ok(result) => {
+            Ok(HttpResponse::Ok().json(format!("Rows affected: {}", result.rows_affected())))
+        }
+        Err(e) => Err(ApiError::InternalError(3, format!("Database error: {}", e))),
+    }
+}
+
+pub async fn editar_perfil(
+    data: web::Data<AppState>,
+    perfil: web::Json<Perfil>,
+) -> Result<impl Responder, ApiError> {
+    let key = std::env::var("DB_KEY").unwrap_or("*Asdf-Xasdfadf2eee".to_string());
+
+    let insert = sqlx::query(
+        r#"
+        update Persona set telf1 = aes_encrypt(?,?), direccion = aes_encrypt(?,?) , email = aes_encrypt(?,?), ruc = ?
+        where dni = ? 
+        "#,
+    )
+    .bind(perfil.telf.clone())
+    .bind(&key)
+    .bind(perfil.direccion.clone())
+    .bind(&key)
+    .bind(perfil.email.clone())
+    .bind(&key)
+    .bind(perfil.ruc.clone())
+    .bind(perfil.dni.clone())
+    .execute(&data.db)
+    .await;
+
+    match insert {
+        Ok(result) => {
+            Ok(HttpResponse::Ok().json(format!("Rows affected: {}", result.rows_affected())))
+        }
+        Err(e) => Err(ApiError::InternalError(3, format!("Database error: {}", e))),
+    }
 }

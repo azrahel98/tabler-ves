@@ -31,7 +31,7 @@
               <div class="tab-pane p-3" :class="{ 'active show': activeTab === 'perfil' }">
                 <div class="container-md">
                   <div class="row g-4">
-                    <div class="col-md-3 col-lg-2">
+                    <div class="col-md-4 col-lg-3">
                       <Card_user :user="perfil" :vinculo="(vinculos ?? []).filter((x:any) => x.estado === 'activo')[0]" />
                     </div>
                     <div class="col-md-8 col-lg-8">
@@ -107,7 +107,7 @@ import { IconAddressBook, IconBriefcase } from '@tabler/icons-vue'
 import Card_banco from '@comp/perfi/personal/card_banco.vue'
 import Card_educacion from '@comp/perfi/personal/card_educacion.vue'
 
-const perfil = ref({})
+const perfil = ref<any>({})
 const vinculos = ref(<any>[])
 
 const activeTab = ref('perfil')

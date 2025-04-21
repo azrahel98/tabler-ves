@@ -11,7 +11,7 @@ pub struct Persona {
     pub sexo: Option<String>,
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, Deserialize)]
 pub struct Perfil {
     pub dni: String,
     pub nombre: Option<String>,
@@ -69,6 +69,15 @@ pub struct DatosBancarios {
     pub cci: Option<String>,
     pub banco: String,
     pub estado: i8,
+}
+#[derive(Debug, Serialize, Deserialize, FromRow)]
+pub struct DatosBancariosResponse {
+    pub numero_cuenta: String,
+    pub tipo_cuenta: String,
+    pub cci: Option<String>,
+    pub banco: i32,
+    pub estado: i8,
+    pub dni: String,
 }
 
 #[derive(Debug, Serialize, Deserialize, FromRow)]

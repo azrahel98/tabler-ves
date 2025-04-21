@@ -1,7 +1,10 @@
 <template>
   <div class="card">
-    <div class="card-header">
-      <h3 class="card-title">Información Básica</h3>
+    <div class="card-header d-flex justify-content-between">
+      <h4 class="fw-bold p-0 m-0">Información Básica</h4>
+      <button class="btn btn-action m-0 p-0" type="button" data-bs-toggle="modal" data-bs-target="#editmodal">
+        <IconUserEdit class="icon h-100" />
+      </button>
     </div>
     <div class="card-body">
       <div class="row g-3">
@@ -42,6 +45,7 @@
         </div>
       </div>
     </div>
+    <Editar_infopersonal :user="perfil" />
   </div>
 </template>
 
@@ -49,6 +53,8 @@
 import { format, getYear, parseISO, addDays } from 'date-fns'
 import { Calendar, FileText, Mail, MapPin, Phone, User } from 'lucide-vue-next'
 import Info_basica from './items.vue'
+import { IconUserEdit } from '@tabler/icons-vue'
+import Editar_infopersonal from './modal/editar_infopersonal.vue'
 
 defineProps({
   perfil: {

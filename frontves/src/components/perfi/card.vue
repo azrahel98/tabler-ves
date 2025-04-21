@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { format, parseISO, addDays } from 'date-fns'
-import { IconBrandWhatsapp, IconMail } from '@tabler/icons-vue'
+
 defineProps({
   user: { type: Object, required: true },
   vinculo: { type: Object }
@@ -32,7 +32,7 @@ const nombreabrv = (nombrefull: string) => {
       <div class="text-secondary small">{{ user.dni }}</div>
       <div class="mt-3"></div>
       <div v-if="vinculo" class="text-center mt-2 lista small">
-        <span class="badge bg-primary text-white fw-bold px-2 text-wrap align-middle">
+        <span class="badge w-75 bg-primary text-white fw-bold px-2 text-wrap align-middle">
           {{ vinculo.cargo }}
         </span>
 
@@ -44,17 +44,6 @@ const nombreabrv = (nombrefull: string) => {
         <div class="datagrid-content">
           {{ vinculo.fecha_ingreso ? format(addDays(parseISO(vinculo.fecha_ingreso), 0), 'dd/MM/yyyy') : 'Fecha no disponible' }}
         </div>
-      </div>
-      <div class="d-flex mt-3" v-if="user.telf">
-        <a class="card-btn" :href="`https://wa.me/${user.telf}?text=Hola%2C%20quisiera%20más%20información.`">
-          <IconMail class="icon me-2 text-muted icon-3" />
-          Email</a
-        >
-        <!-- <a class="card-btn" v-if="user.email">
-          <IconBrandWhatsapp class="icon text-muted me-3" />
-
-          Call</a
-        > -->
       </div>
     </div>
   </div>
