@@ -30,6 +30,14 @@ async fn main() -> std::io::Result<()> {
         .min_connections(5)
         .idle_timeout(Duration::from_secs(300))
         .max_lifetime(Duration::from_secs(1800))
+        .after_connect(|conn, _| {
+            Box::pin(async move {
+                sqlx::query("SET time_zone = '-05:00'")
+                    .execute(conn)
+                    .await?;
+                Ok(())
+            })
+        })
         .connect(&database_url)
         .await
     {

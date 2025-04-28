@@ -13,7 +13,8 @@ export default defineConfig({
       { find: '@views', replacement: path.resolve(__dirname, './src/views') },
       { find: '@router', replacement: path.resolve(__dirname, './src/router/') },
       { find: '@comp', replacement: path.resolve(__dirname, './src/components') },
-      { find: '@api', replacement: path.resolve(__dirname, './src/client/') }
+      { find: '@api', replacement: path.resolve(__dirname, './src/client/') },
+      { find: '@store', replacement: path.resolve(__dirname, './src/store/') }
     ]
   },
 })

@@ -13,7 +13,8 @@
       "@views/*":["./src/views/*"],
       "@router/*":["./src/router/*"],
       "@comp/*":["./src/components/*"],
-      "@api/*":["./src/client/*"]
+      "@api/*":["./src/client/*"],
+      "@store/*":["./src/store/*"]
     }
   },
   "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue"]

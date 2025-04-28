@@ -1,7 +1,7 @@
 use crate::{
     AppState,
     middleware::error::ApiError,
-    models::dash::{Cumpleaños, CumpleañosRequest, DataResumen, ResumenResponse},
+    models::dash::{BancosReport, Cumpleaños, CumpleañosRequest, DataResumen, ResumenResponse},
 };
 use actix_web::{
     HttpResponse, Responder,
@@ -172,6 +172,23 @@ pub async fn renuncias_año(data: web::Data<AppState>) -> Result<impl Responder,
         GROUP by
         ar.nombre order by
         count(*) desc
+        "#,
+    )
+    .fetch_all(&data.db)
+    .await
+    .map_err(|e| {
+        eprintln!("Database error: {:?}", e);
+        ApiError::InternalError(3, "Database consulta malformada".into())
+    })?;
+
+    Ok(HttpResponse::Ok().json(data))
+}
+
+pub async fn bancos_report(data: web::Data<AppState>) -> Result<impl Responder, ApiError> {
+    let data = sqlx::query_as!(
+        BancosReport,
+        r#"
+        select id,nombre from Banco
         "#,
     )
     .fetch_all(&data.db)

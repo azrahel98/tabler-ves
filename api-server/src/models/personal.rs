@@ -65,7 +65,7 @@ pub struct Documento {
 pub struct DatosBancarios {
     pub id: i32,
     pub numero_cuenta: String,
-    pub tipo_cuenta: String,
+    pub tipo_cuenta: Option<String>,
     pub cci: Option<String>,
     pub banco: String,
     pub estado: i8,

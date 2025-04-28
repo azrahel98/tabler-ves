@@ -32,7 +32,7 @@ const nombreabrv = (nombrefull: string) => {
       <div class="text-secondary small">{{ user.dni }}</div>
       <div class="mt-3"></div>
       <div v-if="vinculo" class="text-center mt-2 lista small">
-        <span class="badge w-75 bg-primary text-white fw-bold px-2 text-wrap align-middle">
+        <span class="badge px-3 bg-primary text-white fw-bold text-wrap align-middle">
           {{ vinculo.cargo }}
         </span>
 
@@ -48,3 +48,9 @@ const nombreabrv = (nombrefull: string) => {
     </div>
   </div>
 </template>
+
+<style lang="scss" scoped>
+.badge {
+  width: auto;
+}
+</style>

@@ -41,21 +41,22 @@
                   </button>
                 </div>
                 <div class="d-flex gap-2">
-                  <button class="btn btn-sm btn-outline-danger" v-if="store.isAdmin">
+                  <button class="btn btn-sm btn-outline-danger" v-if="store.isAdmin || store.isEditor">
                     <IconTrashX class="icon" />
+                    aqui
                   </button>
                   <button
                     class="btn btn-sm btn-outline-primary"
                     data-bs-toggle="modal"
                     :data-bs-target="`#sindicato-${x.Id}`"
-                    v-if="store.isAdmin && x.estado == 'activo' && !x.sindicato"
+                    v-if="store.isAdmin || (store.isEditor && x.estado == 'activo' && !x.sindicato)"
                   >
                     <IconCopyPlus class="icon" />
                   </button>
                   <button class="btn btn-sm btn-outline-success" v-if="store.isAdmin">
                     <IconEdit class="icon" />
                   </button>
-                  <button class="btn btn-sm btn-outline-warning" v-if="!x.doc_salida" data-bs-toggle="modal" :data-bs-target="`#${x.id}`">
+                  <button class="btn btn-sm btn-outline-warning" v-if="!x.doc_salida && !store.isUser" data-bs-toggle="modal" :data-bs-target="`#${x.id}`">
                     <IconX class="icon" />
                   </button>
                 </div>

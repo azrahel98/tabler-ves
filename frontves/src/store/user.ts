@@ -6,7 +6,9 @@ import { defineStore } from 'pinia'
 export const userStore = defineStore('userStore', {
   state: () => ({ exp: 0, lvl:0, id: '', nombre: '' }),
   getters: {
-    isAdmin: (state) => state.lvl
+    isAdmin: (state) => state.lvl === 1,
+    isEditor: (state) => state.lvl === 2,
+    isUser: (state) => state.lvl === 3,
   },
   actions: {
     create(token: string) {

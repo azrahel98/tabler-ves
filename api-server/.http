@@ -1,12 +1,12 @@
 @baseUrl = http://127.0.0.1:8080
 @contentType = application/json
-@TokenHash = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwiZXhwIjoxNzQ1MDgyOTU4LCJsdmwiOjEsIm5vbWJyZSI6IlJhdWwgQ2hlcmNjYSBMb3BleiJ9.wrMHCvFmCVaboOkccBCV3GzIVpFcajY1jVTRcM6s-ss
+@TokenHash = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MywiZXhwIjoxNzQ2OTg5NzgwLCJsdmwiOjMsIm5vbWJyZSI6IlJhdWwgQ2hlcmNjYSBMb3BleiJ9.CgE6bj71idrFIeELOdKHEyCG2rnqTa6MhgZ70oA6vv4 
 
 POST {{baseUrl}}/login/
 Content-Type: {{contentType}}
 
 {
-    "username": "rscl",
+    "username": "rscl2",
     "password":"unodos",
     "asdf":2
 }
@@ -31,7 +31,7 @@ Token: {{TokenHash}}
 
 ##########
 
-POST http://192.168.18.36:8080/personal/buscar
+POST {{baseUrl}}/personal/buscar
 Content-Type: {{contentType}}
 Token: {{TokenHash}}
 

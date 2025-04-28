@@ -1,9 +1,9 @@
 use actix_web::{
-    Error, ResponseError,
+    Error, HttpMessage, ResponseError,
     body::EitherBody,
     dev::{Service, ServiceRequest, ServiceResponse, Transform},
 };
-use chrono::{DateTime, TimeZone, Utc};
+use chrono::{TimeZone, Utc};
 use chrono_tz::Tz;
 use futures_util::future::LocalBoxFuture;
 use jsonwebtoken::{DecodingKey, Validation, decode};
@@ -53,9 +53,8 @@ where
 
     actix_web::dev::forward_ready!(service);
 
-    fn call(&self, request: ServiceRequest) -> Self::Future {
+    fn call(&self, mut request: ServiceRequest) -> Self::Future {
         let headers = request.headers().clone();
-
         let token_header = headers.get("token");
 
         if token_header.is_none() {
@@ -82,7 +81,8 @@ where
 
         match decode::<Claims>(token, &decoding_key, &Validation::default()) {
             Ok(claim) => {
-                let exp_ts = claim.claims.exp as i64;
+                let claims = claim.claims; // <- aquí tomamos los claims
+                let exp_ts = claims.exp as i64;
                 let exp = chrono::NaiveDateTime::from_timestamp_opt(exp_ts, 0);
 
                 let timezone: Tz = "America/Lima".parse().unwrap();
@@ -105,6 +105,8 @@ where
                             .map_into_right_body();
                     return Box::pin(async { Ok(ServiceResponse::new(req, res)) });
                 }
+
+                request.extensions_mut().insert(claims);
 
                 let fut = self.service.call(request);
                 Box::pin(async move { fut.await.map(|res| res.map_into_left_body()) })

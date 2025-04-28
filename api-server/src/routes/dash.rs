@@ -8,6 +8,7 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
             .route("/cumpleaños", web::post().to(cumpleaños))
             .route("/area_report", web::post().to(personal_area_report))
             .route("/renuncias", web::post().to(renuncias_año))
+            .route("/banco_report", web::post().to(bancos_report))
             .route("/info", web::post().to(info)),
     );
 }

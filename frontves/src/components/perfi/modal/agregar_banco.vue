@@ -14,9 +14,7 @@
               <div class="col-md-6">
                 <label for="tipoDocumento" class="form-label text-secondary mb-1">Entidad Financiera</label>
                 <select class="form-select" id="tipoDocumento" v-model="doc.banco">
-                  <option value="1">BANCO DE CREDITO DEL PERU</option>
-                  <option value="2">BBVA</option>
-                  <option value="3">BANCO DE LA NACION</option>
+                  <option v-for="x in bancos" :value="x.id.toString()">{{ x.nombre }}</option>
                 </select>
               </div>
 
@@ -60,6 +58,7 @@ import { z } from 'zod'
 import { ref, watch } from 'vue'
 import { api } from '@api/axios'
 import { router } from '@router/router'
+import { onMounted } from 'vue'
 
 const doc = ref<any>({
   banco: 1,
@@ -68,17 +67,25 @@ const doc = ref<any>({
   tipo: 'AHORRO'
 })
 
+const bancos = ref<any>([])
+
 const prop = defineProps({
   doc: { type: Object, required: false },
   isEdit: { type: Boolean, default: false }
 })
 
+onMounted(async () => {
+  bancos.value = await (await api.post('/dash/banco_report')).data
+})
+
 watch(
   () => prop.doc,
-  (newDoc) => {
+  async (newDoc) => {
     if (prop.isEdit && newDoc) {
+      bancos.value = await (await api.post('/dash/banco_report')).data
       doc.value = { ...newDoc }
-      console.log(doc.value)
+      doc.value.tipo = newDoc.tipo_cuenta
+      doc.value.banco = bancos.value.find((x: any) => x.nombre == newDoc.banco)?.id
     }
   },
   { immediate: true }

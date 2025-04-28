@@ -7,10 +7,12 @@ use crate::{
     },
 };
 use actix_web::{
-    HttpResponse, Responder,
+    HttpRequest, HttpResponse, Responder,
     web::{self},
 };
 use serde::Deserialize;
+
+use super::registrar_historial;
 
 #[derive(Deserialize)]
 pub struct BuscarNombre {
@@ -156,7 +158,7 @@ pub async fn banco_por_dni(
         r#"SELECT
                 cb.id,
                 cb.numero_cuenta,
-                cb.tipo_cuenta,
+                upper(cb.tipo_cuenta) tipo_cuenta,
                 cb.cci,
                 b.nombre banco,
                 cb.estado
@@ -194,6 +196,7 @@ pub async fn grado_por_dni(
 pub async fn agregar_infobancaria(
     data: web::Data<AppState>,
     doc: web::Json<DatosBancariosResponse>,
+    req: HttpRequest,
 ) -> Result<impl Responder, ApiError> {
     let insert = sqlx::query(
         r#"
@@ -211,6 +214,13 @@ pub async fn agregar_infobancaria(
 
     match insert {
         Ok(result) => {
+            let _ = registrar_historial(
+                &req,
+                &data.db,
+                "ingresar cuenta bancaria",
+                Some(&serde_json::to_string(&doc).unwrap_or_default()),
+            )
+            .await;
             Ok(HttpResponse::Ok().json(format!("Rows affected: {}", result.rows_affected())))
         }
         Err(e) => Err(ApiError::InternalError(3, format!("Database error: {}", e))),

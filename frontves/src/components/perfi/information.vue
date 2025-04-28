@@ -2,7 +2,7 @@
   <div class="card">
     <div class="card-header d-flex justify-content-between">
       <h4 class="fw-bold p-0 m-0">Información Básica</h4>
-      <button class="btn btn-action m-0 p-0" type="button" data-bs-toggle="modal" data-bs-target="#editmodal">
+      <button class="btn btn-action m-0 p-0" type="button" data-bs-toggle="modal" data-bs-target="#editmodal" v-if="!store.isUser">
         <IconUserEdit class="icon h-100" />
       </button>
     </div>
@@ -45,7 +45,7 @@
         </div>
       </div>
     </div>
-    <Editar_infopersonal :user="perfil" />
+    <Editar_infopersonal :user="perfil" v-if="!store.isUser" />
   </div>
 </template>
 
@@ -55,6 +55,9 @@ import { Calendar, FileText, Mail, MapPin, Phone, User } from 'lucide-vue-next'
 import Info_basica from './items.vue'
 import { IconUserEdit } from '@tabler/icons-vue'
 import Editar_infopersonal from './modal/editar_infopersonal.vue'
+import { userStore } from '../../store/user'
+
+const store = userStore()
 
 defineProps({
   perfil: {

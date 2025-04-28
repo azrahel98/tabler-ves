@@ -59,3 +59,10 @@ pub struct AreaReport {
     pub nacimiento: NaiveDate,
     pub edad: Option<i32>,
 }
+
+#[derive(Debug, Deserialize, Serialize, sqlx::FromRow)]
+#[allow(non_snake_case)]
+pub struct BancosReport {
+    pub id: i32,
+    pub nombre: String,
+}
