@@ -7,6 +7,10 @@ use actix_web::{
     HttpResponse, Responder,
     web::{self},
 };
+use chrono::{NaiveDate, NaiveDateTime};
+use serde::Deserialize;
+use serde_json::{Value, json};
+use sqlx::Row;
 
 pub async fn cumpleaños(
     data: web::Data<AppState>,
@@ -199,4 +203,99 @@ pub async fn bancos_report(data: web::Data<AppState>) -> Result<impl Responder, 
     })?;
 
     Ok(HttpResponse::Ok().json(data))
+}
+
+pub async fn reporte_personal_activo(
+    data: web::Data<AppState>,
+) -> Result<impl Responder, ApiError> {
+    let data = sqlx::query(
+        r#"
+        select
+        cast(p.dni as char) dni,
+        concat(p.apaterno, " ", p.amaterno, " ", p.nombre) nombre,
+        dc.fecha ingreso,
+        dcs.fecha renuncia,
+        ar.nombre area,
+        cr.nombre cargo,
+        s.nombre sindicato,
+        rg.nombre regimen
+        from
+        Vinculo v
+        inner join Persona p on v.dni = p.dni
+        inner join Cargo cr on v.cargo_id = cr.id
+        inner join Area ar on v.area_id = ar.id
+        inner join Documento dc on v.doc_ingreso_id = dc.id
+        inner join Regimen rg on v.regimen = rg.id
+        left join Documento dcs on v.doc_salida_id = dcs.id
+        left join vinculo_sindicato vs on vs.vinculo_id = v.id
+        left join Sindicato s on vs.sindicato_id = s.id where v.estado = 'activo'
+        "#,
+    )
+    .fetch_all(&data.db)
+    .await
+    .map_err(|e| {
+        eprintln!("Database error: {:?}", e);
+        ApiError::InternalError(3, "Database consulta malformada".into())
+    })?;
+
+    let result: Vec<Value> = data
+        .iter()
+        .map(|row| {
+            let ingreso: NaiveDate = row.get("ingreso");
+            let renuncia: Option<NaiveDate> = row.try_get("renuncia").ok(); // puede ser NULL
+
+            json!({
+                "dni": row.get::<String, _>("dni"),
+                "nombre": row.get::<String, _>("nombre"),
+                "ingreso": ingreso.to_string(),
+                "renuncia": renuncia.map(|d| d.to_string()),
+                "area": row.get::<String, _>("area"),
+                "cargo": row.get::<String, _>("cargo"),
+                "sindicato": row.try_get::<Option<String>, _>("sindicato").unwrap_or(None),
+                "regimen": row.get::<String, _>("regimen"),
+            })
+        })
+        .collect();
+
+    Ok(HttpResponse::Ok().json(result))
+}
+#[derive(Deserialize)]
+pub struct PerfilDni {
+    pub dni: String,
+}
+pub async fn reporte_historial(
+    data: web::Data<AppState>,
+    dni: web::Json<PerfilDni>,
+) -> Result<impl Responder, ApiError> {
+    let buscar = format!("%{}%", dni.dni);
+
+    let data = sqlx::query(
+        r#"
+        SELECT f.operacion, f.detalle, f.fecha, u.nombre
+        FROM historial f
+        INNER JOIN usuario u ON f.idusuario = u.id
+        WHERE f.detalle LIKE ?
+        "#,
+    )
+    .bind(&buscar)
+    .fetch_all(&data.db)
+    .await
+    .map_err(|e| {
+        eprintln!("Database error: {:?}", e);
+        ApiError::InternalError(3, "Consulta malformada".into())
+    })?;
+
+    let result: Vec<Value> = data
+        .iter()
+        .map(|row| {
+            json!({
+                "operacion": row.get::<String, _>("operacion"),
+                "detalle": row.get::<String, _>("detalle"),
+                "fecha": row.get::<NaiveDateTime, _>("fecha").to_string(),
+                "nombre": row.get::<String, _>("nombre"),
+            })
+        })
+        .collect();
+
+    Ok(HttpResponse::Ok().json(result))
 }

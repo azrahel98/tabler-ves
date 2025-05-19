@@ -104,6 +104,8 @@
 import { z } from 'zod'
 import { ref } from 'vue'
 import { api } from '@api/axios'
+import { router } from '@router/router'
+import { isDate } from 'date-fns'
 
 const doc = ref<any>({
   tipoDocumento: 'Carta',
@@ -124,7 +126,7 @@ const schema_validate = z.object({
   tipoDocumento: z.string().nonempty().nullable(),
   numeroDocumento: z.number().nullable(),
   añoDocumento: z.number().min(2024, 'El año debe ser mayor o igual a 2024').nullable(),
-  fecha: z.string().refine((val) => !isNaN(Date.parse(val)), {
+  fecha: z.string().refine((val) => !isDate(val), {
     message: 'La fecha no es válida'
   }),
   fechaValida: z.string().nullable(),
@@ -149,7 +151,7 @@ const renuncia = async (id: number) => {
       fecha: doc.value.fechaValida,
       descripcion: doc.value.descripcion
     })
-    // router.go(0)
+    router.go(0)
   }
 }
 </script>

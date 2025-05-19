@@ -53,7 +53,7 @@ where
 
     actix_web::dev::forward_ready!(service);
 
-    fn call(&self, mut request: ServiceRequest) -> Self::Future {
+    fn call(&self, request: ServiceRequest) -> Self::Future {
         let headers = request.headers().clone();
         let token_header = headers.get("token");
 

@@ -2,15 +2,18 @@ use crate::{
     AppState,
     middleware::error::ApiError,
     models::personal::{
-        DatosBancarios, DatosBancariosResponse, Documento, GradoAcademico, Perfil, Persona,
-        Vinculos,
+        DatosBancarios, DatosBancariosResponse, Documento, DocumentoSindicato, GradoAcademico,
+        LegajoPersonal, Perfil, Persona, Vinculos,
     },
 };
 use actix_web::{
     HttpRequest, HttpResponse, Responder,
     web::{self},
 };
+
 use serde::Deserialize;
+use serde_json::{Value, json};
+use sqlx::Row;
 
 use super::registrar_historial;
 
@@ -115,6 +118,7 @@ pub async fn vinculos_por_dni(
 pub async fn renuncia_por_vinculo(
     data: web::Data<AppState>,
     doc: web::Json<Documento>,
+    req: HttpRequest,
 ) -> Result<impl Responder, ApiError> {
     let insert = sqlx::query(
         r#"
@@ -143,6 +147,13 @@ pub async fn renuncia_por_vinculo(
 
     match vinculo {
         Ok(result) => {
+            let _ = registrar_historial(
+                &req,
+                &data.db,
+                "registro de renuncia",
+                Some(&serde_json::to_string(&doc).unwrap_or_default()),
+            )
+            .await;
             Ok(HttpResponse::Ok().json(format!("Rows affected: {}", result.rows_affected())))
         }
         Err(e) => Err(ApiError::InternalError(3, format!("Database error: {}", e))),
@@ -161,7 +172,8 @@ pub async fn banco_por_dni(
                 upper(cb.tipo_cuenta) tipo_cuenta,
                 cb.cci,
                 b.nombre banco,
-                cb.estado
+                cb.estado,
+                "asd" as dni
                 FROM
                 Persona p
                 inner join CuentaBancaria cb on cb.dni_persona = p.dni
@@ -230,6 +242,7 @@ pub async fn agregar_infobancaria(
 pub async fn editar_datos_bancarios(
     data: web::Data<AppState>,
     doc: web::Json<DatosBancarios>,
+    req: HttpRequest,
 ) -> Result<impl Responder, ApiError> {
     let insert = sqlx::query(
         r#"
@@ -248,6 +261,13 @@ pub async fn editar_datos_bancarios(
 
     match insert {
         Ok(result) => {
+            let _ = registrar_historial(
+                &req,
+                &data.db,
+                "actualizar cuenta bancaria",
+                Some(&serde_json::to_string(&doc).unwrap_or_default()),
+            )
+            .await;
             Ok(HttpResponse::Ok().json(format!("Rows affected: {}", result.rows_affected())))
         }
         Err(e) => Err(ApiError::InternalError(3, format!("Database error: {}", e))),
@@ -257,6 +277,7 @@ pub async fn editar_datos_bancarios(
 pub async fn agregar_gradoacademico(
     data: web::Data<AppState>,
     doc: web::Json<GradoAcademico>,
+    req: HttpRequest,
 ) -> Result<impl Responder, ApiError> {
     let insert = sqlx::query(
         r#"
@@ -272,6 +293,13 @@ pub async fn agregar_gradoacademico(
 
     match insert {
         Ok(result) => {
+            let _ = registrar_historial(
+                &req,
+                &data.db,
+                "agrega grado academico",
+                Some(&serde_json::to_string(&doc).unwrap_or_default()),
+            )
+            .await;
             Ok(HttpResponse::Ok().json(format!("Rows affected: {}", result.rows_affected())))
         }
         Err(e) => Err(ApiError::InternalError(3, format!("Database error: {}", e))),
@@ -281,6 +309,7 @@ pub async fn agregar_gradoacademico(
 pub async fn editar_gradoacademico(
     data: web::Data<AppState>,
     doc: web::Json<GradoAcademico>,
+    req: HttpRequest,
 ) -> Result<impl Responder, ApiError> {
     let insert = sqlx::query(
         r#"
@@ -296,6 +325,13 @@ pub async fn editar_gradoacademico(
 
     match insert {
         Ok(result) => {
+            let _ = registrar_historial(
+                &req,
+                &data.db,
+                "editar grado academico",
+                Some(&serde_json::to_string(&doc).unwrap_or_default()),
+            )
+            .await;
             Ok(HttpResponse::Ok().json(format!("Rows affected: {}", result.rows_affected())))
         }
         Err(e) => Err(ApiError::InternalError(3, format!("Database error: {}", e))),
@@ -305,6 +341,7 @@ pub async fn editar_gradoacademico(
 pub async fn editar_perfil(
     data: web::Data<AppState>,
     perfil: web::Json<Perfil>,
+    req: HttpRequest,
 ) -> Result<impl Responder, ApiError> {
     let key = std::env::var("DB_KEY").unwrap_or("*Asdf-Xasdfadf2eee".to_string());
 
@@ -327,8 +364,207 @@ pub async fn editar_perfil(
 
     match insert {
         Ok(result) => {
+            let _ = registrar_historial(
+                &req,
+                &data.db,
+                "editar informacion personal",
+                Some(&serde_json::to_string(&perfil).unwrap_or_default()),
+            )
+            .await;
             Ok(HttpResponse::Ok().json(format!("Rows affected: {}", result.rows_affected())))
         }
         Err(e) => Err(ApiError::InternalError(3, format!("Database error: {}", e))),
+    }
+}
+
+pub async fn agregar_sindicato(
+    data: web::Data<AppState>,
+    doc: web::Json<DocumentoSindicato>,
+    req: HttpRequest,
+) -> Result<impl Responder, ApiError> {
+    let mut tx = data.db.begin().await.unwrap();
+
+    let insert = sqlx::query(
+        r#"
+        INSERT INTO Documento (tipo,fecha, descripcion)
+        VALUES ('Doc.Adm',?, ?)
+        "#,
+    )
+    .bind(&doc.fecha)
+    .bind(&doc.descripcion)
+    .execute(&mut *tx)
+    .await;
+
+    let documento_id = insert.unwrap().last_insert_id();
+
+    let _ = sqlx::query(
+        r#"
+        INSERT INTO vinculo_sindicato (vinculo_id, sindicato_id, documento_afiliacion)
+        VALUES (?, ?, ?)
+        "#,
+    )
+    .bind(doc.id_vinculo)
+    .bind(doc.sindicato)
+    .bind(documento_id)
+    .execute(&mut *tx)
+    .await;
+
+    let resultado = tx.commit().await;
+
+    match resultado {
+        Ok(_) => {
+            let _ = registrar_historial(
+                &req,
+                &data.db,
+                "afiliar al sindicato",
+                Some(&serde_json::to_string(&doc).unwrap_or_default()),
+            )
+            .await;
+            Ok(HttpResponse::Ok().json("Se registraron correctamente los datos"))
+        }
+        Err(e) => Err(ApiError::InternalError(3, format!("Database error: {}", e))),
+    }
+}
+
+// LEGAJOS
+
+pub async fn personas_legajos(data: web::Data<AppState>) -> Result<impl Responder, ApiError> {
+    let data = sqlx::query(r#"select persona from legajo GROUP by persona"#)
+        .fetch_all(&data.db)
+        .await
+        .map_err(|e| {
+            eprintln!("Database error: {:?}", e);
+            ApiError::InternalError(3, "Database consulta malformada".into())
+        })?;
+
+    let result: Vec<Value> = data
+        .iter()
+        .map(|row| {
+            json!({
+                "persona": row.get::<String, _>("persona"),
+
+            })
+        })
+        .collect();
+
+    Ok(HttpResponse::Ok().json(result))
+}
+
+pub async fn reporte_legajo(
+    data: web::Data<AppState>,
+    dni: web::Json<PerfilDni>,
+) -> Result<impl Responder, ApiError> {
+    let datos = sqlx::query_as!(
+        LegajoPersonal,
+        r#"select
+            id,
+            persona,
+            dni,
+            cast(fecha as char) fecha,
+            estado,
+            descrip,
+            false as nuevo
+            from
+            legajo
+            where
+            dni = ?
+            order by
+            fecha desc
+        "#,
+        dni.dni
+    )
+    .fetch_all(&data.db)
+    .await
+    .expect("REASON");
+
+    Ok(HttpResponse::Ok().json(datos))
+}
+
+pub async fn agregar_evento_legajo(
+    data: web::Data<AppState>,
+    doc: web::Json<LegajoPersonal>,
+    req: HttpRequest,
+) -> Result<impl Responder, ApiError> {
+    let mut tx = data.db.begin().await.unwrap();
+
+    if doc.nuevo == 1 {
+        let enum_row = sqlx::query_scalar::<_, String>(
+            r#"
+            SELECT COLUMN_TYPE
+            FROM INFORMATION_SCHEMA.COLUMNS
+            WHERE TABLE_NAME = 'legajo'
+              AND COLUMN_NAME = 'estado'
+              AND TABLE_SCHEMA = DATABASE()
+            "#,
+        )
+        .fetch_one(&mut *tx)
+        .await
+        .map_err(|e| {
+            eprintln!("Error al obtener ENUM: {:?}", e);
+            ApiError::InternalError(1, "Error al obtener valores de ENUM".into())
+        })?;
+
+        let enum_clean = enum_row.trim_start_matches("enum(").trim_end_matches(")");
+        let mut valores: Vec<String> = enum_clean
+            .split(',')
+            .map(|s| s.trim_matches('\'').to_string())
+            .collect();
+
+        if !valores.contains(&"persona".to_string()) {
+            valores.push("persona".to_string());
+
+            let nuevo_enum = format!(
+                "ENUM({})",
+                valores
+                    .iter()
+                    .map(|v| format!("'{}'", v))
+                    .collect::<Vec<_>>()
+                    .join(", ")
+            );
+
+            let alter_query = format!("ALTER TABLE legajo MODIFY COLUMN estado {};", nuevo_enum);
+
+            sqlx::query(&alter_query)
+                .execute(&mut *tx)
+                .await
+                .map_err(|e| {
+                    eprintln!("Error al modificar ENUM: {:?}", e);
+                    ApiError::InternalError(2, "No se pudo modificar ENUM".into())
+                })?;
+        }
+    }
+
+    let _ = sqlx::query(
+        r#"
+        INSERT INTO legajo (persona, dni, fecha, estado, descrip)
+        VALUES (?, ?, ?, ?, ?)
+        "#,
+    )
+    .bind(&doc.persona)
+    .bind(&doc.dni)
+    .bind(doc.fecha.clone())
+    .bind(&doc.estado)
+    .bind(&doc.descrip)
+    .execute(&mut *tx)
+    .await
+    .map_err(|e| {
+        eprintln!("Error insert legajo: {:?}", e);
+        ApiError::InternalError(4, "Error al insertar legajo".into())
+    })?;
+
+    let resultado = tx.commit().await;
+
+    match resultado {
+        Ok(_) => {
+            let _ = registrar_historial(
+                &req,
+                &data.db,
+                "afiliar al sindicato",
+                Some(&serde_json::to_string(&doc).unwrap_or_default()),
+            )
+            .await;
+            Ok(HttpResponse::Ok().json("Se registraron correctamente los datos"))
+        }
+        Err(e) => Err(ApiError::InternalError(6, format!("Database error: {}", e))),
     }
 }

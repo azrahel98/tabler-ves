@@ -28,9 +28,12 @@ const nombreabrv = (nombrefull: string) => {
       </h4>
       <div class="text-secondary small">{{ user.dni }}</div>
       <div class="mt-3">
-        <span class="badge text-uppercase fw-medium" style="font-size: 0.7rem" :class="{ 'bg-danger-lt': user.estado == 'inactivo', 'bg-success-lt': user.estado == 'activo' }">{{
-          user.estado
-        }}</span>
+        <span
+          class="badge text-uppercase fw-medium text-white fs-6"
+          style="font-size: 0.7rem"
+          :class="{ 'bg-secondary': user.estado == 'inactivo', 'bg-primary': user.estado == 'activo' }"
+          >{{ user.estado }}</span
+        >
       </div>
     </div>
   </div>

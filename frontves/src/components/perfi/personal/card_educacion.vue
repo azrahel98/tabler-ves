@@ -16,11 +16,13 @@
         Full: <strong>{{ grado.abrv }}. {{ nombre }}</strong>
       </div>
     </div>
-    <div class="card-body text-center" v-else-if="grado != null && !store.isUser">
-      <h3 class="card-subtitle fw-semibold fs-4 text-center">Grado academico y SP</h3>
-      <button class="btn" data-bs-toggle="modal" data-bs-target="#add_info_grado">
-        <IconPlus class="icon m-0 p-0" />
-      </button>
+    <div class="card-body text-center" v-else>
+      <div v-if="!store.isUser">
+        <h3 class="card-subtitle fw-semibold fs-4 text-center">Grado academico y SP</h3>
+        <button class="btn" data-bs-toggle="modal" data-bs-target="#add_info_grado">
+          <IconPlus class="icon m-0 p-0" />
+        </button>
+      </div>
     </div>
     <addacademico v-if="grado == null && !store.isUser" />
     <addacademico v-else-if="grado != null && !store.isUser" :doc="grado" :is-edit="true" />

@@ -20,11 +20,13 @@
         <dd class="col-7">{{ datos.estado }}</dd>
       </dl>
     </div>
-    <div class="card-body text-center" v-else-if="datos != null && !store.isUser">
-      <h3 class="card-subtitle fw-semibold fs-4">Informacion Bancaria</h3>
-      <button class="btn">
-        <IconPlus class="icon m-0 p-0" data-bs-toggle="modal" data-bs-target="#add_info_bancaria" />
-      </button>
+    <div class="card-body text-center" v-else>
+      <div v-if="!store.isUser">
+        <h3 class="card-subtitle fw-semibold fs-4">Informacion Bancaria</h3>
+        <button class="btn">
+          <IconPlus class="icon m-0 p-0" data-bs-toggle="modal" data-bs-target="#add_info_bancaria" />
+        </button>
+      </div>
     </div>
     <addinfo v-if="datos == null && !store.isUser" />
     <addinfo v-else-if="datos != null && !store.isUser" :doc="datos" :is-edit="true" />

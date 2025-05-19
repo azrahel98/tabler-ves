@@ -3,6 +3,11 @@ import vue from '@vitejs/plugin-vue'
 import path from 'path'
 // https://vite.dev/config/
 export default defineConfig({
+  server:{
+    watch:{
+      usePolling: true,
+    }
+  },
   plugins: [vue()],
   define:{
     __VUE_PROD_DEVTOOLS_API__: false,
