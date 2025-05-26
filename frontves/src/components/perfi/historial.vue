@@ -1,5 +1,5 @@
 <template>
-  <div class="card" style="height: 28rem">
+  <div class="card" style="max-height: 70vh">
     <div class="card-body card-body-scrollable card-body-scrollable-shadow">
       <div class="divide-y">
         <div v-for="x in lista">

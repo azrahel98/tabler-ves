@@ -116,4 +116,5 @@ pub struct LegajoPersonal {
     pub estado: Option<String>,
     pub descrip: Option<String>,
     pub nuevo: i32,
+    pub user: Option<i32>,
 }

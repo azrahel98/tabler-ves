@@ -62,8 +62,8 @@ import { onMounted } from 'vue'
 
 const doc = ref<any>({
   banco: 1,
-  numero_cuenta: 1,
-  cci: 2,
+  numero_cuenta: '',
+  cci: '',
   tipo: 'AHORRO'
 })
 
@@ -100,9 +100,15 @@ const schema_validate = z.object({
     .transform((val) => String(val)),
   cci: z
     .union([z.string(), z.number()])
-    .refine((val) => /^\d{20}$/.test(String(val)), {
-      message: `El cci debe tener exactamente 20 dígitos tiene ${doc.value.cci}`
+    .refine((val) => /^\d+$/.test(String(val)), {
+      message: 'El CCI solo debe contener números'
     })
+    .refine(
+      (val) => String(val).length === 20,
+      (val) => ({
+        message: `El cci debe tener exactamente 20 dígitos, pero tiene ${String(val).length}`
+      })
+    )
     .transform((val) => String(val))
 })
 type schema_validateType = z.infer<typeof schema_validate>
@@ -128,7 +134,7 @@ const renuncia = async (edit: boolean) => {
       await api.post('/personal/editar_infobancaria', {
         numero_cuenta: doc.value.numero_cuenta.toString(),
         cci: doc.value.cci.toString(),
-        banco: doc.value.banco,
+        banco: doc.value.banco.toString(),
         estado: 1,
         id: doc.value.id,
         dni: router.currentRoute.value.params.dni,

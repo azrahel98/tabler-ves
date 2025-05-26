@@ -2,7 +2,7 @@
   <div class="card">
     <div class="card-body" v-if="grado != null">
       <div class="card-title d-flex justify-content-between">
-        <h4>Informacion Extra</h4>
+        <h3 class="h3">Informacion Extra</h3>
         <button class="btn btn-action" data-bs-toggle="modal" data-bs-target="#add_info_grado" v-if="grado != null && !store.isUser">
           <IconEdit class="icon m-0" />
         </button>

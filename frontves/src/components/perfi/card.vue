@@ -41,7 +41,7 @@ const nombreabrv = (nombrefull: string) => {
         </div>
 
         <div class="text-uppercase fw-medium text-black">Fecha Ingreso</div>
-        <div class="datagrid-content">
+        <div class="datagrid-content w-auto fw-semibold">
           {{ vinculo.fecha_ingreso ? format(addDays(parseISO(vinculo.fecha_ingreso), 0), 'dd/MM/yyyy') : 'Fecha no disponible' }}
         </div>
       </div>

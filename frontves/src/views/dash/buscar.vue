@@ -9,7 +9,10 @@
           </div>
 
           <div class="col-auto ms-auto d-print-none">
-            <div class="d-flex">
+            <div class="d-flex gap-3">
+              <button class="btn btn-primary btn-icon">
+                <IconUserPlus class="icon" />
+              </button>
               <input type="search" @keyup.enter="buscar" v-model="nombre" class="form-control d-inline-block w-9 me-3" placeholder="buscar ...." />
             </div>
           </div>
@@ -31,6 +34,7 @@
 <script lang="ts" setup>
 import { api } from '@api/axios'
 import Card_user from '@comp/buscar/card_user.vue'
+import { IconUserPlus } from '@tabler/icons-vue'
 import { ref } from 'vue'
 
 const nombre = ref('')

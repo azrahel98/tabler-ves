@@ -37,9 +37,12 @@
                 </div>
               </div>
 
-              <div class="col-md-4">
+              <div class="col-md-5">
                 <label for="tipoDocumento" class="form-label col-form-label-sm text-secondary mb-1">Fecha</label>
-                <input class="form-control m-0" type="datetime-local" v-model="form.fecha" required />
+                <input class="form-control m-0" :class="{ 'is-invalid': errors?.fecha?._errors?.length }" type="datetime-local" v-model="form.fecha" required />
+                <div v-if="errors?.fecha?._errors?.length" class="invalid-feedback d-block small">
+                  <span v-for="(msg, index) in errors.fecha._errors" :key="index">{{ msg }}</span>
+                </div>
               </div>
 
               <div class="col-auto">
@@ -62,11 +65,14 @@
 <script lang="ts" setup>
 import { api } from '@api/axios'
 import { router } from '@router/router'
+import { userStore } from '@store/user'
 import { IconFolderCheck, IconFolderExclamation } from '@tabler/icons-vue'
+import { isAfter, parseISO } from 'date-fns'
 import { onBeforeUnmount, onMounted, ref } from 'vue'
+import { z } from 'zod'
 
 const modalRef = ref<HTMLElement | null>(null)
-
+const store = userStore()
 const personas = ref<any>([])
 
 const form = ref({
@@ -75,8 +81,30 @@ const form = ref({
   descrip: '',
   estado: false,
   dni: '',
-  nuevo: false
+  nuevo: false,
+  user: 0
 })
+
+const schema = z.object({
+  persona: z.string().min(1, 'Seleccione una persona'),
+  fecha: z.string().refine(
+    (value: string | number | Date) => {
+      if (prop.prestado) {
+        return isAfter(new Date(value), parseISO(prop.create!))
+      }
+      return true
+    },
+    {
+      message: `La fecha debe ser posterior a la fecha del prestamo`
+    }
+  ),
+  descrip: z.string().optional(),
+  estado: z.boolean(),
+  nuevo: z.boolean(),
+  user: z.number()
+})
+type schema_validateType = z.infer<typeof schema>
+const errors = ref<z.ZodFormattedError<schema_validateType> | null>(null)
 
 const onModalShown = async () => {
   try {
@@ -113,11 +141,18 @@ const addnombre = (x: any) => {
 
 const prop = defineProps({
   prestado: { type: Boolean, default: false },
-  usuario: { type: String, default: '' }
+  usuario: { type: String, default: '' },
+  create: { type: String }
 })
 
 const send = async () => {
-  try {
+  errors.value = null
+  const result = schema.safeParse(form.value)
+
+  if (!result.success) {
+    errors.value = result.error.format()
+    console.log(errors.value)
+  } else {
     await api.post('/personal/nuevo_evento_legajo', {
       id: 1,
       dni: router.currentRoute.value.params.dni as string,
@@ -125,11 +160,10 @@ const send = async () => {
       fecha: form.value.fecha,
       descrip: form.value.descrip,
       estado: form.value.estado ? 'archivado' : 'prestamo',
-      nuevo: form.value.nuevo ? 1 : 0
+      nuevo: form.value.nuevo ? 1 : 0,
+      user: parseInt(store.id)
     })
     router.go(0)
-  } catch (error) {
-    console.log(error)
   }
 }
 </script>

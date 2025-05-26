@@ -463,7 +463,8 @@ pub async fn reporte_legajo(
             cast(fecha as char) fecha,
             estado,
             descrip,
-            false as nuevo
+            false as nuevo,
+            user
             from
             legajo
             where
@@ -536,8 +537,8 @@ pub async fn agregar_evento_legajo(
 
     let _ = sqlx::query(
         r#"
-        INSERT INTO legajo (persona, dni, fecha, estado, descrip)
-        VALUES (?, ?, ?, ?, ?)
+        INSERT INTO legajo (persona, dni, fecha, estado, descrip,user)
+        VALUES (?, ?, ?, ?, ?,?)
         "#,
     )
     .bind(&doc.persona)
@@ -545,6 +546,7 @@ pub async fn agregar_evento_legajo(
     .bind(doc.fecha.clone())
     .bind(&doc.estado)
     .bind(&doc.descrip)
+    .bind(doc.user)
     .execute(&mut *tx)
     .await
     .map_err(|e| {
@@ -559,7 +561,7 @@ pub async fn agregar_evento_legajo(
             let _ = registrar_historial(
                 &req,
                 &data.db,
-                "afiliar al sindicato",
+                "cambiar legajo",
                 Some(&serde_json::to_string(&doc).unwrap_or_default()),
             )
             .await;

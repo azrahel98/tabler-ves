@@ -20,7 +20,7 @@ export const userStore = defineStore('userStore', {
           this.logout()
           return
         }
-
+        this.id = decoded.id!
         this.exp = decoded.exp!
         this.lvl = decoded.lvl!
         this.nombre = decoded.nombre!

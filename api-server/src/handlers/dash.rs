@@ -275,6 +275,7 @@ pub async fn reporte_historial(
         FROM historial f
         INNER JOIN usuario u ON f.idusuario = u.id
         WHERE f.detalle LIKE ?
+        order by f.fecha desc   
         "#,
     )
     .bind(&buscar)
