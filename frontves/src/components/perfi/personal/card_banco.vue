@@ -21,7 +21,7 @@
     <div class="card-body text-center" v-else>
       <div v-if="!store.isUser">
         <h3 class="card-subtitle fw-semibold fs-4">Informacion Bancaria</h3>
-        <button class="btn">
+        <button class="btn btn-icon border-0">
           <IconPlus class="icon m-0 p-0" data-bs-toggle="modal" data-bs-target="#add_info_bancaria" />
         </button>
       </div>

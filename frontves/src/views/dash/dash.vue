@@ -13,29 +13,29 @@
         <div class="row row-cards">
           <div class="col-sm-6 col-lg-3">
             <card_info :title="`${info.total} Registros`" :cantidad="info.activos" :descarga="true" descripcion=" activos" :funcion="export_activos">
-              <span class="text-white avatar bg-primary">
-                <IconUsersGroup stroke="1.1" class="icon" />
+              <span class="text-white avatar avatar-sm bg-primary">
+                <IconUsersGroup stroke="1.1" class="icon icon-sm" />
               </span>
             </card_info>
           </div>
 
           <div class="col-sm-4 col-lg-3">
-            <card_info :cantidad="info.por_sindicato?.[1]?.cantidad" descripcion="afiliados" title="SUTRAMUVES" :descarga="true">
-              <span class="text-white avatar bg-success">
+            <card_info :cantidad="info.por_sindicato?.[1]?.cantidad" descripcion="afiliados" title="SUTRAMUVES">
+              <span class="text-white avatar avatar-sm bg-success">
                 <IconBrandMinecraft stroke="1.1" class="icon" />
               </span>
             </card_info>
           </div>
           <div class="col-sm-4 col-lg-3">
-            <card_info :cantidad="info.por_sindicato?.[0]?.cantidad" descripcion="afiliados" :descarga="true" title="SOMUVES">
-              <span class="text-white avatar bg-dribbble">
+            <card_info :cantidad="info.por_sindicato?.[0]?.cantidad" descripcion="afiliados" title="SOMUVES">
+              <span class="text-white avatar avatar-sm bg-dribbble">
                 <IconBuilding stroke="1.1" class="icon" />
               </span>
             </card_info>
           </div>
           <div class="col-sm-4 col-lg-3">
-            <card_info :cantidad="info.por_sexo?.[0]?.cantidad" descripcion="activas" :descarga="true" title="Mujeres">
-              <span class="text-white avatar bg-warning">
+            <card_info :cantidad="info.por_sexo?.[0]?.cantidad" descripcion="activas" title="Mujeres">
+              <span class="text-white avatar avatar-sm bg-warning">
                 <IconWoman stroke="1.1" class="icon" />
               </span>
             </card_info>
@@ -52,7 +52,7 @@
           </div>
         </div>
       </div>
-      <div class="tres">
+      <!-- <div class="tres">
         <div class="row row-cards">
           <div class="col-md-12 col-sm-12 col-lg-7">
             <areasresumen :rows="areas" />
@@ -61,7 +61,7 @@
             <Card_personal :data="renuncias" :total="renuncias.reduce((acc: any, x: any) => acc + x.cantidad, 0)" />
           </div>
         </div>
-      </div>
+      </div> -->
     </div>
   </div>
   <areaLoading v-show="!isloading" />
@@ -126,7 +126,6 @@ const export_activos = async () => {
   width: 100%;
   grid-template-rows: min-content 1fr;
   grid-template-columns: 1fr;
-  overflow: hidden;
 
   .items {
     display: grid;
@@ -134,25 +133,6 @@ const export_activos = async () => {
     grid-template-columns: 1fr;
     row-gap: 1rem;
     height: 100%;
-    overflow: hidden;
-
-    .uno,
-    .dos,
-    .tres {
-      width: 100%;
-      min-height: 0; // evita que colapsen el grid
-
-      .row-cards {
-        margin-left: 0;
-        margin-right: 0;
-      }
-    }
-
-    .dos,
-    .tres {
-      overflow-y: auto;
-      overflow-x: hidden;
-    }
   }
 }
 </style>

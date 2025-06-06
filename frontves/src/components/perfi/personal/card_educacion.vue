@@ -19,7 +19,7 @@
     <div class="card-body text-center" v-else>
       <div v-if="!store.isUser">
         <h3 class="card-subtitle fw-semibold fs-4 text-center">Grado academico y SP</h3>
-        <button class="btn" data-bs-toggle="modal" data-bs-target="#add_info_grado">
+        <button class="btn btn-icon border-0" data-bs-toggle="modal" data-bs-target="#add_info_grado">
           <IconPlus class="icon m-0 p-0" />
         </button>
       </div>

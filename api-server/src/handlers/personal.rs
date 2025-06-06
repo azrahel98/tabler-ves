@@ -42,6 +42,7 @@ pub async fn buscar_por_nombre(
         concat_ws(" ",dg.nombre,dg.apaterno,dg.amaterno) LIKE ?
         GROUP BY
         v.dni
+        order by v.estado asc
         "#,
         nombre
     )

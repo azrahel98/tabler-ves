@@ -6,7 +6,7 @@
     <div class="d-flex flex-column">
       <span class="text-muted fw-medium fs-5" v-if="valor">{{ texto }}</span>
       <span v-else class="text-danger fw-medium fs-5">{{ texto }}</span>
-      <span class="fw-medium small" v-if="valor">{{ valor }}</span>
+      <span class="fw-normal fs-4" v-if="valor">{{ valor }}</span>
       <span class="status-dot status-dot-animated bg-warning d-block h-1 w-1" v-else>{{ valor }}</span>
     </div>
   </div>

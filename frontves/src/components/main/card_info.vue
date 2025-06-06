@@ -1,6 +1,6 @@
 <template>
-  <div class="card card-sm">
-    <div class="card-body">
+  <div class="card p-0 card-sm">
+    <div class="card-body py-2 px-3">
       <div class="row align-items-center">
         <div class="col-auto">
           <slot />

@@ -20,12 +20,14 @@ const nombreabrv = (nombrefull: string) => {
 <template>
   <div class="card">
     <div class="card-body p-3 text-center">
-      <span class="avatar avatar-md mb-3 rounded">{{ nombreabrv(user.nombre) }}</span>
-      <h4 class="m-0 mb-1">
+      <span class="avatar fw-bolder avatar-md mb-3 rounded" :class="{ 'bg-secondary-lt': user.estado == 'inactivo', 'bg-primary-lt': user.estado == 'activo' }" v>{{
+        nombreabrv(user.nombre)
+      }}</span>
+      <h5 class="m-0 mb-1">
         <RouterLink :to="{ name: 'perfil', params: { dni: user.dni } }">
           {{ user.nombre }}
         </RouterLink>
-      </h4>
+      </h5>
       <div class="text-secondary small">{{ user.dni }}</div>
       <div class="mt-3">
         <span

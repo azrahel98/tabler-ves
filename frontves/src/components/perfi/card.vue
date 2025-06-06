@@ -36,7 +36,7 @@ const nombreabrv = (nombrefull: string) => {
           {{ vinculo.cargo }}
         </span>
 
-        <div class="text-muted mb-3 fw-medium">
+        <div class="text-muted fs-5 mb-3 fw-medium">
           {{ vinculo.area }}
         </div>
 
