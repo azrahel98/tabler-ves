@@ -24,24 +24,24 @@ const nombreabrv = (nombrefull: string) => {
   <div class="card">
     <div class="card-body p-3 text-center">
       <span class="avatar avatar-md mb-3 rounded">{{ nombreabrv(user.nombre) }}</span>
-      <h4 class="m-0 mb-1">
-        <RouterLink :to="{ name: 'perfil', params: { dni: user.dni } }">
+      <p class="m-0 mb-1  ">
+        <RouterLink class="text-black fw-medium text-decoration-none text-body" :to="{ name: 'perfil', params: { dni: user.dni } }">
           {{ user.nombre }}
         </RouterLink>
-      </h4>
-      <div class="text-secondary small">{{ user.dni }}</div>
+      </p>
+      <div class="text-secondary  text-hint">{{ user.dni }}</div>
       <div class="mt-3"></div>
-      <div v-if="vinculo" class="text-center mt-2 lista small">
+      <div v-if="vinculo" class="text-center mt-2 lista text-hint">
         <span class="badge px-3 bg-primary text-white fw-bold text-wrap align-middle">
           {{ vinculo.cargo }}
         </span>
 
-        <div class="text-muted fs-5 mb-3 fw-medium">
+        <div class="text-muted text-hint mb-3 fw-medium">
           {{ vinculo.area }}
         </div>
 
-        <div class="text-uppercase fw-medium text-black">Fecha Ingreso</div>
-        <div class="datagrid-content w-auto fw-semibold">
+        <div class="text-uppercase fw-medium small">Fecha Ingreso</div>
+        <div class="datagrid-content fs-5 fw-medium">
           {{ vinculo.fecha_ingreso ? format(addDays(parseISO(vinculo.fecha_ingreso), 0), 'dd/MM/yyyy') : 'Fecha no disponible' }}
         </div>
       </div>

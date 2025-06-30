@@ -1,7 +1,7 @@
 <template>
   <div class="card">
-    <div class="card-header px-3 py-2 d-flex justify-content-between">
-      <h4 class="fw-bold p-0 m-0">Información Básica</h4>
+    <div class="card-header d-flex justify-content-between">
+      <p class="">Informacion Basica</p>
       <button class="btn btn-action m-0 p-0" type="button" data-bs-toggle="modal" data-bs-target="#editmodal" v-if="!store.isUser">
         <IconUserEdit class="icon-sm" />
       </button>

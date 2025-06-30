@@ -1,26 +1,26 @@
 <template>
   <div id="add_info_bancaria" class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
     >
-    <div class="modal-dialog">
+    <div class="modal-dialog ">
       <div class="modal-content border-0 shadow">
-        <div class="modal-header bg-light">
+        <div class="modal-header bg-light ">
           <h1 class="modal-title fw-bold" id="resignationModalLabel" v-if="!isEdit">Registrar Informacion Bancaria</h1>
           <h1 class="modal-title fw-bold" id="resignationModalLabel" v-else>Editar la Informacion Bancaria</h1>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" />
         </div>
-        <div class="modal-body p-4">
-          <form @submit.prevent="renuncia(isEdit)">
+        <div class="modal-body p-3">
+        <form @submit.prevent="renuncia(isEdit)">
             <div class="row g-3">
               <div class="col-md-6">
                 <label for="tipoDocumento" class="form-label text-secondary mb-1">Entidad Financiera</label>
-                <select class="form-select" id="tipoDocumento" v-model="doc.banco">
+                <select class="form-select fs-5 fw-medium" id="tipoDocumento" v-model="doc.banco">
                   <option v-for="x in bancos" :value="x.id.toString()">{{ x.nombre }}</option>
                 </select>
               </div>
 
               <div class="col-md-6">
                 <label for="numeroDocumento" class="form-label text-secondary mb-1">Numero de Cuenta</label>
-                <input type="text" v-model="doc.numero_cuenta" class="form-control" placeholder="##" :class="errors?.numero_cuenta ? 'is-invalid' : ''" required />
+                <input type="text" v-model="doc.numero_cuenta" class="form-control fs-5" placeholder="##" :class="errors?.numero_cuenta ? 'is-invalid' : ''" required />
                 <div v-if="errors?.numero_cuenta" class="invalid-feedback small">
                   <span v-for="(error, index) in errors.numero_cuenta._errors" :key="index">{{ error }}</span>
                 </div>

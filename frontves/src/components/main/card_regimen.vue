@@ -1,19 +1,19 @@
 <template>
   <div class="card">
     <div class="card-header" v-if="header">
-      <h3 class="card-title">Regimenes Laborales</h3>
+      <p class="text-card-title ">Regimenes Laborales</p>
     </div>
     <table class="table card-table table-vcenter">
       <thead>
         <tr>
-          <th>{{ title }}</th>
+          <th >{{ title }}</th>
           <th colspan="2">Servidores</th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="x in (reg as Array<any>)">
-          <td>{{ x.nombre }}</td>
-          <td>{{ x.cantidad }}</td>
+          <td class="text-hint">{{ x.nombre }}</td>
+          <td class="text-hint">{{ x.cantidad }}</td>
           <td class="w-50">
             <div class="progress progress-xs">
               <div class="progress-bar" :style="{ width: `${(x.cantidad / total(reg)) * 100}%` }"></div>

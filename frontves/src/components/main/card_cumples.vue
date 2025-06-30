@@ -1,27 +1,27 @@
 <template>
   <div class="card">
     <div class="card-header">
-      <h3 class="card-title">Cumpleaños</h3>
+       <p class="text-card-title ">Regimenes Laborales</p>
     </div>
     <div class="limites">
       <table class="table table-vcenter table-hover">
         <tbody style="height: 100%">
           <tr v-for="x in filteredInfo(info)">
             <td class="w-100">
-              <RouterLink :to="{ name: 'perfil', params: { dni: x.dni } }" class="small text-reset" :class="istoday(x.nacimiento) ? 'fw-medium' : ''">
+              <RouterLink :to="{ name: 'perfil', params: { dni: x.dni } }" class="text-hint text-dark" :class="istoday(x.nacimiento) ? '' : ''">
                 {{ x.nombre }}
               </RouterLink>
             </td>
-            <td class="text-nowrap text-secondary fw-medium" v-if="istoday(x.nacimiento)">
-              <IconCalendar class="icon text-primary" />
+            <td class="text-nowrap text-hint" v-if="istoday(x.nacimiento)">
+              <IconCalendar class="icon text-primary text-hint" />
               {{ format(addDays(parseISO(x.nacimiento), 0), 'MMMM dd, yyyy') }}
             </td>
-            <td class="text-nowrap text-secondary" v-else>
-              <IconCalendar class="icon icon-1" />
+            <td class="text-nowrap text-hint" v-else>
+              <IconCalendar class="icon icon-1 text-primary" />
               {{ format(addDays(parseISO(x.nacimiento), 0), 'MMMM dd, yyyy') }}
             </td>
-            <td class="text-nowrap fw-medium">
-              <a :class="istoday(x.nacimiento) ? 'text-warning' : 'text-secondary'">
+            <td class="text-nowrap text-hint">
+              <a :class="istoday(x.nacimiento) ? 'text-warning' : 'text-dark'">
                 <IconCake class="icon icon-1" />
                 {{ x.edad }}
               </a>
@@ -45,7 +45,7 @@ onMounted(async () => {
   try {
     info.value = await (
       await api.post('/dash/cumpleaños', {
-        mes: new Date().getMonth() + 1,
+        mes: new Date().getMonth() ,
         dia: 2
       })
     ).data

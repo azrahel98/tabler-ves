@@ -137,7 +137,7 @@
   --tblr-dark-border-subtle: #6c7a91;
   --tblr-white-rgb: 255, 255, 255;
   --tblr-black-rgb: 0, 0, 0;
-  --tblr-font-sans-serif:    "Inter Var", Inter, -apple-system, BlinkMacSystemFont, San Francisco, Segoe UI, Roboto, Helvetica Neue, sans-serif;
+  --tblr-font-sans-serif:    "Inter", Inter, -apple-system, BlinkMacSystemFont, San Francisco, Segoe UI, Roboto, Helvetica Neue, sans-serif;
   --tblr-font-monospace:  Menlo, Monaco, Consolas, Liberation Mono, Courier New, monospace;
   --tblr-gradient: linear-gradient(180deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0));
   --tblr-body-font-family: var(--tblr-font-sans-serif);
@@ -263,7 +263,7 @@
 body {
   margin: 0;
   font-family: var(--tblr-body-font-family);
-  font-size: var(--tblr-body-font-size);
+  font-size: 14px;
   font-weight: var(--tblr-body-font-weight);
   line-height: var(--tblr-body-line-height);
   color: var(--tblr-body-color);
