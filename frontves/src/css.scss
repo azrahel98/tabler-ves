@@ -17,8 +17,10 @@ $font-xl: clamp(1.125rem, 1.8vw, 1.25rem);
 body {
   font-family: $font-sans;
   font-size: $font-base;
+  font-style: normal;
+   font-optical-sizing: auto;
   line-height: 1.5;
-}
+} 
 
 p{
   margin: 0 !important;

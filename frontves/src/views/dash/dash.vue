@@ -72,10 +72,8 @@ import { api } from '@api/axios'
 import card_info from '@comp/main/card_info.vue'
 import regimenesMedia from '@comp/main/card_regimen.vue'
 import cumpleañosCard from '@comp/main/card_cumples.vue'
-import areasresumen from '@comp/main/card_area.vue'
 import areaLoading from '@comp/loading.vue'
 import { IconBrandMinecraft, IconBuilding, IconUsersGroup, IconWoman } from '@tabler/icons-vue'
-import Card_personal from '@comp/main/card_personal.vue'
 
 import * as XLSX from 'xlsx'
 

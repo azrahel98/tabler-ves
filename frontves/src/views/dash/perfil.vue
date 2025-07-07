@@ -10,9 +10,9 @@
         </div>
       </div>
     </div>
-    <div class="page-body mt-0">
-      <div class="container-xl">
-        <div class="card">
+    <div class="page-body bg-transparent mt-0">
+      <div class="container-xl bg-transparent">
+        <div class="card px-0 border-0">
           <div class="card-header">
             <ul class="nav nav-tabs card-header-tabs">
               <li class="nav-item">
@@ -26,27 +26,27 @@
               </li>
             </ul>
           </div>
-          <div class="card-body p-0">
+          <div class="card-body p-0 px-0 mx-0">
             <transition name="fade" mode="out-in">
-              <div class="tab-content" :key="activeTab">
-                <div class="tab-pane p-3 active" v-if="activeTab === 'perfil'">
-                  <div class="container-md">
+              <div class="tab-content bg-transparent p-0" :key="activeTab">
+                <div class="tab-pane active" v-if="activeTab === 'perfil'">
+                  <div class="px-2 py-4">
                     <div class="row g-4">
-                      <div class="col-md-4 col-lg-3">
+                      <div class="col-md-12 col-lg-4">
                         <Card_user :user="perfil" :vinculo="(vinculos ?? []).filter((x:any) => x.estado === 'activo')[0]" />
                       </div>
-                      <div class="col-md-8 col-lg-8">
+                      <div class="col-md-12 col-lg-8">
                         <Informacion :perfil="perfil" />
                       </div>
                       <div class="col-md-12">
                         <div class="row g-3">
-                          <div class="col-md-4">
+                          <div class="col-md-5 col-lg-4">
                             <Card_banco />
                           </div>
-                          <div class="col-md-4">
+                          <div class="col-md-4 col-lg-4">
                             <Card_educacion :nombre="perfil.nombre" />
                           </div>
-                          <div class="col-md-4">
+                          <div class="col-md-3 col-lg-4">
                             <card_legajo :lista="legajos.slice(0, 3)" />
                           </div>
                         </div>

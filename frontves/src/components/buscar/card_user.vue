@@ -18,24 +18,29 @@ const nombreabrv = (nombrefull: string) => {
 </script>
 
 <template>
-  <div class="card">
-    <div class="card-body p-3 text-center">
-      <span class="avatar fw-bolder avatar-md mb-3 rounded" :class="{ 'bg-secondary-lt': user.estado == 'inactivo', 'bg-primary-lt': user.estado == 'activo' }" v>{{
-        nombreabrv(user.nombre)
-      }}</span>
-      <h5 class="m-0 mb-1">
-        <RouterLink :to="{ name: 'perfil', params: { dni: user.dni } }">
-          {{ user.nombre }}
-        </RouterLink>
-      </h5>
-      <div class="text-secondary small">{{ user.dni }}</div>
-      <div class="mt-3">
+  <div class="card h-100" style="min-height: 15vh">
+    <div class="card-body p-4 pb-2 text-start d-flex flex-column justify-content-between">
+      <div class="d-flex align-items-start gap-2">
         <span
-          class="badge text-uppercase fw-medium text-white fs-6"
-          style="font-size: 0.7rem"
-          :class="{ 'bg-secondary': user.estado == 'inactivo', 'bg-primary': user.estado == 'activo' }"
-          >{{ user.estado }}</span
+          class="avatar avatar-rounded fs-5 flex-shrink-0 d-flex align-items-center justify-content-center"
+          :class="{ 'bg-secondary-lt ': user.estado == 'inactivo', 'bg-facebook text-white': user.estado == 'activo' }"
         >
+          {{ nombreabrv(user.nombre) }}
+        </span>
+        <div>
+          <h4 class="m-0 mb-1">
+            <RouterLink :to="{ name: 'perfil', params: { dni: user.dni } }">
+              {{ user.nombre }}
+            </RouterLink>
+          </h4>
+          <div class="text-secondary small">{{ user.dni }}</div>
+        </div>
+      </div>
+
+      <div class="text-end">
+        <span class="badge text-lowercase fw-normal fs-6 text-white" :class="{ 'bg-secondary-lt ': user.estado == 'inactivo', 'bg-primary-lt': user.estado == 'activo' }">{{
+          user.estado
+        }}</span>
       </div>
     </div>
   </div>
