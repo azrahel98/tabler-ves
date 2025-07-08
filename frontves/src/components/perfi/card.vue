@@ -24,7 +24,7 @@ const nombreabrv = (nombrefull: string) => {
 <template>
   <div class="card">
     <div class="card-body p-4 pb-2 text-center d-flex flex-column gap-0 align-items-center">
-      <span class="avatar avatar-cover avatar-lg avatar-rounded">{{ nombreabrv(user.nombre) }}</span>
+      <span class="avatar  avatar-lg avatar-rounded">{{ nombreabrv(user.nombre) }}</span>
       <h4 class="font-bold tracking-tight w-50 p-0 m-0">{{ user.nombre }}</h4>
       <div class="text-secondary fs-5">
         <IconCreditCard class="icon" />
