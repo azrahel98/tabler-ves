@@ -1,34 +1,37 @@
 <template>
   <div class="page-wrapper">
     <div class="page-header d-print-none p-0 m-0">
-      <div class="container-xl">
-        <div class="row g-2 align-items-center justify-content-around">
-          <div class="col-auto">
-            <h1 class="page-title fs-1">Trabajadores</h1>
-            <div class="text-secondary mt-1 small">Gestiona y visualiza información de todos los trabajadores</div>
-          </div>
+    <div class="container-xl">
+            <div class="row g-2 align-items-center">
+              <div class="col">
+                <h2 class="page-title">Trabajadores</h2>
+                <div class="text-secondary mt-1">Reporte de trabajadores registrados</div>
+              </div>
 
-          <div class="col-auto">
-            <button class="btn btn-primary ">
-              <IconUserPlus class="icon icon-link" />
-              Nuevo
-            </button>
+              <div class="col-auto ms-auto d-print-none">
+                  <a href="#" class="btn btn-primary btn-3">
+                    <IconUserPlus class="icon " />
+                    Nuevo
+                  </a>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
     </div>
 
-    <div class="search">
-      <div class="card">
+    <div class="search container">
+      <div class="card bg-transparent border-0">
         <div class="card-body">
-          <input type="search" @keyup.enter="buscar" v-model="nombre" class="form-control text-center d-inline-block me-3" placeholder="buscar ...." />
-          <select class="form-select tomselected ts-hidden-accessible " id="select-users" value="" tabindex="-1">
-            <option value="3">Activo</option>
+          <div class="row justify-content-center row-gap-2">
+           <div class=" col-lg-3 col-sm-6 col-md-5 col-10">
+             <input type="search" @keyup.enter="buscar" v-model="nombre" class="form-control fs-3 d-inline-block me-3" placeholder="buscar ...." />
+           </div>
+         <div class="col-md-2 col-lg-1 col-sm-3 col-4">
+           <select class="form-select tomselected ts-hidden-accessible " id="select-users" value="" tabindex="-1">
+            <option value="">Activo</option>
             <option value="4">Cesado</option>
-            <option value="1">Chuck Tesla</option>
-            <option value=""></option>
-            <option value="2">Elon Musk</option>
           </select>
+         </div>
+          </div>
         </div>
       </div>
     </div>
@@ -74,25 +77,10 @@ const buscar = async () => {
   }
   .search {
     height: min-content;
-    align-self: center;
-    width: max-content;
     justify-self: center;
+    align-self: center;
 
-    .card-body {
-      display: flex;
-      gap: 1vh;
-      input {
-        min-width: 10vh;
-        max-width: 20vh;
-      }
-      select{
-        width: 12ch;
-      }
-      option,
-      select {
-        font-size: 0.77rem;
-      }
-    }
+   
   }
   .page-body {
     padding: 0;

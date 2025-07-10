@@ -24,28 +24,28 @@ const nombreabrv = (nombrefull: string) => {
 <template>
   <div class="card">
     <div class="card-body p-4 pb-2 text-center d-flex flex-column gap-0 align-items-center">
-      <span class="avatar  avatar-lg avatar-rounded">{{ nombreabrv(user.nombre) }}</span>
-      <h4 class="font-bold tracking-tight w-50 p-0 m-0">{{ user.nombre }}</h4>
+      <span class="avatar fs-4 avatar-lg avatar-rounded">{{ nombreabrv(user.nombre) }}</span>
+      <h4 class="font-bold tracking-tight w-75 p-0 m-0">{{ user.nombre }}</h4>
       <div class="text-secondary fs-5">
         <IconCreditCard class="icon" />
         {{ user.dni }}
       </div>
-      <span class="badge mt-3 badge-lg fs-5" v-if="user.nacimiento">
+      <span class="badge mt-3 badge-lg fs-5 text-secondary" v-if="user.nacimiento">
         <IconCake class="icon" />
-        {{ getYear(new Date()) - getYear(addDays(parseISO(user.nacimiento), 0)) }} Años
+        {{ getYear(new Date()) - getYear(addDays(parseISO(user.nacimiento), 0)) }} años
       </span>
       <div v-if="vinculo" class="mt-1"></div>
-      <div v-if="vinculo" class="text-center mt-2 lista text-hint">
-        <span class="badge px-3 bg-primary text-white fs-5 fw-bold text-wrap align-middle">
+      <div v-if="vinculo" class="text-center  ">
+        <span class="badge px-3 bg-primary text-white fs-6 fw-bold text-wrap align-middle">
           {{ vinculo.cargo }}
         </span>
 
-        <div class="text-secondary fw-bold fs-5 mb-1 fw-medium">
+        <div class="text-secondary fw-bold fs-6 mb-1 fw-medium">
           {{ vinculo.area }}
         </div>
 
-        <div class="text-uppercase fw-bold">Fecha Ingreso</div>
-        <div class="datagrid-content fs-4 fw-medium">
+        <div class="text-uppercase fw-bold fs-5">Fecha Ingreso</div>
+        <div class="datagrid-content fs-5 fw-medium">
           {{ vinculo.fecha_ingreso ? format(addDays(parseISO(vinculo.fecha_ingreso), 0), 'dd/MM/yyyy') : 'Fecha no disponible' }}
         </div>
       </div>

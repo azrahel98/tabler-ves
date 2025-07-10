@@ -1,7 +1,7 @@
 <template>
   <div class="card">
     <div class="card-body">
-      <form @submit.prevent="guardar(perfil)">
+      <form @submit.prevent="guardar(perfil)" >
         <div class="d-flex justify-content-between">
           <div class="d-flex gap-2">
             <IconUserEdit class="icon text-black" />

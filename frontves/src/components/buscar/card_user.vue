@@ -28,11 +28,11 @@ const nombreabrv = (nombrefull: string) => {
           {{ nombreabrv(user.nombre) }}
         </span>
         <div>
-          <h3 class="m-0 mb-1">
+          <h4 class="m-0 mb-1">
             <RouterLink :to="{ name: 'perfil', params: { dni: user.dni } }">
               {{ user.nombre }}
             </RouterLink>
-          </h3>
+          </h4>
           <div class="text-secondary ">{{ user.dni }}</div>
         </div>
       </div>
