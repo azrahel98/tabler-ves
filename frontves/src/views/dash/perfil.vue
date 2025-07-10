@@ -32,11 +32,11 @@
                 <div class="tab-pane active" v-if="activeTab === 'perfil'">
                   <div class="px-2 py-4">
                     <div class="row g-4">
-                      <div class="col-md-12 col-lg-4">
+                      <div class="col-md-12 col-lg-3">
                         <Card_user :user="perfil" :vinculo="(vinculos ?? []).filter((x:any) => x.estado === 'activo')[0]" />
                       </div>
-                      <div class="col-md-12 col-lg-8">
-                        <Informacion :perfil="perfil" />
+                      <div class="col-md-12 col-lg-9">
+                        <Informacion :perfil="perfil" @update:perfil="updateperfil" />
                       </div>
                       <div class="col-md-12">
                         <div class="row g-3">
@@ -135,6 +135,14 @@ onMounted(async () => {
     console.log(error)
   }
 })
+
+const updateperfil = async () => {
+  try {
+    perfil.value = await (await api.post('/personal/por_dni', { dni: router.currentRoute.value.params.dni })).data
+  } catch (error) {
+    console.log(error)
+  }
+}
 </script>
 
 <style scoped lang="scss">
