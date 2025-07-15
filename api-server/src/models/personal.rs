@@ -1,5 +1,5 @@
 use chrono::NaiveDate;
-use chrono::NaiveDateTime;
+use chrono::NaiveTime;
 use serde::Deserialize;
 use serde::Serialize;
 use sqlx::FromRow;
@@ -117,4 +117,11 @@ pub struct LegajoPersonal {
     pub descrip: Option<String>,
     pub nuevo: i32,
     pub user: Option<i32>,
+}
+
+#[derive(Debug, Serialize, Deserialize, FromRow)]
+pub struct AsistenciaVw {
+    pub dni: String,
+    pub hora: Option<String>,
+    pub fecha: Option<NaiveDate>,
 }

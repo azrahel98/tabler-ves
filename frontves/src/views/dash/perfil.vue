@@ -24,6 +24,9 @@
               <li class="nav-item">
                 <a class="nav-link" :class="{ active: activeTab === 'historial' }" href="#" @click.prevent="activeTab = 'historial'"> Historial </a>
               </li>
+              <li class="nav-item">
+                <a class="nav-link" :class="{ active: activeTab === 'asistencia' }" href="#" @click.prevent="activeTab = 'asistencia'"> Asistencia </a>
+              </li>
             </ul>
           </div>
           <div class="card-body p-0 px-0 mx-0">
@@ -31,22 +34,22 @@
               <div class="tab-content bg-transparent p-0" :key="activeTab">
                 <div class="tab-pane active" v-if="activeTab === 'perfil'">
                   <div class="px-2 py-4">
-                    <div class="row g-4">
-                      <div class="col-md-12 col-lg-3">
+                    <div class="row g-4 justify-content-center">
+                      <div class="col-md-5 col-lg-3 col-sm-6">
                         <Card_user :user="perfil" :vinculo="(vinculos ?? []).filter((x:any) => x.estado === 'activo')[0]" />
                       </div>
-                      <div class="col-md-12 col-lg-9">
+                      <div class="col-md-12 col-lg-9 col-sm-12">
                         <Informacion :perfil="perfil" @update:perfil="updateperfil" />
                       </div>
                       <div class="col-md-12">
-                        <div class="row g-3">
-                          <div class="col-md-5 col-lg-4">
+                        <div class="row row-gap-2 justify-content-center">
+                          <div class="col-md-8 col-lg-4 col-12">
                             <Card_banco />
                           </div>
-                          <div class="col-md-4 col-lg-4">
+                          <div class="col-md-8 col-lg-4 col-12">
                             <Card_educacion :nombre="perfil.nombre" />
                           </div>
-                          <div class="col-md-3 col-lg-4">
+                          <div class="col-md-8 col-lg-4 col-12">
                             <card_legajo :lista="legajos.slice(0, 3)" />
                           </div>
                         </div>
@@ -82,8 +85,11 @@
                   </div>
                 </div>
 
-                <div class="tab-pane p-3 active" v-else>
+                <div class="tab-pane p-3 active" v-else-if="activeTab === 'historial'">
                   <HistorialCard :lista="historial" />
+                </div>
+                <div class="tab-pane p-3 active" v-else>
+                  <Asistencia :dni="router.currentRoute.value.params.dni.toString()" />
                 </div>
               </div>
             </transition>
@@ -109,6 +115,7 @@ import { IconBriefcase } from '@tabler/icons-vue'
 import Card_banco from '@comp/perfi/personal/card_banco.vue'
 import Card_educacion from '@comp/perfi/personal/card_educacion.vue'
 import card_legajo from '@comp/perfi/personal/card_legajo.vue'
+import Asistencia from '@comp/perfi/asistencia.vue'
 
 const perfil = ref<any>({})
 const vinculos = ref(<any>[])

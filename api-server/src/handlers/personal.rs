@@ -2,8 +2,8 @@ use crate::{
     AppState,
     middleware::error::ApiError,
     models::personal::{
-        DatosBancarios, DatosBancariosResponse, Documento, DocumentoSindicato, GradoAcademico,
-        LegajoPersonal, Perfil, Persona, Vinculos,
+        AsistenciaVw, DatosBancarios, DatosBancariosResponse, Documento, DocumentoSindicato,
+        GradoAcademico, LegajoPersonal, Perfil, Persona, Vinculos,
     },
 };
 use actix_web::{
@@ -570,4 +570,32 @@ pub async fn agregar_evento_legajo(
         }
         Err(e) => Err(ApiError::InternalError(6, format!("Database error: {}", e))),
     }
+}
+
+#[derive(Deserialize)]
+pub struct AsistenciaBody {
+    pub dni: String,
+    pub mes: i32,
+    pub año: i32,
+}
+
+pub async fn report_asistencia(
+    data: web::Data<AppState>,
+    dni: web::Json<AsistenciaBody>,
+) -> Result<impl Responder, ApiError> {
+    let datos = sqlx::query_as!(
+        AsistenciaVw,
+        r#"select * from asistenciavw where year(fecha) = ? and month(fecha) = ? and dni = ?
+        "#,
+        dni.año,
+        dni.mes,
+        dni.dni
+    )
+    .fetch_all(&data.db)
+    .await
+    .expect("REASON");
+
+    println!("{:?}", datos);
+
+    Ok(HttpResponse::Ok().json(datos))
 }

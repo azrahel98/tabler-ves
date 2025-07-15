@@ -1,6 +1,6 @@
 @baseUrl = http://127.0.0.1:8080
 @contentType = application/json
-@TokenHash = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MywiZXhwIjoxNzQ4MjI1NDgzLCJsdmwiOjMsIm5vbWJyZSI6IlJhdWwgQ2hlcmNjYSBMb3BleiJ9.v7ac4BkcSu5EPMddCZ5iTsDx5Bh8u4nfvaXHBwHg93Q
+@TokenHash = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MywiZXhwIjoxNzUzMzY5MzE1LCJsdmwiOjMsIm5vbWJyZSI6IlJhdWwgMiJ9.QXUNIC_MbCTO4S2yTf-Go645BFs0oJVdAbVPj72E7eY
 POST {{baseUrl}}/login/
 Content-Type: {{contentType}}
 
@@ -42,3 +42,14 @@ Token: {{TokenHash}}
 POST {{baseUrl}}/dash/personal_activo
 Content-Type: {{contentType}}
 Token: {{TokenHash}}
+
+##########
+POST {{baseUrl}}/personal/asistencia
+Content-Type: {{contentType}}
+Token: {{TokenHash}}
+
+{
+    "dni":"70247264",
+    "mes":1,
+    "año":2025
+}

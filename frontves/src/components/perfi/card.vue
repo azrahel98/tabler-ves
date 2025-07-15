@@ -31,20 +31,23 @@ const nombreabrv = (nombrefull: string) => {
         {{ user.dni }}
       </div>
       <span class="badge mt-3 badge-lg fs-5 text-secondary" v-if="user.nacimiento">
-        <IconCake class="icon" />
+        <IconCake class="icon text-yellow" />
         {{ getYear(new Date()) - getYear(addDays(parseISO(user.nacimiento), 0)) }} años
       </span>
       <div v-if="vinculo" class="mt-1"></div>
-      <div v-if="vinculo" class="text-center  ">
-        <span class="badge px-3 bg-primary text-white fs-6 fw-bold text-wrap align-middle">
+      <div v-if="vinculo" class="text-center">
+        <div class="text-primary fw-medium fs-5">
           {{ vinculo.cargo }}
-        </span>
+        </div>
+        <!-- <span class="badge px-3 bg-primary text-white badge-sm fw-bold text-wrap align-middle">
+          {{ vinculo.cargo }}
+        </span> -->
 
         <div class="text-secondary fw-bold fs-6 mb-1 fw-medium">
           {{ vinculo.area }}
         </div>
 
-        <div class="text-uppercase fw-bold fs-5">Fecha Ingreso</div>
+        <div class="fw-bold small">Fecha Ingreso</div>
         <div class="datagrid-content fs-5 fw-medium">
           {{ vinculo.fecha_ingreso ? format(addDays(parseISO(vinculo.fecha_ingreso), 0), 'dd/MM/yyyy') : 'Fecha no disponible' }}
         </div>
