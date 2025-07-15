@@ -22,7 +22,6 @@
             </button>
           </div>
 
-          <!-- Botón refrescar -->
           <button type="button" class="btn btn-ghost-success btn-sm" @click="loadEventos" :disabled="loading">
             <span v-if="loading" class="spinner-border spinner-border-sm"></span>
             <IconRefresh class="icon" v-else />
@@ -32,7 +31,6 @@
     </div>
 
     <div class="card-body p-0">
-      <!-- Estado de carga -->
       <div v-if="loading && eventos.length === 0" class="text-center py-5">
         <div class="spinner-border text-primary mb-3"></div>
         <p class="text-secondary">Cargando eventos...</p>
@@ -56,7 +54,6 @@
             </tr>
           </thead>
 
-          <!-- Cuerpo del calendario -->
           <tbody>
             <tr v-for="semana in semanasDelMes" :key="semana[0]?.fecha || 'empty'">
               <td
@@ -70,18 +67,14 @@
                 }"
               >
                 <div v-if="dia" class="calendar-day-content">
-                  <!-- Número del día -->
                   <div class="calendar-day-number">
                     {{ dia.numero }}
                   </div>
-
-                  <!-- Eventos del día -->
-                  <div v-if="dia.eventos.length > 0" class="calendar-events">
+                  <div v-if="dia.eventos.length > 0" class="calendar-events bg-secondary-subtle">
                     <div
                       v-for="(evento, index) in dia.eventos"
                       :key="index"
                       class="calendar-event"
-                      :class="getEventClass(evento)"
                       @click="showEventDetails(evento, dia)"
                       :title="`${evento.hora} - DNI: ${evento.dni}`"
                     >
@@ -100,7 +93,6 @@
     </div>
   </div>
 
-  <!-- Modal de detalles del evento -->
   <div class="modal fade" :class="{ show: showModal }" :style="{ display: showModal ? 'block' : 'none' }" tabindex="-1" @click.self="closeModal">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
@@ -213,7 +205,6 @@
             </div>
           </div>
 
-          <!-- Eventos del mismo día -->
           <div v-if="selectedDayEvents && selectedDayEvents.length > 1" class="mt-4">
             <h6 class="text-secondary">Otros eventos del mismo día:</h6>
             <div class="list-group list-group-flush">
@@ -417,7 +408,7 @@ onMounted(() => {
 
 <style scoped>
 .calendar-day {
-  height: 120px;
+  height: 10vh;
   width: 14.28%;
   vertical-align: top;
   border: 1px solid var(--tblr-border-color);
@@ -503,7 +494,6 @@ onMounted(() => {
   cursor: pointer;
 }
 
-/* Responsive */
 @media (max-width: 768px) {
   .calendar-day {
     height: 80px;

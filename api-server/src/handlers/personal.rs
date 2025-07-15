@@ -3,7 +3,7 @@ use crate::{
     middleware::error::ApiError,
     models::personal::{
         AsistenciaVw, DatosBancarios, DatosBancariosResponse, Documento, DocumentoSindicato,
-        GradoAcademico, LegajoPersonal, Perfil, Persona, Vinculos,
+        GradoAcademico, LegajoPersonal, Perfil, Persona, Vinculos,ContactoEmergencia
     },
 };
 use actix_web::{
@@ -585,7 +585,7 @@ pub async fn report_asistencia(
 ) -> Result<impl Responder, ApiError> {
     let datos = sqlx::query_as!(
         AsistenciaVw,
-        r#"select * from asistenciavw where year(fecha) = ? and month(fecha) = ? and dni = ?
+        r#"select * from asistenciavw where year(fecha) = ? and month(fecha) = ? and dni = ? order by fecha asc,hora asc
         "#,
         dni.año,
         dni.mes,
@@ -596,6 +596,64 @@ pub async fn report_asistencia(
     .expect("REASON");
 
     println!("{:?}", datos);
+
+    Ok(HttpResponse::Ok().json(datos))
+}
+
+pub async fn contacto_emergencia_add(
+    data: web::Data<AppState>,
+    contacto: web::Json<ContactoEmergencia>,
+    req: HttpRequest,
+) -> Result<impl Responder, ApiError> {
+    let key = std::env::var("DB_KEY").unwrap_or("*Asdf-Xasdfadf2eee".to_string());
+    let query = sqlx::query(
+        r#"
+        INSERT INTO ContactoEmergencia (persona_dni, nombre, telefono, relacion)
+        VALUES (?, ?,aes_encrypt(?,?), ?)
+        ON DUPLICATE KEY UPDATE
+          nombre = VALUES(nombre),
+          telefono = VALUES(telefono),
+          relacion = VALUES(relacion)
+        "#,
+    )
+    .bind(&contacto.persona_dni)
+    .bind(&contacto.nombre)
+    .bind(&contacto.telefono)
+    .bind(key)
+    .bind(&contacto.relacion)
+    .execute(&data.db)
+    .await;
+
+    match query {
+        Ok(result) => {
+            let _ = registrar_historial(
+                &req,
+                &data.db,
+                "insert or update contacto de emergencia",
+                Some(&serde_json::to_string(&contacto.0).unwrap_or_default()),
+            )
+            .await;
+            Ok(HttpResponse::Ok().json(format!("Rows affected: {}", result.rows_affected())))
+        }
+        Err(e) => Err(ApiError::InternalError(3, format!("Database error: {}", e))),
+    }
+}
+
+pub async fn conctaco_por_dni(
+    data: web::Data<AppState>,
+    dni: web::Json<PerfilDni>,
+) -> Result<impl Responder, ApiError> {
+    let key = std::env::var("DB_KEY").unwrap_or("*Asdf-Xasdfadf2eee".to_string());
+    let datos = sqlx::query_as!(
+        ContactoEmergencia,
+        r#"select persona_dni,nombre,relacion,cast(aes_decrypt(telefono,?) as char) telefono from ContactoEmergencia  where persona_dni = ?
+        "#,
+        key,
+        dni.dni
+    )
+    .fetch_optional(&data.db)
+    .await
+    .expect("REASON");
 
     Ok(HttpResponse::Ok().json(datos))
 }

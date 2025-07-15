@@ -125,3 +125,12 @@ pub struct AsistenciaVw {
     pub hora: Option<String>,
     pub fecha: Option<NaiveDate>,
 }
+
+#[derive(Debug, Serialize, Deserialize, FromRow)]
+pub struct ContactoEmergencia {
+    pub persona_dni: String,
+    pub nombre: String,
+    pub relacion: String,
+    pub telefono: Option<String>,
+}
+
