@@ -99,11 +99,14 @@ const guardarContacto = async () => {
 
   const dni = router.currentRoute.value.params.dni
 
+  form.value.persona_dni = dni.toString()
+
   try {
     await api.post('/personal/agregar_contacto', {
-      dni,
       ...form.value
     })
+
+    router.go(0)
   } catch (e) {
     console.error('Error al guardar el contacto', e)
   }

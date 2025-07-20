@@ -340,15 +340,6 @@ const crearDiaCalendario = (fecha: Date, esDelMesActual: boolean): DiaCalendario
   }
 }
 
-const getEventClass = (evento: EventoAPI) => {
-  const hora = parseInt(evento.hora.split(':')[0])
-  const minuto = parseInt(evento.hora.split(':')[1])
-  console.log(minuto)
-  if (hora <= 8 && minuto <= 15) return 'calendar-event-morning '
-  if (hora >= 8 && minuto >= 16) return 'calendar-event-afternoon'
-  return 'calendar-event-evening'
-}
-
 const formatFecha = (fecha: string) => {
   return new Date(fecha + 'T00:00:00').toLocaleDateString('es-ES', {
     weekday: 'long',
