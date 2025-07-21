@@ -38,7 +38,7 @@
 import { api } from '@api/axios'
 import { router } from '@router/router'
 import { IconCashBanknote, IconPlus } from '@tabler/icons-vue'
-import addinfo from '@comp/perfi/modal/agregar_banco.vue'
+import addinfo from '@comp/perfil/modal/agregar_banco.vue'
 import { onMounted, ref } from 'vue'
 import { userStore } from '@store/user'
 

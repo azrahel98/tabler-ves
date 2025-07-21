@@ -34,7 +34,7 @@ import { api } from '@api/axios'
 import { router } from '@router/router'
 import { userStore } from '@store/user'
 import { IconUserCheck, IconEdit, IconPlus, IconUser, IconPhoneCall, IconUsers } from '@tabler/icons-vue'
-import Agregar_contacto from '../modal/agregar_contacto.vue'
+import Agregar_contacto from '../../../modal/agregar_contacto.vue'
 const contacto = ref<any>(null)
 const store = userStore()
 onMounted(async () => {

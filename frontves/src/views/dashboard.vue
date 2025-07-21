@@ -1,40 +1,31 @@
+<script setup lang="ts">
+import Sidebar from '@comp/sidebar/sidebar.vue'
+</script>
+
 <template>
-  <div class="app-container">
-    <Sidebar :is-expanded="isExpanded" :toggle="togglesidebar" />
-    <div class="main-content" @click="handleOutsideClick">
-      <div class="page-body p-0 m-0">
-        <div class="container-fluid">
-          <router-view />
-        </div>
-      </div>
+  <div class="layout">
+    <Sidebar class="sidebar" />
+    <div class="main-content">
+      <RouterView />
     </div>
   </div>
 </template>
-<script setup lang="ts">
-import Sidebar from '@comp/sidebar.vue'
-import { ref } from 'vue'
-
-const isExpanded = ref(false)
-
-const togglesidebar = () => {
-  isExpanded.value = !isExpanded.value
-}
-const handleOutsideClick = (_event: MouseEvent) => {
-  isExpanded.value = false
-}
-</script>
 
 <style lang="scss" scoped>
-.app-container {
+.layout {
   display: flex;
+  flex-direction: column;
   height: 100vh;
-  max-width: 100vw;
-}
-.main-content {
-  flex: 1;
-  padding-left: 60px;
-  background-color: #f4f6fa;
-  transition: margin-left 0.3s ease;
-  width: 100%;
+
+  .sidebar {
+    flex-shrink: 0;
+  }
+
+  .main-content {
+    flex: 1;
+    overflow-y: auto;
+    height: 100vh;
+    padding: 1rem;
+  }
 }
 </style>

@@ -1,23 +1,5 @@
 <template>
   <div class="page-wrapper">
-    <div class="page-header d-print-none p-0 m-0">
-      <div class="container-xl">
-        <div class="row g-2 align-items-center">
-          <div class="col">
-            <h2 class="page-title">Trabajadores</h2>
-            <div class="text-secondary mt-1">Reporte de trabajadores registrados</div>
-          </div>
-
-          <div class="col-auto ms-auto d-print-none">
-            <a href="#" class="btn btn-primary btn-3">
-              <IconUserPlus class="icon" />
-              Nuevo
-            </a>
-          </div>
-        </div>
-      </div>
-    </div>
-
     <div class="search container">
       <div class="card bg-transparent border-0">
         <div class="card-body">
@@ -51,7 +33,6 @@
 <script lang="ts" setup>
 import { api } from '@api/axios'
 import Card_user from '@comp/buscar/card_user.vue'
-import { IconUserPlus } from '@tabler/icons-vue'
 import { ref } from 'vue'
 
 const nombre = ref('')
@@ -68,9 +49,8 @@ const buscar = async () => {
 
 <style lang="scss" scoped>
 .page-wrapper {
-  height: 100vh;
   display: grid;
-  grid-template-rows: 10vh min-content auto;
+  grid-template-rows: min-content auto;
   row-gap: 1vh;
   .page-header {
     border-radius: 12px;

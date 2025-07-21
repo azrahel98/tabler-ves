@@ -10,11 +10,11 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true,
     "paths": {
-      "@views/*":["./src/views/*"],
-      "@router/*":["./src/router/*"],
-      "@comp/*":["./src/components/*"],
-      "@api/*":["./src/client/*"],
-      "@store/*":["./src/store/*"]
+      "@views/*": ["./src/views/*"],
+      "@router/*": ["./src/router/*"],
+      "@comp/*": ["./src/components/*"],
+      "@api/*": ["./src/client/*"],
+      "@store/*": ["./src/store/*"]
     }
   },
   "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue"]

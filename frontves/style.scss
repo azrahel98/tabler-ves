@@ -1,0 +1,20 @@
+.form-control {
+  transition: border-color 0.15s ease-in-out;
+
+  &:focus-visible {
+    outline: none;
+    border: transparent;
+    box-shadow: 0 0 0 3px rgba(var(--tblr-primary-rgb, 59, 110, 246), 0.25); // azul suave
+  }
+
+  &::placeholder {
+    color: var(--tblr-placeholder-color, #adb5bd);
+    opacity: 1;
+  }
+
+  &:disabled {
+    background-color: var(--tblr-bg-disabled, #e9ecef);
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}

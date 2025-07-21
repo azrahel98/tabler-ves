@@ -31,7 +31,7 @@
 </template>
 <script setup lang="ts">
 import { IconFolderShare, IconPaperclip } from '@tabler/icons-vue'
-import modallegajo from '@comp/perfi/modal/agregar_legajo.vue'
+import modallegajo from '@comp/perfil/modal/agregar_legajo.vue'
 import { userStore } from '@store/user'
 
 const store = userStore()

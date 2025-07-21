@@ -1,65 +1,66 @@
 <template>
-  <div class="card" style="max-height: 70vh">
-    <div class="card-header">
-      <h3 class="card-title d-flex align-items-center">
-        <IconReport class="icon me-2" />
-        {{ title }}
-      </h3>
-      <div class="card-actions">
-        <span class="badge bg-primary text-white fw-bold">{{ lista.length }}</span>
-      </div>
-    </div>
-
-    <div class="card-body card-body-scrollable card-body-scrollable-shadow p-0">
-      <!-- Estado vacío -->
-      <div v-if="lista.length === 0" class="empty">
-        <div class="empty-img">
-          <IconPaperBagOff class="icon me-3" />
+  <div class="tab-pane p-3 active">
+    <div class="card" style="max-height: 70vh">
+      <div class="card-header">
+        <h3 class="card-title d-flex align-items-center">
+          <IconReport class="icon me-2" />
+          {{ title }}
+        </h3>
+        <div class="card-actions">
+          <span class="badge bg-primary text-white fw-bold">{{ lista.length }}</span>
         </div>
-        <p class="empty-title">Sin resultados</p>
-        <p class="empty-subtitle text-secondary">No se encontraron registros para el criterio de búsqueda</p>
       </div>
 
-      <div v-else class="list-group list-group-flush">
-        <div v-for="(item, index) in lista" :key="index" class="list-group-item list-group-item-action">
-          <div class="row align-items-start">
-            <div class="col-auto">
-              <span class="avatar avatar-sm avatar-rounded bg-primary-lt">
-                {{ getInitials(item.nombre) }}
-              </span>
-            </div>
+      <div class="card-body card-body-scrollable card-body-scrollable-shadow p-0">
+        <div v-if="lista.length === 0" class="empty">
+          <div class="empty-img">
+            <IconPaperBagOff class="icon me-3" />
+          </div>
+          <p class="empty-title">Sin resultados</p>
+          <p class="empty-subtitle text-secondary">No se encontraron registros para el criterio de búsqueda</p>
+        </div>
 
-            <div class="col">
-              <div class="d-flex align-items-center justify-content-between mb-2">
-                <div class="d-flex align-items-center flex-wrap">
-                  <div class="d-flex align-items-center me-3">
-                    <IconUser class="icon me-1 text-secondary" />
-                    <strong class="text-body">{{ item.nombre }}</strong>
-                  </div>
-                  <span class="badge small" :class="getOperationBadge(item.operacion)">
-                    {{ formatOperacion(item.operacion) }}
-                  </span>
-                </div>
-
-                <div class="text-secondary d-flex align-items-center">
-                  <IconClock class="icon icon-sm" />
-                  <small>{{ formatFecha(item.fecha) }}</small>
-                </div>
+        <div v-else class="list-group list-group-flush">
+          <div v-for="(item, index) in lista" :key="index" class="list-group-item list-group-item-action">
+            <div class="row align-items-start">
+              <div class="col-auto">
+                <span class="avatar avatar-sm avatar-rounded bg-primary-lt">
+                  {{ getInitials(item.nombre) }}
+                </span>
               </div>
 
-              <div v-if="item.detalle && item.detalle.trim()" class="mt-2">
-                <div class="card card-sm">
-                  <div class="card-body">
-                    <div class="flex-fill">
-                      <pre class="mb-0 text-white small">{{ item.detalle }}</pre>
+              <div class="col">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                  <div class="d-flex align-items-center flex-wrap">
+                    <div class="d-flex align-items-center me-3">
+                      <IconUser class="icon me-1 text-secondary" />
+                      <strong class="text-body">{{ item.nombre }}</strong>
+                    </div>
+                    <span class="badge small" :class="getOperationBadge(item.operacion)">
+                      {{ formatOperacion(item.operacion) }}
+                    </span>
+                  </div>
+
+                  <div class="text-secondary d-flex align-items-center">
+                    <IconClock class="icon icon-sm" />
+                    <small>{{ formatFecha(item.fecha) }}</small>
+                  </div>
+                </div>
+
+                <div v-if="item.detalle && item.detalle.trim()" class="mt-2">
+                  <div class="card card-sm">
+                    <div class="card-body">
+                      <div class="flex-fill">
+                        <pre class="mb-0 text-white small">{{ item.detalle }}</pre>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
 
-              <div class="mt-2 d-flex align-items-center text-muted">
-                <IconCalendar class="icon icon-sm" />
-                <small>{{ formatFechaCompleta(item.fecha) }}</small>
+                <div class="mt-2 d-flex align-items-center text-muted">
+                  <IconCalendar class="icon icon-sm" />
+                  <small>{{ formatFechaCompleta(item.fecha) }}</small>
+                </div>
               </div>
             </div>
           </div>
@@ -75,7 +76,7 @@ import { IconCalendar, IconClock, IconPaperBagOff, IconReport, IconUser } from '
 interface HistorialItem {
   operacion: string
   detalle: string
-  fecha: string // NaiveDateTime convertido a string
+  fecha: string
   nombre: string
 }
 
@@ -125,7 +126,6 @@ const getOperationBadge = (operacion: string): string => {
   return 'bg-secondary text-white'
 }
 
-// Función para formatear operación (hacer más legible)
 const formatOperacion = (operacion: string): string => {
   return operacion
     .toLowerCase()
@@ -134,7 +134,6 @@ const formatOperacion = (operacion: string): string => {
     .join(' ')
 }
 
-// Función para formatear fecha relativa
 const formatFecha = (fecha: string): string => {
   try {
     const date = new Date(fecha)
@@ -159,7 +158,6 @@ const formatFecha = (fecha: string): string => {
   }
 }
 
-// Función para fecha completa
 const formatFechaCompleta = (fecha: string): string => {
   try {
     const date = new Date(fecha)

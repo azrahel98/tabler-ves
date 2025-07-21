@@ -1,13 +1,5 @@
 <template>
   <div class="container-xl main-page" v-show="isloading">
-    <div class="px-4 pt-2">
-      <div class="max-w-7xl mx-auto">
-        <div class="space-y-1">
-          <span class="text-sm font-medium"> Resumen de los indicadores </span>
-          <h2 class="font-bold text-gray tracking-tight">Dashboard</h2>
-        </div>
-      </div>
-    </div>
     <div class="items">
       <div class="uno">
         <div class="row row-cards">
@@ -119,11 +111,8 @@ const export_activos = async () => {
 </script>
 <style lang="scss" scoped>
 .main-page {
-  height: 100dvh;
   display: grid;
   width: 100%;
-  grid-template-rows: min-content 1fr;
-  grid-template-columns: 1fr;
 
   .items {
     display: grid;

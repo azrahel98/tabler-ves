@@ -101,10 +101,10 @@
 import { format, addDays, parseISO } from 'date-fns'
 
 import { IconBriefcase, IconClipboardOff, IconCopyPlus, IconEyePlus, IconEyeX, IconFileInfo, IconX } from '@tabler/icons-vue'
-import { userStore } from '../../store/user'
+import { userStore } from '../../../../store/user'
 
-import Renuncia from './modal/renuncia.vue'
-import Sindicato from './modal/agregar_sindicato.vue'
+import Renuncia from '../../modal/renuncia.vue'
+import Sindicato from '../../modal/agregar_sindicato.vue'
 
 const store = userStore()
 

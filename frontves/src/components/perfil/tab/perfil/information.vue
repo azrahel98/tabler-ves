@@ -33,11 +33,11 @@
       <form @submit.prevent="guardar(perfil)">
         <div class="row g-3">
           <div class="col-md-6">
-            <label class="form-label required">
-              <MapPin class="icon icon-sm me-1 text-red" />
+            <label class="form-label" :class="{ 'required ': editMode }">
+              <MapPin class="icon" :class="editMode ? 'text-red icon-sm me-1' : 'text-blue'" />
               Dirección
             </label>
-            <div class="input-group">
+            <div class="input-group" v-if="editMode">
               <span class="input-group-text">
                 <MapPin class="icon icon-sm" />
               </span>
@@ -56,43 +56,51 @@
                 </div>
               </div>
             </div>
+            <div v-else>
+              <strong class="text-hint fw-normal">{{ perfil.direccion }}</strong>
+            </div>
           </div>
 
           <div class="col-md-6">
-            <label class="form-label required">
-              <Phone class="icon icon-sm me-1 text-red" />
+            <label class="form-label" :class="{ required: editMode }">
+              <Phone class="icon" :class="editMode ? 'text-red icon-sm me-1' : 'text-blue'" />
               Teléfono
             </label>
-            <div class="input-group">
-              <span class="input-group-text">
-                <Phone class="icon icon-sm" />
-              </span>
-              <input
-                type="tel"
-                v-model="perfil.telf"
-                placeholder="999 999 999"
-                class="form-control"
-                :class="{ 'is-invalid': errors?.telf }"
-                :disabled="!editMode || loading"
-                maxlength="9"
-                @input="formatPhone"
-                @blur="validateField('telf')"
-              />
-              <div v-if="errors?.telf" class="invalid-feedback">
-                <div v-for="error in errors.telf._errors" :key="error">
-                  {{ error }}
+            <div v-if="editMode">
+              <div class="input-group">
+                <span class="input-group-text">
+                  <Phone class="icon icon-sm" />
+                </span>
+                <input
+                  type="tel"
+                  v-model="perfil.telf"
+                  placeholder="999 999 999"
+                  class="form-control"
+                  :class="{ 'is-invalid': errors?.telf }"
+                  :disabled="!editMode || loading"
+                  maxlength="9"
+                  @input="formatPhone"
+                  @blur="validateField('telf')"
+                />
+                <div v-if="errors?.telf" class="invalid-feedback">
+                  <div v-for="error in errors.telf._errors" :key="error">
+                    {{ error }}
+                  </div>
                 </div>
               </div>
+              <div class="small text-secondary" v-if="editMode">Formato: 9 dígitos sin espacios</div>
             </div>
-            <div class="small text-secondary" v-if="editMode">Formato: 9 dígitos sin espacios</div>
+            <div v-else>
+              <strong class="text-hint fw-normal">{{ perfil.telf }}</strong>
+            </div>
           </div>
 
           <div class="col-md-6">
-            <label class="form-label required">
-              <Mail class="icon icon-sm me-1 text-red" />
+            <label class="form-label" :class="{ required: editMode }">
+              <Mail class="icon" :class="editMode ? 'text-red icon-sm me-1' : 'text-blue'" />
               Correo Electrónico
             </label>
-            <div class="input-group">
+            <div class="input-group" v-if="editMode">
               <span class="input-group-text">
                 <Mail class="icon icon-sm" />
               </span>
@@ -111,6 +119,9 @@
                 </div>
               </div>
             </div>
+            <div v-else>
+              <strong class="text-hint fw-normal">{{ perfil.email }}</strong>
+            </div>
           </div>
 
           <div class="col-md-6">
@@ -119,13 +130,18 @@
               RUC
               <span class="text-secondary" v-if="editMode">(Opcional)</span>
             </label>
-            <div class="input-group">
-              <span class="input-group-text">
-                <FileText class="icon icon-sm" />
-              </span>
-              <input type="text" v-model="perfil.ruc" placeholder="20123456789" class="form-control" :disabled="!editMode || loading" maxlength="11" />
+            <div v-if="editMode">
+              <div class="input-group">
+                <span class="input-group-text">
+                  <FileText class="icon" :class="editMode ? 'text-red icon-sm me-1' : 'text-blue'" />
+                </span>
+                <input type="text" v-model="perfil.ruc" placeholder="20123456789" class="form-control" :disabled="!editMode || loading" maxlength="11" />
+              </div>
+              <div class="text-secondary small" v-if="editMode">RUC de 11 dígitos (opcional)</div>
             </div>
-            <div class="text-secondary small" v-if="editMode">RUC de 11 dígitos (opcional)</div>
+            <div v-else>
+              <strong class="text-hint fw-normal">{{ perfil.emrail }}</strong>
+            </div>
           </div>
         </div>
 
@@ -149,41 +165,13 @@
         </div>
       </form>
     </div>
-
-    <!-- <div class="card-footer bg-transparent text-secondary">
-      <div class="row align-items-center">
-        <div class="col">
-          <div class="d-flex align-items-center">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="icon icon-sm me-1"
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              stroke-width="2"
-              stroke="currentColor"
-              fill="none"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <path stroke="none" d="m0 0h24v24H0z" fill="none" />
-              <path d="M12 8h.01" />
-              <path d="M11 12h1v4h1" />
-              <path d="M12 3c7.2 0 9 1.8 9 9s-1.8 9 -9 9s-9 -1.8 -9 -9s1.8 -9 9 -9z" />
-            </svg>
-            <small>Tu información está protegida y encriptada</small>
-          </div>
-        </div>
-        <div class="col-auto"></div>
-      </div>
-    </div> -->
   </div>
 </template>
 
 <script setup lang="ts">
 import { FileText, Mail, MapPin, Phone } from 'lucide-vue-next'
 import { IconAlertCircle, IconCheck, IconUserEdit, IconX } from '@tabler/icons-vue'
-import { userStore } from '../../store/user'
+import { userStore } from '../../../../store/user'
 import { api } from '@api/axios'
 import { router } from '@router/router'
 import { ref } from 'vue'
