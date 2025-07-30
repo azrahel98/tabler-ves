@@ -1,7 +1,10 @@
 use crate::{
     AppState,
     middleware::error::ApiError,
-    models::dash::{BancosReport, Cumpleaños, CumpleañosRequest, DataResumen, ResumenResponse},
+    models::dash::{
+        BancosReport, Cumpleaños, CumpleañosRequest, DataResumen, DbOrgani, Organigrama,
+        ResumenResponse,
+    },
 };
 use actix_web::{
     HttpResponse, Responder,
@@ -299,4 +302,85 @@ pub async fn reporte_historial(
         .collect();
 
     Ok(HttpResponse::Ok().json(result))
+}
+
+pub async fn organigrama(data: web::Data<AppState>) -> Result<impl Responder, ApiError> {
+    let rows = sqlx::query_as::<_, DbOrgani>(
+        r#"
+        SELECT
+            a.id,
+            a.nombre AS area,
+            CONCAT(p.apaterno, ' ', p.amaterno, ' ', p.nombre) AS nombre,
+            CAST(p.dni AS CHAR) AS dni,
+            a.nivel AS nivel
+        FROM
+            Area a
+            LEFT JOIN Vinculo v ON a.id = v.area_id
+            AND v.estado = 'activo'
+            AND v.cargo_id IN (30, 381, 614)
+            LEFT JOIN Persona p ON v.dni = p.dni
+        WHERE
+            a.activo = 1
+        GROUP BY
+            a.id
+        "#,
+    )
+    .fetch_all(&data.db)
+    .await
+    .map_err(|e| {
+        eprintln!("Database error: {:?}", e);
+        ApiError::InternalError(3, "Consulta malformada".into())
+    })?;
+
+    let mut organigrama: Vec<Organigrama> = Vec::new();
+
+    for row in &rows {
+        if row.nivel.is_none() {
+            let org = Organigrama {
+                id: row.id,
+                area: row.area.clone(),
+                dni: row.dni.clone(),
+                jefe: row.nombre.clone(),
+                subgerencias: Vec::new(),
+            };
+            organigrama.push(org);
+        }
+    }
+
+    for row in &rows {
+        if let Some(nivel) = row.nivel {
+            for org in organigrama.iter_mut() {
+                if org.id == nivel {
+                    let sub = Organigrama {
+                        id: row.id,
+                        area: row.area.clone(),
+                        dni: row.dni.clone(),
+                        jefe: row.nombre.clone(),
+                        subgerencias: Vec::new(),
+                    };
+                    org.subgerencias.push(sub);
+                }
+            }
+        }
+    }
+
+    for row in &rows {
+        if let Some(nivel) = row.nivel {
+            for org in organigrama.iter_mut() {
+                for sub in org.subgerencias.iter_mut() {
+                    if sub.id == nivel {
+                        let new_sub = Organigrama {
+                            id: row.id,
+                            area: row.area.clone(),
+                            dni: row.dni.clone(),
+                            jefe: row.nombre.clone(),
+                            subgerencias: Vec::new(),
+                        };
+                        sub.subgerencias.push(new_sub);
+                    }
+                }
+            }
+        }
+    }
+    Ok(HttpResponse::Ok().json(organigrama))
 }

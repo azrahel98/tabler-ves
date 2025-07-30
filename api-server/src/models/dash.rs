@@ -1,5 +1,6 @@
 use chrono::NaiveDate;
 use serde::{Deserialize, Serialize};
+use sqlx::FromRow;
 
 use crate::middleware::error::ApiError;
 
@@ -65,4 +66,22 @@ pub struct AreaReport {
 pub struct BancosReport {
     pub id: i32,
     pub nombre: String,
+}
+
+#[derive(Serialize, Deserialize, Clone)]
+pub struct Organigrama {
+    pub id: i32,
+    pub area: String,
+    pub jefe: Option<String>,
+    pub dni: Option<String>,
+    pub subgerencias: Vec<Organigrama>,
+}
+
+#[derive(FromRow, Deserialize)]
+pub struct DbOrgani {
+    pub id: i32,
+    pub area: String,
+    pub nombre: Option<String>,
+    pub dni: Option<String>,
+    pub nivel: Option<i32>,
 }

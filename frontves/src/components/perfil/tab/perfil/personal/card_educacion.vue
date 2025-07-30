@@ -1,42 +1,62 @@
 <template>
-  <div class="card">
-    <div class="card-body px-3 py-2" v-if="contacto != null">
-      <div class="d-flex justify-content-between align-items-start">
-        <h3 class="fw-semibold fs-4 m-0"><IconUserCheck class="icon" /> Contacto de Emergencia</h3>
-        <button class="btn btn-action" data-bs-toggle="modal" data-bs-target="#modal_contacto_emergencia" v-if="!store.isUser"><IconEdit class="icon" /></button>
+  <div :class="contacto == null ? 'col-2' : 'col-md-6 col-sm-6 col-lg-3 col-12'" style="height: min-content">
+    <div class="card">
+      <div class="card-header px-2 py-2 d-flex flex-wrap align-items-center" :class="contacto == null ? 'justify-content-center row-gap-1' : 'justify-content-center row-gap-2'">
+        <div class="d-flex align-items-center">
+          <div class="px-2">
+            <h5 class="card-title mb-0">Contacto de Emergencia</h5>
+            <p class="text-muted mb-0 small">Información de contacto de emergencia</p>
+          </div>
+        </div>
+        <button
+          v-if="!store.isUser"
+          class="btn btn-warning btn-sm d-flex align-items-center row-gap-0 column-gap-2"
+          data-bs-toggle="modal"
+          data-bs-target="#modal_contacto_emergencia"
+          :title="contacto ? 'Editar contacto' : 'Agregar contacto'"
+        >
+          <IconEdit v-if="contacto" class="icon icon-sm" />
+          <IconPlus v-else class="icon icon-sm" />
+          <span class="d-none d-sm-inline">{{ contacto ? 'Editar' : 'Agregar' }}</span>
+        </button>
       </div>
-      <div class="card bg-body mt-2">
-        <div class="card-body px-2 py-2 fs-5">
-          <div class="mb-2">
-            <IconUser class="icon me-2 text-secondary icon-2" /> Nombre: <strong>{{ contacto.nombre }}</strong>
-          </div>
-          <div class="mb-2">
-            <IconPhoneCall class="icon me-2 text-secondary icon-2" /> Teléfono: <strong>{{ contacto.telefono }}</strong>
-          </div>
-          <div class="mb-2">
-            <IconUsers class="icon me-2 text-secondary icon-2" /> Relación: <strong>{{ contacto.relacion }}</strong>
+
+      <div class="card-body" v-if="contacto != null">
+        <div class="text-center position-relative">
+          <div class="avatar avatar-lg bg-white mb-2 text-black fw-bold fs-2"></div>
+
+          <h3 class="fw-bold mb-2 text-uppercase">{{ contacto.nombre }}</h3>
+
+          <div class="d-flex justify-content-center align-items-center gap-3 mb-3">
+            <div class="d-flex align-items-center text-secondary">
+              <IconCreditCard class="icon icon-sm me-1" />
+              <span class="small fw-medium">{{ contacto.telefono }}</span>
+            </div>
+
+            <div class="d-flex align-items-center text-secondary">
+              <IconCake class="icon icon-sm me-1" />
+              <span class="small fw-medium"> {{ contacto.relacion }} </span>
+            </div>
           </div>
         </div>
       </div>
+
+      <Agregar_contacto v-if="!store.isUser" :contacto="contacto" :is-edit="contacto != null" :dni="(router.currentRoute.value.params.dni as string)" />
     </div>
-    <div class="card-body text-center" v-else>
-      <div v-if="!store.isUser" class="d-flex justify-content-between align-items-start">
-        <h3 class="fw-semibold fs-4 m-0"><IconUserCheck class="icon" /> Contacto de Emergencia</h3>
-        <button class="btn btn-icon border-0" data-bs-toggle="modal" data-bs-target="#modal_contacto_emergencia"><IconPlus class="icon" /></button>
-      </div>
-    </div>
-    <Agregar_contacto v-if="!store.isUser" :contacto="contacto" :is-edit="contacto != null" :dni="(router.currentRoute.value.params.dni as string)" />
   </div>
 </template>
+
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import { api } from '@api/axios'
 import { router } from '@router/router'
 import { userStore } from '@store/user'
-import { IconUserCheck, IconEdit, IconPlus, IconUser, IconPhoneCall, IconUsers } from '@tabler/icons-vue'
+import { IconEdit, IconPlus, IconCake, IconCreditCard } from '@tabler/icons-vue'
 import Agregar_contacto from '../../../modal/agregar_contacto.vue'
+
 const contacto = ref<any>(null)
 const store = userStore()
+
 onMounted(async () => {
   try {
     const dni = router.currentRoute.value.params.dni
@@ -47,3 +67,13 @@ onMounted(async () => {
   }
 })
 </script>
+
+<style scoped>
+.gap-2 {
+  gap: 0.5rem;
+}
+
+.gap-3 {
+  gap: 1rem;
+}
+</style>

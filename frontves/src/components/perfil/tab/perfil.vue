@@ -5,20 +5,14 @@
         <div class="col-md-5 col-lg-3 col-sm-6">
           <Card_user :user="perfil" :vinculo="vinculo" />
         </div>
-        <div class="col-md-12 col-lg-9 col-sm-12">
+        <div class="col-md-12 col-lg-8 offset-lg-1 col-sm-12">
           <Informacion :perfil="perfil" @update:perfill="updateperfill" />
         </div>
         <div class="col-md-12">
-          <div class="row row-gap-2 justify-content-center">
-            <div class="col-md-8 col-lg-4 col-12">
-              <Card_banco />
-            </div>
-            <div class="col-md-8 col-lg-4 col-12">
-              <Card_educacion :nombre="perfil.nombre" />
-            </div>
-            <div class="col-md-8 col-lg-4 col-12">
-              <card_legajo :lista="legajos.slice(0, 3)" />
-            </div>
+          <div class="row row-gap-2 justify-content-start">
+            <Card_banco />
+            <Card_educacion :nombre="perfil.nombre" />
+            <card_legajo :lista="legajos.slice(0, 3)" />
           </div>
         </div>
       </div>

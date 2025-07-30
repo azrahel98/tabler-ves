@@ -2,8 +2,8 @@ use crate::{
     AppState,
     middleware::error::ApiError,
     models::personal::{
-        AsistenciaVw, DatosBancarios, DatosBancariosResponse, Documento, DocumentoSindicato,
-        GradoAcademico, LegajoPersonal, Perfil, Persona, Vinculos,ContactoEmergencia
+        AsistenciaVw, ContactoEmergencia, DatosBancarios, DatosBancariosResponse, Documento,
+        DocumentoSindicato, GradoAcademico, LegajoPersonal, Perfil, Persona, Vinculos,
     },
 };
 use actix_web::{
@@ -42,7 +42,7 @@ pub async fn buscar_por_nombre(
         concat_ws(" ",dg.nombre,dg.apaterno,dg.amaterno) LIKE ?
         GROUP BY
         v.dni
-        order by v.estado asc   
+        order by v.estado asc,concat_ws(" ",dg.nombre,dg.apaterno,dg.amaterno)  desc
         "#,
         nombre
     )

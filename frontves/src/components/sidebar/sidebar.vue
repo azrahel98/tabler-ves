@@ -67,7 +67,7 @@
           </RouterLink>
 
           <li class="nav-item">
-            <RouterLink to="/buscar" class="nav-link">
+            <RouterLink to="/organigrama" class="nav-link">
               <span class="nav-link-icon d-md-none d-lg-inline-block">
                 <IconBuildingArch class="icon" />
               </span>

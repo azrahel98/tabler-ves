@@ -6,16 +6,16 @@
           <div class="card-header">
             <ul class="nav nav-tabs card-header-tabs">
               <li class="nav-item">
-                <a class="nav-link" :class="{ 'text-primary fw-bold bg-white': activeTab === 'perfill' }" href="#" @click.prevent="activeTab = 'perfill'"> perfill </a>
+                <a class="nav-link" :class="{ 'fw-bold bg-white activetab': activeTab === 'perfill' }" href="#" @click.prevent="activeTab = 'perfill'"> Perfil </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" :class="{ 'text-primary fw-bold bg-white': activeTab === 'vinculos' }" href="#" @click.prevent="activeTab = 'vinculos'"> Vínculos </a>
+                <a class="nav-link" :class="{ 'fw-bold bg-white activetab': activeTab === 'vinculos' }" href="#" @click.prevent="activeTab = 'vinculos'"> Vínculos </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" :class="{ 'text-primary fw-bold bg-white': activeTab === 'historial' }" href="#" @click.prevent="activeTab = 'historial'"> Historial </a>
+                <a class="nav-link" :class="{ 'fw-bold bg-white activetab': activeTab === 'historial' }" href="#" @click.prevent="activeTab = 'historial'"> Historial </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" :class="{ 'text-primary fw-bold bg-white': activeTab === 'asistencia' }" href="#" @click.prevent="activeTab = 'asistencia'"> Asistencia </a>
+                <a class="nav-link" :class="{ 'fw-bold bg-white activetab': activeTab === 'asistencia' }" href="#" @click.prevent="activeTab = 'asistencia'"> Asistencia </a>
               </li>
             </ul>
           </div>
@@ -95,5 +95,10 @@ onMounted(async () => {
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
+}
+.activetab {
+  border: 1px solid var(--tblr-secondary-lt);
+  border-bottom: 1.2px solid var(--tblr-primary);
+  color: #007bff !important;
 }
 </style>

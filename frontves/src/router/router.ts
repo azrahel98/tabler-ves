@@ -1,11 +1,4 @@
-import {
-  createRouter,
-  createWebHistory,
-  type NavigationGuardNext,
-  type RouteLocationNormalized,
-  type RouteRecordRaw
-} from 'vue-router'
-
+import { createRouter, createWebHistory, type NavigationGuardNext, type RouteLocationNormalized, type RouteRecordRaw } from 'vue-router'
 
 import { userStore } from '../store/user'
 
@@ -13,7 +6,7 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/login',
     name: 'login',
-    component: () => import('@views/login.vue'),
+    component: () => import('@views/login.vue')
   },
   {
     path: '/',
@@ -32,21 +25,20 @@ const routes: RouteRecordRaw[] = [
         component: () => import('@views/dash/buscar.vue')
       },
       {
+        path: '/organigrama',
+        name: 'organigrama',
+        component: () => import('@views/dash/organigrama.vue')
+      },
+      {
         path: '/perfil/:dni',
         name: 'perfil',
         component: () => import('@views/dash/perfil.vue')
-      },
-   
+      }
     ]
-  },
+  }
 ]
 
-
-const middleware = async (
-  _to: RouteLocationNormalized,
-  _from: RouteLocationNormalized,
-  next: NavigationGuardNext
-) => {
+const middleware = async (_to: RouteLocationNormalized, _from: RouteLocationNormalized, next: NavigationGuardNext) => {
   const store = userStore()
   const token = localStorage.getItem('jwt')
   if (token == null) {
