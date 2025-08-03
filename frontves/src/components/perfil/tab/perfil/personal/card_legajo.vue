@@ -11,7 +11,7 @@
           class="btn btn-orange btn-sm d-flex align-items-center gap-2"
           data-bs-toggle="modal"
           data-bs-target="#add_legajo"
-          v-if="verificar(lista)?.estado != 'prestamo' || verificar(lista)?.user == store.id"
+          v-if="verificar()?.estado != 'prestamo' || verificar()?.user == store.id"
           title="Gestionar legajo"
         >
           <IconFolderShare class="icon icon-sm" />
@@ -23,8 +23,8 @@
         <div class="d-flex h-auto justify-content-center gap-5">
           <div class="text-center">
             <div class="avatar avatar-lg">
-              <span :class="verificar(lista)?.estado == 'prestamo' ? 'text-danger' : 'text-success'">
-                <IconAlertCircle v-if="verificar(lista)?.estado == 'prestamo'" />
+              <span :class="verificar()?.estado == 'prestamo' ? 'text-danger' : 'text-success'">
+                <IconAlertCircle v-if="verificar()?.estado == 'prestamo'" />
                 <svg
                   v-else
                   class="icon icon-lg"
@@ -45,26 +45,26 @@
           </div>
 
           <div class="d-flex row-gap-0 column-gap-2">
-            <div class="text-center" v-if="verificar(lista)">
+            <div class="text-center" v-if="verificar()">
               <span class="badge">
                 <IconUser />
                 <div class="text-center">
-                  <div class="small opacity-75">{{ verificar(lista)?.estado == 'prestamo' ? 'En poder de' : 'Último movimiento por' }}</div>
-                  <div class="fw-bold">{{ verificar(lista)?.persona }}</div>
+                  <div class="small opacity-75">{{ verificar()?.estado == 'prestamo' ? 'En poder de' : 'Último movimiento por' }}</div>
+                  <div class="fw-bold">{{ verificar()?.persona }}</div>
                 </div>
               </span>
             </div>
             <div class="d-flex flex-column m-0 p-0 gap-1 align-content-start text-start">
-              <div class="text-center" v-if="verificar(lista)?.fecha">
+              <div class="text-center" v-if="verificar()?.fecha">
                 <span class="badge text-secondary">
                   <IconCalendar class="icon text-primary" />
-                  {{ verificar(lista)?.fecha.split(' ')[0] }}
+                  {{ verificar()?.fecha.split(' ')[0] }}
                 </span>
               </div>
-              <div class="text-center" v-if="verificar(lista)?.fecha">
+              <div class="text-center" v-if="verificar()?.fecha">
                 <span class="badge bg-bitbucket-lt text-secondary text-start">
                   <IconClock class="icon text-green" />
-                  {{ verificar(lista)?.fecha.split(' ')[1] }}
+                  {{ verificar()?.fecha.split(' ')[1] }}
                 </span>
               </div>
             </div>
@@ -98,7 +98,7 @@
         </div>
       </div>
 
-      <modallegajo :prestado="verificar(lista)?.estado == 'prestamo'" :usuario="verificar(lista)?.persona" />
+      <modallegajo :prestado="verificar()?.estado == 'prestamo'" :usuario="verificar()?.persona" :create="verificar()?.fecha" />
     </div>
   </div>
 </template>
@@ -113,11 +113,11 @@ import { router } from '@router/router'
 
 const store = userStore()
 
-const verificar = (list: Array<any>) => {
-  return list[0]
-}
-
 const lista = ref<any>([])
+
+const verificar = () => {
+  return lista.value[0]
+}
 
 onMounted(async () => {
   lista.value = await (await api.post('/personal/legajo_por_dni', { dni: router.currentRoute.value.params.dni })).data

@@ -55,7 +55,7 @@
 </template>
 
 <script setup lang="ts">
-import { IconBuilding, IconBuildingBridge, IconBuildingCommunity, IconCake, IconCalendar, IconCreditCard, IconFlameFilled, IconUserBolt, IconWoman } from '@tabler/icons-vue'
+import { IconBuildingCommunity, IconCake, IconCalendar, IconCreditCard, IconUserBolt } from '@tabler/icons-vue'
 import { format, parseISO, addDays, getYear } from 'date-fns'
 
 defineProps({

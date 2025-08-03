@@ -88,14 +88,14 @@ const form = ref({
 const schema = z.object({
   persona: z.string().min(1, 'Seleccione una persona'),
   fecha: z.string().refine(
-    (value: string | number | Date) => {
-      if (prop.prestado) {
-        return isAfter(new Date(value), parseISO(prop.create!))
+    (value: string) => {
+      if (prop.prestado && prop.create) {
+        return isAfter(new Date(value), parseISO(prop.create))
       }
       return true
     },
     {
-      message: `La fecha debe ser posterior a la fecha del prestamo`
+      message: `La fecha debe ser posterior a la fecha del préstamo`
     }
   ),
   descrip: z.string().optional(),
