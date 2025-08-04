@@ -10,7 +10,7 @@
         </div>
         <div class="col-md-12">
           <div class="row row-gap-2 justify-content-start">
-            <Card_banco />
+            <Card_banco @check="(x) => (info.banco = x)" />
             <Card_educacion :nombre="perfil.nombre" />
             <card_legajo :lista="legajos.slice(0, 3)" />
           </div>
@@ -37,6 +37,12 @@ defineProps({
 })
 
 const perfil = ref<any>({})
+
+const info = ref({
+  banco: true,
+  contacto: true,
+  legajo: true
+})
 
 const updateperfill = async () => {
   try {

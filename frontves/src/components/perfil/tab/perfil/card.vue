@@ -9,10 +9,14 @@
 
           <h3 class="fw-bold mb-2">{{ user.nombre }}</h3>
 
-          <div class="d-flex justify-content-center align-items-center gap-3 mb-3">
+          <div class="d-flex justify-content-center align-items-center flex-wrap column-gap-3 row-gap-0 mb-3">
             <div class="d-flex align-items-center text-secondary">
               <IconCreditCard class="icon icon-sm me-1" />
               <span class="small fw-medium">{{ user.dni }}</span>
+            </div>
+            <div class="d-flex align-items-center text-secondary">
+              <IconCalendarDot class="icon icon-sm me-1" />
+              <span class="small fw-medium">{{ user.nacimiento }}</span>
             </div>
 
             <div class="d-flex align-items-center text-secondary" v-if="user.nacimiento">
@@ -23,30 +27,11 @@
         </div>
       </div>
 
-      <div class="p-2" v-if="vinculo">
-        <div class="d-flex flex-column">
-          <div class="d-flex align-items-center small bg-light rounded p-2 transition-all">
-            <IconUserBolt class="me-2 text-green" />
-            <div>
-              <small class="text-muted d-block">Cargo</small>
-              <span class="fw-medium">{{ vinculo.cargo }}</span>
-            </div>
-          </div>
-          <div class="d-flex align-items-center small bg-light rounded p-2 transition-all">
-            <IconBuildingCommunity class="me-2 text-primary" />
-            <div>
-              <small class="text-muted d-block">Área</small>
-              <span class="fw-medium">{{ vinculo.area }}</span>
-            </div>
-          </div>
-          <div class="d-flex align-items-center small bg-light rounded p-2 transition-all">
-            <IconCalendar class="me-2 text-primary" />
-            <div>
-              <small class="text-muted d-block">Fecha de Ingreso</small>
-              <span class="fw-bold fs-4">
-                {{ vinculo.fecha_ingreso ? format(addDays(parseISO(vinculo.fecha_ingreso), 0), 'dd/MM/yyyy') : 'No disponible' }}
-              </span>
-            </div>
+      <div class="px-2 pb-3" v-if="vinculo">
+        <div class="d-flex flex-column justify-content-center align-content-center align-items-center">
+          <div class="badge bg-success text-white fs-6">
+            <IconUserBolt class="icon" />
+            <span class="fw-bold">{{ vinculo.cargo }}</span>
           </div>
         </div>
       </div>
@@ -55,8 +40,8 @@
 </template>
 
 <script setup lang="ts">
-import { IconBuildingCommunity, IconCake, IconCalendar, IconCreditCard, IconUserBolt } from '@tabler/icons-vue'
-import { format, parseISO, addDays, getYear } from 'date-fns'
+import { IconCake, IconCalendarDot, IconCreditCard, IconUserBolt } from '@tabler/icons-vue'
+import { parseISO, addDays, getYear } from 'date-fns'
 
 defineProps({
   user: { type: Object, required: true },

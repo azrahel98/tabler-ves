@@ -1,7 +1,7 @@
 <template>
-  <div :class="datos == null ? 'col-2' : 'col-md-6 col-sm-6 col-lg-4 col-12'" style="height: min-content">
+  <div :class="datos == null ? 'col-auto' : 'col-md-6 col-sm-12 col-lg-4 col-12'" style="height: min-content">
     <div class="card">
-      <div class="card-header px-2 py-2 d-flex align-items-center flex-wrap" :class="datos == null ? 'justify-content-center row-gap-4' : 'justify-content-between'">
+      <div class="card-header px-2 py-2 d-flex align-items-center flex-wrap gap-5" :class="datos == null ? 'justify-content-center row-gap-4' : 'justify-content-between'">
         <div class="d-flex align-items-center">
           <div class="px-2">
             <h5 class="card-title mb-0 p-0 m-0">Información Bancaria</h5>
@@ -16,7 +16,7 @@
           :title="datos ? 'Editar información' : 'Agregar información'"
         >
           <IconPlus class="icon icon-sm" />
-          <span class="d-none d-sm-inline">{{ datos ? 'Editar' : 'Agregar' }}</span>
+          <!-- <span class="d-none d-sm-inline">{{ datos ? 'Editar' : 'Agregar' }}</span> -->
         </button>
       </div>
 
@@ -71,9 +71,16 @@ const formatCCI = (cci: string) => {
   return cci.replace(/(.{3})/g, '$1 ').trim()
 }
 
+const emit = defineEmits<{
+  check: [value: boolean]
+}>()
+
 onMounted(async () => {
   try {
     datos.value = await (await api.post('/personal/banco_por_dni', { dni: router.currentRoute.value.params.dni })).data
+    if (!datos.value) {
+      emit('check', false)
+    }
   } catch (error) {
     datos.value = null
   }

@@ -1,7 +1,10 @@
 <template>
-  <div :class="contacto == null ? 'col-2' : 'col-md-6 col-sm-6 col-lg-3 col-12'" style="height: min-content">
+  <div :class="contacto == null ? 'col-auto' : 'col-md-6 col-sm-12 col-lg-4 col-12'" style="height: min-content">
     <div class="card">
-      <div class="card-header px-2 py-2 d-flex flex-wrap align-items-center" :class="contacto == null ? 'justify-content-center row-gap-1' : 'justify-content-center row-gap-2'">
+      <div
+        class="card-header px-2 py-2 d-flex flex-wrap align-items-center gap-5"
+        :class="contacto == null ? 'justify-content-center row-gap-1' : 'justify-content-center row-gap-2'"
+      >
         <div class="d-flex align-items-center">
           <div class="px-2">
             <h5 class="card-title mb-0">Contacto de Emergencia</h5>
@@ -17,7 +20,7 @@
         >
           <IconEdit v-if="contacto" class="icon icon-sm" />
           <IconPlus v-else class="icon icon-sm" />
-          <span class="d-none d-sm-inline">{{ contacto ? 'Editar' : 'Agregar' }}</span>
+          <!-- <span class="d-none d-sm-inline">{{ contacto ? 'Editar' : 'Agregar' }}</span> -->
         </button>
       </div>
 

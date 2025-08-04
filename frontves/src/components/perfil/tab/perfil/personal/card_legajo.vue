@@ -1,7 +1,7 @@
 <template>
-  <div :class="lista.length <= 0 ? 'col-2' : 'col-md-12 col-lg-4 col-12'" style="height: min-content">
+  <div :class="lista.length <= 0 ? 'col-auto' : 'col-md-12 col-lg-4 col-12'" style="height: min-content">
     <div class="card">
-      <div class="card-header d-flex flex-wrap align-items-center p-0 px-2 py-2" :class="lista.length <= 0 ? 'justify-content-center row-gap-2' : 'justify-content-between'">
+      <div class="card-header d-flex flex-wrap align-items-center p-0 px-2 py-2 gap-5" :class="lista.length <= 0 ? 'justify-content-center row-gap-2' : 'justify-content-between'">
         <div class="px-2">
           <h5 class="card-title mb-0">Legajo</h5>
           <p class="text-muted mb-0 small">Historial de movimientos del legajo</p>
@@ -15,7 +15,7 @@
           title="Gestionar legajo"
         >
           <IconFolderShare class="icon icon-sm" />
-          <span class="d-none d-sm-inline">Gestionar</span>
+          <!-- <span class="d-none d-sm-inline">Gestionar</span> -->
         </button>
       </div>
 
