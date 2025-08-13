@@ -1,0 +1,60 @@
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+}
+
+.main-page {
+  display: grid;
+  grid-template-rows: min-content min-content 35vh min-content min-content;
+  align-content: space-between;
+  height: 100vh;
+  width: 21cm; /* A4 horizontal fijo */
+  box-sizing: border-box;
+}
+
+.main-page .info-em {
+  display: grid;
+  grid-template-columns: repeat(5, max-content);
+  gap: 2vh 2vh;
+}
+
+.main-page .info-economica {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  column-gap: 1vh;
+}
+
+.main-page .info-economica .ingreso {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+/* Evitar cortes */
+.print-card,
+.print-header,
+.info-em,
+.info-economica {
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+@media print {
+  html,
+  body {
+    width: 21cm;
+    height: 29.7cm;
+    background-color: red !important;
+  }
+
+  .main-page {
+    background-color: red !important;
+  }
+  @page {
+    size: A4;
+    margin: 0;
+  }
+}

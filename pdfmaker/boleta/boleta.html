@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bo de Pago - Municipalidad Villa el Salvador</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="./index.css" />
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              "tabler-primary": "#206bc4",
+              "tabler-secondary": "#6c7293",
+              "tabler-success": "#2fb344",
+              "tabler-danger": "#d63384",
+              "tabler-warning": "#f76707",
+              "tabler-info": "#4299e1",
+              "tabler-light": "#f8fafc",
+              "tabler-dark": "#1e293b",
+              "tabler-muted": "#64748b",
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        width: 100%;
+      }
+
+      .main-page {
+        display: grid;
+        grid-template-rows: min-content min-content 30vh min-content min-content;
+        align-content: space-between;
+        height: 100vh;
+
+        box-sizing: border-box;
+      }
+
+      .main-page .info-em {
+        display: grid;
+        grid-template-columns: repeat(5, max-content);
+        gap: 2vh 2vh;
+      }
+
+      .main-page .info-economica {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        column-gap: 1vh;
+      }
+
+      .main-page .info-economica .ingreso {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+
+      @media print {
+        @page {
+          size: A4;
+          margin: 0;
+        }
+      }
+    </style>
+  </head>
+  <body class="bg-bg-red-500">
+    <div class="main-page">
+      <div
+        class="bg-blue-500 shadow-sm border border-gray-200 mb-1 print-header"
+      >
+        <div class="px-10 py-10 pt-8">
+          <div class="flex justify-between items-start">
+            <div class="flex items-center space-x-4">
+              <div
+                class="w-12 h-12 bg-tabler-primary rounded-lg flex items-center justify-center text-white font-bold text-lg"
+              >
+                <img src="./logo.png"/>
+              </div>
+              <div>
+                <h1 class="text-xl font-bold text-tabler-dark">
+                  Municipalidad Distrital
+                </h1>
+                <p class="text-gray-300  font-medium">Villa el Salvador</p>
+                <p class="text-sm text-gray-300 ">Lima, Perú</p>
+              </div>
+            </div>
+            <div class="text-right">
+              <div
+                class="bg-tabler-light border border-gray-200 rounded-lg p-2"
+              >
+                <div
+                  class="text-xs text-tabler-muted uppercase tracking-wide font-medium mb-1"
+                >
+                  Boleta N°
+                </div>
+                <div class="text-2xl font-bold text-tabler-dark">00000001</div>
+                <div class="text-xs text-tabler-muted mt-2">
+                  01/01/2025 - 10:01:01
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium bg-tabler-primary text-white"
+          >
+            <svg class="w-3 h-3 mr-1.5" fill="currentColor" viewBox="0 0 20 20">
+              <path
+                fill-rule="evenodd"
+                d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
+                clip-rule="evenodd"
+              />
+            </svg>
+            Período: Mayo 2025
+          </div>
+        </div>
+      </div>
+
+      <!-- Employee Information Card -->
+      <div class="bg-white rounded-lg border mb-2 border-gray-200 px-10 py-3">
+        <div class="flex items-center mb-4 pt-3">
+          <div
+            class="w-8 h-8 bg-tabler-info rounded-lg flex items-center justify-center text-white mr-3"
+          >
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+              <path
+                fill-rule="evenodd"
+                d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                clip-rule="evenodd"
+              />
+            </svg>
+          </div>
+          <h2 class="text-lg font-semibold text-tabler-dark">
+            Información del Servidor
+          </h2>
+        </div>
+
+        <div class="info-em">
+          <div class="space-y-1">
+            <label
+              class="text-xs font-medium text-tabler-muted uppercase tracking-wide"
+              >DNI</label
+            >
+            <div
+              class="bg-tabler-light border border-gray-200 rounded-md px-3 py-2 text-sm font-medium text-tabler-dark"
+            >
+              45678912
+            </div>
+          </div>
+          <div class="space-y-1">
+            <label
+              class="text-xs font-medium text-tabler-muted uppercase tracking-wide"
+              >Código AIRHSP</label
+            >
+            <div
+              class="bg-tabler-light border border-gray-200 rounded-md px-3 py-2 text-sm font-medium text-tabler-dark"
+            >
+              45678912
+            </div>
+          </div>
+          <div class="space-y-1 md:col-span-2 lg:col-span-1">
+            <label
+              class="text-xs font-medium text-tabler-muted uppercase tracking-wide"
+              >Apellidos y Nombres</label
+            >
+            <div
+              class="bg-tabler-light border border-gray-200 rounded-md px-3 py-2 text-sm font-medium text-tabler-dark"
+            >
+              Raúl Smith Taylor Choque de Quispe
+            </div>
+          </div>
+          <div class="space-y-1">
+            <label
+              class="text-xs font-medium text-tabler-muted uppercase tracking-wide"
+              >Establecimiento</label
+            >
+            <div
+              class="bg-tabler-light border border-gray-200 rounded-md px-3 py-2 text-sm font-medium text-tabler-dark"
+            >
+              Villa el Salvador
+            </div>
+          </div>
+          <div class="space-y-1">
+            <label
+              class="text-xs font-medium text-tabler-muted uppercase tracking-wide"
+              >Fecha de Ingreso</label
+            >
+            <div
+              class="bg-tabler-light border border-gray-200 rounded-md px-3 py-2 text-sm font-medium text-tabler-dark"
+            >
+              15/01/2020
+            </div>
+          </div>
+          <div class="space-y-1">
+            <label
+              class="text-xs font-medium text-tabler-muted uppercase tracking-wide"
+              >Régimen Laboral</label
+            >
+            <div
+              class="bg-tabler-light border border-gray-200 rounded-md px-3 py-2 text-sm font-medium text-tabler-dark"
+            >
+              CAS
+            </div>
+          </div>
+          <div class="space-y-1 md:col-span-2">
+            <label
+              class="text-xs font-medium text-tabler-muted uppercase tracking-wide"
+              >Cargo</label
+            >
+            <div
+              class="bg-tabler-light border border-gray-200 rounded-md px-3 py-2 text-sm font-medium text-tabler-dark"
+            >
+              Especialista en Planeamiento
+            </div>
+          </div>
+          <div class="space-y-1">
+            <label
+              class="text-xs font-medium text-tabler-muted uppercase tracking-wide"
+              >Rubro Financiamiento</label
+            >
+            <div
+              class="bg-tabler-light border border-gray-200 rounded-md px-3 py-2 text-sm font-medium text-tabler-dark"
+            >
+              09
+            </div>
+          </div>
+          <div class="space-y-1 md:col-span-3">
+            <label
+              class="text-xs font-medium text-tabler-muted uppercase tracking-wide"
+              >Área/Unidad Orgánica</label
+            >
+            <div
+              class="bg-tabler-light border border-gray-200 rounded-md px-3 py-2 text-sm font-medium text-tabler-dark"
+            >
+              Unidad de Planeamiento Estratégico, Modernización y Programación
+              de Inversiones
+            </div>
+          </div>
+          <div class="space-y-1">
+            <label
+              class="text-xs font-medium text-tabler-muted uppercase tracking-wide"
+              >Meta Presupuestal</label
+            >
+            <div
+              class="bg-tabler-light border border-gray-200 rounded-md px-3 py-2 text-sm font-medium text-tabler-dark"
+            >
+              11
+            </div>
+          </div>
+          <div class="space-y-1">
+            <label
+              class="text-xs font-medium text-tabler-muted uppercase tracking-wide"
+              >Régimen Pensionario</label
+            >
+            <div
+              class="bg-tabler-light border border-gray-200 rounded-md px-3 py-2 text-sm font-medium text-tabler-dark"
+            >
+              AFP Integra
+            </div>
+          </div>
+          <div class="space-y-1">
+            <label
+              class="text-xs font-medium text-tabler-muted uppercase tracking-wide"
+              >Condición</label
+            >
+            <div
+              class="bg-tabler-light border border-gray-200 rounded-md px-3 py-2 text-sm font-medium text-tabler-dark"
+            >
+              DOMICILIADO
+            </div>
+          </div>
+          <div class="space-y-1">
+            <label
+              class="text-xs font-medium text-tabler-muted uppercase tracking-wide"
+              >CUSPP</label
+            >
+            <div
+              class="bg-tabler-light border border-gray-200 rounded-md px-3 py-2 text-sm font-medium text-tabler-dark"
+            >
+              123456789012
+            </div>
+          </div>
+          <div class="space-y-1">
+            <label
+              class="text-xs font-medium text-tabler-muted uppercase tracking-wide"
+              >Jornada Laboral</label
+            >
+            <div
+              class="bg-tabler-light border border-gray-200 rounded-md px-3 py-2 text-sm font-medium text-tabler-dark"
+            >
+              48 HORAS
+            </div>
+          </div>
+          <div class="space-y-1">
+            <label
+              class="text-xs font-medium text-tabler-muted uppercase tracking-wide"
+              >Días Trabajados</label
+            >
+            <div
+              class="bg-tabler-light border border-gray-200 rounded-md px-3 py-2 text-sm font-medium text-tabler-dark"
+            >
+              30
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Financial Information -->
+      <div class="info-economica px-5">
+        <!-- Ingresos -->
+        <div
+          class="bg-white rounded-lg shadow-sm border border-gray-200 print-card"
+        >
+          <div class="p-6 ingreso">
+            <div class="flex items-center mb-4">
+              <div
+                class="w-8 h-8 bg-tabler-success rounded-lg flex items-center justify-center text-white mr-3"
+              >
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                  <path
+                    fill-rule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+              </div>
+              <h3 class="text-base font-semibold text-tabler-dark">Ingresos</h3>
+            </div>
+            <div class="space-y-3">
+              <div
+                class="flex justify-between items-center py-2 border-b border-gray-100"
+              >
+                <span class="text-sm text-tabler-muted">Sueldo Básico</span>
+                <span class="text-sm font-semibold text-tabler-dark"
+                  >S/ 3,000.00</span
+                >
+              </div>
+              <div
+                class="flex justify-between items-center py-2 border-b border-gray-100"
+              >
+                <span class="text-sm text-tabler-muted"
+                  >Asignación Familiar</span
+                >
+                <span class="text-sm font-semibold text-tabler-dark"
+                  >S/ 102.50</span
+                >
+              </div>
+              <div
+                class="flex justify-between items-center py-2 border-b border-gray-100"
+              >
+                <span class="text-sm text-tabler-muted"
+                  >Bonificación Extraordinaria</span
+                >
+                <span class="text-sm font-semibold text-tabler-dark"
+                  >S/ 200.00</span
+                >
+              </div>
+              <div
+                class="flex justify-between items-center pt-3 mt-3 border-t-2 border-tabler-success"
+              >
+                <span class="text-sm font-semibold text-tabler-dark"
+                  >TOTAL INGRESOS</span
+                >
+                <span class="text-base font-bold text-tabler-success"
+                  >S/ 3,302.50</span
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Descuentos -->
+        <div
+          class="bg-white rounded-lg shadow-sm border border-gray-200 print-card"
+        >
+          <div class="p-6 ingreso">
+            <div class="flex items-center mb-4">
+              <div
+                class="w-8 h-8 bg-tabler-danger rounded-lg flex items-center justify-center text-white mr-3"
+              >
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                  <path
+                    fill-rule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM7 9a1 1 0 000 2h6a1 1 0 100-2H7z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+              </div>
+              <h3 class="text-base font-semibold text-tabler-dark">
+                Descuentos
+              </h3>
+            </div>
+            <div class="space-y-3">
+              <div
+                class="flex justify-between items-center py-2 border-b border-gray-100"
+              >
+                <span class="text-sm text-tabler-muted">AFP Fondo</span>
+                <span class="text-sm font-semibold text-tabler-dark"
+                  >S/ 300.00</span
+                >
+              </div>
+              <div
+                class="flex justify-between items-center py-2 border-b border-gray-100"
+              >
+                <span class="text-sm text-tabler-muted">AFP Comisión</span>
+                <span class="text-sm font-semibold text-tabler-dark"
+                  >S/ 45.00</span
+                >
+              </div>
+              <div
+                class="flex justify-between items-center py-2 border-b border-gray-100"
+              >
+                <span class="text-sm text-tabler-muted"
+                  >Renta Quinta Categoría</span
+                >
+                <span class="text-sm font-semibold text-tabler-dark"
+                  >S/ 0.00</span
+                >
+              </div>
+              <div
+                class="flex justify-between items-center pt-3 mt-3 border-t-2 border-tabler-danger"
+              >
+                <span class="text-sm font-semibold text-tabler-dark"
+                  >TOTAL DESCUENTOS</span
+                >
+                <span class="text-base font-bold text-tabler-danger"
+                  >S/ 345.00</span
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Aportes -->
+        <div
+          class="bg-white rounded-lg shadow-sm border border-gray-200 print-card"
+        >
+          <div class="p-6 ingreso">
+            <div class="flex items-center mb-4">
+              <div
+                class="w-8 h-8 bg-tabler-info rounded-lg flex items-center justify-center text-white mr-3"
+              >
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <h3 class="text-base font-semibold text-tabler-dark">
+                Aportes del Empleador
+              </h3>
+            </div>
+            <div class="space-y-3">
+              <div
+                class="flex justify-between items-center py-2 border-b border-gray-100"
+              >
+                <span class="text-sm text-tabler-muted">Essalud</span>
+                <span class="text-sm font-semibold text-tabler-dark"
+                  >S/ 270.00</span
+                >
+              </div>
+              <div
+                class="flex justify-between items-center py-2 border-b border-gray-100"
+              >
+                <span class="text-sm text-tabler-muted">Seguro Vida Ley</span>
+                <span class="text-sm font-semibold text-tabler-dark"
+                  >S/ 15.00</span
+                >
+              </div>
+              <div
+                class="flex justify-between items-center pt-3 mt-3 border-t-2 border-tabler-info"
+              >
+                <span class="text-sm font-semibold text-tabler-dark"
+                  >TOTAL APORTES</span
+                >
+                <span class="text-base font-bold text-tabler-info"
+                  >S/ 285.00</span
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div
+        class="bg-gradient-to-r from-tabler-primary to-blue-600 rounded-t-none shadow-md text-white  print-card"
+      >
+        <div class="px-8 py-5 text-center">
+          <div class="text-sm font-medium opacity-90 mb-2">NETO A PAGAR</div>
+          <div class="text-4xl font-bold mb-2">S/ 2,957.50</div>
+          <div class="text-sm opacity-90">
+            Dos mil novecientos cincuenta y siete con 50/100 Soles
+          </div>
+        </div>
+      </div>
+
+
+      <div
+        class="bg-whitehadow-sm border border-gray-200 print-card"
+      >
+        <div class="py-2 text-center">
+          <div class="flex items-center justify-center ">
+            <div
+              class="bg-tabler-muted rounded-full flex items-center justify-center text-white mr-2"
+            >
+              <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                <path
+                  fill-rule="evenodd"
+                  d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+            </div>
+            <h4 class="text-sm font-semibold text-tabler-dark">
+              Información Importante
+            </h4>
+          </div>
+          <p class="text-sm text-tabler-muted mb-2">
+            Este documento es generado automáticamente por el sistema de
+            planillas de la Municipalidad Distrital de Villa el Salvador
+          </p>
+          <p class="text-xs text-tabler-muted">
+            Para consultas o reclamos, dirigirse al área de Recursos Humanos •
+            Teléfono: (01) 287-0000 • Email: rrhh@munives.gob.pe
+          </p>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

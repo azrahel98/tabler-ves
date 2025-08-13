@@ -1,0 +1,27 @@
+{
+  "name": "pdfmaker",
+  "module": "index.ts",
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/minimist": "^1.2.5",
+    "@types/node": "^24.2.1",
+    "ts-node": "^10.9.2"
+  },
+  "scripts": {
+    "dev":"rm dist/* && tsc && cp boleta/* ./dist && node dist/index.js"
+  },
+  "peerDependencies": {
+    "typescript": "^5.9.2"
+  },
+  "dependencies": {
+    "minimist": "^1.2.8",
+    "pkg": "^5.8.1",
+    "puppeteer": "^24.16.1"
+  },
+  "pkg":{
+    "assets":[
+       "dist/boleta.html",
+      "node_modules/puppeteer/.local-chromium/**/*"
+    ]
+  }
+}
