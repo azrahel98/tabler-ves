@@ -1,5 +1,5 @@
 <template>
-  <div class="tab-pane p-3 active">
+  <div class="card">
     <div class="card" style="max-height: 70vh">
       <div class="card-header">
         <h3 class="card-title d-flex align-items-center">

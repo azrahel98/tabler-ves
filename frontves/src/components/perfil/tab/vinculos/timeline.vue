@@ -4,7 +4,7 @@
       <IconBriefcase class="icon text-white" />
     </div>
     <div class="card timeline-event-card">
-      <div class="card-body p-2">
+      <div class="card-body px-4">
         <div class="d-flex justify-content-between align-items-start">
           <div class="pe-2">
             <h5 class="fw-semibold mb-1">{{ x.cargo }}</h5>
@@ -14,11 +14,11 @@
             </span>
           </div>
           <div class="text-end">
-            <span class="badge fs-5 bg-primary mb-1 d-block text-white">
-              {{ x.fecha_ingreso ? format(addDays(parseISO(x.fecha_ingreso), 0), 'yyyy/MM/dd') : 'Fecha no disponible' }}
+            <span class="badge bg-primary mb-1 fs-5 d-block text-white">
+              {{ x.fecha_ingreso ? format(addDays(parseISO(x.fecha_ingreso), 0), 'dd/MM/yyyy') : 'Fecha no disponible' }}
             </span>
             <span v-if="x.fecha_salida" class="badge fs-5 bg-secondary d-block text-white">
-              {{ x.fecha_salida ? format(addDays(parseISO(x.fecha_salida), 0), 'yyyy/MM/dd') : 'Fecha no disponible' }}
+              {{ x.fecha_salida ? format(addDays(parseISO(x.fecha_salida), 0), 'dd/MM/yyyy') : 'Fecha no disponible' }}
             </span>
           </div>
         </div>

@@ -1,10 +1,10 @@
 <template>
-  <div :class="datos == null ? 'col-auto' : 'col-md-6 col-sm-12 col-lg-4 col-12'" style="height: min-content">
+  <div style="height: min-content">
     <div class="card">
       <div class="card-header px-2 py-2 d-flex align-items-center flex-wrap gap-5" :class="datos == null ? 'justify-content-center row-gap-4' : 'justify-content-between'">
         <div class="d-flex align-items-center">
           <div class="px-2">
-            <h5 class="card-title mb-0 p-0 m-0">Información Bancaria</h5>
+            <h4 class="mb-0 p-0 m-0">Información Bancaria</h4>
             <p class="text-muted mb-0 small">Datos de cuenta bancaria</p>
           </div>
         </div>
@@ -22,7 +22,7 @@
 
       <div class="card-body" v-if="datos != null">
         <div class="credit-card">
-          <div class="credit-card-front bg-secondary-subtle">
+          <div class="credit-card-front bg-gradient-from-blue bg-gradient bg-gradient-via-teal bg-gradient-to-primary">
             <div class="d-flex justify-content-between align-items-start">
               <div class="text-black align-bottom small fw-medium">
                 <div class="h3 fw-bold mb-0">{{ datos.banco || 'BANCO NO ESPECIFICADO' }}</div>

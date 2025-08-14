@@ -1,5 +1,5 @@
 <template>
-  <div class="tab-pane p-3 active">
+  <div class="card">
     <div class="vinculos-container">
       <div class="d-flex justify-content-between align-items-center p-3 border-bottom">
         <h3 class="card-title mb-0">Vínculos Laborales</h3>

@@ -16,7 +16,9 @@
             </div>
             <div class="d-flex align-items-center text-secondary">
               <IconCalendarDot class="icon icon-sm me-1" />
-              <span class="small fw-medium">{{ user.nacimiento }}</span>
+              <span class="small fw-medium">
+                {{ user.nacimiento ? format(addDays(parseISO(user.nacimiento), 0), 'dd/MM/yyyy') : 'Fecha no disponible' }}
+              </span>
             </div>
 
             <div class="d-flex align-items-center text-secondary" v-if="user.nacimiento">
@@ -27,10 +29,9 @@
         </div>
       </div>
 
-      <div class="px-2 pb-3" v-if="vinculo">
+      <div class="px-4 pb-4" v-if="vinculo">
         <div class="d-flex flex-column justify-content-center align-content-center align-items-center">
-          <div class="badge bg-success text-white fs-6">
-            <IconUserBolt class="icon" />
+          <div class="badge bg-success text-wrap text-white fs-6">
             <span class="fw-bold">{{ vinculo.cargo }}</span>
           </div>
         </div>
@@ -40,8 +41,8 @@
 </template>
 
 <script setup lang="ts">
-import { IconCake, IconCalendarDot, IconCreditCard, IconUserBolt } from '@tabler/icons-vue'
-import { parseISO, addDays, getYear } from 'date-fns'
+import { IconCake, IconCalendarDot, IconCreditCard } from '@tabler/icons-vue'
+import { parseISO, addDays, getYear, format } from 'date-fns'
 
 defineProps({
   user: { type: Object, required: true },

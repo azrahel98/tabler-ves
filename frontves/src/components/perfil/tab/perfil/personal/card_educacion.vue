@@ -1,5 +1,5 @@
 <template>
-  <div :class="contacto == null ? 'col-auto' : 'col-md-6 col-sm-12 col-lg-4 col-12'" style="height: min-content">
+  <div style="height: min-content">
     <div class="card">
       <div
         class="card-header px-2 py-2 d-flex flex-wrap align-items-center gap-5"
@@ -7,7 +7,7 @@
       >
         <div class="d-flex align-items-center">
           <div class="px-2">
-            <h5 class="card-title mb-0">Contacto de Emergencia</h5>
+            <h4 class="mb-0">Contacto de Emergencia</h4>
             <p class="text-muted mb-0 small">Información de contacto de emergencia</p>
           </div>
         </div>
@@ -26,9 +26,9 @@
 
       <div class="card-body" v-if="contacto != null">
         <div class="text-center position-relative">
-          <div class="avatar avatar-lg bg-white mb-2 text-black fw-bold fs-2"></div>
+          <div class="avatar avatar-md bg-white mb-2 text-black fw-bold fs-2"></div>
 
-          <h3 class="fw-bold mb-2 text-uppercase">{{ contacto.nombre }}</h3>
+          <h4 class="fw-bold mb-2 text-uppercase">{{ contacto.nombre }}</h4>
 
           <div class="d-flex justify-content-center align-items-center gap-3 mb-3">
             <div class="d-flex align-items-center text-secondary">

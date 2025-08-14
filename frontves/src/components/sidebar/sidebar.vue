@@ -91,6 +91,15 @@
               <a class="dropdown-item">Practicante</a>
             </div>
           </li>
+
+          <li class="nav-item">
+            <RouterLink to="/boleta" class="nav-link">
+              <span class="nav-link-icon d-md-none d-lg-inline-block">
+                <IconBuildingArch class="icon" />
+              </span>
+              <span class="nav-link-title fw-medium"> Boleta </span>
+            </RouterLink>
+          </li>
         </ul>
       </div>
     </div>

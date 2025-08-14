@@ -1,6 +1,35 @@
 <template>
-  <div class="page-wrapper pt-1" v-show="isloadingMain">
-    <div class="page-body bg-transparent mt-0">
+  <div class="page-wrapper" v-show="isloadingMain">
+    <div class="container">
+      <div class="row justify-content-start">
+        <div class="row justify-content-center col-lg-7 col-md-12 col-sm-12 row-gap-3" style="height: min-content">
+          <div class="col-md-5 col-lg-5 col-xl-4">
+            <card_user class="justify-content-center" :user="perfil" :vinculo="(vinculos ?? []).filter((x:any) => x.estado === 'activo')[0]" />
+          </div>
+          <div class="col-md-12 col-lg-12 col-xl-8">
+            <Informacion :perfil="perfil" />
+          </div>
+          <div class="col-lg-12">
+            <vinculoTab :vinculos="vinculos" />
+          </div>
+          <div class="col-lg-12">
+            <Historial :lista="historial" />
+          </div>
+        </div>
+        <div class="col-lg-5 row row-gap-3 align-content-start">
+          <div class="col-12">
+            <card_legajo />
+          </div>
+          <div class="col-12">
+            <Card_banco />
+          </div>
+          <div class="col-12">
+            <Card_educacion nombre="asdf" />
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- <div class="page-body bg-transparent mt-0">
       <div class="container-xl bg-transparent">
         <div class="card px-0 border-0">
           <div class="card-header">
@@ -31,7 +60,7 @@
           </div>
         </div>
       </div>
-    </div>
+    </div> -->
   </div>
   <areaLoading v-show="!isloadingMain" />
 </template>
@@ -41,14 +70,21 @@ import { router } from '@router/router'
 import { onMounted, ref } from 'vue'
 
 import areaLoading from '@comp/loading.vue'
+import Card_user from '@comp/perfil/tab/perfil/card.vue'
+import Informacion from '@comp/perfil/tab/perfil/information.vue'
+import card_legajo from '@comp/perfil/tab/perfil/personal/card_legajo.vue'
+import Card_banco from '@comp/perfil/tab/perfil/personal/card_banco.vue'
+import Card_educacion from '@comp/perfil/tab/perfil/personal/card_educacion.vue'
+
 import HistorialCard from '@comp/perfil/tab/historial.vue'
 
 import Asistencia from '@comp/perfil/tab/asistencia.vue'
 import perfillTab from '@comp/perfil/tab/perfil.vue'
 import vinculoTab from '@comp/perfil/tab/vinculos.vue'
+import Historial from '@comp/perfil/tab/historial.vue'
 
 const vinculos = ref(<any>[])
-
+const perfil = ref({})
 const activeTab = ref('perfill')
 const isloadingMain = ref(false)
 const historial = ref<any>([])
@@ -57,6 +93,7 @@ onMounted(async () => {
   try {
     vinculos.value = await (await api.post('/personal/vinculos_por_dni', { dni: router.currentRoute.value.params.dni })).data
     historial.value = await (await api.post('/dash/reporte_historia', { dni: router.currentRoute.value.params.dni })).data
+    perfil.value = await (await api.post('/personal/por_dni', { dni: router.currentRoute.value.params.dni })).data
     isloadingMain.value = true
   } catch (error) {
     console.log(error)
@@ -66,39 +103,9 @@ onMounted(async () => {
 
 <style scoped lang="scss">
 .page-wrapper {
-  .page-body {
-    flex: 1;
-    overflow: hidden;
-
-    .container-xl {
-      height: 100%;
-
-      .card {
-        display: flex;
-        flex-direction: column;
-        max-height: 100%;
-        height: min-content;
-
-        .card-body {
-          flex: 1;
-          overflow-y: auto;
-          overflow-x: hidden;
-        }
-      }
-    }
-  }
-}
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.3s ease;
-}
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-}
-.activetab {
-  border: 1px solid var(--tblr-secondary-lt);
-  border-bottom: 1.2px solid var(--tblr-primary);
-  color: #007bff !important;
+  height: 100%;
+  display: grid;
+  grid-template-rows: min-content auto;
+  padding: 0.4rem 1rem 0.2rem 1rem;
 }
 </style>
