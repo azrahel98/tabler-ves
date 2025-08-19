@@ -255,7 +255,7 @@
 import { api } from '@api/axios'
 import { IconArrowLeft, IconArrowRight, IconCalendar, IconClock, IconError404, IconRefresh } from '@tabler/icons-vue'
 import { getMonth, getYear } from 'date-fns'
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, watch } from 'vue'
 
 interface EventoAPI {
   dni: string
@@ -398,9 +398,9 @@ watch(currentDate, () => {
   loadEventos()
 })
 
-onMounted(() => {
-  loadEventos()
-})
+// onMounted(() => {
+//   loadEventos()
+// })
 </script>
 
 <style scoped>

@@ -32,7 +32,7 @@
 
       <form @submit.prevent="guardar(perfil)">
         <div class="row g-3">
-          <div class="col-md-6">
+          <div class="col-md-12">
             <label class="form-label" :class="{ 'required ': editMode }">
               <MapPin class="icon" :class="editMode ? 'text-red icon-sm me-1' : 'text-blue'" />
               Dirección

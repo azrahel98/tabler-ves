@@ -3,11 +3,13 @@
     <div class="container">
       <div class="row justify-content-start">
         <div class="row justify-content-center col-lg-7 col-md-12 col-sm-12 row-gap-3" style="height: min-content">
-          <div class="col-md-5 col-lg-5 col-xl-4">
-            <card_user class="justify-content-center" :user="perfil" :vinculo="(vinculos ?? []).filter((x:any) => x.estado === 'activo')[0]" />
-          </div>
-          <div class="col-md-12 col-lg-12 col-xl-8">
-            <Informacion :perfil="perfil" />
+          <div class="row col-12 row-gap-3 justify-content-center">
+            <div class="col-lg-5">
+              <card_user class="justify-content-center" :user="perfil" :vinculo="(vinculos ?? []).filter((x:any) => x.estado === 'activo')[0]" />
+            </div>
+            <div class="col-lg-12">
+              <Informacion :perfil="perfil" />
+            </div>
           </div>
           <div class="col-lg-12">
             <vinculoTab :vinculos="vinculos" />
@@ -27,6 +29,9 @@
             <Card_educacion nombre="asdf" />
           </div>
         </div>
+      </div>
+      <div class="row">
+        <Asistencia :dni="router.currentRoute.value.params.dni.toString()" />
       </div>
     </div>
     <!-- <div class="page-body bg-transparent mt-0">
@@ -76,16 +81,17 @@ import card_legajo from '@comp/perfil/tab/perfil/personal/card_legajo.vue'
 import Card_banco from '@comp/perfil/tab/perfil/personal/card_banco.vue'
 import Card_educacion from '@comp/perfil/tab/perfil/personal/card_educacion.vue'
 
-import HistorialCard from '@comp/perfil/tab/historial.vue'
+// import HistorialCard from '@comp/perfil/tab/historial.vue'
 
-import Asistencia from '@comp/perfil/tab/asistencia.vue'
-import perfillTab from '@comp/perfil/tab/perfil.vue'
+// import Asistencia from '@comp/perfil/tab/asistencia.vue'
+// import perfillTab from '@comp/perfil/tab/perfil.vue'
 import vinculoTab from '@comp/perfil/tab/vinculos.vue'
 import Historial from '@comp/perfil/tab/historial.vue'
+import Asistencia from '@comp/perfil/tab/asistencia.vue'
 
 const vinculos = ref(<any>[])
 const perfil = ref({})
-const activeTab = ref('perfill')
+// const activeTab = ref('perfill')
 const isloadingMain = ref(false)
 const historial = ref<any>([])
 
