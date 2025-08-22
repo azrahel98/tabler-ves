@@ -1,7 +1,7 @@
 <template>
   <div style="height: min-content">
     <div class="card">
-      <div class="card-header px-2 py-2 d-flex align-items-center flex-wrap gap-5" :class="datos == null ? 'justify-content-center row-gap-4' : 'justify-content-between'">
+      <div class="card-header px-2 py-2 d-flex align-items-center flex-wrap gap-5 justify-content-between">
         <div class="d-flex align-items-center">
           <div class="px-2">
             <h4 class="mb-0 p-0 m-0">Información Bancaria</h4>
