@@ -38,12 +38,6 @@ defineProps({
 
 const perfil = ref<any>({})
 
-const info = ref({
-  banco: true,
-  contacto: true,
-  legajo: true
-})
-
 const updateperfill = async () => {
   try {
     perfil.value = await (await api.post('/personal/por_dni', { dni: router.currentRoute.value.params.dni })).data

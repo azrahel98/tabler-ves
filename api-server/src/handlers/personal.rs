@@ -471,7 +471,7 @@ pub async fn reporte_legajo(
             where
             dni = ?
             order by
-            fecha desc
+            id desc
         "#,
         dni.dni
     )

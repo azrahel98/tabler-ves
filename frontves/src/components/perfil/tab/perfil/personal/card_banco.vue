@@ -17,7 +17,7 @@
         <IconPlus class="icon icon-sm" />
       </button>
     </div>
-    <div class="card-body">
+    <div class="card-body" v-if="banco != null">
       <div class="credit-card mt-3">
         <div class="d-flex justify-content-between">
           <h3>{{ banco?.banco }}</h3>
@@ -71,7 +71,7 @@ onMounted(async () => {
   justify-content: center;
   .credit-card {
     display: grid;
-
+    max-width: 23vw;
     grid-template-rows: repeat(3, min-height);
     width: 90%;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);

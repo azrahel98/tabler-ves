@@ -15,85 +15,24 @@
           title="Gestionar legajo"
         >
           <IconFolderShare class="icon icon-sm" />
-          <!-- <span class="d-none d-sm-inline">Gestionar</span> -->
         </button>
       </div>
 
-      <div class="card-body p-0 m-0 py-4" v-if="lista.length > 0">
-        <div class="d-flex h-auto justify-content-center gap-5">
-          <div class="text-center">
-            <div class="avatar avatar-lg">
-              <span :class="verificar()?.estado == 'prestamo' ? 'text-danger' : 'text-success'">
-                <IconAlertCircle v-if="verificar()?.estado == 'prestamo'" />
-                <svg
-                  v-else
-                  class="icon icon-lg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  stroke-width="2"
-                  stroke="currentColor"
-                  fill="none"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                >
-                  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                  <path d="M5 12l5 5l10 -10" />
-                </svg>
-              </span>
-            </div>
-          </div>
-
-          <div class="d-flex row-gap-0 column-gap-2">
-            <div class="text-center" v-if="verificar()">
-              <span class="badge">
-                <IconUser />
-                <div class="text-center">
-                  <div class="small opacity-75">{{ verificar()?.estado == 'prestamo' ? 'En poder de' : 'Último movimiento por' }}</div>
-                  <div class="fw-bold">{{ verificar()?.persona }}</div>
-                </div>
-              </span>
-            </div>
-            <div class="d-flex flex-column m-0 p-0 gap-1 align-content-start text-start">
-              <div class="text-center" v-if="verificar()?.fecha">
-                <span class="badge text-secondary">
-                  <IconCalendar class="icon text-primary" />
-                  {{ verificar()?.fecha.split(' ')[0] }}
-                </span>
-              </div>
-              <div class="text-center" v-if="verificar()?.fecha">
-                <span class="badge bg-bitbucket-lt text-secondary text-start">
-                  <IconClock class="icon text-green" />
-                  {{ verificar()?.fecha.split(' ')[1] }}
-                </span>
+      <div class="card-body p-0 m-0 py-2 px-4" v-if="lista.length > 0">
+        <div class="estado d-flex align-items-start justify-content-center column-gap-4 row-gap-0">
+          <span class="badge text-white fs-6" :class="[verificar().estado === 'archivado' ? 'bg-primary' : 'bg-secondary']">{{
+            verificar().estado === 'archivado' ? 'Devuelto por:' : 'En poder de:'
+          }}</span>
+          <div class="d-flex align-items-start gap-2">
+            <div class="avatar avatar-md" />
+            <div>
+              <h4 class="m-0 p-0">{{ verificar().persona }}</h4>
+              <p class="small m-0" v-if="verificar().descrip">{{ verificar().descrip }}</p>
+              <div class="d-flex align-content-center align-items-center">
+                <IconCalendar class="icon" :class="[verificar().estado === 'archivado' ? 'text-primary' : 'text-danger']" />
+                <p class="small m-0 fw-normal">{{ verificar().fecha }}</p>
               </div>
             </div>
-          </div>
-        </div>
-
-        <div class="border-top pt-3" v-if="lista.length > 1">
-          <div class="text-center mb-3">
-            <span class="badge bg-gray-lt text-gray">
-              <IconHistory class="icon" />
-              Historial de movimientos
-            </span>
-          </div>
-
-          <div class="d-flex flex-column gap-2">
-            <div v-for="(x, _) in lista.slice(1, 4)" :key="x.id" class="d-flex align-items-center justify-content-between p-2 bg-light rounded">
-              <div class="d-flex align-items-center gap-2">
-                <span class="badge badge-sm" :class="x.estado == 'prestamo' ? 'bg-danger' : 'bg-success'"></span>
-                <div>
-                  <div class="fw-medium small">{{ x.persona }}</div>
-                  <div class="text-muted small">{{ x.descrip }}</div>
-                </div>
-              </div>
-              <div class="text-muted small">{{ x.fecha }}</div>
-            </div>
-          </div>
-
-          <div class="text-center mt-3" v-if="lista.length > 4">
-            <span class="badge bg-gray-lt text-gray small"> +{{ lista.length - 4 }} movimientos más </span>
           </div>
         </div>
       </div>
@@ -104,7 +43,7 @@
 </template>
 
 <script setup lang="ts">
-import { IconAlertCircle, IconCalendar, IconClock, IconFolderShare, IconHistory, IconUser } from '@tabler/icons-vue'
+import { IconCalendar, IconFolderShare } from '@tabler/icons-vue'
 import modallegajo from '@comp/perfil/modal/agregar_legajo.vue'
 import { userStore } from '@store/user'
 import { onMounted, ref } from 'vue'
@@ -121,6 +60,7 @@ const verificar = () => {
 
 onMounted(async () => {
   lista.value = await (await api.post('/personal/legajo_por_dni', { dni: router.currentRoute.value.params.dni })).data
+  console.log(lista)
 })
 </script>
 
