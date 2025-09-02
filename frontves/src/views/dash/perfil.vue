@@ -34,38 +34,6 @@
         <Asistencia :dni="router.currentRoute.value.params.dni.toString()" />
       </div>
     </div>
-    <!-- <div class="page-body bg-transparent mt-0">
-      <div class="container-xl bg-transparent">
-        <div class="card px-0 border-0">
-          <div class="card-header">
-            <ul class="nav nav-tabs card-header-tabs">
-              <li class="nav-item">
-                <a class="nav-link" :class="{ 'fw-bold bg-white activetab': activeTab === 'perfill' }" href="#" @click.prevent="activeTab = 'perfill'"> Perfil </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" :class="{ 'fw-bold bg-white activetab': activeTab === 'vinculos' }" href="#" @click.prevent="activeTab = 'vinculos'"> Vínculos </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" :class="{ 'fw-bold bg-white activetab': activeTab === 'historial' }" href="#" @click.prevent="activeTab = 'historial'"> Historial </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" :class="{ 'fw-bold bg-white activetab': activeTab === 'asistencia' }" href="#" @click.prevent="activeTab = 'asistencia'"> Asistencia </a>
-              </li>
-            </ul>
-          </div>
-          <div class="card-body p-0 px-0 mx-0">
-            <transition name="fade" mode="out-in">
-              <div class="tab-content bg-transparent p-0" :key="activeTab">
-                <perfillTab v-if="activeTab === 'perfill'" :vinculo="(vinculos ?? []).filter((x:any) => x.estado === 'activo')[0]" />
-                <vinculoTab v-else-if="activeTab === 'vinculos'" :vinculos="vinculos" />
-                <HistorialCard v-else-if="activeTab === 'historial'" :lista="historial" />
-                <Asistencia v-else :dni="router.currentRoute.value.params.dni.toString()" />
-              </div>
-            </transition>
-          </div>
-        </div>
-      </div>
-    </div> -->
   </div>
   <areaLoading v-show="!isloadingMain" />
 </template>
@@ -81,17 +49,12 @@ import card_legajo from '@comp/perfil/tab/perfil/personal/card_legajo.vue'
 import Card_banco from '@comp/perfil/tab/perfil/personal/card_banco.vue'
 import Card_educacion from '@comp/perfil/tab/perfil/personal/card_educacion.vue'
 
-// import HistorialCard from '@comp/perfil/tab/historial.vue'
-
-// import Asistencia from '@comp/perfil/tab/asistencia.vue'
-// import perfillTab from '@comp/perfil/tab/perfil.vue'
 import vinculoTab from '@comp/perfil/tab/vinculos.vue'
 import Historial from '@comp/perfil/tab/historial.vue'
 import Asistencia from '@comp/perfil/tab/asistencia.vue'
 
 const vinculos = ref(<any>[])
 const perfil = ref({})
-// const activeTab = ref('perfill')
 const isloadingMain = ref(false)
 const historial = ref<any>([])
 

@@ -242,7 +242,7 @@ pub async fn agregar_infobancaria(
 
 pub async fn editar_datos_bancarios(
     data: web::Data<AppState>,
-    doc: web::Json<DatosBancarios>,
+    mut doc: web::Json<DatosBancarios>,
     req: HttpRequest,
 ) -> Result<impl Responder, ApiError> {
     let insert = sqlx::query(
@@ -262,6 +262,17 @@ pub async fn editar_datos_bancarios(
 
     match insert {
         Ok(result) => {
+
+        let row = sqlx::query!(
+        "SELECT nombre FROM Banco WHERE id = ?",
+        doc.banco
+    )
+    .fetch_one(&data.db) // pool es tu conexión a la BD
+    .await;
+
+    let nombre: String = row.unwrap().nombre;
+    doc.banco = nombre;
+
             let _ = registrar_historial(
                 &req,
                 &data.db,

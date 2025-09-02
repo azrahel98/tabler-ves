@@ -36,9 +36,9 @@
                       <IconUser class="icon me-1 icon-sm text-secondary" />
                       <strong class="text-body fs-4">{{ item.nombre }}</strong>
                     </div>
-                    <!-- <span class="badge fs-6" :class="getOperationBadge(item.operacion)">
-                      {{ formatOperacion(item.operacion) }}
-                    </span> -->
+                    <span class="badge fs-6">
+                      {{ item.operacion }}
+                    </span>
                   </div>
 
                   <div class="text-secondary d-flex align-items-center">
@@ -49,25 +49,10 @@
 
                 <div v-if="item.detalle && item.detalle.trim()" class="mt-2">
                   <div class="card card-sm">
-                    <div class="card-body">
-                      <div v-if="item.operacion === 'cambiar legajo'">
-                        <div class="estado d-flex align-items-start justify-content-start column-gap-4 row-gap-0">
-                          <span class="badge text-white fs-6" :class="[JSON.parse(item.detalle).estado === 'archivado' ? 'bg-primary' : 'bg-secondary']">{{
-                            JSON.parse(item.detalle).estado === 'archivado' ? 'Devuelto por:' : 'En poder de:'
-                          }}</span>
-                          <div class="d-flex align-items-start gap-2">
-                            <div class="avatar avatar-md" />
-                            <div>
-                              <h4 class="m-0 p-0">{{ JSON.parse(item.detalle).persona }}</h4>
-                              <p class="small m-0" v-if="JSON.parse(item.detalle).descrip">{{ JSON.parse(item.detalle).descrip }}</p>
-                              <div class="d-flex align-content-center align-items-center">
-                                <IconCalendar class="icon" :class="[JSON.parse(item.detalle).estado === 'archivado' ? 'text-primary' : 'text-danger']" />
-                                <p class="small m-0 fw-normal">{{ JSON.parse(item.detalle).fecha }}</p>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
+                    <div class="card-body p-0 m-0">
+                      <Legajo v-if="item.operacion === 'cambiar legajo'" :item="item" />
+                      <Banco v-else-if="item.operacion === 'actualizar cuenta bancaria'" :item="JSON.parse(item.detalle)" />
+                      <Information v-else-if="item.operacion === 'editar informacion personal'" :perfil="JSON.parse(item.detalle)" />
                       <div class="flex-fill" v-else>
                         <pre class="mb-0 text-white small">{{ item.detalle }}</pre>
                       </div>
@@ -90,6 +75,9 @@
 
 <script setup lang="ts">
 import { IconCalendar, IconClock, IconPaperBagOff, IconReport, IconUser } from '@tabler/icons-vue'
+import Legajo from './historial/legajo.vue'
+import Banco from './historial/banco.vue'
+import Information from './historial/info.vue'
 
 interface HistorialItem {
   operacion: string
@@ -115,42 +103,6 @@ const getInitials = (nombre: string): string => {
     .toUpperCase()
     .slice(0, 2)
 }
-
-// const getOperationBadge = (operacion: string): string => {
-//   const op = operacion.toLowerCase()
-
-//   if (op.includes('crear') || op.includes('insert') || op.includes('add') || op.includes('nuevo')) {
-//     return 'bg-success text-white'
-//   }
-//   if (op.includes('editar') || op.includes('update') || op.includes('modificar') || op.includes('cambiar')) {
-//     return 'bg-primary text-white'
-//   }
-//   if (op.includes('eliminar') || op.includes('delete') || op.includes('borrar') || op.includes('quitar')) {
-//     return 'bg-danger text-white'
-//   }
-//   if (op.includes('login') || op.includes('acceso') || op.includes('ingreso') || op.includes('entrar')) {
-//     return 'bg-success text-white'
-//   }
-//   if (op.includes('logout') || op.includes('salir') || op.includes('cerrar')) {
-//     return 'bg-warning text-white'
-//   }
-//   if (op.includes('ver') || op.includes('consultar') || op.includes('select') || op.includes('buscar')) {
-//     return 'bg-info text-white'
-//   }
-//   if (op.includes('exportar') || op.includes('descargar') || op.includes('imprimir')) {
-//     return 'bg-cyan text-white'
-//   }
-
-//   return 'bg-secondary text-white'
-// }
-
-// const formatOperacion = (operacion: string): string => {
-//   return operacion
-//     .toLowerCase()
-//     .split('_')
-//     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-//     .join(' ')
-// }
 
 const formatFecha = (fecha: string): string => {
   try {

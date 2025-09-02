@@ -140,7 +140,7 @@
               <div class="text-secondary small" v-if="editMode">RUC de 11 dígitos (opcional)</div>
             </div>
             <div v-else>
-              <strong class="text-hint fw-normal">{{ perfil.emrail }}</strong>
+              <strong class="text-hint fw-normal">{{ perfil.ruc }}</strong>
             </div>
           </div>
         </div>
