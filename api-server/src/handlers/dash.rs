@@ -271,10 +271,11 @@ pub async fn reporte_historial(
     dni: web::Json<PerfilDni>,
 ) -> Result<impl Responder, ApiError> {
     let buscar = format!("%{}%", dni.dni);
+    let key = std::env::var("DB_KEY").unwrap_or("*Asdf-Xasdfadf2eee".to_string());
 
     let data = sqlx::query(
         r#"
-        SELECT f.operacion, f.detalle, f.fecha, u.nombre
+        SELECT f.operacion,cast(aes_decrypt(f.detalle,?) as char) detalle, f.fecha, u.nombre
         FROM historial f
         INNER JOIN usuario u ON f.idusuario = u.id
         WHERE f.detalle LIKE ?
@@ -282,6 +283,7 @@ pub async fn reporte_historial(
         "#,
     )
     .bind(&buscar)
+    .bind(key)
     .fetch_all(&data.db)
     .await
     .map_err(|e| {

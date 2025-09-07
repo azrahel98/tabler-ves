@@ -7,12 +7,6 @@
             <div class="col-lg-3 col-sm-6 col-md-5 col-10">
               <input type="search" @keyup.enter="buscar" v-model="nombre" class="form-control text-center d-inline-block me-3" placeholder="buscar ...." />
             </div>
-            <div class="col-md-2 col-lg-2 col-sm-3 col-4">
-              <select class="form-select tomselected ts-hidden-accessible" id="select-users" value="" tabindex="-1">
-                <option value="">Activo</option>
-                <option value="4">Cesado</option>
-              </select>
-            </div>
           </div>
         </div>
       </div>

@@ -11,6 +11,7 @@ use actix_web::{
     web::{self},
 };
 
+use futures_util::future::ok;
 use serde::Deserialize;
 use serde_json::{Value, json};
 use sqlx::Row;
@@ -56,15 +57,7 @@ pub async fn buscar_por_nombre(
     Ok(HttpResponse::Ok().json(trabajador))
 }
 
-#[derive(Deserialize)]
-pub struct PerfilDni {
-    pub dni: String,
-}
-
-pub async fn perfil_por_dni(
-    data: web::Data<AppState>,
-    nombre: web::Json<PerfilDni>,
-) -> Result<impl Responder, ApiError> {
+async fn get_perfil_by_dni(data: web::Data<AppState>, dni: String) -> Result<Perfil, ApiError> {
     let key = std::env::var("DB_KEY").unwrap_or("*Asdf-Xasdfadf2eee".to_string());
 
     let trabajador = sqlx::query_as!(
@@ -89,12 +82,25 @@ pub async fn perfil_por_dni(
         key,
         key,
         key,
-        nombre.dni
+        dni
     )
     .fetch_one(&data.db)
     .await
     .expect("REASON");
 
+    Ok(trabajador)
+}
+
+#[derive(Deserialize)]
+pub struct PerfilDni {
+    pub dni: String,
+}
+
+pub async fn perfil_por_dni(
+    data: web::Data<AppState>,
+    nombre: web::Json<PerfilDni>,
+) -> Result<impl Responder, ApiError> {
+    let trabajador = get_perfil_by_dni(data, nombre.dni.clone()).await.unwrap();
     Ok(HttpResponse::Ok().json(trabajador))
 }
 
@@ -262,16 +268,12 @@ pub async fn editar_datos_bancarios(
 
     match insert {
         Ok(result) => {
+            let row = sqlx::query!("SELECT nombre FROM Banco WHERE id = ?", doc.banco)
+                .fetch_one(&data.db) // pool es tu conexión a la BD
+                .await;
 
-        let row = sqlx::query!(
-        "SELECT nombre FROM Banco WHERE id = ?",
-        doc.banco
-    )
-    .fetch_one(&data.db) // pool es tu conexión a la BD
-    .await;
-
-    let nombre: String = row.unwrap().nombre;
-    doc.banco = nombre;
+            let nombre: String = row.unwrap().nombre;
+            doc.banco = nombre;
 
             let _ = registrar_historial(
                 &req,
@@ -356,6 +358,7 @@ pub async fn editar_perfil(
     req: HttpRequest,
 ) -> Result<impl Responder, ApiError> {
     let key = std::env::var("DB_KEY").unwrap_or("*Asdf-Xasdfadf2eee".to_string());
+    let perfil_antes = get_perfil_by_dni(data.clone(), perfil.dni.clone()).await?;
 
     let insert = sqlx::query(
         r#"
@@ -376,13 +379,29 @@ pub async fn editar_perfil(
 
     match insert {
         Ok(result) => {
+            let mut diff = serde_json::to_value(&perfil_antes).unwrap();
+
+            if perfil_antes.telf == perfil.telf {
+                diff["telf"] = serde_json::Value::Null;
+            }
+            if perfil_antes.direccion == perfil.direccion {
+                diff["direccion"] = serde_json::Value::Null;
+            }
+            if perfil_antes.email == perfil.email {
+                diff["email"] = serde_json::Value::Null;
+            }
+            if perfil_antes.ruc == perfil.ruc {
+                diff["ruc"] = serde_json::Value::Null;
+            }
+
             let _ = registrar_historial(
                 &req,
                 &data.db,
                 "editar informacion personal",
-                Some(&serde_json::to_string(&perfil).unwrap_or_default()),
+                Some(&diff.to_string()),
             )
             .await;
+
             Ok(HttpResponse::Ok().json(format!("Rows affected: {}", result.rows_affected())))
         }
         Err(e) => Err(ApiError::InternalError(3, format!("Database error: {}", e))),

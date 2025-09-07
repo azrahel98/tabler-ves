@@ -27,7 +27,7 @@ defineProps({
   justify-content: center;
   .credit-card {
     display: grid;
-    max-width: 15vw;
+    max-width: 18vw;
     grid-template-rows: repeat(3, min-height);
     width: 90%;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);

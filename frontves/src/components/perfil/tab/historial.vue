@@ -75,6 +75,7 @@
 
 <script setup lang="ts">
 import { IconCalendar, IconClock, IconPaperBagOff, IconReport, IconUser } from '@tabler/icons-vue'
+import { formatFechaCompleta } from '@api/date'
 import Legajo from './historial/legajo.vue'
 import Banco from './historial/banco.vue'
 import Information from './historial/info.vue'
@@ -123,22 +124,6 @@ const formatFecha = (fecha: string): string => {
       const days = Math.floor(diffInMinutes / 1440)
       return `${days}d`
     }
-  } catch {
-    return fecha
-  }
-}
-
-const formatFechaCompleta = (fecha: string): string => {
-  try {
-    const date = new Date(fecha)
-    return date.toLocaleString('es-ES', {
-      weekday: 'short',
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    })
   } catch {
     return fecha
   }

@@ -5,10 +5,10 @@
         <div class="row justify-content-center col-lg-7 col-md-12 col-sm-12 row-gap-3" style="height: min-content">
           <div class="row col-12 row-gap-3 justify-content-center">
             <div class="col-lg-5">
-              <card_user class="justify-content-center" :user="perfil" :vinculo="(vinculos ?? []).filter((x:any) => x.estado === 'activo')[0]" />
+              <card_user class="justify-content-center" :user="perfil.perfil" :vinculo="(vinculos ?? []).filter((x:any) => x.estado === 'activo')[0]" />
             </div>
             <div class="col-lg-12">
-              <Informacion :perfil="perfil" />
+              <Informacion :perfil="perfil.perfil" />
             </div>
           </div>
           <div class="col-lg-12">
@@ -52,9 +52,10 @@ import Card_educacion from '@comp/perfil/tab/perfil/personal/card_educacion.vue'
 import vinculoTab from '@comp/perfil/tab/vinculos.vue'
 import Historial from '@comp/perfil/tab/historial.vue'
 import Asistencia from '@comp/perfil/tab/asistencia.vue'
+import { useProfileStore } from '@store/perfil'
 
 const vinculos = ref(<any>[])
-const perfil = ref({})
+const perfil = useProfileStore()
 const isloadingMain = ref(false)
 const historial = ref<any>([])
 
@@ -62,7 +63,7 @@ onMounted(async () => {
   try {
     vinculos.value = await (await api.post('/personal/vinculos_por_dni', { dni: router.currentRoute.value.params.dni })).data
     historial.value = await (await api.post('/dash/reporte_historia', { dni: router.currentRoute.value.params.dni })).data
-    perfil.value = await (await api.post('/personal/por_dni', { dni: router.currentRoute.value.params.dni })).data
+    await perfil.fetchData(router.currentRoute.value.params.dni.toString())
     isloadingMain.value = true
   } catch (error) {
     console.log(error)

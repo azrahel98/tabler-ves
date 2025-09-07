@@ -12,7 +12,7 @@
           <p class="small m-0" v-if="JSON.parse(item.detalle).descrip">{{ JSON.parse(item.detalle).descrip }}</p>
           <div class="d-flex align-content-center align-items-center">
             <IconCalendar class="icon" :class="[JSON.parse(item.detalle).estado === 'archivado' ? 'text-primary' : 'text-danger']" />
-            <p class="small m-0 fw-normal">{{ JSON.parse(item.detalle).fecha }}</p>
+            <p class="small m-0 fw-normal">{{ formatFechaCompleta(JSON.parse(item.detalle).fecha) }}</p>
           </div>
         </div>
       </div>
@@ -21,6 +21,7 @@
 </template>
 
 <script lang="ts" setup>
+import { formatFechaCompleta } from '@api/date'
 defineProps({
   item: { type: Object, required: true }
 })

@@ -18,7 +18,7 @@
         </button>
       </div>
 
-      <div class="card-body p-0 m-0 py-2 px-4" v-if="lista.length > 0">
+      <div class="card-body m-0 p-4" v-if="lista.length > 0">
         <div class="estado d-flex align-items-start justify-content-center column-gap-4 row-gap-0">
           <span class="badge text-white fs-6" :class="[verificar().estado === 'archivado' ? 'bg-primary' : 'bg-secondary']">{{
             verificar().estado === 'archivado' ? 'Devuelto por:' : 'En poder de:'
@@ -30,7 +30,7 @@
               <p class="small m-0" v-if="verificar().descrip">{{ verificar().descrip }}</p>
               <div class="d-flex align-content-center align-items-center">
                 <IconCalendar class="icon" :class="[verificar().estado === 'archivado' ? 'text-primary' : 'text-danger']" />
-                <p class="small m-0 fw-normal">{{ verificar().fecha }}</p>
+                <p class="small m-0 fw-normal">{{ formatFechaCompleta(verificar().fecha) }}</p>
               </div>
             </div>
           </div>
@@ -48,6 +48,7 @@ import modallegajo from '@comp/perfil/modal/agregar_legajo.vue'
 import { userStore } from '@store/user'
 import { onMounted, ref } from 'vue'
 import { api } from '@api/axios'
+import { formatFechaCompleta } from '@api/date'
 import { router } from '@router/router'
 
 const store = userStore()
