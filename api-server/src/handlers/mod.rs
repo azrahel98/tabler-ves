@@ -12,7 +12,7 @@ pub async fn registrar_historial(
     detalle: Option<&str>,
 ) -> Result<(), ApiError> {
     let detalle_str = detalle.unwrap_or("");
-
+    let key = std::env::var("DB_KEY").unwrap_or("*Asdf-Xasdfadf2eee".to_string());
     let user_id = req
         .extensions()
         .get::<Claims>()
@@ -21,11 +21,12 @@ pub async fn registrar_historial(
 
     let _ = query!(
         r#"
-        CALL registrar_historial(?, ?, ?)
+        CALL registrar_historial(?, ?, ?,?)
         "#,
         user_id,
         operacion,
-        detalle_str
+        detalle_str,
+        key
     )
     .execute(db)
     .await

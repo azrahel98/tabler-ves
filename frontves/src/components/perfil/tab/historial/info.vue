@@ -1,55 +1,49 @@
 <template>
   <form @submit.prevent="" class="p-3">
-    <div class="row g-3">
-      <div class="col-md-12">
-        <label class="form-label">
-          <MapPin class="icon text-blue" />
-          Dirección
-        </label>
+    <div class="row">
+      <div
+        v-for="(x, y) in Object.entries(perfil)"
+        :key="y"
+        :class="[(x[1] !== null && x[0] === 'direccion') || (x[0] === 'telf' && x[1] != null) || (x[0] === 'email' && x[1] != null) ? 'col-md-6' : 'd-none']"
+      >
+        <div v-if="x[0] === 'direccion' && x[1] != null">
+          <label class="form-label">
+            <MapPin class="icon text-warning" />
+            Dirección
+          </label>
 
-        <div>
-          <strong class="text-hint fw-normal">{{ perfil.direccion }}</strong>
+          <div>
+            <strong class="text-hint fw-normal">{{ x[1] }}</strong>
+          </div>
         </div>
-      </div>
+        <div v-else-if="x[0] === 'telf' && x[1] != null">
+          <label class="form-label">
+            <Phone class="icon text-warning" />
+            Teléfono
+          </label>
 
-      <div class="col-md-6">
-        <label class="form-label">
-          <Phone class="icon text-blue" />
-          Teléfono
-        </label>
-
-        <div>
-          <strong class="text-hint fw-normal">{{ perfil.telf }}</strong>
+          <div>
+            <strong class="text-hint fw-normal">{{ x[1] }}</strong>
+          </div>
         </div>
-      </div>
+        <div v-else-if="x[0] === 'email' && x[1] != null">
+          <label class="form-label text-secondary fw-medium">
+            <MailCheck class="icon icon-sm me-1 text-warning" />
+            Correo
+          </label>
 
-      <div class="col-md-6">
-        <label class="form-label">
-          <Mail class="icon text-blue" />
-          Correo Electrónico
-        </label>
-
-        <div>
-          <strong class="text-hint fw-normal">{{ perfil.email }}</strong>
+          <div>
+            <strong class="text-hint fw-normal">{{ x[1] }}</strong>
+          </div>
         </div>
-      </div>
-
-      <div class="col-md-6">
-        <label class="form-label">
-          <FileText class="icon icon-sm me-1 text-secondary" />
-          RUC
-        </label>
-
-        <div>
-          <strong class="text-hint fw-normal">{{ perfil.ruc }}</strong>
-        </div>
+        <div v-else></div>
       </div>
     </div>
   </form>
 </template>
 
 <script setup lang="ts">
-import { FileText, Mail, MapPin, Phone } from 'lucide-vue-next'
+import { MailCheck, MapPin, Phone } from 'lucide-vue-next'
 defineProps({
   perfil: { type: Object, required: true }
 })

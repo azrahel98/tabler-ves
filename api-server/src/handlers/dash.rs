@@ -278,12 +278,13 @@ pub async fn reporte_historial(
         SELECT f.operacion,cast(aes_decrypt(f.detalle,?) as char) detalle, f.fecha, u.nombre
         FROM historial f
         INNER JOIN usuario u ON f.idusuario = u.id
-        WHERE f.detalle LIKE ?
+        WHERE aes_decrypt(f.detalle,?) LIKE ?
         order by f.fecha desc   
         "#,
     )
+    .bind(key.clone())
+    .bind(key.clone())
     .bind(&buscar)
-    .bind(key)
     .fetch_all(&data.db)
     .await
     .map_err(|e| {

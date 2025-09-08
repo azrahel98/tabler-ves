@@ -11,7 +11,7 @@ use actix_web::{
     web::{self},
 };
 
-use futures_util::future::ok;
+
 use serde::Deserialize;
 use serde_json::{Value, json};
 use sqlx::Row;
