@@ -12,6 +12,8 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
             .route("/personal_activo", web::post().to(reporte_personal_activo))
             .route("/reporte_historia", web::post().to(reporte_historial))
             .route("/info", web::post().to(info))
+            .route("/reporte_legajos", web::post().to(report_legajos))
+            .route("/reporte_renuncias", web::post().to(report_renuncias))
             .route("/organigrama", web::post().to(organigrama)),
     );
 }

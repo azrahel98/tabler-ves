@@ -1,8 +1,12 @@
 <template>
   <div class="card">
     <div class="card-body">
-      <h3 class="card-title">Renuncias del año</h3>
-
+      <div class="d-flex justify-content-between">
+        <h3 class="card-title">Renuncias del año</h3>
+        <span class="col-2 cursor-pointer">
+          <IconDownload class="icon icon text-primary" @click="funcion()" />
+        </span>
+      </div>
       <table class="table table-sm table-borderless">
         <thead>
           <tr>
@@ -39,9 +43,11 @@
 </template>
 
 <script lang="ts" setup>
+import { IconDownload } from '@tabler/icons-vue'
 defineProps({
   data: { type: Array, required: true },
-  total: { type: Number, required: true }
+  total: { type: Number, required: true },
+  funcion: { type: Function, required: true }
 })
 </script>
 

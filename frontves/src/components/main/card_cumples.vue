@@ -6,18 +6,26 @@
     <div class="limites">
       <table class="table table-vcenter table-hover">
         <tbody style="height: 100%">
-          <tr v-for="x in filteredInfo(info)" :key="x.dni" @click="() => router.push({ name: 'perfil', params: { dni: x.dni } })" role="button" style="cursor: pointer">
+          <tr v-for="x in info" :key="x.dni" @click="() => router.push({ name: 'perfil', params: { dni: x.dni } })" role="button" style="cursor: pointer">
             <td class="text-hint text-secondary fw-medium small w-100">
               {{ x.nombre }}
             </td>
 
-            <td class="text-nowrap text-hint" v-if="istoday(x.nacimiento)">
+            <td class="text-nowrap text-hint text-capitalize" v-if="istoday(x.nacimiento)">
               <IconCalendar class="icon text-primary text-hint" />
-              {{ format(addDays(parseISO(x.nacimiento), 0), 'MMMM dd, yyyy') }}
+              {{
+                format(addDays(parseISO(x.nacimiento), 0), 'MMMM dd, yyyy', {
+                  locale: es
+                })
+              }}
             </td>
-            <td class="text-nowrap text-hint" v-else>
+            <td class="text-nowrap text-hint text-capitalize" v-else>
               <IconCalendar class="icon icon-1 text-primary" />
-              {{ format(addDays(parseISO(x.nacimiento), 0), 'MMMM dd, yyyy') }}
+              {{
+                format(addDays(parseISO(x.nacimiento), 0), 'MMMM dd, yyyy', {
+                  locale: es
+                })
+              }}
             </td>
 
             <td class="text-nowrap text-hint">
@@ -39,17 +47,13 @@ import { IconCake, IconCalendar } from '@tabler/icons-vue'
 import { addDays, format, parseISO, startOfDay } from 'date-fns'
 import { onMounted, ref } from 'vue'
 import { router } from '@router/router'
+import { es } from 'date-fns/locale'
 
 const info = ref<Array<any>>([])
 
 onMounted(async () => {
   try {
-    info.value = await (
-      await api.post('/dash/cumpleaños', {
-        mes: new Date().getMonth(),
-        dia: 2
-      })
-    ).data
+    info.value = await (await api.post('/dash/cumpleaños', format(new Date(), 'yyyy-MM-dd'))).data
     console.log(info.value)
   } catch (error) {
     console.log(error)
@@ -61,14 +65,6 @@ const istoday = (x: string): boolean => {
   const birthday = addDays(parseISO(x), 0)
   return today.getDate() == birthday.getDate()
 }
-
-const filteredInfo = (data: Array<any>) => {
-  const today = startOfDay(new Date())
-  return data.filter((x) => {
-    const birthday = addDays(parseISO(x.nacimiento), 0)
-    return today.getDate() <= birthday.getDate()
-  })
-}
 </script>
 
 <style lang="scss" scoped>
@@ -76,7 +72,7 @@ const filteredInfo = (data: Array<any>) => {
   height: 100%;
   .limites {
     overflow-y: auto;
-    max-height: 35vh;
+    max-height: 30vh;
   }
 }
 </style>

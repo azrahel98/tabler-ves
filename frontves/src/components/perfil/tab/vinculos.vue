@@ -5,7 +5,7 @@
         <h3 class="card-title mb-0">Vínculos Laborales</h3>
       </div>
       <div class="timeline-scroll-container">
-        <div class="p-3">
+        <div class="p-3" style="max-height: 40vh; overflow-y: auto">
           <ul class="timeline" v-if="!isloading && vinculos && vinculos.length > 0">
             <Timeline :x="x" v-for="x in (vinculos as Array<any>)" :key="x.Id" :click_collapse="click_collapse" />
           </ul>

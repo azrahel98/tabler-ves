@@ -33,6 +33,11 @@ const routes: RouteRecordRaw[] = [
         path: '/perfil/:dni',
         name: 'perfil',
         component: () => import('@views/dash/perfil.vue')
+      },
+      {
+        path: '/nuevo',
+        name: 'nuevo',
+        component: () => import('@views/dash/nuevo.vue')
       }
       // {
       //   path: '/boleta',

@@ -2,8 +2,8 @@ use crate::{
     AppState,
     middleware::error::ApiError,
     models::dash::{
-        BancosReport, Cumpleaños, CumpleañosRequest, DataResumen, DbOrgani, Organigrama,
-        ResumenResponse,
+        BancosReport, Cumpleaños, DataResumen, DbOrgani, Organigrama, ReporteLegajo,
+        ReporteRenuncias, ResumenResponse,
     },
 };
 use actix_web::{
@@ -15,33 +15,49 @@ use serde::Deserialize;
 use serde_json::{Value, json};
 use sqlx::Row;
 
-pub async fn cumpleaños(
-    data: web::Data<AppState>,
-    mes: web::Json<CumpleañosRequest>,
-) -> Result<impl Responder, ApiError> {
-    mes.validate()?;
-
+pub async fn cumpleaños(data: web::Data<AppState>) -> Result<impl Responder, ApiError> {
     let lista = sqlx::query_as!(
         Cumpleaños,
         r#"
-        select
-        p.dni,
-        concat_ws(" ", p.apaterno, amaterno, p.nombre) nombre,
-        p.fecha_nacimiento nacimiento,
-        YEAR(CURRENT_DATE) - year(p.fecha_nacimiento) edad
-        from
-        Persona p
-        inner join Vinculo v on p.dni = v.dni
-        where
-        v.estado = 'activo'
-        and month(p.fecha_nacimiento) = ?
-        GROUP by
-        p.dni
-        order by
-        day(p.fecha_nacimiento),
-        YEAR(CURRENT_DATE) - year(p.fecha_nacimiento) asc
-        "#,
-        mes.mes,
+            SELECT
+            p.dni,
+            CONCAT_WS(' ', p.apaterno, p.amaterno, p.nombre) AS nombre,
+            p.fecha_nacimiento nacimiento,
+            TIMESTAMPDIFF(YEAR, p.fecha_nacimiento, CURRENT_DATE) AS edad
+            FROM
+            Persona p
+            INNER JOIN Vinculo v ON p.dni = v.dni
+            WHERE
+            v.estado = 'activo'
+            AND (
+                STR_TO_DATE(
+                CONCAT(
+                    YEAR(CURRENT_DATE),
+                    '-',
+                    DATE_FORMAT(p.fecha_nacimiento, '%m-%d')
+                ),
+                '%Y-%m-%d'
+                ) BETWEEN DATE_SUB(CURRENT_DATE, INTERVAL 5 DAY)
+                AND DATE_ADD(CURRENT_DATE, INTERVAL 30 DAY)
+                OR STR_TO_DATE(
+                CONCAT(
+                    YEAR(CURRENT_DATE) + 1,
+                    '-',
+                    DATE_FORMAT(p.fecha_nacimiento, '%m-%d')
+                ),
+                '%Y-%m-%d'
+                ) BETWEEN DATE_SUB(CURRENT_DATE, INTERVAL 5 DAY)
+                AND DATE_ADD(CURRENT_DATE, INTERVAL 10 DAY)
+            )
+            GROUP BY
+            p.dni,
+            nombre,
+            p.fecha_nacimiento,
+            edad
+            ORDER BY
+            MONTH(p.fecha_nacimiento),
+            DAY(p.fecha_nacimiento);
+        "#
     )
     .fetch_all(&data.db)
     .await
@@ -386,4 +402,83 @@ pub async fn organigrama(data: web::Data<AppState>) -> Result<impl Responder, Ap
         }
     }
     Ok(HttpResponse::Ok().json(organigrama))
+}
+
+pub async fn report_legajos(data: web::Data<AppState>) -> Result<impl Responder, ApiError> {
+    let data = sqlx::query_as!(
+        ReporteLegajo,
+        r#"
+        SELECT
+        l.id,
+        concat_ws(' ', p.apaterno, p.amaterno, p.nombre) AS nombre,
+        p.dni,
+        l.estado,
+        l.persona,
+        u.id userid,
+        u.nombre usuario,
+        l.fecha
+        FROM
+        legajo l
+        INNER JOIN (
+            SELECT
+            dni,
+            MAX(fecha) AS ultima_fecha
+            FROM
+            legajo
+            GROUP BY
+            dni
+        ) AS ultimo_registro ON l.dni = ultimo_registro.dni
+        AND l.fecha = ultimo_registro.ultima_fecha
+        INNER JOIN Persona p ON l.dni = p.dni
+        INNER JOIN usuario u ON l.user = u.id
+        WHERE
+        l.estado = 'prestamo'
+        "#,
+    )
+    .fetch_all(&data.db)
+    .await
+    .map_err(|e| {
+        eprintln!("Database error: {:?}", e);
+        ApiError::InternalError(3, "Database consulta malformada".into())
+    })?;
+
+    Ok(HttpResponse::Ok().json(data))
+}
+
+pub async fn report_renuncias(data: web::Data<AppState>) -> Result<impl Responder, ApiError> {
+    let data = sqlx::query_as!(
+        ReporteRenuncias,
+        r#"
+        SELECT
+        v.id,
+        v.dni,
+        CONCAT_WS(' ', pe.apaterno, pe.amaterno, pe.nombre) nombre,
+        d.fecha,
+        d.fecha_valida fechavalida,
+        ar.nombre AS  area,
+        cr.nombre AS  cargo,
+        pl.codigo
+        FROM
+        Vinculo AS v
+        INNER JOIN Documento AS d ON v.doc_salida_id = d.id
+        INNER JOIN Persona AS pe ON v.dni = pe.dni
+        INNER JOIN Plaza AS pl ON v.plaza_id = pl.codigo
+        INNER JOIN Area AS ar ON v.area_id = ar.id
+        INNER JOIN Cargo AS cr ON v.cargo_id = cr.id
+        WHERE
+        v.estado = 'inactivo'
+        AND year(d.fecha) = year(now())
+        ORDER BY
+        pl.codigo ASC,
+        d.fecha DESC;
+        "#,
+    )
+    .fetch_all(&data.db)
+    .await
+    .map_err(|e| {
+        eprintln!("Database error: {:?}", e);
+        ApiError::InternalError(3, "Database consulta malformada".into())
+    })?;
+
+    Ok(HttpResponse::Ok().json(data))
 }

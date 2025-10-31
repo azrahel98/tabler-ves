@@ -1,33 +1,6 @@
-use chrono::NaiveDate;
+use chrono::{NaiveDate, NaiveDateTime};
 use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
-
-use crate::middleware::error::ApiError;
-
-#[derive(Deserialize, Serialize)]
-pub struct CumpleañosRequest {
-    pub mes: i32,
-    pub dia: i32,
-}
-
-impl CumpleañosRequest {
-    pub fn validate(&self) -> Result<(), ApiError> {
-        if self.mes < 1 || self.mes > 12 {
-            return Err(ApiError::BadRequest(
-                1,
-                "mes debe estar entre 1 y 12".into(),
-            ));
-        }
-        if self.dia < 1 || self.dia > 31 {
-            return Err(ApiError::BadRequest(
-                2,
-                "dia debe estar entre 1 y 31".into(),
-            ));
-        }
-
-        Ok(())
-    }
-}
 
 #[derive(Debug, Deserialize, Serialize, sqlx::FromRow)]
 #[allow(non_snake_case)]
@@ -35,7 +8,7 @@ pub struct Cumpleaños {
     pub dni: String,
     pub nombre: Option<String>,
     pub nacimiento: NaiveDate,
-    pub edad: Option<i32>,
+    pub edad: Option<i64>,
 }
 
 #[derive(Serialize)]
@@ -84,4 +57,28 @@ pub struct DbOrgani {
     pub nombre: Option<String>,
     pub dni: Option<String>,
     pub nivel: Option<i32>,
+}
+
+#[derive(Serialize, Deserialize, Clone)]
+pub struct ReporteLegajo {
+    pub id: i32,
+    pub nombre: Option<String>,
+    pub dni: String,
+    pub estado: Option<String>,
+    pub persona: String,
+    pub userid: i32,
+    pub usuario: String,
+    pub fecha: NaiveDateTime,
+}
+
+#[derive(Serialize, Deserialize, Clone)]
+pub struct ReporteRenuncias {
+    pub id: i32,
+    pub dni: String,
+    pub nombre: Option<String>,
+    pub fecha: Option<NaiveDate>,
+    pub fechavalida: Option<NaiveDate>,
+    pub cargo: String,
+    pub area: String,
+    pub codigo: String,
 }

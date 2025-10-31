@@ -11,7 +11,7 @@ use actix_web::{
     web::{self},
 };
 
-
+use chrono::NaiveDate;
 use serde::Deserialize;
 use serde_json::{Value, json};
 use sqlx::Row;
@@ -121,16 +121,20 @@ pub async fn vinculos_por_dni(
 
     Ok(HttpResponse::Ok().json(trabajador))
 }
-
 pub async fn renuncia_por_vinculo(
     data: web::Data<AppState>,
     doc: web::Json<Documento>,
     req: HttpRequest,
 ) -> Result<impl Responder, ApiError> {
-    let insert = sqlx::query(
+    let mut tx =
+        data.db.begin().await.map_err(|e| {
+            ApiError::InternalError(3, format!("DB transaction begin error: {}", e))
+        })?;
+
+    let insert_result = sqlx::query(
         r#"
-        insert into Documento (tipo, numero, year, fecha, fecha_valida, descripcion)
-        values (?, ?, ?, ?, ?, ?)
+        INSERT INTO Documento (tipo, numero, year, fecha, fecha_valida, descripcion)
+        VALUES (?, ?, ?, ?, ?, ?)
         "#,
     )
     .bind(&doc.tipo)
@@ -139,32 +143,90 @@ pub async fn renuncia_por_vinculo(
     .bind(&doc.fecha)
     .bind(&doc.fecha_valida)
     .bind(&doc.descripcion)
-    .execute(&data.db)
-    .await;
+    .execute(&mut tx)
+    .await
+    .map_err(|e| ApiError::InternalError(3, format!("Insert Documento error: {}", e)))?;
 
-    let vinculo = sqlx::query(
+    let new_doc_id = insert_result.last_insert_id();
+
+    sqlx::query(
         r#"
-        update Vinculo set estado = 'inactivo', doc_salida_id = ? where id = ?
+        UPDATE Vinculo
+        SET estado = 'inactivo', doc_salida_id = ?
+        WHERE id = ?
         "#,
     )
-    .bind(insert.unwrap().last_insert_id())
+    .bind(new_doc_id)
     .bind(doc.id)
-    .execute(&data.db)
-    .await;
+    .execute(&mut tx)
+    .await
+    .map_err(|e| ApiError::InternalError(3, format!("Update Vinculo error: {}", e)))?;
 
-    match vinculo {
-        Ok(result) => {
-            let _ = registrar_historial(
-                &req,
-                &data.db,
-                "registro de renuncia",
-                Some(&serde_json::to_string(&doc).unwrap_or_default()),
-            )
-            .await;
-            Ok(HttpResponse::Ok().json(format!("Rows affected: {}", result.rows_affected())))
-        }
-        Err(e) => Err(ApiError::InternalError(3, format!("Database error: {}", e))),
+    sqlx::query(
+        r#"
+        UPDATE Plaza p
+        JOIN Vinculo v ON p.codigo = v.plaza_id
+        SET p.estado = 'vacante'
+        WHERE v.id = ?
+        "#,
+    )
+    .bind(doc.id) // Usamos el mismo ID de Vinculo
+    .execute(&mut tx)
+    .await
+    .map_err(|e| ApiError::InternalError(3, format!("Update Plaza error: {}", e)))?;
+
+    let row = sqlx::query(
+        r#"
+        SELECT
+          v.dni,
+          cr.nombre,
+          v.estado,
+          ds.fecha,
+          ds.descripcion,
+          CONCAT_WS('-', ds.tipo, ds.numero, ds.year) AS documento
+        FROM Vinculo v
+        INNER JOIN Documento ds ON v.doc_salida_id = ds.id
+        INNER JOIN Cargo cr ON v.cargo_id = cr.id
+        WHERE v.id = ?
+        "#,
+    )
+    .bind(doc.id)
+    .fetch_one(&mut tx)
+    .await
+    .map_err(|e| ApiError::InternalError(3, format!("Select after update error: {}", e)))?;
+
+    tx.commit()
+        .await
+        .map_err(|e| ApiError::InternalError(3, format!("Commit error: {}", e)))?;
+
+    let json_value = serde_json::json!({
+        "dni": row.try_get::<Option<String>, _>("dni")
+            .map_err(|e| ApiError::InternalError(3, format!("Row get dni error: {}", e)))?,
+        "nombre": row.try_get::<Option<String>, _>("nombre")
+            .map_err(|e| ApiError::InternalError(3, format!("Row get nombre error: {}", e)))?,
+        "estado": row.try_get::<Option<String>, _>("estado")
+            .map_err(|e| ApiError::InternalError(3, format!("Row get estado error: {}", e)))?,
+        "fecha": row.try_get::<Option<NaiveDate>, _>("fecha")
+            .map_err(|e| ApiError::InternalError(3, format!("Row get fecha error: {}", e)))?
+            .map(|d| d.to_string()),
+        "descripcion": row.try_get::<Option<String>, _>("descripcion")
+            .map_err(|e| ApiError::InternalError(3, format!("Row get descripcion error: {}", e)))?,
+        "documento": row.try_get::<Option<String>, _>("documento")
+            .map_err(|e| ApiError::InternalError(3, format!("Row get documento error: {}", e)))?,
+    });
+
+    if let Err(e) = registrar_historial(
+        &req,
+        &data.db,
+        "registro de renuncia",
+        Some(&serde_json::to_string(&json_value).unwrap_or_default()),
+    )
+    .await
+    {
+        eprintln!("registrar_historial failed: {}", e);
     }
+
+    Ok(HttpResponse::Ok().json(json_value))
 }
 
 pub async fn banco_por_dni(
@@ -379,7 +441,7 @@ pub async fn editar_perfil(
 
     match insert {
         Ok(result) => {
-            let mut diff = serde_json::to_value(&perfil_antes).unwrap();
+            let mut diff = serde_json::to_value(&perfil).unwrap();
 
             if perfil_antes.telf == perfil.telf {
                 diff["telf"] = serde_json::Value::Null;
@@ -410,25 +472,24 @@ pub async fn editar_perfil(
 
 pub async fn agregar_sindicato(
     data: web::Data<AppState>,
-    doc: web::Json<DocumentoSindicato>,
+    mut doc: web::Json<DocumentoSindicato>, // Se hace mutable para poder añadirle el DNI
     req: HttpRequest,
 ) -> Result<impl Responder, ApiError> {
-    let mut tx = data.db.begin().await.unwrap();
+    let mut tx = data.db.begin().await?;
 
-    let insert = sqlx::query(
+    let documento_id = sqlx::query(
         r#"
-        INSERT INTO Documento (tipo,fecha, descripcion)
-        VALUES ('Doc.Adm',?, ?)
+        INSERT INTO Documento (tipo, fecha, descripcion)
+        VALUES ('Doc.Adm', ?, ?)
         "#,
     )
     .bind(&doc.fecha)
     .bind(&doc.descripcion)
     .execute(&mut *tx)
-    .await;
+    .await?
+    .last_insert_id();
 
-    let documento_id = insert.unwrap().last_insert_id();
-
-    let _ = sqlx::query(
+    sqlx::query(
         r#"
         INSERT INTO vinculo_sindicato (vinculo_id, sindicato_id, documento_afiliacion)
         VALUES (?, ?, ?)
@@ -438,27 +499,32 @@ pub async fn agregar_sindicato(
     .bind(doc.sindicato)
     .bind(documento_id)
     .execute(&mut *tx)
+    .await?;
+
+    let row = sqlx::query("SELECT dni FROM vinculo WHERE id = ?")
+        .bind(doc.id_vinculo)
+        .fetch_one(&mut *tx) // Se usa una referencia mutable a la transacción
+        .await?;
+
+    let dni: String = row.try_get("dni")?;
+
+    doc.0.dni = Some(dni);
+
+    tx.commit().await?;
+    let _ = registrar_historial(
+        &req,
+        &data.db,
+        "afiliar al sindicato",
+        Some(&serde_json::to_string(&doc).unwrap_or_default()),
+    )
     .await;
 
-    let resultado = tx.commit().await;
-
-    match resultado {
-        Ok(_) => {
-            let _ = registrar_historial(
-                &req,
-                &data.db,
-                "afiliar al sindicato",
-                Some(&serde_json::to_string(&doc).unwrap_or_default()),
-            )
-            .await;
-            Ok(HttpResponse::Ok().json("Se registraron correctamente los datos"))
-        }
-        Err(e) => Err(ApiError::InternalError(3, format!("Database error: {}", e))),
-    }
+    Ok(HttpResponse::Ok().json("Se registraron correctamente los datos"))
 }
 
 // LEGAJOS
 
+// lega
 pub async fn personas_legajos(data: web::Data<AppState>) -> Result<impl Responder, ApiError> {
     let data = sqlx::query(r#"select persona from legajo GROUP by persona"#)
         .fetch_all(&data.db)

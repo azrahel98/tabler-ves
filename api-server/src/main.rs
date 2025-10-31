@@ -1,5 +1,6 @@
 use actix_cors::Cors;
 use actix_web::{App, HttpServer, middleware::Logger, web};
+use dotenv::from_filename;
 use sqlx::mysql::{MySqlPool, MySqlPoolOptions};
 use std::time::Duration;
 
@@ -8,14 +9,13 @@ mod middleware;
 mod models;
 mod routes;
 
-use dotenv::dotenv;
 pub struct AppState {
     pub db: MySqlPool,
 }
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    dotenv().ok();
+    from_filename(".env").ok();
     if std::env::var("RUST_LOG").is_err() {
         unsafe {
             std::env::set_var("RUST_LOG", "debug,actix_web=info");

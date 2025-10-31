@@ -34,15 +34,14 @@
           <a href="#" class="nav-link d-flex lh-1 p-0 px-2" data-bs-toggle="dropdown" aria-label="Open user menu" aria-expanded="false">
             <span class="avatar avatar-sm"> </span>
             <div class="d-none d-xl-block ps-2">
-              <div>Raul Chercca Lopez</div>
-              <div class="mt-1 small text-secondary">Usuario</div>
+              <div>{{ store.nombre }}</div>
+              <div class="mt-1 small text-secondary">{{ store.isAdmin ? 'Administrador' : store.isEditor ? 'Editor' : 'Usuario' }}</div>
             </div>
           </a>
           <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-            <a class="dropdown-item">Profile</a>
-            <a class="dropdown-item">Feedback</a>
+            <a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#cambio_pass">Cambiar Contraseña </a>
             <div class="dropdown-divider"></div>
-            <a class="dropdown-item" @click="logout">Logout</a>
+            <a class="dropdown-item" @click="logout">Salir</a>
           </div>
         </div>
       </div>
@@ -75,7 +74,7 @@
             </RouterLink>
           </li>
 
-          <li class="nav-item dropdown">
+          <!-- <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#navbar-help" data-bs-toggle="dropdown" data-bs-auto-close="outside" role="button" aria-expanded="false">
               <span class="nav-link-icon d-md-none d-lg-inline-block">
                 <IconUsersPlus class="icon" />
@@ -93,22 +92,27 @@
           </li>
 
           <li class="nav-item">
-            <RouterLink to="/boleta" class="nav-link">
+            <RouterLink to="/nuevo" class="nav-link">
               <span class="nav-link-icon d-md-none d-lg-inline-block">
                 <IconBuildingArch class="icon" />
               </span>
               <span class="nav-link-title fw-medium"> Boleta </span>
             </RouterLink>
-          </li>
+          </li> -->
         </ul>
       </div>
     </div>
+    <Pass />
   </header>
 </template>
 <script setup lang="ts">
-import { IconBuildingArch, IconHome, IconMenu4, IconMoodSearch, IconUsersPlus } from '@tabler/icons-vue'
+import { IconBuildingArch, IconHome, IconMenu4, IconMoodSearch } from '@tabler/icons-vue'
 import Notificaciones from './notificaciones.vue'
 import { router } from '@router/router'
+import { userStore } from '@store/user'
+import Pass from './pass.vue'
+
+const store = userStore()
 
 const logout = () => {
   localStorage.clear()

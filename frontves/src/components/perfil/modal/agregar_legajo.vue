@@ -1,5 +1,14 @@
 <template>
-  <div id="add_legajo" ref="modalRef" class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div
+    :id="`add_legajo-${index}`"
+    ref="modalRef"
+    class="modal fade"
+    data-bs-backdrop="static"
+    data-bs-keyboard="false"
+    tabindex="-1"
+    aria-labelledby="staticBackdropLabel"
+    aria-hidden="true"
+  >
     >
     <div class="modal-dialog">
       <div class="modal-content border-0 shadow">
@@ -142,7 +151,8 @@ const addnombre = (x: any) => {
 const prop = defineProps({
   prestado: { type: Boolean, default: false },
   usuario: { type: String, default: '' },
-  create: { type: String }
+  create: { type: String },
+  index: { type: Number, default: 1 }
 })
 
 const send = async () => {

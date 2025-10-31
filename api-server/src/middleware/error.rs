@@ -45,3 +45,9 @@ impl ResponseError for ApiError {
         }
     }
 }
+
+impl From<sqlx::Error> for ApiError {
+    fn from(error: sqlx::Error) -> Self {
+        ApiError::InternalError(500, format!("Error en la base de datos: {}", error))
+    }
+}

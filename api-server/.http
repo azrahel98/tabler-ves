@@ -1,12 +1,12 @@
 @baseUrl = http://127.0.0.1:8080
 @contentType = application/json
-@TokenHash = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MywiZXhwIjoxNzUzMzY5MzE1LCJsdmwiOjMsIm5vbWJyZSI6IlJhdWwgMiJ9.QXUNIC_MbCTO4S2yTf-Go645BFs0oJVdAbVPj72E7eY
+@TokenHash = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MywiZXhwIjoxNzYwMzIwNTg0LCJsdmwiOjMsIm5vbWJyZSI6IlJhdWwgMiJ9.eFokOGaBKZugtRa6fAYp0e3dHLoJXjyqszyLu7e75Fs
 POST {{baseUrl}}/login/
 Content-Type: {{contentType}}
 
 {
-    "username": "rscl2",
-    "password":"unodos",
+    "username": "rscl",
+    "password":"unodostres",
     "asdf":2
 }
 
@@ -52,4 +52,15 @@ Token: {{TokenHash}}
     "dni":"70247264",
     "mes":1,
     "año":2025
+}
+
+##########
+POST {{baseUrl}}/login/changepass
+Content-Type: application/json
+Token: {{TokenHash}}
+
+{
+  "oldpass": "asdf",
+  "newpass": "unodos",
+  "id": 2
 }

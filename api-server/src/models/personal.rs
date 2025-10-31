@@ -22,8 +22,7 @@ pub struct Perfil {
     pub nacimiento: NaiveDate,
     pub sexo: Option<String>,
 }
-
-#[derive(Serialize)]
+#[derive(Serialize, Deserialize)]
 pub struct Vinculos {
     pub id: i32,
     pub dni: String,
@@ -35,12 +34,20 @@ pub struct Vinculos {
     pub cargo: String,
     pub regimen: Option<String>,
     pub sueldo: Option<f64>,
+    pub codigo: Option<String>,
+    pub cargo_estructural: Option<String>,
+    pub grupo_ocupacional: Option<String>,
     pub estado: String,
     pub doc_salida: Option<String>,
     pub descrip_salida: Option<String>,
     pub fecha_salida: Option<NaiveDate>,
     pub numero_doc_salida: Option<String>,
     pub sindicato: Option<String>,
+    pub tipo_evento: Option<String>,
+    pub estado_evento: Option<String>,
+    pub doc_evento_tipo: Option<String>,
+    pub numero_doc_evento: Option<i32>,
+    pub fecha_evento: Option<NaiveDate>,
 }
 
 #[derive(Debug, Serialize, Deserialize, FromRow)]
@@ -104,6 +111,8 @@ pub struct DocumentoSindicato {
     pub descripcion: String,
     pub sindicato: i32,
     pub id_vinculo: i32,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub dni: Option<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize, FromRow)]
@@ -132,4 +141,3 @@ pub struct ContactoEmergencia {
     pub relacion: String,
     pub telefono: Option<String>,
 }
-

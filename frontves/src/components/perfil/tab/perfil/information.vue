@@ -1,166 +1,190 @@
 <template>
-  <div class="card">
-    <div class="card-header border-0 pb-0">
+  <div class="card shadow-sm">
+    <div class="card-header bg-white border-0 pb-0">
       <div class="d-flex align-items-center justify-content-between w-100">
         <div class="d-flex align-items-center">
-          <IconUserEdit class="icon me-2 text-primary" />
+          <IconUserEdit class="me-2 text-primary" :size="24" />
           <div>
-            <h3 class="card-title mb-0">Información Básica</h3>
-            <p class="text-secondary mb-0 small">Actualiza tu información personal</p>
+            <h3 class="card-title mb-0 h5">Información Básica</h3>
+            <p class="text-muted mb-0 small">Actualiza tu información personal</p>
           </div>
         </div>
-        <div class="d-flex gap-2">
-          <div v-if="!store.isUser" class="form-check form-switch">
-            <input class="form-check-input" type="checkbox" v-model="editMode" :disabled="loading" />
-            <label class="form-check-label text-secondary">
-              {{ editMode ? 'Modo edición' : 'Solo lectura' }}
-            </label>
-          </div>
+        <div v-if="!store.isUser" class="form-check form-switch">
+          <input id="editModeSwitch" v-model="isEditMode" class="form-check-input" type="checkbox" :disabled="isLoading" role="switch" />
+          <label class="form-check-label text-muted" for="editModeSwitch">
+            {{ isEditMode ? 'Modo edición' : 'Solo lectura' }}
+          </label>
         </div>
       </div>
     </div>
 
     <div class="card-body">
+      <!-- Alert de Error General -->
       <div v-if="generalError" class="alert alert-danger alert-dismissible fade show" role="alert">
-        <div class="d-flex align-items-center">
-          <IconAlertCircle class="icon alert-icon me-2" />
-
-          <div>{{ generalError }}</div>
+        <div class="d-flex align-items-start">
+          <IconAlertCircle class="me-2 flex-shrink-0" :size="20" />
+          <div class="flex-grow-1">{{ generalError }}</div>
         </div>
-        <button type="button" class="btn-close" @click="generalError = ''" aria-label="Close"></button>
+        <button type="button" class="btn-close" @click="clearGeneralError" aria-label="Cerrar"></button>
       </div>
 
-      <form @submit.prevent="guardar(perfil)">
+      <!-- Formulario -->
+      <form @submit.prevent="handleSubmit" novalidate>
         <div class="row g-3">
-          <div class="col-md-12">
-            <label class="form-label" :class="{ 'required ': editMode }">
-              <MapPin class="icon" :class="editMode ? 'text-red icon-sm me-1' : 'text-blue'" />
+          <div class="col-12">
+            <label for="direccion" class="form-label mb-1" :class="{ 'fw-semibold': isEditMode }">
+              <MapPin class="me-1" :size="16" :class="isEditMode ? 'text-danger' : 'text-primary'" />
               Dirección
+              <span v-if="isEditMode" class="text-danger">*</span>
             </label>
-            <div class="input-group" v-if="editMode">
-              <span class="input-group-text">
-                <MapPin class="icon icon-sm" />
+            <div v-if="isEditMode" class="input-group">
+              <span class="input-group-text bg-light">
+                <MapPin :size="18" />
               </span>
               <input
+                id="direccion"
+                v-model.trim="formData.direccion"
                 type="text"
-                v-model="perfil.direccion"
                 placeholder="Ingresa tu dirección completa"
                 class="form-control"
-                :class="{ 'is-invalid': errors?.direccion }"
-                :disabled="!editMode || loading"
-                @blur="validateField('direccion')"
+                :class="{ 'is-invalid': fieldErrors.direccion }"
+                :disabled="isLoading"
+                :aria-describedby="fieldErrors.direccion ? 'direccion-error' : undefined"
+                @blur="validateSingleField('direccion')"
               />
-              <div v-if="errors?.direccion" class="invalid-feedback">
-                <div v-for="error in errors.direccion._errors" :key="error">
-                  {{ error }}
-                </div>
+              <div v-if="fieldErrors.direccion" id="direccion-error" class="invalid-feedback">
+                {{ fieldErrors.direccion }}
               </div>
             </div>
-            <div v-else>
-              <strong class="text-hint fw-normal">{{ perfil.direccion }}</strong>
+            <div v-else class="mt-0">
+              <span class="text-body">{{ formData.direccion || '—' }}</span>
             </div>
           </div>
 
           <div class="col-md-6">
-            <label class="form-label" :class="{ required: editMode }">
-              <Phone class="icon" :class="editMode ? 'text-red icon-sm me-1' : 'text-blue'" />
+            <label for="telf" class="form-label mb-1" :class="{ 'fw-semibold': isEditMode }">
+              <Phone class="me-1" :size="16" :class="isEditMode ? 'text-danger' : 'text-primary'" />
               Teléfono
+              <span v-if="isEditMode" class="text-danger">*</span>
             </label>
-            <div v-if="editMode">
+            <div v-if="isEditMode">
               <div class="input-group">
-                <span class="input-group-text">
-                  <Phone class="icon icon-sm" />
+                <span class="input-group-text bg-light">
+                  <Phone :size="18" />
                 </span>
                 <input
+                  id="telf"
+                  v-model="formData.telf"
                   type="tel"
-                  v-model="perfil.telf"
                   placeholder="999 999 999"
                   class="form-control"
-                  :class="{ 'is-invalid': errors?.telf }"
-                  :disabled="!editMode || loading"
+                  :class="{ 'is-invalid': fieldErrors.telf }"
+                  :disabled="isLoading"
                   maxlength="9"
-                  @input="formatPhone"
-                  @blur="validateField('telf')"
+                  inputmode="numeric"
+                  pattern="[0-9]*"
+                  :aria-describedby="fieldErrors.telf ? 'telf-error' : 'telf-help'"
+                  @input="handlePhoneInput"
+                  @blur="validateSingleField('telf')"
                 />
-                <div v-if="errors?.telf" class="invalid-feedback">
-                  <div v-for="error in errors.telf._errors" :key="error">
-                    {{ error }}
-                  </div>
+                <div v-if="fieldErrors.telf" id="telf-error" class="invalid-feedback">
+                  {{ fieldErrors.telf }}
                 </div>
               </div>
-              <div class="small text-secondary" v-if="editMode">Formato: 9 dígitos sin espacios</div>
+              <small id="telf-help" class="form-text text-muted"> Formato: 9 dígitos sin espacios </small>
             </div>
-            <div v-else>
-              <strong class="text-hint fw-normal">{{ perfil.telf }}</strong>
+            <div v-else class="mt-1">
+              <span class="text-body">{{ formData.telf || '—' }}</span>
             </div>
           </div>
 
           <div class="col-md-6">
-            <label class="form-label" :class="{ required: editMode }">
-              <Mail class="icon" :class="editMode ? 'text-red icon-sm me-1' : 'text-blue'" />
+            <label for="email" class="form-label mb-1" :class="{ 'fw-semibold': isEditMode }">
+              <Mail class="me-1" :size="16" :class="isEditMode ? 'text-danger' : 'text-primary'" />
               Correo Electrónico
+              <span v-if="isEditMode" class="text-danger">*</span>
             </label>
-            <div class="input-group" v-if="editMode">
-              <span class="input-group-text">
-                <Mail class="icon icon-sm" />
+            <div v-if="isEditMode" class="input-group">
+              <span class="input-group-text bg-light">
+                <Mail :size="18" />
               </span>
               <input
+                id="email"
+                v-model.trim="formData.email"
                 type="email"
-                v-model="perfil.email"
                 placeholder="ejemplo@correo.com"
                 class="form-control"
-                :class="{ 'is-invalid': errors?.email }"
-                :disabled="!editMode || loading"
-                @blur="validateField('email')"
+                :class="{ 'is-invalid': fieldErrors.email }"
+                :disabled="isLoading"
+                autocomplete="email"
+                :aria-describedby="fieldErrors.email ? 'email-error' : undefined"
+                @blur="validateSingleField('email')"
               />
-              <div v-if="errors?.email" class="invalid-feedback">
-                <div v-for="error in errors.email._errors" :key="error">
-                  {{ error }}
-                </div>
+              <div v-if="fieldErrors.email" id="email-error" class="invalid-feedback">
+                {{ fieldErrors.email }}
               </div>
             </div>
-            <div v-else>
-              <strong class="text-hint fw-normal">{{ perfil.email }}</strong>
+            <div v-else class="mt-1">
+              <span class="text-body">{{ formData.email || '—' }}</span>
             </div>
           </div>
 
           <div class="col-md-6">
-            <label class="form-label">
-              <FileText class="icon icon-sm me-1 text-secondary" />
+            <label for="ruc" class="form-label mb-0" :class="{ 'fw-semibold': isEditMode }">
+              <FileText class="me-1 text-muted" :size="16" />
               RUC
-              <span class="text-secondary" v-if="editMode">(Opcional)</span>
+              <span v-if="isEditMode" class="text-muted small">(Opcional)</span>
             </label>
-            <div v-if="editMode">
+            <div v-if="isEditMode">
               <div class="input-group">
-                <span class="input-group-text">
-                  <FileText class="icon" :class="editMode ? 'text-red icon-sm me-1' : 'text-blue'" />
+                <span class="input-group-text bg-light">
+                  <FileText :size="18" />
                 </span>
-                <input type="text" v-model="perfil.ruc" placeholder="20123456789" class="form-control" :disabled="!editMode || loading" maxlength="11" />
+                <input
+                  id="ruc"
+                  v-model="formData.ruc"
+                  type="text"
+                  placeholder="20123456789"
+                  class="form-control"
+                  :class="{ 'is-invalid': fieldErrors.ruc }"
+                  :disabled="isLoading"
+                  maxlength="11"
+                  inputmode="numeric"
+                  pattern="[0-9]*"
+                  :aria-describedby="fieldErrors.ruc ? 'ruc-error' : 'ruc-help'"
+                  @input="handleRucInput"
+                  @blur="validateSingleField('ruc')"
+                />
+                <div v-if="fieldErrors.ruc" id="ruc-error" class="invalid-feedback">
+                  {{ fieldErrors.ruc }}
+                </div>
               </div>
-              <div class="text-secondary small" v-if="editMode">RUC de 11 dígitos (opcional)</div>
+              <small id="ruc-help" class="form-text text-muted"> RUC de 11 dígitos (opcional) </small>
             </div>
-            <div v-else>
-              <strong class="text-hint fw-normal">{{ perfil.ruc }}</strong>
+            <div v-else class="mt-1">
+              <span class="text-body">{{ formData.ruc || '—' }}</span>
             </div>
           </div>
         </div>
 
-        <div class="mt-4 d-flex justify-content-between align-items-center" v-if="editMode">
-          <div class="text-secondary small">
-            <IconAlertCircle class="icon icon-sm" />
-            Los campos marcados con * son obligatorios
-          </div>
+        <div v-if="isEditMode && !store.isUser" class="mt-4 pt-3 border-top">
+          <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <small class="text-muted d-flex align-items-center">
+              <IconAlertCircle class="me-1" :size="16" />
+              Los campos marcados con * son obligatorios
+            </small>
 
-          <div class="d-flex gap-2" v-if="editMode && !store.isUser">
-            <button type="button" class="btn btn-secondary fs-5 p-1 px-2" @click="cancelarEdicion" :disabled="loading">
-              <IconX class="icon" />
-              Cancelar
-            </button>
-            <button type="submit" class="btn btn-primary fs-5 p-1 px-2" :disabled="loading">
-              <span v-if="loading" class="spinner-border spinner-border-sm me-2" role="status"></span>
-              <IconCheck class="icon" />
-              {{ loading ? 'Guardando...' : 'Guardar Cambios' }}
-            </button>
+            <div class="d-flex gap-2">
+              <button type="button" class="btn btn-outline-secondary" @click="handleCancel" :disabled="isLoading">
+                <IconX class="me-1" :size="18" />
+                Cancelar
+              </button>
+              <button type="submit" class="btn btn-primary" :disabled="isLoading || !isFormValid">
+                <span v-if="isLoading" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                <IconCheck v-else class="me-1" :size="18" />
+                {{ isLoading ? 'Guardando...' : 'Guardar Cambios' }}
+              </button>
+            </div>
           </div>
         </div>
       </form>
@@ -169,129 +193,166 @@
 </template>
 
 <script setup lang="ts">
+import { computed, reactive, ref, watch } from 'vue'
 import { FileText, Mail, MapPin, Phone } from 'lucide-vue-next'
 import { IconAlertCircle, IconCheck, IconUserEdit, IconX } from '@tabler/icons-vue'
+import { z } from 'zod'
 import { userStore } from '../../../../store/user'
+import { useProfileStore } from '@store/perfil'
 import { api } from '@api/axios'
 import { router } from '@router/router'
-import { ref } from 'vue'
-import { z } from 'zod'
 
-const store = userStore()
-const editMode = ref(false)
-const loading = ref(false)
+interface PerfilData {
+  direccion: string
+  telf: string
+  email: string
+  ruc?: string | null
+}
 
-const generalError = ref('')
+// const props = defineProps<{
+//   perfil: PerfilData
+// }>()
 
 const props = defineProps({
-  perfil: {
-    type: Object,
-    required: true
-  }
+  perfil: { type: Object, required: true }
 })
 
-const schema_validate = z.object({
-  telf: z
-    .union([z.string({ message: 'Se espera un telefono' }), z.number({ message: '' })])
-    .refine((val) => /^\d{9}$/.test(String(val)), {
-      message: 'El teléfono debe tener exactamente 9 dígitos'
-    })
-    .transform((val) => String(val)),
-  direccion: z.string({ message: 'Se espera una direccion' }).min(5, 'La dirección debe tener al menos 5 caracteres').max(200, 'La dirección no puede exceder 200 caracteres'),
-  email: z.string({ message: 'Se espera un correo electronico' }).email('Ingresa un correo electrónico válido').max(100, 'El correo no puede exceder 100 caracteres'),
+const store = userStore()
+const profileStore = useProfileStore()
+
+const isEditMode = ref(false)
+const isLoading = ref(false)
+const generalError = ref('')
+
+const validationSchema = z.object({
+  telf: z.string({ required_error: 'El teléfono es requerido' }).regex(/^\d{9}$/, 'El teléfono debe tener exactamente 9 dígitos'),
+  direccion: z
+    .string({ required_error: 'La dirección es requerida' })
+    .min(5, 'La dirección debe tener al menos 5 caracteres')
+    .max(200, 'La dirección no puede exceder 200 caracteres'),
+  email: z.string({ required_error: 'El correo electrónico es requerido' }).email('Ingresa un correo electrónico válido').max(100, 'El correo no puede exceder 100 caracteres'),
   ruc: z
     .string()
-    .nullable()
+    .regex(/^\d{11}$/, 'El RUC debe tener exactamente 11 dígitos')
     .optional()
-    .refine((val) => !val || /^\d{11}$/.test(val), {
-      message: 'El RUC debe tener exactamente 11 dígitos'
-    })
+    .or(z.literal(''))
 })
 
-type schema_validateType = z.infer<typeof schema_validate>
-type FormattedErrors = Partial<z.ZodFormattedError<schema_validateType>>
+type ValidationSchema = z.infer<typeof validationSchema>
+type FieldName = keyof ValidationSchema
 
-const errors = ref<FormattedErrors | null>(null)
+const formData = reactive<PerfilData>({
+  direccion: props.perfil.direccion,
+  telf: props.perfil.telf,
+  email: props.perfil.email,
+  ruc: props.perfil.ruc || ''
+})
 
-const fieldNames = ['telf', 'direccion', 'email', 'ruc'] as const
-type FieldName = (typeof fieldNames)[number]
+const fieldErrors = reactive<Partial<Record<FieldName, string>>>({})
 
-const validateField = (fieldName: FieldName) => {
-  try {
-    const singleFieldSchema = z.object({
-      [fieldName]: schema_validate.shape[fieldName]
-    } as Pick<typeof schema_validate.shape, FieldName>)
+const isFormValid = computed(() => {
+  const result = validationSchema.safeParse(formData)
+  return result.success
+})
 
-    singleFieldSchema.parse({ [fieldName]: props.perfil[fieldName] })
-
-    if (errors.value?.[fieldName]) {
-      delete errors.value[fieldName]
-      if (Object.keys(errors.value).length === 0) {
-        errors.value = null
-        generalError.value = ''
-      }
+watch(
+  () => props.perfil,
+  (newPerfil) => {
+    if (!isEditMode.value) {
+      Object.assign(formData, {
+        direccion: newPerfil.direccion,
+        telf: newPerfil.telf,
+        email: newPerfil.email,
+        ruc: newPerfil.ruc || ''
+      })
     }
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      const formatted = error.format() as z.ZodFormattedError<schema_validateType>
+  },
+  { deep: true }
+)
 
-      if (!errors.value) {
-        errors.value = {}
-      }
-
-      if (formatted[fieldName]) {
-        errors.value[fieldName] = formatted[fieldName]
-        generalError.value = 'Corrige los errores en el formulario'
-      }
-    }
-  }
-}
-
-const emit = defineEmits(['update:perfil'])
-
-const formatPhone = (event: Event) => {
-  const target = event.target as HTMLInputElement
-  let value = target.value.replace(/\D/g, '').slice(0, 9)
-  props.perfil.telf = value
-}
-
-const cancelarEdicion = () => {
-  editMode.value = false
-  errors.value = null
-  emit('update:perfil', true)
+const clearGeneralError = () => {
   generalError.value = ''
 }
 
-const guardar = async (user: any) => {
+const validateSingleField = (fieldName: FieldName) => {
   try {
-    loading.value = true
-    errors.value = null
-    generalError.value = ''
+    const fieldSchema = validationSchema.shape[fieldName]
+    fieldSchema.parse(formData[fieldName])
+    delete fieldErrors[fieldName]
 
-    const valid = schema_validate.safeParse(user)
+    if (Object.keys(fieldErrors).length === 0) {
+      clearGeneralError()
+    }
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      fieldErrors[fieldName] = error.errors[0]?.message || 'Error de validación'
+      generalError.value = 'Corrige los errores en el formulario'
+    }
+  }
+}
 
-    if (!valid.success) {
-      errors.value = valid.error.format()
+const handlePhoneInput = (event: Event) => {
+  const target = event.target as HTMLInputElement
+  const cleaned = target.value.replace(/\D/g, '').slice(0, 9)
+  formData.telf = cleaned
+}
+
+const handleRucInput = (event: Event) => {
+  const target = event.target as HTMLInputElement
+  const cleaned = target.value.replace(/\D/g, '').slice(0, 11)
+  formData.ruc = cleaned
+}
+
+const handleCancel = () => {
+  Object.assign(formData, {
+    direccion: props.perfil.direccion,
+    telf: props.perfil.telf,
+    email: props.perfil.email,
+    ruc: props.perfil.ruc || ''
+  })
+
+  Object.keys(fieldErrors).forEach((key) => delete fieldErrors[key as FieldName])
+  clearGeneralError()
+
+  isEditMode.value = false
+}
+
+const handleSubmit = async () => {
+  try {
+    isLoading.value = true
+    Object.keys(fieldErrors).forEach((key) => delete fieldErrors[key as FieldName])
+    clearGeneralError()
+
+    const validationResult = validationSchema.safeParse(formData)
+
+    if (!validationResult.success) {
+      validationResult.error.errors.forEach((error) => {
+        const fieldName = error.path[0] as FieldName
+        fieldErrors[fieldName] = error.message
+      })
       generalError.value = 'Por favor, corrige los errores en el formulario'
       return
     }
 
-    await api.post('/personal/editar_por_dni', {
+    const dataToSend = {
       dni: router.currentRoute.value.params.dni,
-      telf: user.telf,
-      direccion: user.direccion,
-      email: user.email,
-      ruc: user.ruc || null,
+      telf: formData.telf,
+      direccion: formData.direccion,
+      email: formData.email,
+      ruc: formData.ruc || null,
       nacimiento: '2025-01-01'
-    })
+    }
 
-    editMode.value = false
+    await api.post('/personal/editar_por_dni', dataToSend)
+
+    isEditMode.value = false
+
+    await profileStore.update_perfil(router.currentRoute.value.params.dni as string)
   } catch (error: any) {
     console.error('Error al guardar:', error)
-    generalError.value = error.response?.data?.message || 'Error al guardar la información. Inténtalo nuevamente.'
+    generalError.value = error.response?.data?.message || 'Error al guardar la información. Por favor, inténtalo nuevamente.'
   } finally {
-    loading.value = false
-    emit('update:perfil', true)
+    isLoading.value = false
   }
 }
 </script>

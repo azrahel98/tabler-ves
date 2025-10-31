@@ -1,7 +1,7 @@
 <template>
   <div class="card">
     <div class="card-header d-flex flex-wrap align-items-center justify-content-between">
-      <h3 class="card-title mb-0">Órganos / Unidades</h3>
+      <h3 class="card-title mb-0">Reporte de Legajos</h3>
       <div class="ms-auto">
         <div class="input-icon">
           <span class="input-icon-addon">
@@ -15,15 +15,17 @@
     <div class="card-body card-body-scrollable card-body-scrollable-shadow p-0">
       <table class="table table-vcenter card-table table-hover">
         <thead>
-          <tr>
+          <tr class="text-center">
             <th class="w-1">#</th>
-            <th>Órgano / Unidad</th>
-            <th class="text-center">Cantidad</th>
+            <th>Legajo</th>
+            <th></th>
+            <th>Usuario</th>
+            <th class="text-center">#</th>
           </tr>
         </thead>
         <tbody>
           <tr v-if="filteredRows.length === 0">
-            <td colspan="3">
+            <td colspan="5">
               <div class="empty">
                 <div class="empty-icon">
                   <IconMoodEmpty class="icon" />
@@ -39,8 +41,22 @@
 
           <tr v-for="(item, index) in filteredRows" :key="index" style="cursor: pointer">
             <td class="text-secondary">{{ index + 1 }}</td>
-            <td class="text-uppercase fs-5">{{ item.nombre }}</td>
-            <td class="text-secondary text-center">{{ item.cantidad }}</td>
+            <td class="text-uppercase fs-5 fw-medium" @click="() => router.push({ name: 'perfil', params: { dni: item.dni } })" role="button">{{ item.nombre }}</td>
+            <td class="text-secondary text-center">{{ item.persona }}</td>
+            <td class="text-secondary text-center">{{ item.usuario }}</td>
+            <td class="">
+              <button
+                class="btn-sm btn btn-icon"
+                v-if="store.id == item.userid"
+                data-bs-toggle="modal"
+                :data-bs-target="`#add_legajo-${index}`"
+                aria-label="Gestionar legajo"
+                title="Gestionar legajo"
+              >
+                <IconEdit class="mx-2" :size="17" />
+              </button>
+            </td>
+            <modalLegajo :prestado="true" :usuario="item.persona" :create="item.fecha" :index="index" />
           </tr>
         </tbody>
       </table>
@@ -49,18 +65,17 @@
 </template>
 
 <script setup lang="ts">
-import { IconMoodEmpty, IconSearch } from '@tabler/icons-vue'
+import { userStore } from '@store/user'
+import { IconEdit, IconMoodEmpty, IconSearch } from '@tabler/icons-vue'
 import { ref, computed } from 'vue'
+import modalLegajo from '@comp/perfil/modal/agregar_legajo.vue'
+import { router } from '@router/router'
 
-interface RowData {
-  nombre: string
-  cantidad: number
-}
+const props = defineProps({
+  rows: { type: Array<any>, required: true }
+})
 
-const props = defineProps<{
-  rows: RowData[]
-}>()
-
+const store = userStore()
 const searchTerm = ref('')
 
 const filteredRows = computed(() => {
@@ -69,7 +84,7 @@ const filteredRows = computed(() => {
 
   const term = searchTerm.value.toLowerCase()
   return props.rows.filter((item) => {
-    return (item.nombre && item.nombre.toLowerCase().includes(term)) || (item.cantidad && String(item.cantidad).includes(term))
+    return (item.nombre && item.nombre.toLowerCase().includes(term)) || (item.persona && String(item.persona).includes(term))
   })
 })
 

@@ -42,18 +42,25 @@
           <div class="col-md-12 col-lg-8">
             <cumpleañosCard />
           </div>
+          <div class="col-4">
+            <div class="row row-gap-3">
+              <div class="col-12">
+                <Card_Renuncias :data="renuncias" :total="renuncias.reduce((acc: any, x: any) => acc + x.cantidad, 0)" :funcion="export_renuncias" />
+              </div>
+            </div>
+          </div>
+          <div class="col-8">
+            <Card_legajos :rows="legajos" />
+          </div>
         </div>
       </div>
-      <!-- <div class="tres">
-        <div class="row row-cards">
-          <div class="col-md-12 col-sm-12 col-lg-7">
+      <div class="tres">
+        <div class="row">
+          <div class="col-12">
             <areasresumen :rows="areas" />
           </div>
-          <div class="col-md-12 col-sm-12 col-lg-5">
-            <Card_personal :data="renuncias" :total="renuncias.reduce((acc: any, x: any) => acc + x.cantidad, 0)" />
-          </div>
         </div>
-      </div> -->
+      </div>
     </div>
   </div>
   <areaLoading v-show="!isloading" />
@@ -65,13 +72,18 @@ import card_info from '@comp/main/card_info.vue'
 import regimenesMedia from '@comp/main/card_regimen.vue'
 import cumpleañosCard from '@comp/main/card_cumples.vue'
 import areaLoading from '@comp/loading.vue'
+import areasresumen from '@comp/main/card_area.vue'
+import Card_Renuncias from '@comp/main/card_personal.vue'
+
 import { IconBrandMinecraft, IconBuilding, IconUsersGroup, IconWoman } from '@tabler/icons-vue'
 
 import * as XLSX from 'xlsx'
+import Card_legajos from '@comp/main/card_legajos.vue'
 
 const info = ref<any>([])
 const renuncias = ref<any>([])
 const areas = ref<any>([])
+const legajos = ref<any>([])
 
 const isloading = ref(false)
 
@@ -80,6 +92,7 @@ onMounted(async () => {
     info.value = await (await api.post('/dash/info')).data
     areas.value = await (await api.post('/dash/area_report')).data
     renuncias.value = await (await api.post('/dash/renuncias')).data
+    legajos.value = await (await api.post('/dash/reporte_legajos')).data
     isloading.value = true
   } catch (error) {
     console.log(error)
@@ -100,6 +113,29 @@ const export_activos = async () => {
     const a = document.createElement('a')
     a.href = url
     a.download = `trabajadores_activos.xlsx`
+    document.body.appendChild(a)
+    a.click()
+    URL.revokeObjectURL(url)
+    document.body.removeChild(a)
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+const export_renuncias = async () => {
+  try {
+    const data = await (await api.post('/dash/reporte_renuncias')).data
+    const worksheet = XLSX.utils.json_to_sheet(data)
+    const workbook = XLSX.utils.book_new()
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Datos')
+    const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' })
+    const blob = new Blob([excelBuffer], {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `renuncias.xlsx`
     document.body.appendChild(a)
     a.click()
     URL.revokeObjectURL(url)
