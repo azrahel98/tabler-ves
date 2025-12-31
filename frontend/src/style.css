@@ -1,0 +1,367 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+
+  /* Nexus Brand Colors */
+  --color-nexus-primary: var(--nexus-primary);
+  --color-nexus-purple-light: var(--nexus-purple-light);
+  --color-nexus-blue: var(--nexus-blue);
+  --color-nexus-teal: var(--nexus-teal);
+
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --radius: 1rem;
+
+  /* Adding comprehensive spacing scale */
+  --spacing-xs: 0.25rem; /* 4px */
+  --spacing-sm: 0.5rem; /* 8px */
+  --spacing-md: 1rem; /* 16px */
+  --spacing-lg: 1.5rem; /* 24px */
+  --spacing-xl: 2rem; /* 32px */
+  --spacing-2xl: 3rem; /* 48px */
+  --spacing-3xl: 4rem; /* 64px */
+
+  /* Adding typography scale - Minimalist Update */
+  --font-size-xs: 0.7rem; /* ~11px */
+  --font-size-sm: 0.8rem; /* ~12.8px */
+  --font-size-base: 0.875rem; /* 14px */
+  --font-size-lg: 1rem; /* 16px */
+  --font-size-xl: 1.125rem; /* 18px */
+  --font-size-2xl: 1.25rem; /* 20px */
+  --font-size-3xl: 1.5rem; /* 24px */
+  --font-size-4xl: 1.875rem; /* 30px */
+
+  /* Adding line heights */
+  --line-height-tight: 1.25;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.75;
+
+  /* Adding font weights */
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* Adding shadows */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+
+  /* Adding transitions */
+  --transition-fast: 150ms;
+  --transition-base: 200ms;
+  --transition-slow: 300ms;
+}
+
+:root {
+  /* Brand Colors from Guide */
+  --nexus-primary: #5347ce; /* Deep Purple */
+  --nexus-purple-light: #887cfd; /* Lavender */
+  --nexus-blue: #4896fe; /* Sky Blue */
+  --nexus-teal: #16c8c7; /* Teal/Cyan */
+
+  --background: #f5f7fa;
+  --foreground: #1a1a1a;
+
+  --card: #ffffff;
+  --card-foreground: #1a1a1a;
+
+  --popover: #ffffff;
+  --popover-foreground: #1a1a1a;
+
+  --primary: #5347ce;
+  --primary-foreground: #ffffff;
+
+  --secondary: #f0f2f5;
+  --secondary-foreground: #1a1a1a;
+
+  --muted: #f0f2f5;
+  --muted-foreground: #6b7280;
+
+  --accent: #f0f2f5;
+  --accent-foreground: #1a1a1a;
+
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+
+  /* Adding success and warning colors */
+  --success: #10b981;
+  --success-foreground: #ffffff;
+
+  --warning: #f59e0b;
+  --warning-foreground: #ffffff;
+
+  --info: #3b82f6;
+  --info-foreground: #ffffff;
+
+  --border: #e5e7eb;
+  --input: #e5e7eb;
+  --ring: #5347ce;
+
+  --radius: 1rem;
+
+  --sidebar: #ffffff;
+  --sidebar-foreground: #64748b;
+  --sidebar-primary: #5347ce;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #f1f5f9;
+  --sidebar-accent-foreground: #1e293b;
+  --sidebar-border: #e2e8f0;
+  --sidebar-ring: #5347ce;
+}
+
+.dark {
+  --background: #0f172a;
+  --foreground: #f8fafc;
+
+  --card: #1e293b;
+  --card-foreground: #f8fafc;
+
+  --popover: #1e293b;
+  --popover-foreground: #f8fafc;
+
+  --primary: #5347ce;
+  --primary-foreground: #ffffff;
+
+  --secondary: #334155;
+  --secondary-foreground: #f8fafc;
+
+  --muted: #334155;
+  --muted-foreground: #94a3b8;
+
+  --accent: #334155;
+  --accent-foreground: #f8fafc;
+
+  --destructive: #7f1d1d;
+  --destructive-foreground: #f8fafc;
+
+  /* Adding dark mode status colors */
+  --success: #059669;
+  --success-foreground: #f8fafc;
+
+  --warning: #d97706;
+  --warning-foreground: #f8fafc;
+
+  --info: #2563eb;
+  --info-foreground: #f8fafc;
+
+  --border: #334155;
+  --input: #334155;
+  --ring: #5347ce;
+
+  --sidebar: #0f172a;
+  --sidebar-foreground: #94a3b8;
+  --sidebar-primary: #5347ce;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #1e293b;
+  --sidebar-accent-foreground: #f8fafc;
+  --sidebar-border: #1e293b;
+  --sidebar-ring: #5347ce;
+}
+
+/* Custom Utilities for charts and brand elements */
+.text-nexus-primary {
+  color: var(--nexus-primary);
+}
+.bg-nexus-primary {
+  background-color: var(--nexus-primary);
+}
+
+.text-nexus-purple-light {
+  color: var(--nexus-purple-light);
+}
+.bg-nexus-purple-light {
+  background-color: var(--nexus-purple-light);
+}
+
+.text-nexus-blue {
+  color: var(--nexus-blue);
+}
+.bg-nexus-blue {
+  background-color: var(--nexus-blue);
+}
+
+.text-nexus-teal {
+  color: var(--nexus-teal);
+}
+.bg-nexus-teal {
+  background-color: var(--nexus-teal);
+}
+
+/* Adding base typography and layout styles */
+body {
+  font-feature-settings: 'rlig' 1, 'calt' 1;
+  line-height: var(--line-height-normal);
+  font-size: var(--font-size-base);
+  color: var(--foreground);
+  background-color: var(--background);
+}
+
+/* Adding heading styles */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-tight);
+  color: var(--foreground);
+}
+
+h1 {
+  font-size: var(--font-size-4xl);
+}
+
+h2 {
+  font-size: var(--font-size-3xl);
+}
+
+h3 {
+  font-size: var(--font-size-2xl);
+}
+
+h4 {
+  font-size: var(--font-size-xl);
+}
+
+h5 {
+  font-size: var(--font-size-lg);
+}
+
+h6 {
+  font-size: var(--font-size-base);
+}
+
+/* Adding utility classes for consistent spacing */
+.container-padding {
+  padding: var(--spacing-lg);
+}
+
+.section-spacing {
+  margin-bottom: var(--spacing-xl);
+}
+
+.card-padding {
+  padding: var(--spacing-lg);
+}
+
+/* Adding utility classes for status colors */
+.text-success {
+  color: var(--success);
+}
+
+.bg-success {
+  background-color: var(--success);
+}
+
+.text-warning {
+  color: var(--warning);
+}
+
+.bg-warning {
+  background-color: var(--warning);
+}
+
+.text-info {
+  color: var(--info);
+}
+
+.bg-info {
+  background-color: var(--info);
+}
+
+/* Adding smooth transitions for interactive elements */
+button,
+a,
+input,
+select,
+textarea {
+  transition-duration: var(--transition-base);
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Adding focus styles for accessibility */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+::-webkit-scrollbar {
+  width: 4px;
+  height: 2px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #e1e2e4;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--background);
+}
+
+/* V-Calendar Fixes */
+.vc-popover-content-wrapper, .vc-popover-content {
+  background-color: var(--popover) !important;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-lg);
+}
+.vc-container {
+  background-color: transparent !important;
+  border: none !important;
+}
+.dark .vc-popover-content-wrapper, .dark .vc-popover-content {
+  background-color: var(--popover) !important;
+  border-color: var(--border);
+  color: var(--popover-foreground);
+}
+.vc-nav-popover-container {
+  background-color: var(--popover) !important;
+  color: var(--popover-foreground) !important;
+  border: 1px solid var(--border);
+}
