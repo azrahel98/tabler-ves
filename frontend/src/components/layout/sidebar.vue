@@ -33,9 +33,13 @@
             <span>Nuevo </span>
           </RouterLink>
 
-          <RouterLink to="/chat" v-if="store.id == '1'" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-colors">
+          <RouterLink to="/chat" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-colors">
             <MessageSquare :size="18" />
             <span>Chat</span>
+          </RouterLink>
+          <RouterLink to="/organigrama" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-colors">
+            <Building2 :size="18" />
+            <span>Organigrama</span>
           </RouterLink>
         </ul>
       </div>
@@ -45,7 +49,7 @@
 
 <script setup lang="ts">
 import { userStore } from '@store/user'
-import { LayoutDashboard, MessageSquare, Zap, X, LucideUserPlus2 } from 'lucide-vue-next'
+import { LayoutDashboard, MessageSquare, Zap, X, LucideUserPlus2, Building2 } from 'lucide-vue-next'
 
 const store = userStore()
 

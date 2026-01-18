@@ -32,24 +32,19 @@
                 :key="result.dni"
                 :to="{ name: 'personal', params: { dni: result.dni } }"
                 @click="selectResult(result)"
-                class="flex items-center gap-3 p-3 hover:bg-gray-50 cursor-pointer border-b border-gray-50 last:border-0 transition-colors"
+                class="flex items-center gap-2 p-2 hover:bg-gray-50 cursor-pointer border-b border-gray-50 last:border-0 transition-colors"
               >
-                <div class="relative w-10 h-10 rounded-full overflow-hidden border" :class="result.estado === 'activo' ? 'border-green-500' : 'border-red-500'">
+                <div class="relative w-8 h-8 rounded-full overflow-hidden" :class="result.estado === 'activo' ? 'bg-green-500' : 'bg-red-500'">
                   <img v-if="result.avatar" :src="`${SERVER}${result.avatar}`" alt="Avatar" class="w-full h-full object-cover" />
 
-                  <img
-                    v-else
-                    src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/attachments/gen-images/public/diverse-user-avatars-jNaliJbW5b5ccprrlYjj99XE0SOY9L.png"
-                    alt="Avatar Default"
-                    class="w-full h-full object-cover"
-                  />
+                  <img v-else-if="result.sexo === 'M'" src="/m.png?url" alt="Avatar Default" class="w-full h-full object-cover" />
+                  <img v-else src="/f.png?url" alt="Avatar Default" class="w-full h-full object-cover" />
                 </div>
                 <div class="flex-1 min-w-0">
                   <div class="flex items-center justify-between">
-                    <p class="text-sm font-semibold text-gray-900 truncate">{{ result.nombre }}</p>
-                    <span class="text-xs font-mono text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded">{{ result.dni }}</span>
+                    <p class="text-xs font-semibold text-gray-900 truncate">{{ result.nombre }}</p>
                   </div>
-                  <p class="text-xs text-gray-500 truncate capitalize">{{ result.estado }}</p>
+                  <span class="text-xs font-mono text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded">{{ result.dni }}</span>
                 </div>
               </RouterLink>
             </ul>

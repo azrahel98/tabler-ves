@@ -2,10 +2,10 @@
   <div class="bg-white rounded-2xl px-6 py-5 shadow-lg border border-border w-full">
     <header class="flex flex-col lg::flex-row items-center gap-4 border-b border-border pb-4 mb-4">
       <div class="flex items-center gap-2">
-        <div class="relative w-20 h-20 cursor-pointer group z-10 shrink-0" @click="openFilePicker" title="Cambiar foto de perfil">
-          <div class="w-20 h-20 rounded-full bg-primary flex items-center justify-center overflow-hidden transition-shadow group-hover:shadow-lg">
+        <div class="relative w-16 h-16 cursor-pointer group z-10 shrink-0" @click="openFilePicker" title="Cambiar foto de perfil">
+          <div class="w-16 h-16 rounded-full bg-primary flex items-center justify-center overflow-hidden transition-shadow group-hover:shadow-lg">
             <img v-if="user.avatar" :src="currentImage" alt="Foto de perfil" class="w-full h-full object-cover" />
-            <span v-else class="text-3xl spac font-semibold text-white tracking-tight">
+            <span v-else class="text-2xl font-semibold text-white tracking-tight">
               {{ nombreabrv(user.nombre) }}
             </span>
           </div>
@@ -17,8 +17,8 @@
           </div>
         </div>
 
-        <div v-if="previewImage" class="relative w-20 h-20 shrink-0 bg animate-fade-in-right">
-          <div class="w-20 h-20 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden border-2 border-dashed border-teal shadow-md relative z-10">
+        <div v-if="previewImage" class="relative w-16 h-16 shrink-0 bg animate-fade-in-right">
+          <div class="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden border-2 border-dashed border-teal shadow-md relative z-10">
             <img :src="previewImage" alt="Preview" class="w-full h-full object-cover" />
           </div>
         </div>
@@ -46,9 +46,9 @@
       <input ref="fileInputRef" type="file" accept="image/*" class="hidden" @change="handleFileChange" />
 
       <div class="flex-1 min-w-0 text-center lg:text-center w-full lg:w-auto">
-        <h3 class="text-lg font-bold text-text-primary tracking-tight leading-tight">
+        <h5 class="text-lg font-bold text-text-primary tracking-tight leading-tight">
           {{ user.nombre }}
-        </h3>
+        </h5>
         <p class="text-sm mt-1 font-normal text-text-muted">{{ user.dni }}</p>
       </div>
     </header>

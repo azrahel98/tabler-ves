@@ -24,11 +24,11 @@ const routes: RouteRecordRaw[] = [
         name: 'chat',
         component: () => import('@views/app/chat.vue')
       },
-      // {
-      //   path: '/organigrama',
-      //   name: 'organigrama',
-      //   component: () => import('@views/dash/organigrama.vue')
-      // },
+      {
+        path: '/organigrama',
+        name: 'organigrama',
+        component: () => import('@views/app/organigrama.vue')
+      },
       {
         path: '/personal/:dni',
         name: 'personal',

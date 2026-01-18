@@ -9,9 +9,9 @@
 
         <!-- Contenido -->
         <div class="flex-1 min-w-0 w-full">
-          <h6 class="text-sm font-semibold truncate">
+          <span class="text-sm font-semibold truncate">
             {{ vinculo.cargo }}
-          </h6>
+          </span>
 
           <p class="text-xs mb-2 font-mono truncate">
             {{ vinculo.area }}
@@ -19,10 +19,12 @@
 
           <!-- Fechas -->
           <div class="grid grid-cols-1 sm:flex sm:flex-wrap items-start gap-2">
-            <div class="text-xs font-medium text-text-muted bg-background rounded-md px-2.5 py-1 whitespace-nowrap">Ingreso: {{ vinculo.fecha_ingreso }}</div>
+            <div class="text-xs font-medium text-text-muted bg-background rounded-md px-2.5 py-1 whitespace-nowrap">
+              Ingreso: {{ format(new Date(vinculo.fecha_ingreso), 'dd/MM/yyyy') }}
+            </div>
 
             <div v-if="vinculo.fecha_salida" class="text-xs font-medium text-destructive bg-destructive/10 rounded-md px-2.5 py-1 whitespace-nowrap">
-              Salida: {{ vinculo.fecha_salida }}
+              Salida: {{ format(new Date(vinculo.fecha_salida), 'dd/MM/yyyy') }}
             </div>
           </div>
         </div>
@@ -55,6 +57,7 @@
 import { Briefcase, Trash2 } from 'lucide-vue-next'
 import Renuncia from './vinculo/renuncia.vue'
 import Pop from './vinculo/pop.vue'
+import { format } from 'date-fns'
 
 interface Vinculo {
   cargo: string
