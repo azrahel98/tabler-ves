@@ -9,7 +9,7 @@
           <div class="w-8 h-8 rounded-lg bg-linear-to-br from-[#5347ce] to-[#887cfd] flex items-center justify-center">
             <Zap :size="18" class="text-white" />
           </div>
-          <span class="text-xl font-bold text-gray-900">Munives</span>
+          <span class="text-lg font-bold text-gray-900">Munives</span>
         </a>
         <div class="ml-auto flex items-center gap-2">
           <kbd class="hidden md:inline-block px-2 py-1 text-xs text-gray-500 bg-gray-50 rounded border border-gray-200">⌘K</kbd>

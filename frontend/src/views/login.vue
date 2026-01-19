@@ -1,6 +1,6 @@
 <template>
   <div class="flex min-h-screen items-center justify-center bg-[#F5F7FA] p-4">
-    <div class="w-full max-w-1/5">
+    <div class="w-full max-w-1/4">
       <div data-slot="card" class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 border-gray-100 shadow-sm">
         <div
           data-slot="card-header"
@@ -100,7 +100,7 @@ const handleLogin = async () => {
     if (token) {
       localStorage.setItem('jwt', token)
       store.create(token)
-      router.push('/')
+      router.push({ name: 'dashboard' })
     } else {
       error.value = 'Error al iniciar sesión: Token no recibido'
     }

@@ -89,7 +89,7 @@
 
         <div class="flex items-center gap-3">
           <div class="w-10 h-10 rounded-full bg-gray-200 overflow-hidden border-2 border-white shadow-sm">
-            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Alaska" alt="Young Alaska" class="w-9 h-9 rounded-full" />
+            <img src="/m.png?url" alt="Young Alaska" class="w-9 h-9 rounded-full" />
           </div>
 
           <div class="hidden md:block text-left">

@@ -225,7 +225,9 @@
 
 /* Adding base typography and layout styles */
 body {
-  font-feature-settings: 'rlig' 1, 'calt' 1;
+  font-feature-settings:
+    'rlig' 1,
+    'calt' 1;
   line-height: var(--line-height-normal);
   font-size: var(--font-size-base);
   color: var(--foreground);
@@ -245,27 +247,27 @@ h6 {
 }
 
 h1 {
-  font-size: var(--font-size-4xl);
-}
-
-h2 {
-  font-size: var(--font-size-3xl);
-}
-
-h3 {
-  font-size: var(--font-size-2xl);
-}
-
-h4 {
-  font-size: var(--font-size-xl);
-}
-
-h5 {
   font-size: var(--font-size-lg);
 }
 
-h6 {
+h2 {
   font-size: var(--font-size-base);
+}
+
+h3 {
+  font-size: var(--font-size-base);
+}
+
+h4 {
+  font-size: var(--font-size-sm);
+}
+
+h5 {
+  font-size: var(--font-size-sm);
+}
+
+h6 {
+  font-size: var(--font-size-xs);
 }
 
 /* Adding utility classes for consistent spacing */
@@ -345,7 +347,8 @@ textarea:focus-visible {
 }
 
 /* V-Calendar Fixes */
-.vc-popover-content-wrapper, .vc-popover-content {
+.vc-popover-content-wrapper,
+.vc-popover-content {
   background-color: var(--popover) !important;
   border-radius: var(--radius-lg);
   border: 1px solid var(--border);
@@ -355,7 +358,8 @@ textarea:focus-visible {
   background-color: transparent !important;
   border: none !important;
 }
-.dark .vc-popover-content-wrapper, .dark .vc-popover-content {
+.dark .vc-popover-content-wrapper,
+.dark .vc-popover-content {
   background-color: var(--popover) !important;
   border-color: var(--border);
   color: var(--popover-foreground);

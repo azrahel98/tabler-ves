@@ -14,7 +14,7 @@ pub fn generate_token(user_id: i32, level: i32, nombre: String) -> String {
     let encoding_key = EncodingKey::from_secret(secret_key.as_bytes());
 
     let claims = Claims {
-        exp: (chrono::Utc::now() + chrono::Duration::weeks(2)).timestamp() as usize,
+        exp: (chrono::Utc::now() + chrono::Duration::hours(1)).timestamp() as usize,
         lvl: Some(level),
         nombre,
         id: user_id,

@@ -482,3 +482,27 @@ pub async fn report_renuncias(data: web::Data<AppState>) -> Result<impl Responde
 
     Ok(HttpResponse::Ok().json(data))
 }
+
+#[derive(Deserialize, serde::Serialize)]
+pub struct ReporteDocumento {
+    pub id: i32,
+    pub nombre: String,
+    pub sigla: Option<String>,
+}
+
+pub async fn reporte_documentos(data: web::Data<AppState>) -> Result<impl Responder, ApiError> {
+    let data = sqlx::query_as!(
+        ReporteDocumento,
+        r#"
+        SELECT id, nombre, sigla FROM TipoDocumento
+        "#
+    )
+    .fetch_all(&data.db)
+    .await
+    .map_err(|e| {
+        eprintln!("Database error: {:?}", e);
+        ApiError::InternalError(3, "Database consulta malformada".into())
+    })?;
+
+    Ok(HttpResponse::Ok().json(data))
+}

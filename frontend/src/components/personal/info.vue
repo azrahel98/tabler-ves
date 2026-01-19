@@ -1,6 +1,6 @@
 <template>
   <div class="bg-white rounded-2xl px-6 py-5 shadow-lg border border-border w-full">
-    <header class="flex flex-col lg::flex-row items-center gap-4 border-b border-border pb-4 mb-4">
+    <header class="flex flex-col lg:flex-row items-center gap-4 border-b border-border pb-4 mb-4">
       <div class="flex items-center gap-2">
         <div class="relative w-16 h-16 cursor-pointer group z-10 shrink-0" @click="openFilePicker" title="Cambiar foto de perfil">
           <div class="w-16 h-16 rounded-full bg-primary flex items-center justify-center overflow-hidden transition-shadow group-hover:shadow-lg">
@@ -46,16 +46,16 @@
       <input ref="fileInputRef" type="file" accept="image/*" class="hidden" @change="handleFileChange" />
 
       <div class="flex-1 min-w-0 text-center lg:text-center w-full lg:w-auto">
-        <h5 class="text-lg font-bold text-text-primary tracking-tight leading-tight">
+        <p class="text-base font-bold text-text-primary tracking-tight leading-tight">
           {{ user.nombre }}
-        </h5>
+        </p>
         <p class="text-sm mt-1 font-normal text-text-muted">{{ user.dni }}</p>
       </div>
     </header>
 
     <section class="space-y-2.5 mb-3">
       <div class="flex justify-between items-center">
-        <h6 class="text-sm font-semibold tracking-tight mb-2 uppercase">Información Personal</h6>
+        <h5 class="text-sm font-semibold tracking-tight mb-2 uppercase">Información Personal</h5>
         <Editar_info v-if="app.canEdit" />
       </div>
       <div class="flex items-center gap-3">
@@ -114,7 +114,7 @@
     <div class="border-b border-border mb-4" v-if="Emergencia" />
 
     <section class="space-y-4" v-if="Emergencia">
-      <h3 class="text-sm font-semibold text-text-primary tracking-tight mb-2 uppercase">Contacto de Emergencia</h3>
+      <h5 class="text-sm font-semibold text-text-primary tracking-tight mb-2 uppercase">Contacto de Emergencia</h5>
 
       <div class="flex items-center gap-3">
         <div class="p-1.5 rounded-lg bg-destructive/20 text-destructive">

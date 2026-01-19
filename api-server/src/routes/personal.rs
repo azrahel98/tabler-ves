@@ -34,6 +34,8 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
             .route("/vinculos_por_dni", web::post().to(vinculos_por_dni))
             .route("/asistencia", web::post().to(report_asistencia))
             .route("/agregar_contacto", web::post().to(contacto_emergencia_add))
+            .route("/buscar_vacantes", web::post().to(buscar_vacantes))
+            .route("/buscar_por_plaza", web::post().to(buscar_por_plaza))
             .route("/contacto_dni", web::post().to(conctaco_por_dni)),
     );
 }

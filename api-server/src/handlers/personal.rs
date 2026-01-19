@@ -753,3 +753,105 @@ pub async fn conctaco_por_dni(
 
     Ok(HttpResponse::Ok().json(datos))
 }
+
+#[derive(Deserialize, serde::Serialize)]
+pub struct Vacante {
+    pub id: i32,
+    pub dni: String,
+    pub nombre: Option<String>,
+    pub fecha: Option<NaiveDate>,
+    pub fechavalida: Option<NaiveDate>,
+    pub area: String,
+    pub cargo: String,
+    pub codigo: String,
+    pub sueldo: Option<f64>,
+}
+
+pub async fn buscar_vacantes(data: web::Data<AppState>) -> Result<impl Responder, ApiError> {
+    let vacantes = sqlx::query_as!(
+        Vacante,
+        r#"
+        SELECT
+        v.id,
+        v.dni,
+        CONCAT_WS(' ', pe.apaterno, pe.amaterno, pe.nombre) nombre,
+        d.fecha,
+        d.fecha_valida fechavalida,
+        ar.nombre AS  area,
+        cr.nombre AS  cargo,
+        pl.codigo,
+        v.sueldo
+        FROM
+        Vinculo AS v
+        INNER JOIN Documento AS d ON v.doc_salida_id = d.id
+        INNER JOIN Persona AS pe ON v.dni = pe.dni
+        INNER JOIN Plaza AS pl ON v.plaza_id = pl.codigo
+        INNER JOIN Area AS ar ON v.area_id = ar.id
+        INNER JOIN Cargo AS cr ON v.cargo_id = cr.id
+        WHERE
+        v.estado = 'inactivo'
+        AND d.fecha >= DATE_SUB(CURDATE(), INTERVAL 3 MONTH)
+        ORDER BY
+        d.fecha DESC
+        "#
+    )
+    .fetch_all(&data.db)
+    .await
+    .map_err(|e| {
+        eprintln!("Database error: {:?}", e);
+        ApiError::InternalError(3, "Database error retrieving vacantes".into())
+    })?;
+
+    Ok(HttpResponse::Ok().json(vacantes))
+}
+
+#[derive(Deserialize)]
+pub struct BuscarPlaza {
+    pub codigo: String,
+}
+
+#[derive(serde::Serialize, sqlx::FromRow)]
+pub struct PlazaDetalle {
+    pub codigo: String,
+    pub cargo_estructural: Option<String>,
+    pub cargo_descripcion: Option<String>,
+    pub grupo_ocupacional: Option<String>,
+    pub grupo_descripcion: Option<String>,
+    pub condicion: Option<String>,
+    pub regimen_id: i32,
+    pub regimen: String,
+}
+
+pub async fn buscar_por_plaza(
+    data: web::Data<AppState>,
+    body: web::Json<BuscarPlaza>,
+) -> Result<impl Responder, ApiError> {
+    let plaza = sqlx::query_as::<_, PlazaDetalle>(
+        r#"
+        select
+        p.codigo,
+        ce.codigo cargo_estructural,
+        ce.descripcion cargo_descripcion,
+        go.codigo grupo_ocupacional,
+        go.descripcion grupo_descripcion,
+        p.condicion,
+        r.id regimen_id,
+        r.decreto regimen
+        from
+        Plaza p
+        inner join CargoEstructural ce on p.cargoestructural = ce.codigo
+        inner join GruposOcupacionales go on p.grupoocupacional = go.codigo
+        inner join Regimen r on p.regimen = r.id
+        where p.codigo = ?
+        "#,
+    )
+    .bind(body.codigo.clone())
+    .fetch_optional(&data.db)
+    .await
+    .map_err(|e| {
+        eprintln!("Database error: {:?}", e);
+        ApiError::InternalError(3, "Database error retrieving plaza".into())
+    })?;
+
+    Ok(HttpResponse::Ok().json(plaza))
+}

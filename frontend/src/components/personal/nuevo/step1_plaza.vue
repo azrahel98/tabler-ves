@@ -1,6 +1,6 @@
 <template>
   <div class="max-w-4xl mx-auto space-y-6">
-    <!-- <div class="flex justify-center">
+    <div class="flex justify-center">
       <div class="bg-secondary/50 p-1 rounded-xl inline-flex">
         <button
           @click="mode = 'search'"
@@ -17,7 +17,7 @@
           Crear Nueva Plaza
         </button>
       </div>
-    </div> -->
+    </div>
 
     <div v-if="mode === 'search'" class="space-y-3 flex flex-col items-center">
       <div class="bg-primary/5 border border-primary/10 rounded-2xl w-max px-6 py-4 text-center">

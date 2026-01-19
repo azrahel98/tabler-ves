@@ -70,7 +70,7 @@ export const useNuevoUsuarioStore = defineStore('NuevoUsuarioStore', () => {
 
   const fetchVacantes = async () => {
     try {
-      const { data } = await api.post('dash/buscar_vacantes')
+      const { data } = await api.post('personal/buscar_vacantes')
       vacantes.value = data
     } catch (error) {
       console.error('Error fetching vacantes:', error)
@@ -79,11 +79,11 @@ export const useNuevoUsuarioStore = defineStore('NuevoUsuarioStore', () => {
 
   const fetchPlazaDetails = async (codigoPlaza: string) => {
     try {
-      const { data } = await api.post('dash/buscar_por_plaza', {
-        plaza: codigoPlaza
+      const { data } = await api.post('personal/buscar_por_plaza', {
+        codigo: codigoPlaza
       })
 
-      plaza.codigo = data.plaza
+      plaza.codigo = data.codigo
       plaza.cargo_estructural.codigo = data.cargo_estructural
       plaza.cargo_estructural.nombre = data.cargo_descripcion
       plaza.grupo_ocupacional.codigo = data.grupo_ocupacional
