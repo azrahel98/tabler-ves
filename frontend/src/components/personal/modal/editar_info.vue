@@ -1,11 +1,11 @@
 <template>
   <div>
     <button
-      class="inline-flex items-center justify-center h-9 w-9 rounded-xl border border-[#e5e7eb] text-[#6b7280] transition-colors hover:bg-[#5347ce]/5 hover:text-[#5347ce] hover:border-[#5347ce]/30"
+      class="inline-flex items-center justify-center h-7 w-7 rounded-xl border border-[#e5e7eb] text-[#6b7280] transition-colors hover:bg-[#5347ce]/5 hover:text-[#5347ce] hover:border-[#5347ce]/30"
       title="Editar Perfil"
       @click="openModal"
     >
-      <Edit class="w-4 h-4" />
+      <Edit class="w-3.5 h-3.5" />
     </button>
 
     <Teleport to="body">

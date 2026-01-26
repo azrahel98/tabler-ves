@@ -40,7 +40,7 @@ watch(
           <Banco />
         </div>
 
-        <div class="widget-item historial-scroll-container">
+        <div class="widget-item historial-scroll-container" v-if="perfil.historial.length > 0">
           <Historial :lista="perfil.historial" />
         </div>
 
@@ -52,9 +52,8 @@ watch(
 
 <style lang="scss" scoped>
 $gap-size: 3vh;
-$sidebar-base: 250px;
-$widget-max-width: 350px; // Definimos un ancho máximo para los widgets
-
+$sidebar-base: 230px;
+$widget-max-width: 350px;
 .perfil-container {
   display: flex;
   flex-wrap: wrap;
@@ -68,33 +67,32 @@ $widget-max-width: 350px; // Definimos un ancho máximo para los widgets
   }
 
   .main-layout {
-    flex: 999 1 500px;
+    flex: 1 1 0; // Ocupa el resto del espacio
+    min-width: 300px; // Evita que se colapse demasiado
     display: flex;
-    flex-wrap: wrap;
+    flex-direction: column;
     gap: $gap-size;
-    align-items: flex-start;
 
     .vinculos-wrapper {
-      flex: 2 1 400px;
-      min-width: 300px;
+      width: 100%; // Siempre ancho total del main-layout
     }
 
     .widgets-column {
-      // 1. Evitamos que la columna crezca infinitamente a lo ancho
-      flex: 1 1 300px;
-      max-width: $widget-max-width;
-
-      display: flex;
-      flex-direction: column;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      align-items: center;
+      align-self: center;
       gap: 1.5rem;
+      width: 100%;
+
+      .widget-item {
+        width: 100%;
+      }
 
       .historial-scroll-container {
-        // 2. Control de altura y scroll
-        max-height: 400px; // Ajusta este valor según tu diseño
+        max-height: 400px;
         overflow-y: auto;
-        overflow-x: hidden;
 
-        // Estilo opcional para la barra de scroll (más estética)
         &::-webkit-scrollbar {
           width: 6px;
         }
@@ -102,17 +100,6 @@ $widget-max-width: 350px; // Definimos un ancho máximo para los widgets
           background: #ccc;
           border-radius: 10px;
         }
-      }
-
-      .btn-ver-mas {
-        width: fit-content;
-        align-self: flex-start;
-        padding: 0.6rem 1.2rem;
-        background: #3b82f6;
-        color: white;
-        border-radius: 6px;
-        border: none;
-        cursor: pointer;
       }
     }
   }

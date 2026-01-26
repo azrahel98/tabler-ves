@@ -9,7 +9,7 @@
     </div>
 
     <div v-else-if="rootNode" class="max-w-[1600px] mx-auto">
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
         <div v-for="area in childNodes" :key="area.id" class="flex">
           <Poppover v-if="area.subgerencias?.length" placement="left" width="w-[300px]" class="w-full flex">
             <template #trigger="{ isOpen }">
@@ -31,13 +31,13 @@
                     </div>
                   </div>
 
-                  <div class="mb-4 flex-grow">
-                    <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest block mb-0.5">
+                  <div class="mb-4 grow">
+                    <span class="text-xs font-bold text-slate-400 capitalize tracking-widest block mb-0.5">
                       {{ getAreaType(area.area) }}
                     </span>
-                    <h3 class="font-extrabold text-[13px] text-slate-800 leading-snug line-clamp-2">
+                    <span class="font-bold text-md leading-snug line-clamp-2">
                       {{ formatAreaName(area.area) }}
-                    </h3>
+                    </span>
                   </div>
 
                   <div class="pt-3 border-t border-slate-50 flex items-center gap-2.5">
@@ -91,9 +91,9 @@
             <div class="w-9 h-9 rounded-lg bg-slate-50 text-slate-400 border border-slate-100 flex items-center justify-center shrink-0 mb-3">
               <component :is="getAreaIcon(area.area)" class="w-4.5 h-4.5" />
             </div>
-            <div class="mb-4 flex-grow">
-              <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest block mb-0.5">{{ getAreaType(area.area) }}</span>
-              <h3 class="font-extrabold text-[13px] text-slate-800 leading-snug">{{ formatAreaName(area.area) }}</h3>
+            <div class="mb-4 grow">
+              <span class="text-xs font-bold capitalize tracking-widest block mb-0.5 text-slate-400">{{ getAreaType(area.area) }}</span>
+              <span class="font-bold text-md leading-snug line-clamp-2">{{ formatAreaName(area.area) }}</span>
             </div>
             <div class="pt-3 border-t border-slate-50 flex items-center gap-2.5">
               <div class="w-7 h-7 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center shrink-0">
@@ -137,15 +137,28 @@ onMounted(async () => {
   }
 })
 
-// --- HELPERS DE FORMATEO ---
 const cleanTitle = (t: string) => t?.replace(/GERENCIA DE |SUBGERENCIA DE |OFICINA DE |UNIDAD DE /gi, '') || ''
 
-const formatAreaName = (area: string) =>
-  area
-    ? cleanTitle(area)
-        .toLowerCase()
-        .replace(/\b\w/g, (l) => l.toUpperCase())
-    : ''
+const formatAreaName = (area: string) => {
+  if (!area) return ''
+
+  // 1. Limpiamos y formateamos todo a Title Case inicialmente
+  let formatted = cleanTitle(area)
+    .toLowerCase()
+    .replace(/\b\w/g, (l) => l.toUpperCase())
+
+  // 2. Definimos los conectores que queremos forzar a minúsculas
+  const connectors = ['Y', 'De', 'La', 'Del', 'E', 'A']
+
+  connectors.forEach((connector) => {
+    // Usamos una Regex que busca el conector solo si es una palabra completa (\b)
+    // y NO está al principio de la cadena (^).
+    const regex = new RegExp(`(?!^)\\b${connector}\\b`, 'g')
+    formatted = formatted.replace(regex, connector.toLowerCase())
+  })
+
+  return formatted
+}
 
 const getAcronym = (area: string) =>
   area

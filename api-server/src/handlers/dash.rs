@@ -450,27 +450,28 @@ pub async fn report_renuncias(data: web::Data<AppState>) -> Result<impl Responde
         ReporteRenuncias,
         r#"
         SELECT
-        v.id,
-        v.dni,
-        CONCAT_WS(' ', pe.apaterno, pe.amaterno, pe.nombre) nombre,
-        d.fecha,
-        d.fecha_valida fechavalida,
-        ar.nombre AS  area,
-        cr.nombre AS  cargo,
-        pl.codigo
+            v.id,
+            v.dni,
+            CONCAT_WS(' ', pe.apaterno, pe.amaterno, pe.nombre) AS nombre,
+            d.fecha,
+            ar.nombre AS area,
+            cr.nombre AS cargo,
+            pl.codigo
         FROM
-        Vinculo AS v
-        INNER JOIN Documento AS d ON v.doc_salida_id = d.id
-        INNER JOIN Persona AS pe ON v.dni = pe.dni
-        INNER JOIN Plaza AS pl ON v.plaza_id = pl.codigo
-        INNER JOIN Area AS ar ON v.area_id = ar.id
-        INNER JOIN Cargo AS cr ON v.cargo_id = cr.id
+            Vinculo AS v
+            INNER JOIN Documento AS d ON v.doc_salida_id = d.id
+            INNER JOIN Persona AS pe ON v.dni = pe.dni
+            INNER JOIN Plaza AS pl ON v.plaza_id = pl.codigo
+            INNER JOIN Area AS ar ON v.area_id = ar.id
+            INNER JOIN Cargo AS cr ON v.cargo_id = cr.id
         WHERE
-        v.estado = 'inactivo'
-        AND year(d.fecha) = year(now())
+            v.estado = 'inactivo'
+            AND (
+                d.fecha BETWEEN DATE_SUB(CURRENT_DATE, INTERVAL 120 DAY) 
+                        AND DATE_ADD(CURRENT_DATE, INTERVAL 2 DAY)
+            )
         ORDER BY
-        pl.codigo ASC,
-        d.fecha DESC;
+            d.fecha desc;
         "#,
     )
     .fetch_all(&data.db)

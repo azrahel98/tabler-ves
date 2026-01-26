@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Clock, FileText, UserCog, CreditCard, LogOut, Phone, Mail, MapPin, Inbox, Activity } from 'lucide-vue-next'
+import { Clock, FileText, UserCog, CreditCard, LogOut, Phone, Mail, MapPin, Inbox, Activity, Building2, Calendar, Cake } from 'lucide-vue-next'
 
 interface HistorialItem {
   operacion: string
@@ -90,10 +90,10 @@ const getOperationIcon = (operacion: string) => {
 </script>
 
 <template>
-  <div class="bg-white rounded-2xl shadow-sm border border-[#e5e7eb] flex flex-col max-h-[600px] overflow-y-auto h-min">
-    <div class="px-4 py-3 border-b border-[#e5e7eb] flex items-center justify-between shrink-0 bg-white z-10">
+  <div class="bg-white rounded-2xl shadow-sm border border-[#e5e7eb] flex flex-col max-h-[450px] overflow-y-auto h-min">
+    <div class="px-4 gap-2 py-3 border-b border-[#e5e7eb] flex items-center justify-between shrink-0 bg-white z-10">
       <h5 class="text-[#1a1a1a] font-bold tracking-tight">{{ title }}</h5>
-      <span class="px-2.5 py-0.5 text-xs font-bold rounded-md bg-[#5347ce]/10 text-[#5347ce]"> {{ lista.length }} Eventos </span>
+      <span class="px-2.5 py-0.5 text-xs font-bold rounded-md bg-[#5347ce]/10 text-[#5347ce]"> {{ lista.length }} </span>
     </div>
 
     <div class="overflow-y-auto custom-scrollbar p-0 flex-1 relative">
@@ -136,7 +136,8 @@ const getOperationIcon = (operacion: string) => {
               </div>
             </div>
 
-            <div v-if="item.detalle && item.detalle.trim()" class="text-sm">
+            <div v-if="item.detalle && item.detalle.trim()" class="text-sm mt-3">
+              <!-- Legajo -->
               <div v-if="item.operacion.toLowerCase().includes('legajo')" class="bg-[#f5f7fa] rounded-lg p-3 border border-[#e5e7eb]/60">
                 <div class="flex items-start gap-3">
                   <div class="w-8 h-8 rounded-lg bg-white border border-[#e5e7eb] flex items-center justify-center text-xs font-bold text-[#5347ce] shrink-0 shadow-sm">
@@ -152,27 +153,109 @@ const getOperationIcon = (operacion: string) => {
                 </div>
               </div>
 
-              <div v-else-if="item.operacion === 'editar informacion personal'" class="bg-[#f5f7fa] rounded-lg p-3 border border-[#e5e7eb]/60 grid gap-2">
-                <div v-if="safeParse(item.detalle).email" class="flex items-center gap-2 text-xs">
-                  <Mail class="w-3.5 h-3.5 text-[#94a3b8]" />
-                  <span class="text-[#1a1a1a] truncate">{{ safeParse(item.detalle).email }}</span>
+              <!-- Editar Información Personal -->
+              <div v-else-if="item.operacion === 'editar informacion personal'" class="bg-[#f5f7fa]/50 rounded-xl p-3 border border-[#e5e7eb] flex flex-col gap-2">
+                <div v-if="safeParse(item.detalle).email" class="flex items-center gap-2.5 group/item">
+                  <div class="p-1.5 rounded-full bg-white border border-gray-100 text-gray-400 group-hover/item:text-[#5347ce] group-hover/item:border-[#5347ce]/20 transition-colors">
+                    <Mail class="w-3 h-3" />
+                  </div>
+                  <div class="flex flex-col min-w-0">
+                    <span class="text-[10px] text-gray-400 font-medium uppercase tracking-wider">Email</span>
+                    <span class="text-xs text-gray-700 font-medium truncate">{{ safeParse(item.detalle).email }}</span>
+                  </div>
                 </div>
-                <div v-if="safeParse(item.detalle).telf" class="flex items-center gap-2 text-xs">
-                  <Phone class="w-3.5 h-3.5 text-[#94a3b8]" />
-                  <span class="text-[#1a1a1a]">{{ safeParse(item.detalle).telf }}</span>
+
+                <div v-if="safeParse(item.detalle).telf" class="flex items-center gap-2.5 group/item">
+                  <div class="p-1.5 rounded-full bg-white border border-gray-100 text-gray-400 group-hover/item:text-[#5347ce] group-hover/item:border-[#5347ce]/20 transition-colors">
+                    <Phone class="w-3 h-3" />
+                  </div>
+                  <div class="flex flex-col min-w-0">
+                    <span class="text-[10px] text-gray-400 font-medium uppercase tracking-wider">Teléfono</span>
+                    <span class="text-xs text-gray-700 font-medium font-mono">{{ safeParse(item.detalle).telf }}</span>
+                  </div>
                 </div>
-                <div v-if="safeParse(item.detalle).direccion" class="flex items-start gap-2 text-xs">
-                  <MapPin class="w-3.5 h-3.5 text-[#94a3b8] mt-0.5 shrink-0" />
-                  <span class="text-[#1a1a1a] leading-relaxed">{{ safeParse(item.detalle).direccion }}</span>
+
+                <div v-if="safeParse(item.detalle).direccion" class="flex items-start gap-2.5 group/item">
+                  <div
+                    class="p-1.5 rounded-full bg-white border border-gray-100 text-gray-400 group-hover/item:text-[#5347ce] group-hover/item:border-[#5347ce]/20 transition-colors shrink-0 mt-0.5"
+                  >
+                    <MapPin class="w-3 h-3" />
+                  </div>
+                  <div class="flex flex-col min-w-0">
+                    <span class="text-[10px] text-gray-400 font-medium uppercase tracking-wider">Dirección</span>
+                    <span class="text-xs text-gray-700 font-medium leading-relaxed">{{ safeParse(item.detalle).direccion }}</span>
+                  </div>
+                </div>
+
+                <div v-if="safeParse(item.detalle).nacimiento" class="flex items-center gap-2.5 group/item">
+                  <div class="p-1.5 rounded-full bg-white border border-gray-100 text-gray-400 group-hover/item:text-[#5347ce] group-hover/item:border-[#5347ce]/20 transition-colors">
+                    <Cake class="w-3 h-3" />
+                  </div>
+                  <div class="flex flex-col min-w-0">
+                    <span class="text-[10px] text-gray-400 font-medium uppercase tracking-wider">Nacimiento</span>
+                    <span class="text-xs text-gray-700 font-medium">{{ safeParse(item.detalle).nacimiento }}</span>
+                  </div>
                 </div>
               </div>
 
-              <div v-else-if="item.operacion === 'actualizar cuenta bancaria'" class="bg-[#f5f7fa] rounded-lg p-1 border border-[#e5e7eb]/60">
-                <Banco :item="safeParse(item.detalle)" />
+              <!-- Cuenta Bancaria -->
+              <div
+                v-else-if="item.operacion === 'ingresar cuenta bancaria' || item.operacion === 'actualizar cuenta bancaria'"
+                class="bg-gradient-to-br from-[#f8fafc] to-[#f1f5f9] rounded-xl p-3.5 border border-[#e2e8f0] relative overflow-hidden group/card text-left"
+              >
+                <!-- Decorative background elements -->
+                <div class="absolute -right-6 -top-6 w-24 h-24 bg-blue-500/5 rounded-full blur-2xl group-hover/card:bg-blue-500/10 transition-colors"></div>
+
+                <div class="relative z-10">
+                  <div class="flex items-center gap-2 mb-3">
+                    <div class="w-8 h-8 rounded-lg bg-white shadow-sm border border-gray-100 flex items-center justify-center text-blue-600">
+                      <Building2 class="w-4 h-4" />
+                    </div>
+                    <div>
+                      <p class="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Información Bancaria</p>
+                      <p class="text-xs font-semibold text-gray-900">{{ safeParse(item.detalle).tipo_cuenta }}</p>
+                    </div>
+                  </div>
+
+                  <div class="space-y-2">
+                    <div class="flex flex-col">
+                      <span class="text-[10px] text-gray-400 uppercase tracking-widest mb-0.5">Número de Cuenta</span>
+                      <span class="font-mono text-xs text-gray-700 font-medium tracking-wide bg-white/60 w-full rounded px-2 py-1 border border-gray-100/50">
+                        {{ safeParse(item.detalle).numero_cuenta }}
+                      </span>
+                    </div>
+                    <div class="flex flex-col">
+                      <span class="text-[10px] text-gray-400 uppercase tracking-widest mb-0.5">CCI</span>
+                      <span class="font-mono text-[11px] text-gray-600 tracking-wide break-all bg-white/60 w-full rounded px-2 py-1 border border-gray-100/50">
+                        {{ safeParse(item.detalle).cci }}
+                      </span>
+                    </div>
+                  </div>
+                </div>
               </div>
 
-              <div v-else-if="item.operacion === 'registro de renuncia'" class="bg-[#ef4444]/5 rounded-lg p-1 border border-[#ef4444]/20">
-                <Renuncia :item="safeParse(item.detalle)" />
+              <!-- Renuncia -->
+              <div v-else-if="item.operacion === 'registro de renuncia'" class="bg-red-50/50 rounded-xl p-3 border border-red-100 relative group/renuncia text-left">
+                <div class="flex items-start gap-3">
+                  <div class="p-2 rounded-lg bg-red-100/50 text-red-600 border border-red-200/50 shrink-0">
+                    <LogOut class="w-4 h-4" />
+                  </div>
+                  <div class="flex flex-col min-w-0 flex-1">
+                    <span class="text-[10px] font-bold text-red-400 uppercase tracking-wider mb-0.5">Renuncia Registrada</span>
+                    <p class="text-sm font-bold text-gray-900 leading-tight mb-1">{{ safeParse(item.detalle).nombre }}</p>
+
+                    <div class="flex items-center gap-3 mt-1.5">
+                      <div class="flex items-center gap-1.5 px-2 py-1 rounded-md bg-white/60 border border-red-100/50">
+                        <Calendar class="w-3 h-3 text-red-400" />
+                        <span class="text-xs font-medium text-gray-700">{{ safeParse(item.detalle).fecha }}</span>
+                      </div>
+                      <div v-if="safeParse(item.detalle).documento" class="flex items-center gap-1.5 px-2 py-1 rounded-md bg-white/60 border border-red-100/50">
+                        <FileText class="w-3 h-3 text-red-400" />
+                        <span class="text-xs font-medium text-gray-700">{{ safeParse(item.detalle).documento }}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
 
               <div v-else class="bg-[#f5f7fa] rounded-lg p-3 text-xs font-mono text-[#6b7280] break-words border border-[#e5e7eb]/60">

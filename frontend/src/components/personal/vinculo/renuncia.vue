@@ -5,10 +5,10 @@
       title="Registrar Baja"
       @click="openModal"
     >
-      <FileMinus class="w-4 h-4" />
+      <FileMinus class="w-3.5 h-3.5" />
     </button>
 
-    <modal :is-open="isModalOpen" @update:is-open="isModalOpen = $event" title="Registrar Cese Laboral" width="600px">
+    <modal :is-open="isModalOpen" @update:is-open="isModalOpen = $event" title="Registrar Cese Laboral" width="470px">
       <template #body>
         <div class="w-full px-1">
           <form @submit.prevent="handleSubmit(vinculo)">
@@ -193,11 +193,11 @@ const handleSubmit = async (id: number) => {
 
   try {
     await api.post('/personal/renuncia_por_vinculo', {
-      tipoDocumento: form.documentType,
+      tipoDocumento: form.documentType.toString(),
       numeroDocumento: sunat.value ? null : parseInt(form.documentNumber),
       añoDocumento: sunat.value ? null : parseInt(form.documentYear),
       fecha: form.effectiveDate,
-      fechaValida: form.documentDate,
+      fechaValida: sunat.value ? null : form.documentDate,
       descripcion: form.observation,
       id
     })

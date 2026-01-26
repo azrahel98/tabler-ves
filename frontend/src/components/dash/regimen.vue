@@ -1,16 +1,16 @@
 <template>
   <div class="rounded-lg bg-card text-card-foreground shadow-sm p-4 h-min">
-    <div class="flex items-center gap-2 mb-4">
+    <div class="flex items-center gap-2 mb-4.5">
       <users class="lucide lucide-users w-4 h-4 text-nexus-blue" />
-      <h3 class="text-base font-medium">Distribución por Régimen</h3>
+      <h5 class="font-bold text-[#1a1a1a]">Distribución por Régimen</h5>
     </div>
 
-    <div class="space-y-4">
+    <div class="space-y-2">
       <div v-for="(regimen, index) in regimenes" :key="regimen.nombre" class="relative">
         <template v-if="obtenerDatosRegimen(regimen, index) as any">
           <div class="flex items-center justify-between mb-1">
             <div class="flex items-center gap-2">
-              <div class="w-2.5 h-2.5 rounded-full" :class="obtenerDatosRegimen(regimen, index).colorBg"></div>
+              <div class="w-2 h-2 rounded-full" :class="obtenerDatosRegimen(regimen, index).colorBg"></div>
 
               <span class="text-xs font-medium">{{ regimen.nombre }}</span>
             </div>

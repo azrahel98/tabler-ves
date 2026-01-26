@@ -1,8 +1,6 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
 
-@custom-variant dark (&:is(.dark *));
-
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -46,29 +44,27 @@
   --color-card-foreground: var(--card-foreground);
   --radius: 1rem;
 
-  /* Adding comprehensive spacing scale */
-  --spacing-xs: 0.25rem; /* 4px */
-  --spacing-sm: 0.5rem; /* 8px */
-  --spacing-md: 1rem; /* 16px */
-  --spacing-lg: 1.5rem; /* 24px */
-  --spacing-xl: 2rem; /* 32px */
-  --spacing-2xl: 3rem; /* 48px */
-  --spacing-3xl: 4rem; /* 64px */
+  --font-size-xs: clamp(0.55rem, 0.5rem + 0.1vw, 0.65rem); /* ~8.8px -> 10.4px */
+  --font-size-sm: clamp(0.65rem, 0.6rem + 0.15vw, 0.75rem); /* ~10.4px -> 12px */
+  --font-size-base: clamp(0.75rem, 0.7rem + 0.2vw, 0.85rem); /* ~12px -> 13.6px */
+  --font-size-lg: clamp(0.85rem, 0.8rem + 0.3vw, 0.95rem); /* ~13.6px -> 15px */
+  --font-size-xl: clamp(0.95rem, 0.9rem + 0.5vw, 1.15rem); /* ~15.2px -> 18.4px */
+  --font-size-2xl: clamp(1.1rem, 1rem + 0.8vw, 1.4rem); /* ~17.6px -> 22.4px */
+  --font-size-3xl: clamp(1.25rem, 1.1rem + 1.2vw, 1.75rem); /* ~20px -> 28px */
+  --font-size-4xl: clamp(1.5rem, 1.3rem + 2vw, 2.5rem); /* ~24px -> 40px */
 
-  /* Adding typography scale - Minimalist Update */
-  --font-size-xs: 0.7rem; /* ~11px */
-  --font-size-sm: 0.8rem; /* ~12.8px */
-  --font-size-base: 0.875rem; /* 14px */
-  --font-size-lg: 1rem; /* 16px */
-  --font-size-xl: 1.125rem; /* 18px */
-  --font-size-2xl: 1.25rem; /* 20px */
-  --font-size-3xl: 1.5rem; /* 24px */
-  --font-size-4xl: 1.875rem; /* 30px */
+  /* Ajuste de Spacing para coincidir con la escala pequeña */
+  --spacing-xs: 0.2rem; /* 3.2px */
+  --spacing-sm: 0.4rem; /* 6.4px */
+  --spacing-md: 0.75rem; /* 12px */
+  --spacing-lg: 1.1rem; /* 17.6px */
+  --spacing-xl: 1.5rem; /* 24px */
+  --spacing-2xl: 2.2rem; /* 35px */
+  --spacing-3xl: 3rem; /* 48px */
 
-  /* Adding line heights */
-  --line-height-tight: 1.25;
-  --line-height-normal: 1.5;
-  --line-height-relaxed: 1.75;
+  /* Line heights más densos para look técnico */
+  --line-height-tight: 1.15;
+  --line-height-normal: 1.4;
 
   /* Adding font weights */
   --font-weight-normal: 400;
@@ -130,7 +126,9 @@
   --info-foreground: #ffffff;
 
   --border: #e5e7eb;
-  --input: #e5e7eb;
+  --input-focus-border: var(--nexus-primary);
+  --input-placeholder-color: var(--muted-foreground);
+  --input-bg-hover: color-mix(in srgb, var(--background), var(--foreground) 2%);
   --ring: #5347ce;
 
   --radius: 1rem;
@@ -228,8 +226,14 @@ body {
   font-feature-settings:
     'rlig' 1,
     'calt' 1;
-  line-height: var(--line-height-normal);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  /* Ajustamos el tracking (espaciado entre letras) ligeramente */
+  letter-spacing: -0.01em;
+
   font-size: var(--font-size-base);
+  line-height: var(--line-height-normal);
   color: var(--foreground);
   background-color: var(--background);
 }
@@ -246,30 +250,25 @@ h6 {
   color: var(--foreground);
 }
 
+/* Heading styles mejorados */
 h1 {
+  font-size: var(--font-size-4xl);
+}
+h2 {
+  font-size: var(--font-size-3xl);
+}
+h3 {
+  font-size: var(--font-size-2xl);
+}
+h4 {
+  font-size: var(--font-size-xl);
+}
+h5 {
   font-size: var(--font-size-lg);
 }
-
-h2 {
-  font-size: var(--font-size-base);
-}
-
-h3 {
-  font-size: var(--font-size-base);
-}
-
-h4 {
-  font-size: var(--font-size-sm);
-}
-
-h5 {
-  font-size: var(--font-size-sm);
-}
-
 h6 {
-  font-size: var(--font-size-xs);
+  font-size: var(--font-size-base);
 }
-
 /* Adding utility classes for consistent spacing */
 .container-padding {
   padding: var(--spacing-lg);
@@ -327,7 +326,56 @@ textarea:focus-visible {
   outline: 2px solid var(--ring);
   outline-offset: 2px;
 }
+/* Reset y Estilo Base de Inputs */
+input[type='text'],
+input[type='email'],
+input[type='password'],
+input[type='number'],
+textarea,
+select {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-base);
+  color: var(--foreground);
+  transition:
+    border-color var(--transition-fast) ease,
+    background-color var(--transition-fast) ease,
+    box-shadow var(--transition-fast) ease;
+}
+input[type='date'] {
+  position: relative;
+}
 
+/* Específico para Firefox: asegura que el campo sea interactivo */
+@-moz-document url-prefix() {
+  input[type='date'] {
+    appearance: none;
+    -moz-appearance: textfield;
+  }
+}
+/* Hover Sutil */
+input:hover,
+textarea:hover {
+  border-color: color-mix(in srgb, var(--border), var(--foreground) 20%);
+  background-color: var(--input-bg-hover);
+}
+
+/* Focus Minimalista (Sin outline grueso, solo cambio de borde y anillo suave) */
+input:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--nexus-primary);
+  background-color: transparent;
+  /* Anillo de luz muy tenue en lugar de sombra pesada */
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--nexus-primary), transparent 90%);
+}
+
+/* Placeholder sutil */
+::placeholder {
+  color: var(--muted-foreground);
+  opacity: 0.6;
+  font-size: var(--font-size-sm);
+}
 ::-webkit-scrollbar {
   width: 4px;
   height: 2px;

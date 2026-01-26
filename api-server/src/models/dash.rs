@@ -77,7 +77,6 @@ pub struct ReporteRenuncias {
     pub dni: String,
     pub nombre: Option<String>,
     pub fecha: Option<NaiveDate>,
-    pub fechavalida: Option<NaiveDate>,
     pub cargo: String,
     pub area: String,
     pub codigo: String,

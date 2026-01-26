@@ -1,6 +1,6 @@
 <template>
-  <div class="bg-white rounded-2xl px-6 py-5 shadow-lg border border-border w-full">
-    <header class="flex flex-col lg:flex-row items-center gap-4 border-b border-border pb-4 mb-4">
+  <div class="bg-white rounded-2xl px-0 py-5 shadow-lg border border-border w-full">
+    <header class="flex flex-col px-4 items-center gap-4 border-b border-border pb-4 mb-4">
       <div class="flex items-center gap-2">
         <div class="relative w-16 h-16 cursor-pointer group z-10 shrink-0" @click="openFilePicker" title="Cambiar foto de perfil">
           <div class="w-16 h-16 rounded-full bg-primary flex items-center justify-center overflow-hidden transition-shadow group-hover:shadow-lg">
@@ -53,87 +53,87 @@
       </div>
     </header>
 
-    <section class="space-y-2.5 mb-3">
-      <div class="flex justify-between items-center">
-        <h5 class="text-sm font-semibold tracking-tight mb-2 uppercase">Información Personal</h5>
+    <section class="space-y-2.5 px-1.5 mb-1">
+      <div class="flex justify-between px-2 gap-2 items-center">
+        <h6 class="text-sm font-semibold tracking-tight uppercase">Información Personal</h6>
         <Editar_info v-if="app.canEdit" />
       </div>
-      <div class="flex items-center gap-3">
+      <div class="flex items-center gap-1.5">
         <div class="p-1.5 rounded-lg bg-purple-light/20 text-primary shrink-0">
-          <mail class="w-5 h-5" />
+          <mail class="w-3.5 h-3.5" />
         </div>
         <div>
           <p class="text-xs text-text-muted font-medium">Correo</p>
-          <p class="text-sm text-text-primary font-normal break-all">
+          <p class="text-xs text-text-primary font-normal break-all">
             {{ user.email }}
           </p>
         </div>
       </div>
 
-      <div class="flex items-center gap-3">
+      <div class="flex items-center gap-1.5">
         <div class="p-1.5 rounded-lg bg-teal/20 text-teal">
-          <phone class="w-5 h-5" />
+          <phone class="w-3.5 h-3.5" />
         </div>
         <div>
           <p class="text-xs text-text-muted font-medium">Teléfono</p>
-          <p class="text-sm text-text-primary font-normal">{{ user.telf }}</p>
+          <p class="text-xs text-text-primary font-normal">{{ user.telf }}</p>
         </div>
       </div>
 
-      <div class="flex items-center gap-3">
+      <div class="flex items-center gap-1.5">
         <div class="p-1.5 rounded-lg bg-blue/20 text-blue">
-          <map-pin-icon class="w-5 h-5" />
+          <map-pin-icon class="w-3.5 h-3.5" />
         </div>
         <div>
           <p class="text-xs text-text-muted font-medium">Dirección</p>
-          <p class="text-sm text-text-primary font-normal">{{ user.direccion }}</p>
+          <p class="text-xs text-text-primary font-normal">{{ user.direccion }}</p>
         </div>
       </div>
 
-      <div class="flex items-center gap-3">
+      <div class="flex items-center gap-1.5">
         <div class="p-1.5 rounded-lg bg-blue/20 text-blue">
-          <cake-icon class="w-5 h-5" />
+          <cake-icon class="w-3.5 h-3.5" />
         </div>
         <div>
           <p class="text-xs text-text-muted font-medium">Nacimiento</p>
-          <p class="text-sm text-text-primary font-normal">{{ formatFechaCompleta(user.nacimiento) }}</p>
+          <p class="text-xs text-text-primary font-normal">{{ formatFechaCompleta(user.nacimiento) }}</p>
         </div>
       </div>
 
-      <div class="flex items-center gap-3">
+      <div class="flex items-center gap-1.5">
         <div class="p-1.5 rounded-lg bg-blue/20 text-blue">
-          <cake-icon class="w-5 h-5" />
+          <cake-icon class="w-3.5 h-3.5" />
         </div>
         <div>
           <p class="text-xs text-text-muted font-medium">Edad</p>
-          <p class="text-sm text-text-primary font-normal">{{ getYear(new Date()) - getYear(new Date(user.nacimiento)) }} años</p>
+          <p class="text-xs text-text-primary font-normal">{{ getYear(new Date()) - getYear(new Date(user.nacimiento)) }} años</p>
         </div>
       </div>
     </section>
 
-    <div class="border-b border-border mb-4" v-if="Emergencia" />
+    <div class="border-b border-border mb-2" v-if="Emergencia" />
 
-    <section class="space-y-4" v-if="Emergencia">
-      <h5 class="text-sm font-semibold text-text-primary tracking-tight mb-2 uppercase">Contacto de Emergencia</h5>
+    <section class="space-y-2 px-2" v-if="Emergencia">
+      <h6 class="text-sm font-semibold text-text-primary tracking-tight mb-2 uppercase">Contacto de Emergencia</h6>
 
-      <div class="flex items-center gap-3">
-        <div class="p-1.5 rounded-lg bg-destructive/20 text-destructive">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <div class="flex items-center gap-1.5">
+        <div class="p-1 rounded-lg bg-destructive/20 text-destructive">
+          <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
           </svg>
         </div>
         <div>
           <p class="text-xs text-text-muted font-medium">Nombre &amp; Relación</p>
-          <p class="text-sm text-text-primary font-normal">
+          <p class="text-xs text-text-primary font-normal">
             {{ Emergencia.nombre }}
             <span class="text-text-muted">({{ Emergencia.relacion }})</span>
           </p>
         </div>
       </div>
 
-      <div class="flex items-center gap-3">
-        <div class="p-1.5 rounded-lg bg-destructive/20 text-destructive">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <div class="flex items-center gap-1.5">
+        <div class="p-1 rounded-lg bg-destructive/20 text-destructive">
+          <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <path
               stroke-linecap="round"
               stroke-linejoin="round"
@@ -144,7 +144,7 @@
         </div>
         <div>
           <p class="text-xs text-text-muted font-medium">Teléfono de Emergencia</p>
-          <p class="text-sm text-text-primary font-normal">{{ Emergencia.telefono }}</p>
+          <p class="text-xs text-text-primary font-normal">{{ Emergencia.telefono }}</p>
         </div>
       </div>
     </section>
@@ -166,7 +166,7 @@ const app = userStore()
 const props = defineProps({
   user: { type: Object, required: true },
   vinculo: { type: Object, required: true },
-  Emergencia: { type: Object, required: true }
+  Emergencia: { type: Object }
 })
 
 const emit = defineEmits(['file-selected'])

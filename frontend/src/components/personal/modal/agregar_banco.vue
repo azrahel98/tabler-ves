@@ -149,7 +149,7 @@ const isSubmitting = ref(false)
 const errors = ref<Record<string, string>>({})
 
 const formData = reactive({
-  banco: '0',
+  banco: 0,
   tipo_cuenta: '',
   numero_cuenta: '',
   cci: '',
@@ -167,13 +167,13 @@ const loadFormData = () => {
   if (store.banco && store.banco.id) {
     let bancoid = banks.value.find((bank) => bank.nombre === store.banco.banco)
     let tipo = accountTypes.find((type) => type.toLowerCase() === store.banco.tipo_cuenta.toLowerCase())
-    formData.banco = bancoid?.id.toString() || '0'
+    formData.banco = bancoid?.id || 0
     formData.tipo_cuenta = tipo || ''
     formData.numero_cuenta = store.banco.numero_cuenta || ''
     formData.cci = store.banco.cci || ''
     formData.id = store.banco.id || 0
   } else {
-    formData.banco = '0'
+    formData.banco = 0
     formData.tipo_cuenta = ''
     formData.numero_cuenta = ''
     formData.cci = ''
@@ -199,6 +199,7 @@ const handleSubmit = async () => {
 
   isSubmitting.value = true
   try {
+    formData.banco = parseInt(formData.banco.toString())
     const payload: any = {
       dni: store.perfil.dni,
       ...formData

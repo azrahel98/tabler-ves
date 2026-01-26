@@ -46,6 +46,7 @@ const routes: RouteRecordRaw[] = [
 const middleware = async (_to: RouteLocationNormalized, _from: RouteLocationNormalized, next: NavigationGuardNext) => {
   const store = userStore()
   const token = localStorage.getItem('jwt')
+  console.log(token)
   if (token == null) {
     return next({
       name: 'login'

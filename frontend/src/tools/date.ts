@@ -1,11 +1,11 @@
-const formatFechaCompleta = (fecha: string, seconds?: boolean): string => {
+const formatFechaCompleta = (fecha: any, seconds?: boolean, day?: boolean): string => {
   try {
     const date = new Date(fecha)
     if (isNaN(date.getTime())) return fecha
 
     return date.toLocaleString('es-ES', {
       timeZone: 'UTC',
-      weekday: 'short',
+      weekday: day ? 'short' : undefined,
       year: 'numeric',
       month: 'short',
       day: 'numeric',

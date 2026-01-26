@@ -133,7 +133,7 @@ pub async fn renuncia_por_vinculo(
 
     let insert_result = sqlx::query(
         r#"
-        INSERT INTO Documento (tipo, numero, year, fecha, fecha_valida, descripcion)
+        INSERT INTO Documento (tipo_documento_id, numero, year, fecha, fecha_valida, descripcion)
         VALUES (?, ?, ?, ?, ?, ?)
         "#,
     )
@@ -183,7 +183,7 @@ pub async fn renuncia_por_vinculo(
           v.estado,
           ds.fecha,
           ds.descripcion,
-          CONCAT_WS('-', ds.tipo, ds.numero, ds.year) AS documento
+          CONCAT_WS('-', ds.tipo_documento_id, ds.numero, ds.year) AS documento
         FROM Vinculo v
         INNER JOIN Documento ds ON v.doc_salida_id = ds.id
         INNER JOIN Cargo cr ON v.cargo_id = cr.id
