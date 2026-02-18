@@ -1,11 +1,11 @@
 @baseUrl = http://127.0.0.1:8080
 @contentType = application/json
-@TokenHash = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MywiZXhwIjoxNzYwMzIwNTg0LCJsdmwiOjMsIm5vbWJyZSI6IlJhdWwgMiJ9.eFokOGaBKZugtRa6fAYp0e3dHLoJXjyqszyLu7e75Fs
+@TokenHash = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwiZXhwIjoxNzcxMTk1NzAwLCJsdmwiOjEsIm5vbWJyZSI6IlJhdWwgQ2hlcmNjYSBMb3BleiJ9.k3zVn3VT9-m30XtbmF3FhxVuHgK96meP-IpT8GX8Y7c
 POST {{baseUrl}}/login/
 Content-Type: {{contentType}}
 
 {
-    "username": "rscl",
+    "username": "rscl2",
     "password":"unodostres",
     "asdf":2
 }

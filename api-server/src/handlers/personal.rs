@@ -1,5 +1,5 @@
 use crate::{
-    AppState,
+    AppState, key,
     middleware::error::ApiError,
     models::personal::{
         AsistenciaVw, ContactoEmergencia, DatosBancarios, DatosBancariosResponse, Documento,
@@ -51,14 +51,14 @@ pub async fn buscar_por_nombre(
     .await
     .map_err(|e| {
         eprintln!("Database error: {:?}", e);
-        ApiError::InternalError(3, "Database consulta malformada".into())
+        ApiError::InternalError("Database consulta malformada".into())
     })?;
 
     Ok(HttpResponse::Ok().json(trabajador))
 }
 
 async fn get_perfil_by_dni(data: web::Data<AppState>, dni: String) -> Result<Perfil, ApiError> {
-    let key = std::env::var("DB_KEY").unwrap_or("*Asdf-Xasdfadf2eee".to_string());
+    let key = key::key::DB_KEY;
 
     let trabajador = sqlx::query_as!(
         Perfil,
@@ -86,7 +86,10 @@ async fn get_perfil_by_dni(data: web::Data<AppState>, dni: String) -> Result<Per
     )
     .fetch_one(&data.db)
     .await
-    .expect("REASON");
+    .map_err(|e| {
+        eprintln!("Database error: {:?}", e);
+        ApiError::InternalError("Error al obtener perfil".into())
+    })?;
 
     Ok(trabajador)
 }
@@ -100,7 +103,7 @@ pub async fn perfil_por_dni(
     data: web::Data<AppState>,
     nombre: web::Json<PerfilDni>,
 ) -> Result<impl Responder, ApiError> {
-    let trabajador = get_perfil_by_dni(data, nombre.dni.clone()).await.unwrap();
+    let trabajador = get_perfil_by_dni(data, nombre.dni.clone()).await?;
     Ok(HttpResponse::Ok().json(trabajador))
 }
 
@@ -117,7 +120,10 @@ pub async fn vinculos_por_dni(
     )
     .fetch_all(&data.db)
     .await
-    .expect("REASON");
+    .map_err(|e| {
+        eprintln!("Database error: {:?}", e);
+        ApiError::InternalError("Error al obtener vínculos".into())
+    })?;
 
     Ok(HttpResponse::Ok().json(trabajador))
 }
@@ -126,10 +132,11 @@ pub async fn renuncia_por_vinculo(
     doc: web::Json<Documento>,
     req: HttpRequest,
 ) -> Result<impl Responder, ApiError> {
-    let mut tx =
-        data.db.begin().await.map_err(|e| {
-            ApiError::InternalError(3, format!("DB transaction begin error: {}", e))
-        })?;
+    let mut tx = data
+        .db
+        .begin()
+        .await
+        .map_err(|e| ApiError::InternalError(format!("DB transaction begin error: {}", e)))?;
 
     let insert_result = sqlx::query(
         r#"
@@ -145,7 +152,7 @@ pub async fn renuncia_por_vinculo(
     .bind(&doc.descripcion)
     .execute(&mut tx)
     .await
-    .map_err(|e| ApiError::InternalError(3, format!("Insert Documento error: {}", e)))?;
+    .map_err(|e| ApiError::InternalError(format!("Insert Documento error: {}", e)))?;
 
     let new_doc_id = insert_result.last_insert_id();
 
@@ -160,7 +167,7 @@ pub async fn renuncia_por_vinculo(
     .bind(doc.id)
     .execute(&mut tx)
     .await
-    .map_err(|e| ApiError::InternalError(3, format!("Update Vinculo error: {}", e)))?;
+    .map_err(|e| ApiError::InternalError(format!("Update Vinculo error: {}", e)))?;
 
     sqlx::query(
         r#"
@@ -170,10 +177,10 @@ pub async fn renuncia_por_vinculo(
         WHERE v.id = ?
         "#,
     )
-    .bind(doc.id) // Usamos el mismo ID de Vinculo
+    .bind(doc.id)
     .execute(&mut tx)
     .await
-    .map_err(|e| ApiError::InternalError(3, format!("Update Plaza error: {}", e)))?;
+    .map_err(|e| ApiError::InternalError(format!("Update Plaza error: {}", e)))?;
 
     let row = sqlx::query(
         r#"
@@ -193,26 +200,26 @@ pub async fn renuncia_por_vinculo(
     .bind(doc.id)
     .fetch_one(&mut tx)
     .await
-    .map_err(|e| ApiError::InternalError(3, format!("Select after update error: {}", e)))?;
+    .map_err(|e| ApiError::InternalError(format!("Select after update error: {}", e)))?;
 
     tx.commit()
         .await
-        .map_err(|e| ApiError::InternalError(3, format!("Commit error: {}", e)))?;
+        .map_err(|e| ApiError::InternalError(format!("Commit error: {}", e)))?;
 
     let json_value = serde_json::json!({
         "dni": row.try_get::<Option<String>, _>("dni")
-            .map_err(|e| ApiError::InternalError(3, format!("Row get dni error: {}", e)))?,
+            .map_err(|e| ApiError::InternalError(format!("Row get dni error: {}", e)))?,
         "nombre": row.try_get::<Option<String>, _>("nombre")
-            .map_err(|e| ApiError::InternalError(3, format!("Row get nombre error: {}", e)))?,
+            .map_err(|e| ApiError::InternalError(format!("Row get nombre error: {}", e)))?,
         "estado": row.try_get::<Option<String>, _>("estado")
-            .map_err(|e| ApiError::InternalError(3, format!("Row get estado error: {}", e)))?,
+            .map_err(|e| ApiError::InternalError(format!("Row get estado error: {}", e)))?,
         "fecha": row.try_get::<Option<NaiveDate>, _>("fecha")
-            .map_err(|e| ApiError::InternalError(3, format!("Row get fecha error: {}", e)))?
+            .map_err(|e| ApiError::InternalError(format!("Row get fecha error: {}", e)))?
             .map(|d| d.to_string()),
         "descripcion": row.try_get::<Option<String>, _>("descripcion")
-            .map_err(|e| ApiError::InternalError(3, format!("Row get descripcion error: {}", e)))?,
+            .map_err(|e| ApiError::InternalError(format!("Row get descripcion error: {}", e)))?,
         "documento": row.try_get::<Option<String>, _>("documento")
-            .map_err(|e| ApiError::InternalError(3, format!("Row get documento error: {}", e)))?,
+            .map_err(|e| ApiError::InternalError(format!("Row get documento error: {}", e)))?,
     });
 
     if let Err(e) = registrar_historial(
@@ -252,7 +259,10 @@ pub async fn banco_por_dni(
     )
     .fetch_optional(&data.db)
     .await
-    .expect("REASON");
+    .map_err(|e| {
+        eprintln!("Database error: {:?}", e);
+        ApiError::InternalError("Error al obtener datos bancarios".into())
+    })?;
 
     Ok(HttpResponse::Ok().json(datos))
 }
@@ -269,7 +279,10 @@ pub async fn grado_por_dni(
     )
     .fetch_optional(&data.db)
     .await
-    .expect("REASON");
+    .map_err(|e| {
+        eprintln!("Database error: {:?}", e);
+        ApiError::InternalError("Error al obtener grado académico".into())
+    })?;
 
     Ok(HttpResponse::Ok().json(datos))
 }
@@ -304,7 +317,7 @@ pub async fn agregar_infobancaria(
             .await;
             Ok(HttpResponse::Ok().json(format!("Rows affected: {}", result.rows_affected())))
         }
-        Err(e) => Err(ApiError::InternalError(3, format!("Database error: {}", e))),
+        Err(e) => Err(ApiError::InternalError(format!("Database error: {}", e))),
     }
 }
 
@@ -331,10 +344,12 @@ pub async fn editar_datos_bancarios(
     match insert {
         Ok(result) => {
             let row = sqlx::query!("SELECT nombre FROM Banco WHERE id = ?", doc.banco)
-                .fetch_one(&data.db) // pool es tu conexión a la BD
+                .fetch_one(&data.db)
                 .await;
 
-            let nombre: String = row.unwrap().nombre;
+            let nombre: String = row
+                .map_err(|e| ApiError::InternalError(format!("Error al obtener banco: {}", e)))?
+                .nombre;
             doc.banco = nombre;
 
             let _ = registrar_historial(
@@ -346,7 +361,7 @@ pub async fn editar_datos_bancarios(
             .await;
             Ok(HttpResponse::Ok().json(format!("Rows affected: {}", result.rows_affected())))
         }
-        Err(e) => Err(ApiError::InternalError(3, format!("Database error: {}", e))),
+        Err(e) => Err(ApiError::InternalError(format!("Database error: {}", e))),
     }
 }
 
@@ -378,7 +393,7 @@ pub async fn agregar_gradoacademico(
             .await;
             Ok(HttpResponse::Ok().json(format!("Rows affected: {}", result.rows_affected())))
         }
-        Err(e) => Err(ApiError::InternalError(3, format!("Database error: {}", e))),
+        Err(e) => Err(ApiError::InternalError(format!("Database error: {}", e))),
     }
 }
 
@@ -410,7 +425,7 @@ pub async fn editar_gradoacademico(
             .await;
             Ok(HttpResponse::Ok().json(format!("Rows affected: {}", result.rows_affected())))
         }
-        Err(e) => Err(ApiError::InternalError(3, format!("Database error: {}", e))),
+        Err(e) => Err(ApiError::InternalError(format!("Database error: {}", e))),
     }
 }
 
@@ -419,7 +434,7 @@ pub async fn editar_perfil(
     perfil: web::Json<Perfil>,
     req: HttpRequest,
 ) -> Result<impl Responder, ApiError> {
-    let key = std::env::var("DB_KEY").unwrap_or("*Asdf-Xasdfadf2eee".to_string());
+    let key = key::key::DB_KEY;
     let perfil_antes = get_perfil_by_dni(data.clone(), perfil.dni.clone()).await?;
 
     let insert = sqlx::query(
@@ -466,13 +481,13 @@ pub async fn editar_perfil(
 
             Ok(HttpResponse::Ok().json(format!("Rows affected: {}", result.rows_affected())))
         }
-        Err(e) => Err(ApiError::InternalError(3, format!("Database error: {}", e))),
+        Err(e) => Err(ApiError::InternalError(format!("Database error: {}", e))),
     }
 }
 
 pub async fn agregar_sindicato(
     data: web::Data<AppState>,
-    mut doc: web::Json<DocumentoSindicato>, // Se hace mutable para poder añadirle el DNI
+    mut doc: web::Json<DocumentoSindicato>,
     req: HttpRequest,
 ) -> Result<impl Responder, ApiError> {
     let mut tx = data.db.begin().await?;
@@ -503,7 +518,7 @@ pub async fn agregar_sindicato(
 
     let row = sqlx::query("SELECT dni FROM vinculo WHERE id = ?")
         .bind(doc.id_vinculo)
-        .fetch_one(&mut *tx) // Se usa una referencia mutable a la transacción
+        .fetch_one(&mut *tx)
         .await?;
 
     let dni: String = row.try_get("dni")?;
@@ -522,16 +537,13 @@ pub async fn agregar_sindicato(
     Ok(HttpResponse::Ok().json("Se registraron correctamente los datos"))
 }
 
-// LEGAJOS
-
-// lega
 pub async fn personas_legajos(data: web::Data<AppState>) -> Result<impl Responder, ApiError> {
     let data = sqlx::query(r#"select persona from legajo GROUP by persona"#)
         .fetch_all(&data.db)
         .await
         .map_err(|e| {
             eprintln!("Database error: {:?}", e);
-            ApiError::InternalError(3, "Database consulta malformada".into())
+            ApiError::InternalError("Database consulta malformada".into())
         })?;
 
     let result: Vec<Value> = data
@@ -573,7 +585,10 @@ pub async fn reporte_legajo(
     )
     .fetch_all(&data.db)
     .await
-    .expect("REASON");
+    .map_err(|e| {
+        eprintln!("Database error: {:?}", e);
+        ApiError::InternalError("Error al obtener legajo".into())
+    })?;
 
     Ok(HttpResponse::Ok().json(datos))
 }
@@ -599,7 +614,7 @@ pub async fn agregar_evento_legajo(
         .await
         .map_err(|e| {
             eprintln!("Error al obtener ENUM: {:?}", e);
-            ApiError::InternalError(1, "Error al obtener valores de ENUM".into())
+            ApiError::InternalError("Error al obtener valores de ENUM".into())
         })?;
 
         let enum_clean = enum_row.trim_start_matches("enum(").trim_end_matches(")");
@@ -627,7 +642,7 @@ pub async fn agregar_evento_legajo(
                 .await
                 .map_err(|e| {
                     eprintln!("Error al modificar ENUM: {:?}", e);
-                    ApiError::InternalError(2, "No se pudo modificar ENUM".into())
+                    ApiError::InternalError("No se pudo modificar ENUM".into())
                 })?;
         }
     }
@@ -648,7 +663,7 @@ pub async fn agregar_evento_legajo(
     .await
     .map_err(|e| {
         eprintln!("Error insert legajo: {:?}", e);
-        ApiError::InternalError(4, "Error al insertar legajo".into())
+        ApiError::InternalError("Error al insertar legajo".into())
     })?;
 
     let resultado = tx.commit().await;
@@ -664,7 +679,7 @@ pub async fn agregar_evento_legajo(
             .await;
             Ok(HttpResponse::Ok().json("Se registraron correctamente los datos"))
         }
-        Err(e) => Err(ApiError::InternalError(6, format!("Database error: {}", e))),
+        Err(e) => Err(ApiError::InternalError(format!("Database error: {}", e))),
     }
 }
 
@@ -689,9 +704,10 @@ pub async fn report_asistencia(
     )
     .fetch_all(&data.db)
     .await
-    .expect("REASON");
-
-    println!("{:?}", datos);
+    .map_err(|e| {
+        eprintln!("Database error: {:?}", e);
+        ApiError::InternalError("Error al obtener asistencia".into())
+    })?;
 
     Ok(HttpResponse::Ok().json(datos))
 }
@@ -701,7 +717,7 @@ pub async fn contacto_emergencia_add(
     contacto: web::Json<ContactoEmergencia>,
     req: HttpRequest,
 ) -> Result<impl Responder, ApiError> {
-    let key = std::env::var("DB_KEY").unwrap_or("*Asdf-Xasdfadf2eee".to_string());
+    let key = key::key::DB_KEY;
     let query = sqlx::query(
         r#"
         INSERT INTO ContactoEmergencia (persona_dni, nombre, telefono, relacion)
@@ -731,7 +747,7 @@ pub async fn contacto_emergencia_add(
             .await;
             Ok(HttpResponse::Ok().json(format!("Rows affected: {}", result.rows_affected())))
         }
-        Err(e) => Err(ApiError::InternalError(3, format!("Database error: {}", e))),
+        Err(e) => Err(ApiError::InternalError(format!("Database error: {}", e))),
     }
 }
 
@@ -739,7 +755,7 @@ pub async fn conctaco_por_dni(
     data: web::Data<AppState>,
     dni: web::Json<PerfilDni>,
 ) -> Result<impl Responder, ApiError> {
-    let key = std::env::var("DB_KEY").unwrap_or("*Asdf-Xasdfadf2eee".to_string());
+    let key = key::key::DB_KEY;
     let datos = sqlx::query_as!(
         ContactoEmergencia,
         r#"select persona_dni,nombre,relacion,cast(aes_decrypt(telefono,?) as char) telefono from ContactoEmergencia  where persona_dni = ?
@@ -749,7 +765,10 @@ pub async fn conctaco_por_dni(
     )
     .fetch_optional(&data.db)
     .await
-    .expect("REASON");
+    .map_err(|e| {
+        eprintln!("Database error: {:?}", e);
+        ApiError::InternalError("Error al obtener contacto de emergencia".into())
+    })?;
 
     Ok(HttpResponse::Ok().json(datos))
 }
@@ -799,7 +818,7 @@ pub async fn buscar_vacantes(data: web::Data<AppState>) -> Result<impl Responder
     .await
     .map_err(|e| {
         eprintln!("Database error: {:?}", e);
-        ApiError::InternalError(3, "Database error retrieving vacantes".into())
+        ApiError::InternalError("Database error retrieving vacantes".into())
     })?;
 
     Ok(HttpResponse::Ok().json(vacantes))
@@ -850,7 +869,7 @@ pub async fn buscar_por_plaza(
     .await
     .map_err(|e| {
         eprintln!("Database error: {:?}", e);
-        ApiError::InternalError(3, "Database error retrieving plaza".into())
+        ApiError::InternalError("Database error retrieving plaza".into())
     })?;
 
     Ok(HttpResponse::Ok().json(plaza))

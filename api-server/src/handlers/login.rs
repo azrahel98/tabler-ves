@@ -1,5 +1,6 @@
 use crate::{
     AppState,
+    key::{self, key::DB_KEY},
     middleware::{error::ApiError, jwt::generate_token},
     models::login::Usuario,
 };
@@ -19,10 +20,10 @@ pub struct LoginRequest {
 impl LoginRequest {
     pub fn validate(&self) -> Result<(), ApiError> {
         if self.username.trim().is_empty() {
-            return Err(ApiError::BadRequest(4, "username is required".into()));
+            return Err(ApiError::BadRequest("username is required".into()));
         }
         if self.password.trim().is_empty() {
-            return Err(ApiError::BadRequest(5, "password is required".into()));
+            return Err(ApiError::BadRequest("password is required".into()));
         }
 
         Ok(())
@@ -35,7 +36,7 @@ pub async fn login(
 ) -> Result<impl Responder, ApiError> {
     login.validate()?;
 
-    let key = std::env::var("DB_KEY").unwrap_or("*Asdf-Xasdfadf2eee".to_string());
+    let key = key::key::DB_KEY;
 
     let user = sqlx::query_as!(
         Usuario,
@@ -56,17 +57,17 @@ pub async fn login(
     .await
     .map_err(|e| {
         eprintln!("Database error: {:?}", e);
-        ApiError::InternalError(3, "Database consulta malformada".into())
+        ApiError::InternalError("Database consulta malformada".into())
     })?;
 
     let user = match user {
         Some(u) => {
             if u.pass.as_deref() != Some(login.password.as_str()) {
-                return Err(ApiError::Unauthorized(1, "Contraseña incorrecta".into()));
+                return Err(ApiError::Unauthorized("Contraseña incorrecta".into()));
             }
             u
         }
-        None => return Err(ApiError::Unauthorized(2, "El usuario no existe".into())),
+        None => return Err(ApiError::Unauthorized("El usuario no existe".into())),
     };
 
     let token = generate_token(user.id, user.nivel, user.nombre);
@@ -88,7 +89,7 @@ pub async fn change_pass(
     data: web::Data<AppState>,
     pass: web::Json<ChangePass>,
 ) -> Result<impl Responder, ApiError> {
-    let key = std::env::var("DB_KEY").unwrap_or("*Asdf-Xasdfadf2eee".to_string());
+    let key = DB_KEY;
 
     let db_pass = sqlx::query_scalar!(
         r#"
@@ -103,7 +104,7 @@ pub async fn change_pass(
     .await
     .map_err(|e| {
         eprintln!("Database error: {:?}", e);
-        ApiError::InternalError(3, "Database consulta malformada".into())
+        ApiError::InternalError("Database consulta malformada".into())
     })?
     .unwrap();
 
@@ -111,7 +112,6 @@ pub async fn change_pass(
         Some(p) => p,
         None => {
             return Err(ApiError::Unauthorized(
-                2,
                 "Usuario no encontrado o sin contraseña".into(),
             ));
         }
@@ -119,7 +119,6 @@ pub async fn change_pass(
 
     if db_pass != pass.oldpass {
         return Err(ApiError::Unauthorized(
-            2,
             "La contraseña no es correcta".into(),
         ));
     }
@@ -136,7 +135,7 @@ pub async fn change_pass(
     .await
     .map_err(|e| {
         eprintln!("Database error: {:?}", e);
-        ApiError::InternalError(5, "No se pudo actualizar la contraseña".into())
+        ApiError::InternalError("No se pudo actualizar la contraseña".into())
     })?;
 
     Ok(HttpResponse::Ok().json("Contraseña cambiada con éxito"))

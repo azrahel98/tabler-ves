@@ -1,11 +1,11 @@
 <template>
   <div class="bg-white rounded-2xl px-0 py-5 shadow-lg border border-border w-full">
-    <header class="flex flex-col px-4 items-center gap-4 border-b border-border pb-4 mb-4">
+    <header class="flex flex-col px-4 items-center gap-4 border-b border-border pb-2 mb-4">
       <div class="flex items-center gap-2">
-        <div class="relative w-16 h-16 cursor-pointer group z-10 shrink-0" @click="openFilePicker" title="Cambiar foto de perfil">
-          <div class="w-16 h-16 rounded-full bg-primary flex items-center justify-center overflow-hidden transition-shadow group-hover:shadow-lg">
+        <div class="relative w-14 h-14 cursor-pointer group z-10 shrink-0" @click="openFilePicker" title="Cambiar foto de perfil">
+          <div class="w-14 h-14 rounded-full bg-primary flex items-center justify-center overflow-hidden transition-shadow group-hover:shadow-lg">
             <img v-if="user.avatar" :src="currentImage" alt="Foto de perfil" class="w-full h-full object-cover" />
-            <span v-else class="text-2xl font-semibold text-white tracking-tight">
+            <span v-else class="text-lg font-semibold text-white tracking-tight">
               {{ nombreabrv(user.nombre) }}
             </span>
           </div>
@@ -46,16 +46,16 @@
       <input ref="fileInputRef" type="file" accept="image/*" class="hidden" @change="handleFileChange" />
 
       <div class="flex-1 min-w-0 text-center lg:text-center w-full lg:w-auto">
-        <p class="text-base font-bold text-text-primary tracking-tight leading-tight">
+        <p class="text-md font-bold text-text-primary tracking-tight leading-tight">
           {{ user.nombre }}
         </p>
-        <p class="text-sm mt-1 font-normal text-text-muted">{{ user.dni }}</p>
+        <p class="text-xs mt-1 font-normal text-text-muted">{{ user.dni }}</p>
       </div>
     </header>
 
     <section class="space-y-2.5 px-1.5 mb-1">
       <div class="flex justify-between px-2 gap-2 items-center">
-        <h6 class="text-sm font-semibold tracking-tight uppercase">Información Personal</h6>
+        <p class="text-xs font-semibold tracking-tight uppercase">Información Personal</p>
         <Editar_info v-if="app.canEdit" />
       </div>
       <div class="flex items-center gap-1.5">

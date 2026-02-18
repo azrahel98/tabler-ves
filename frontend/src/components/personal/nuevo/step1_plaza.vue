@@ -1,18 +1,18 @@
 <template>
-  <div class="max-w-4xl mx-auto space-y-6">
+  <div class="max-w-4xl mx-auto space-y-4">
     <div class="flex justify-center">
-      <div class="bg-secondary/50 p-1 rounded-xl inline-flex">
+      <div class="bg-slate-100/80 p-1 rounded-lg inline-flex">
         <button
           @click="mode = 'search'"
-          class="px-4 py-2 text-sm font-medium rounded-lg transition-all"
-          :class="mode === 'search' ? 'bg-white text-primary shadow-sm' : 'text-muted-foreground hover:text-foreground'"
+          class="px-3 py-1.5 text-xs font-medium rounded-md transition-all"
+          :class="mode === 'search' ? 'bg-white text-primary shadow-sm ring-1 ring-slate-200' : 'text-slate-500 hover:text-slate-700'"
         >
           Buscar Plaza Vacante
         </button>
         <button
           @click="mode = 'create'"
-          class="px-4 py-2 text-sm font-medium rounded-lg transition-all"
-          :class="mode === 'create' ? 'bg-white text-primary shadow-sm' : 'text-muted-foreground hover:text-foreground'"
+          class="px-3 py-1.5 text-xs font-medium rounded-md transition-all"
+          :class="mode === 'create' ? 'bg-white text-primary shadow-sm ring-1 ring-slate-200' : 'text-slate-500 hover:text-slate-700'"
         >
           Crear Nueva Plaza
         </button>
@@ -20,120 +20,117 @@
     </div>
 
     <div v-if="mode === 'search'" class="space-y-3 flex flex-col items-center">
-      <div class="bg-primary/5 border border-primary/10 rounded-2xl w-max px-6 py-4 text-center">
-        <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3">
-          <Search class="w-6 h-6 text-primary" />
+      <div class="bg-slate-50 border border-slate-100 rounded-xl w-max px-6 py-4 text-center">
+        <div class="w-8 h-8 bg-blue-50/50 rounded-full flex items-center justify-center mx-auto mb-2.5">
+          <Search class="w-4 h-4 text-primary" />
         </div>
-        <h3 class="text-sm font-bold text-foreground mb-1">Buscar Plaza Disponible</h3>
-        <p class="text-xs text-muted-foreground mb-4 mx-auto">Busca y selecciona una plaza vacante existente para asignar automáticamente los datos correspondientes.</p>
-        <button
-          @click="showModal = true"
-          class="px-5 py-2.5 bg-primary text-primary-foreground text-sm font-semibold rounded-xl hover:bg-primary/90 transition-colors shadow-lg shadow-primary/20"
-        >
-          Abrir Buscador de Plazas
+        <h3 class="text-xs font-bold text-slate-700 mb-0.5">Buscar Plaza Disponible</h3>
+        <p class="text-[10px] text-slate-400 mb-3 mx-auto max-w-[200px] leading-tight">Busca y selecciona una plaza vacante existente para asignar automáticamente los datos.</p>
+        <button @click="showModal = true" class="px-4 py-1.5 bg-primary text-primary-foreground text-xs font-medium rounded-md hover:bg-primary/90 transition-colors shadow-sm">
+          Abrir Buscador
         </button>
       </div>
 
-      <div v-if="store.plaza.codigo" class="border border-border rounded-2xl w-full overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-300">
-        <div class="bg-muted/50 px-4 py-3 border-b border-border flex items-center justify-between">
-          <h4 class="text-xs font-bold text-muted-foreground uppercase tracking-wider">Plaza Seleccionada</h4>
-          <button @click="resetSelection" class="text-xs text-destructive hover:underline">Quitar</button>
+      <div v-if="store.plaza.codigo" class="border border-slate-200 rounded-lg w-full overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-300">
+        <div class="bg-slate-50/50 px-3 py-2 border-b border-slate-200 flex items-center justify-between">
+          <h4 class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Plaza Seleccionada</h4>
+          <button @click="resetSelection" class="text-[10px] text-red-500 hover:underline">Quitar</button>
         </div>
-        <div class="p-4 grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm opacity-75">
+        <div class="p-3 grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
           <div>
-            <span class="block text-xs text-muted-foreground mb-0.5">Código</span>
-            <span class="font-semibold text-foreground">{{ store.plaza.codigo }}</span>
+            <span class="block text-[9px] text-slate-400 uppercase tracking-wide mb-0.5">Código</span>
+            <span class="font-semibold text-slate-700 font-mono">{{ store.plaza.codigo }}</span>
           </div>
           <div>
-            <span class="block text-xs text-muted-foreground mb-0.5">Cargo Estructural</span>
-            <span class="font-semibold text-foreground">{{ store.plaza.cargo_estructural.nombre }}</span>
+            <span class="block text-[9px] text-slate-400 uppercase tracking-wide mb-0.5">Cargo Estructural</span>
+            <span class="font-semibold text-slate-700">{{ store.plaza.cargo_estructural.nombre }}</span>
           </div>
           <div>
-            <span class="block text-xs text-muted-foreground mb-0.5">Grupo</span>
-            <span class="font-semibold text-foreground">{{ store.plaza.grupo_ocupacional.nombre }}</span>
+            <span class="block text-[9px] text-slate-400 uppercase tracking-wide mb-0.5">Grupo</span>
+            <span class="font-semibold text-slate-700">{{ store.plaza.grupo_ocupacional.nombre }}</span>
           </div>
           <div>
-            <span class="block text-xs text-muted-foreground mb-0.5">Cargo</span>
-            <span class="font-semibold text-foreground">{{ store.plaza.cargo || '-' }}</span>
+            <span class="block text-[9px] text-slate-400 uppercase tracking-wide mb-0.5">Cargo</span>
+            <span class="font-semibold text-slate-700">{{ store.plaza.cargo || '-' }}</span>
           </div>
           <div>
-            <span class="block text-xs text-muted-foreground mb-0.5">Reemplazo</span>
-            <span class="font-semibold text-foreground">{{ store.plaza.nombre || '-' }}</span>
+            <span class="block text-[9px] text-slate-400 uppercase tracking-wide mb-0.5">Reemplazo</span>
+            <span class="font-medium text-slate-600 truncate">{{ store.plaza.nombre || '-' }}</span>
           </div>
           <div>
-            <span class="block text-xs text-muted-foreground mb-0.5">Regimen</span>
-            <span class="font-semibold text-foreground">{{ store.plaza.regimen.nombre || '-' }}</span>
+            <span class="block text-[9px] text-slate-400 uppercase tracking-wide mb-0.5">Regimen</span>
+            <span class="font-semibold text-slate-700">{{ store.plaza.regimen.nombre || '-' }}</span>
           </div>
           <div>
-            <span class="block text-xs text-muted-foreground mb-0.5">Sueldo</span>
-            <span class="font-semibold text-foreground">{{ store.plaza.sueldo || '-' }}</span>
+            <span class="block text-[9px] text-slate-400 uppercase tracking-wide mb-0.5">Sueldo</span>
+            <span class="font-mono font-bold text-slate-700">{{ store.plaza.sueldo || '-' }}</span>
           </div>
         </div>
       </div>
     </div>
 
-    <div v-else class="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
+    <div v-else class="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
       <!-- Código de Plaza -->
       <div class="col-span-1">
-        <label class="block text-xs font-semibold text-muted-foreground mb-1.5 ml-1">Código de Plaza</label>
+        <label class="block text-[10px] uppercase tracking-wide font-semibold text-slate-500 mb-1 ml-1">Código de Plaza</label>
         <div class="relative">
           <input
             v-model="store.plaza.codigo"
             type="text"
-            class="w-full rounded-xl border px-4 py-2.5 text-sm focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all"
-            :class="errors.codigo ? 'border-destructive bg-destructive/5' : 'border-border'"
+            class="w-full rounded-md border px-2.5 py-1.5 text-xs focus:ring-2 focus:ring-primary/10 outline-none transition-all placeholder:text-slate-300"
+            :class="errors.codigo ? 'border-red-300 bg-red-50/20' : 'border-slate-200'"
             placeholder="Ej. PL-2024-001"
             @input="errors.codigo = ''"
           />
-          <Hash class="absolute right-3 top-3 w-4 h-4 text-muted-foreground pointer-events-none" />
+          <Hash class="absolute right-2.5 top-2 w-3.5 h-3.5 text-slate-400 pointer-events-none" />
         </div>
-        <span v-if="errors.codigo" class="text-[10px] text-destructive mt-1 ml-1 font-medium">{{ errors.codigo }}</span>
+        <span v-if="errors.codigo" class="text-[9px] text-red-500 mt-1 ml-1">{{ errors.codigo }}</span>
       </div>
 
       <!-- Estado -->
       <div class="col-span-1">
-        <label class="block text-xs font-semibold text-muted-foreground mb-1.5 ml-1">Estado</label>
+        <label class="block text-[10px] uppercase tracking-wide font-semibold text-slate-500 mb-1 ml-1">Estado</label>
         <div class="relative">
           <select
             v-model="store.plaza.estado"
-            class="w-full rounded-xl border px-4 py-2.5 text-sm focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all appearance-none bg-background text-foreground"
-            :class="errors.estado ? 'border-destructive bg-destructive/5' : 'border-border'"
+            class="w-full rounded-md border px-2.5 py-1.5 text-xs focus:ring-2 focus:ring-primary/10 outline-none transition-all appearance-none bg-white text-slate-700"
+            :class="errors.estado ? 'border-red-300 bg-red-50/20' : 'border-slate-200'"
             @change="errors.estado = ''"
           >
             <option value="VACANTE">VACANTE</option>
             <option value="OCUPADO">OCUPADO</option>
             <option value="RESERVADO">RESERVADO</option>
           </select>
-          <ChevronDown class="absolute right-3 top-3 w-4 h-4 text-muted-foreground pointer-events-none" />
+          <ChevronDown class="absolute right-2.5 top-2 w-3.5 h-3.5 text-slate-400 pointer-events-none" />
         </div>
-        <span v-if="errors.estado" class="text-[10px] text-destructive mt-1 ml-1 font-medium">{{ errors.estado }}</span>
+        <span v-if="errors.estado" class="text-[9px] text-red-500 mt-1 ml-1">{{ errors.estado }}</span>
       </div>
 
       <!-- Cargo Estructural -->
       <div class="col-span-2">
-        <label class="block text-xs font-semibold text-muted-foreground mb-1.5 ml-1">Cargo Estructural</label>
+        <label class="block text-[10px] uppercase tracking-wide font-semibold text-slate-500 mb-1 ml-1">Cargo Estructural</label>
         <div class="relative">
           <input
             v-model="store.plaza.cargo_estructural"
             type="text"
-            class="w-full rounded-xl border px-4 py-2.5 text-sm focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all pl-10"
-            :class="errors.cargo_estructural ? 'border-destructive bg-destructive/5' : 'border-border'"
+            class="w-full rounded-md border px-2.5 py-1.5 text-xs focus:ring-2 focus:ring-primary/10 outline-none transition-all pl-8 placeholder:text-slate-300"
+            :class="errors.cargo_estructural ? 'border-red-300 bg-red-50/20' : 'border-slate-200'"
             placeholder="Ej. Analista de Sistemas"
             @input="errors.cargo_estructural = ''"
           />
-          <Briefcase class="absolute left-3 top-3 w-4 h-4 text-muted-foreground pointer-events-none" />
+          <Briefcase class="absolute left-2.5 top-2 w-3.5 h-3.5 text-slate-400 pointer-events-none" />
         </div>
-        <span v-if="errors.cargo_estructural" class="text-[10px] text-destructive mt-1 ml-1 font-medium">{{ errors.cargo_estructural }}</span>
+        <span v-if="errors.cargo_estructural" class="text-[9px] text-red-500 mt-1 ml-1">{{ errors.cargo_estructural }}</span>
       </div>
 
       <!-- Grupo Ocupacional -->
       <div class="col-span-1">
-        <label class="block text-xs font-semibold text-muted-foreground mb-1.5 ml-1">Grupo Ocupacional</label>
+        <label class="block text-[10px] uppercase tracking-wide font-semibold text-slate-500 mb-1 ml-1">Grupo Ocupacional</label>
         <div class="relative">
           <select
             v-model="store.plaza.grupo_ocupacional"
-            class="w-full rounded-xl border px-4 py-2.5 text-sm focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all appearance-none bg-background text-foreground"
-            :class="errors.grupo_ocupacional ? 'border-destructive bg-destructive/5' : 'border-border'"
+            class="w-full rounded-md border px-2.5 py-1.5 text-xs focus:ring-2 focus:ring-primary/10 outline-none transition-all appearance-none bg-white text-slate-700"
+            :class="errors.grupo_ocupacional ? 'border-red-300 bg-red-50/20' : 'border-slate-200'"
             @change="errors.grupo_ocupacional = ''"
           >
             <option value="" disabled selected>Seleccione</option>
@@ -142,19 +139,19 @@
             <option value="AUXILIAR">Auxiliar</option>
             <option value="FUNCIONARIO">Funcionario</option>
           </select>
-          <ChevronDown class="absolute right-3 top-3 w-4 h-4 text-muted-foreground pointer-events-none" />
+          <ChevronDown class="absolute right-2.5 top-2 w-3.5 h-3.5 text-slate-400 pointer-events-none" />
         </div>
-        <span v-if="errors.grupo_ocupacional" class="text-[10px] text-destructive mt-1 ml-1 font-medium">{{ errors.grupo_ocupacional }}</span>
+        <span v-if="errors.grupo_ocupacional" class="text-[9px] text-red-500 mt-1 ml-1">{{ errors.grupo_ocupacional }}</span>
       </div>
 
       <!-- Condición -->
       <div class="col-span-1">
-        <label class="block text-xs font-semibold text-muted-foreground mb-1.5 ml-1">Condición Laboral</label>
+        <label class="block text-[10px] uppercase tracking-wide font-semibold text-slate-500 mb-1 ml-1">Condición Laboral</label>
         <div class="relative">
           <select
             v-model="store.plaza.condicion"
-            class="w-full rounded-xl border px-4 py-2.5 text-sm focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all appearance-none bg-background text-foreground"
-            :class="errors.condicion ? 'border-destructive bg-destructive/5' : 'border-border'"
+            class="w-full rounded-md border px-2.5 py-1.5 text-xs focus:ring-2 focus:ring-primary/10 outline-none transition-all appearance-none bg-white text-slate-700"
+            :class="errors.condicion ? 'border-red-300 bg-red-50/20' : 'border-slate-200'"
             @change="errors.condicion = ''"
           >
             <option value="" disabled selected>Seleccione</option>
@@ -163,9 +160,9 @@
             <option value="CONFIANZA">Confianza</option>
             <option value="OBRERO">Obrero</option>
           </select>
-          <ChevronDown class="absolute right-3 top-3 w-4 h-4 text-muted-foreground pointer-events-none" />
+          <ChevronDown class="absolute right-2.5 top-2 w-3.5 h-3.5 text-slate-400 pointer-events-none" />
         </div>
-        <span v-if="errors.condicion" class="text-[10px] text-destructive mt-1 ml-1 font-medium">{{ errors.condicion }}</span>
+        <span v-if="errors.condicion" class="text-[9px] text-red-500 mt-1 ml-1">{{ errors.condicion }}</span>
       </div>
     </div>
 

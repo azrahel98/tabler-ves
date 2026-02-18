@@ -20,7 +20,7 @@ interface Respuesta {
   historialActualizado: Mensaje[] // Agregamos esto para devolver el historial
 }
 
-const apiKey = 'AIzaSyDac7ZP4NU6lSGjePotCkwMn9qNddFR28M'
+const apiKey = 'AIzaSyDe8g0kQ-lFbhsppYKYouH5fbn7atrX7_Q'
 
 // Ahora la función acepta un historial opcional (por defecto vacío)
 const consultar = async (usuario: string, historialPrevio: Mensaje[] = []): Promise<Respuesta> => {
@@ -28,7 +28,7 @@ const consultar = async (usuario: string, historialPrevio: Mensaje[] = []): Prom
   // Actualmente los estables son 'gemini-1.5-flash' o 'gemini-2.0-flash-exp'.
   const modelName = 'gemini-2.5-flash'
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`
-  const storeName = 'fileSearchStores/servirv2-cjoyzm8a5xxb'
+  const storeName = 'fileSearchStores/rrhh-m8vd6znl4ok4'
 
   const instruccionesSistema = {
     parts: [

@@ -1,5 +1,7 @@
 use crate::{
     AppState,
+    handlers::personal::PerfilDni,
+    key::key::DB_KEY,
     middleware::error::ApiError,
     models::dash::{
         BancosReport, Cumpleaños, DataResumen, DbOrgani, Organigrama, ReporteLegajo,
@@ -63,7 +65,7 @@ pub async fn cumpleaños(data: web::Data<AppState>) -> Result<impl Responder, Ap
     .await
     .map_err(|e| {
         eprintln!("Database error: {:?}", e);
-        ApiError::InternalError(3, "Database consulta malformada".into())
+        ApiError::InternalError("Database consulta malformada".into())
     })?;
 
     Ok(HttpResponse::Ok().json(lista))
@@ -85,7 +87,7 @@ pub async fn info(data: web::Data<AppState>) -> Result<impl Responder, ApiError>
     .map(|r| (r.cantidad, r.activos))
     .map_err(|e| {
         eprintln!("Error total/activos: {:?}", e);
-        ApiError::InternalError(1, "Error al obtener resumen general".into())
+        ApiError::InternalError("Error al obtener resumen general".into())
     })?;
 
     let por_regimen = sqlx::query_as!(
@@ -103,7 +105,7 @@ pub async fn info(data: web::Data<AppState>) -> Result<impl Responder, ApiError>
     )
     .fetch_all(&data.db)
     .await
-    .map_err(|_e| ApiError::InternalError(2, "Error al obtener resumen por régimen".into()))?;
+    .map_err(|_e| ApiError::InternalError("Error al obtener resumen por régimen".into()))?;
 
     let por_sexo = sqlx::query_as!(
         DataResumen,
@@ -119,7 +121,7 @@ pub async fn info(data: web::Data<AppState>) -> Result<impl Responder, ApiError>
     )
     .fetch_all(&data.db)
     .await
-    .map_err(|_e| ApiError::InternalError(3, "Error al obtener resumen por sexo".into()))?;
+    .map_err(|_e| ApiError::InternalError("Error al obtener resumen por sexo".into()))?;
 
     let por_sindicato = sqlx::query_as!(
         DataResumen,
@@ -136,7 +138,7 @@ pub async fn info(data: web::Data<AppState>) -> Result<impl Responder, ApiError>
     )
     .fetch_all(&data.db)
     .await
-    .map_err(|_e| ApiError::InternalError(4, "Error al obtener resumen por sindicato".into()))?;
+    .map_err(|_e| ApiError::InternalError("Error al obtener resumen por sindicato".into()))?;
 
     let response = ResumenResponse {
         total,
@@ -171,7 +173,7 @@ pub async fn personal_area_report(data: web::Data<AppState>) -> Result<impl Resp
     .await
     .map_err(|e| {
         eprintln!("Database error: {:?}", e);
-        ApiError::InternalError(3, "Database consulta malformada".into())
+        ApiError::InternalError("Database consulta malformada".into())
     })?;
 
     Ok(HttpResponse::Ok().json(data))
@@ -201,7 +203,7 @@ pub async fn renuncias_año(data: web::Data<AppState>) -> Result<impl Responder,
     .await
     .map_err(|e| {
         eprintln!("Database error: {:?}", e);
-        ApiError::InternalError(3, "Database consulta malformada".into())
+        ApiError::InternalError("Database consulta malformada".into())
     })?;
 
     Ok(HttpResponse::Ok().json(data))
@@ -218,7 +220,7 @@ pub async fn bancos_report(data: web::Data<AppState>) -> Result<impl Responder, 
     .await
     .map_err(|e| {
         eprintln!("Database error: {:?}", e);
-        ApiError::InternalError(3, "Database consulta malformada".into())
+        ApiError::InternalError("Database consulta malformada".into())
     })?;
 
     Ok(HttpResponse::Ok().json(data))
@@ -254,7 +256,7 @@ pub async fn reporte_personal_activo(
     .await
     .map_err(|e| {
         eprintln!("Database error: {:?}", e);
-        ApiError::InternalError(3, "Database consulta malformada".into())
+        ApiError::InternalError("Database consulta malformada".into())
     })?;
 
     let result: Vec<Value> = data
@@ -278,16 +280,13 @@ pub async fn reporte_personal_activo(
 
     Ok(HttpResponse::Ok().json(result))
 }
-#[derive(Deserialize)]
-pub struct PerfilDni {
-    pub dni: String,
-}
+
 pub async fn reporte_historial(
     data: web::Data<AppState>,
     dni: web::Json<PerfilDni>,
 ) -> Result<impl Responder, ApiError> {
     let buscar = format!("%{}%", dni.dni);
-    let key = std::env::var("DB_KEY").unwrap_or("*Asdf-Xasdfadf2eee".to_string());
+    let key = DB_KEY;
 
     let data = sqlx::query(
         r#"
@@ -298,14 +297,14 @@ pub async fn reporte_historial(
         order by f.fecha desc   
         "#,
     )
-    .bind(key.clone())
-    .bind(key.clone())
+    .bind(key)
+    .bind(key)
     .bind(&buscar)
     .fetch_all(&data.db)
     .await
     .map_err(|e| {
         eprintln!("Database error: {:?}", e);
-        ApiError::InternalError(3, "Consulta malformada".into())
+        ApiError::InternalError("Consulta malformada".into())
     })?;
 
     let result: Vec<Value> = data
@@ -348,7 +347,7 @@ pub async fn organigrama(data: web::Data<AppState>) -> Result<impl Responder, Ap
     .await
     .map_err(|e| {
         eprintln!("Database error: {:?}", e);
-        ApiError::InternalError(3, "Consulta malformada".into())
+        ApiError::InternalError("Consulta malformada".into())
     })?;
 
     let mut organigrama: Vec<Organigrama> = Vec::new();
@@ -439,7 +438,7 @@ pub async fn report_legajos(data: web::Data<AppState>) -> Result<impl Responder,
     .await
     .map_err(|e| {
         eprintln!("Database error: {:?}", e);
-        ApiError::InternalError(3, "Database consulta malformada".into())
+        ApiError::InternalError("Database consulta malformada".into())
     })?;
 
     Ok(HttpResponse::Ok().json(data))
@@ -478,7 +477,7 @@ pub async fn report_renuncias(data: web::Data<AppState>) -> Result<impl Responde
     .await
     .map_err(|e| {
         eprintln!("Database error: {:?}", e);
-        ApiError::InternalError(3, "Database consulta malformada".into())
+        ApiError::InternalError("Database consulta malformada".into())
     })?;
 
     Ok(HttpResponse::Ok().json(data))
@@ -502,7 +501,7 @@ pub async fn reporte_documentos(data: web::Data<AppState>) -> Result<impl Respon
     .await
     .map_err(|e| {
         eprintln!("Database error: {:?}", e);
-        ApiError::InternalError(3, "Database consulta malformada".into())
+        ApiError::InternalError("Database consulta malformada".into())
     })?;
 
     Ok(HttpResponse::Ok().json(data))

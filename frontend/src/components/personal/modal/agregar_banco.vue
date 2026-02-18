@@ -2,8 +2,8 @@
   <div>
     <button class="w-full flex items-center gap-3 px-3 text-sm font-medium text-gray-600 hover:rounded-md hover:text-[#5347ce] transition-all group" @click="openModal">
       <div class="p-1.5 rounded-lg bg-gray-100 text-gray-500 group-hover:bg-[#5347ce]/10 group-hover:text-[#5347ce] transition-colors">
-        <Building2 class="w-4 h-4" v-if="store.isbanco()" />
-        <Edit3Icon class="w-4 h-4" v-else />
+        <Building2 class="w-3 h-3" v-if="store.isbanco()" />
+        <Edit3Icon class="w-3 h-3" v-else />
       </div>
       <span v-if="edit">Información Bancaria</span>
     </button>

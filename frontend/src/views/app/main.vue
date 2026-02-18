@@ -16,28 +16,26 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="max-w-7xl mx-auto px-4 py-4">
-    <div class="flex flex-col gap-6">
-      <div class="flex flex-col lg:flex-row gap-6">
-        <div class="w-full lg:w-1/3">
-          <div class="overflow-y-auto rounded-lg shadow-md bg-card border border-border">
-            <Cumples />
-          </div>
-        </div>
-
-        <div class="w-full lg:w-1/4 flex flex-col gap-6">
-          <Sexo :hombres="info.por_sexo?.[1]?.cantidad" :mujeres="info.por_sexo?.[0]?.cantidad" />
-        </div>
-        <div class="w-full lg:w-1/4 flex flex-col gap-6">
-          <Regimen :regimenes="info.por_regimen" />
-        </div>
+  <div class="max-w-[1400px] mx-auto px-2 py-2">
+    <div class="flex flex-wrap gap-2">
+      <!-- Sexo -->
+      <div class="w-full md:w-[48%] lg:w-[20%]">
+        <Sexo :hombres="info.por_sexo?.[1]?.cantidad" :mujeres="info.por_sexo?.[0]?.cantidad" />
       </div>
-      <div class="flex flex-col lg:flex-row gap-6">
-        <div class="w-full lg:w-1/3">
-          <div class="overflow-y-auto rounded-lg shadow-md bg-card border border-border">
-            <Renuncias />
-          </div>
-        </div>
+
+      <!-- Regimen -->
+      <div class="w-full md:w-[48%] lg:w-[20%]">
+        <Regimen :regimenes="info.por_regimen" />
+      </div>
+
+      <!-- Cumples -->
+      <div class="w-full md:w-[48%] lg:w-[32%]">
+        <Cumples />
+      </div>
+
+      <!-- Renuncias -->
+      <div class="w-full md:w-[48%] lg:w-[32%]">
+        <Renuncias />
       </div>
     </div>
   </div>

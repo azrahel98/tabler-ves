@@ -43,8 +43,6 @@ watch(
         <div class="widget-item historial-scroll-container" v-if="perfil.historial.length > 0">
           <Historial :lista="perfil.historial" />
         </div>
-
-        <!-- <button class="btn-ver-mas">Ver más</button> -->
       </section>
     </main>
   </div>
@@ -79,9 +77,9 @@ $widget-max-width: 350px;
 
     .widgets-column {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-      align-items: center;
-      align-self: center;
+      grid-template-columns: repeat(auto-fill, minmax(19vw, 1fr));
+      align-items: start;
+      justify-items: end;
       gap: 1.5rem;
       width: 100%;
 
@@ -90,16 +88,8 @@ $widget-max-width: 350px;
       }
 
       .historial-scroll-container {
-        max-height: 400px;
-        overflow-y: auto;
-
-        &::-webkit-scrollbar {
-          width: 6px;
-        }
-        &::-webkit-scrollbar-thumb {
-          background: #ccc;
-          border-radius: 10px;
-        }
+        max-width: 25vw;
+        // overflow-y: auto;
       }
     }
   }

@@ -1,4 +1,4 @@
-use chrono::{NaiveDate, NaiveDateTime};
+use chrono::NaiveDate;
 use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
 
@@ -23,15 +23,6 @@ pub struct ResumenResponse {
 pub struct DataResumen {
     pub cantidad: i64,
     pub nombre: String,
-}
-
-#[derive(Debug, Deserialize, Serialize, sqlx::FromRow)]
-#[allow(non_snake_case)]
-pub struct AreaReport {
-    pub dni: String,
-    pub nombre: Option<String>,
-    pub nacimiento: NaiveDate,
-    pub edad: Option<i32>,
 }
 
 #[derive(Debug, Deserialize, Serialize, sqlx::FromRow)]
@@ -68,7 +59,7 @@ pub struct ReporteLegajo {
     pub persona: String,
     pub userid: i32,
     pub usuario: String,
-    pub fecha: NaiveDateTime,
+    pub fecha: chrono::NaiveDateTime,
 }
 
 #[derive(Serialize, Deserialize, Clone)]

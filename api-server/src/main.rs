@@ -5,6 +5,7 @@ use sqlx::mysql::{MySqlPool, MySqlPoolOptions};
 use std::time::Duration;
 
 mod handlers;
+mod key;
 mod middleware;
 mod models;
 mod routes;
@@ -17,13 +18,11 @@ pub struct AppState {
 async fn main() -> std::io::Result<()> {
     from_filename(".env").ok();
     if std::env::var("RUST_LOG").is_err() {
-        unsafe {
-            std::env::set_var("RUST_LOG", "debug,actix_web=info");
-        }
+        unsafe { std::env::set_var("RUST_LOG", "debug,actix_web=info") };
     }
     env_logger::init();
 
-    let database_url = std::env::var("DATABASE_URL").expect("No tenemos la conexion");
+    let database_url = key::key::DATABASE_URL;
 
     let pool = match MySqlPoolOptions::new()
         .max_connections(10)

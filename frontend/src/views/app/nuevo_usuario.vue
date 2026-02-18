@@ -1,82 +1,76 @@
 <template>
-  <div class="container mx-auto max-w-5xl">
-    <div class="mb-4">
-      <h2 class="text-2xl font-bold text-foreground">Registro de Nuevo Usuario</h2>
-      <p class="text-muted-foreground text-sm mt-1">Complete la información requerida en cada paso para registrar un nuevo colaborador.</p>
+  <div class="container mt-0 pt-0 mx-auto max-w-4xl">
+    <div class="mb-3">
+      <span class="text-lg font-bold text-slate-800">Registro de Nuevo Usuario</span>
+      <p class="text-slate-500 text-xs mt-0.5">Complete la información requerida en cada paso para registrar un nuevo colaborador.</p>
     </div>
-
-    <div class="mb-4">
-      <div class="flex items-center justify-between relative">
-        <div class="absolute left-0 top-1/2 -translate-y-1/2 w-full h-1 bg-secondary -z-10 rounded-full"></div>
-        <div
-          class="absolute left-0 top-1/2 -translate-y-1/2 h-1 bg-primary -z-10 rounded-full transition-all duration-300"
-          :style="{ width: `${((store.currentStep - 1) / 3) * 100}%` }"
-        ></div>
-
-        <div v-for="step in 4" :key="step" class="flex flex-col items-center gap-2 bg-background px-2">
-          <div
-            class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm border-2 transition-all duration-300"
-            :class="[
-              step < store.currentStep
-                ? 'bg-primary border-primary text-primary-foreground'
-                : step === store.currentStep
-                ? 'bg-background border-primary text-primary shadow-[0_0_0_4px_rgba(83,71,206,0.1)]'
-                : 'bg-background border-border text-muted-foreground'
-            ]"
-          >
-            <Check v-if="step < store.currentStep" class="w-5 h-5" />
-            <span v-else>{{ step }}</span>
+    <div class="steps">
+      <div class="mb-5 items">
+        <div class="flex items-center justify-center gap-4">
+          <div v-for="step in 4" :key="step" class="flex flex-col items-center gap-1.5">
+            <div
+              class="w-5 h-5 rounded-lg flex items-center justify-center font-bold text-xs border transition-all duration-300"
+              :class="[
+                step < store.currentStep
+                  ? 'bg-primary border-primary text-primary-foreground'
+                  : step === store.currentStep
+                    ? 'bg-white border-primary text-primary shadow-sm ring-2 ring-primary/10'
+                    : 'bg-white border-slate-200 text-slate-400'
+              ]"
+            >
+              <Check v-if="step < store.currentStep" class="w-3 h-3" />
+              <span v-else>{{ step }}</span>
+            </div>
+            <span class="text-[10px] font-medium uppercase tracking-wide" :class="step <= store.currentStep ? 'text-slate-700' : 'text-slate-400'">
+              {{ getStepTitle(step) }}
+            </span>
           </div>
-          <span class="text-xs font-medium" :class="step <= store.currentStep ? 'text-foreground' : 'text-muted-foreground'">
-            {{ getStepTitle(step) }}
-          </span>
+        </div>
+      </div>
+
+      <div class="bg-white contenido rounded-xl border border-slate-200 shadow-sm p-4 mb-4">
+        <div v-if="store.currentStep === 1">
+          <Step1Plaza ref="step1Ref" />
+        </div>
+        <div v-else-if="store.currentStep === 2">
+          <Step2Personal ref="step2Ref" />
+        </div>
+        <div v-else-if="store.currentStep === 3">
+          <Step3Documento ref="step3Ref" />
+        </div>
+        <div v-else-if="store.currentStep === 4">
+          <Step4Verificacion />
         </div>
       </div>
     </div>
-
-    <div class="bg-card rounded-2xl border border-border shadow-sm p-6 mb-6 min-h-[400px] w-full max-h-[70vh] overflow-y-auto">
-      <div v-if="store.currentStep === 1">
-        <Step1Plaza ref="step1Ref" />
-      </div>
-      <div v-else-if="store.currentStep === 2">
-        <Step2Personal ref="step2Ref" />
-      </div>
-      <div v-else-if="store.currentStep === 3">
-        <Step3Documento ref="step3Ref" />
-      </div>
-      <div v-else-if="store.currentStep === 4">
-        <Step4Verificacion />
-      </div>
-    </div>
-
-    <div class="flex justify-between items-center bg-card p-4 rounded-2xl border border-border shadow-sm sticky bottom-4 z-10">
+    <div class="flex justify-between items-center bg-white p-3 mb-7 rounded-xl border border-slate-200 shadow-sm">
       <button
         @click="store.prevStep"
         :disabled="store.currentStep === 1"
-        class="px-5 py-2.5 rounded-xl text-sm font-medium transition-colors"
-        :class="store.currentStep === 1 ? 'text-muted-foreground/50 cursor-not-allowed' : 'text-muted-foreground hover:bg-secondary hover:text-foreground border border-border'"
+        class="px-3 py-1.5 rounded-md text-xs font-medium transition-colors border"
+        :class="store.currentStep === 1 ? 'border-transparent text-slate-300 cursor-not-allowed' : 'border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-slate-800'"
       >
         Atrás
       </button>
 
-      <div class="flex items-center gap-3">
-        <button v-if="store.currentStep === 1" @click="resetForm" class="text-sm text-muted-foreground hover:text-destructive px-3 py-2 transition-colors">Limpiar Todo</button>
+      <div class="flex items-center gap-2">
+        <button v-if="store.currentStep === 1" @click="resetForm" class="text-xs text-slate-400 hover:text-red-500 px-2 py-1.5 transition-colors">Limpiar</button>
 
         <button
           v-if="store.currentStep < 4"
           @click="handleNext"
-          class="px-6 py-2.5 bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-semibold rounded-xl shadow-lg shadow-primary/20 transition-all active:scale-95 flex items-center gap-2"
+          class="px-4 py-1.5 bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-medium rounded-md shadow-sm transition-all active:scale-95 flex items-center gap-1.5"
         >
           Siguiente
-          <ArrowRight class="w-4 h-4" />
+          <ArrowRight class="w-3.5 h-3.5" />
         </button>
 
         <button
           v-else
           @click="handleFinish"
-          class="px-6 py-2.5 bg-green-600 hover:bg-green-700 text-white text-sm font-semibold rounded-xl shadow-lg shadow-green-600/20 transition-all active:scale-95 flex items-center gap-2"
+          class="px-4 py-1.5 bg-green-600 hover:bg-green-700 text-white text-xs font-medium rounded-md shadow-sm shadow-green-600/10 transition-all active:scale-95 flex items-center gap-1.5"
         >
-          <CheckCircle2 class="w-4 h-4" />
+          <CheckCircle2 class="w-3.5 h-3.5" />
           Registrar Usuario
         </button>
       </div>
@@ -144,3 +138,24 @@ const resetForm = () => {
   }
 }
 </script>
+<style scoped>
+.container {
+  display: grid;
+  padding-top: 0;
+  margin-top: 0;
+  grid-template-rows: min-content auto min-content;
+  align-items: start;
+  height: 100%;
+  .steps {
+    display: grid;
+    height: 100%;
+    overflow-y: hidden;
+    grid-template-rows: min-content auto;
+
+    .contenido {
+      max-height: 100%;
+      overflow-y: auto;
+    }
+  }
+}
+</style>
