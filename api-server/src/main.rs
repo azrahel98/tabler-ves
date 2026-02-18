@@ -22,7 +22,7 @@ async fn main() -> std::io::Result<()> {
     }
     env_logger::init();
 
-    let database_url = key::key::DATABASE_URL;
+    let database_url = std::env::var("DATABASE_URL").expect("DATABASE_URL must be set");
 
     let pool = match MySqlPoolOptions::new()
         .max_connections(10)
@@ -64,7 +64,7 @@ async fn main() -> std::io::Result<()> {
             .wrap(Logger::default())
             .wrap(cors)
     })
-    .bind(("0.0.0.0", 8080))?
+    .bind(("0.0.0.0", 4000))?
     .run()
     .await
 }

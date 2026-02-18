@@ -1,0 +1,21 @@
+# Git
+.git
+.gitignore
+
+# Rust build artifacts
+target/
+
+# Environment variables (should be injected at runtime)
+.env
+*.env
+
+# IDE settings
+.vscode/
+.idea/
+
+# Other
+Dockerfile*
+.dockerignore
+README.md
+API.md
+.http
