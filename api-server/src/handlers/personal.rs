@@ -37,8 +37,8 @@ pub async fn buscar_por_nombre(
         MIN(v.estado) AS estado,
         dg.sexo sexo
         from
-        Persona dg
-        inner join Vinculo v on dg.dni = v.dni 
+        persona dg
+        inner join vinculo v on dg.dni = v.dni 
         WHERE
         concat_ws(" ",dg.nombre,dg.apaterno,dg.amaterno) LIKE ?
         GROUP BY
@@ -73,8 +73,8 @@ async fn get_perfil_by_dni(data: web::Data<AppState>, dni: String) -> Result<Per
         p.fecha_nacimiento nacimiento,
         p.sexo
         from
-        Vinculo v
-        inner join Persona p on v.dni = p.dni
+        vinculo v
+        inner join persona p on v.dni = p.dni
         where p.dni = ?
         GROUP by
         p.dni
@@ -114,7 +114,7 @@ pub async fn vinculos_por_dni(
     let trabajador = sqlx::query_as!(
         Vinculos,
         r#"
-        select * from Vinculos_vigentes where dni = ? order by fecha_ingreso desc
+        select * from vinculos_vigentes where dni = ? order by fecha_ingreso desc
         "#,
         nombre.dni
     )
@@ -140,7 +140,7 @@ pub async fn renuncia_por_vinculo(
 
     let insert_result = sqlx::query(
         r#"
-        INSERT INTO Documento (tipo_documento_id, numero, year, fecha, fecha_valida, descripcion)
+        INSERT INTO documento (tipo_documento_id, numero, year, fecha, fecha_valida, descripcion)
         VALUES (?, ?, ?, ?, ?, ?)
         "#,
     )
@@ -158,7 +158,7 @@ pub async fn renuncia_por_vinculo(
 
     sqlx::query(
         r#"
-        UPDATE Vinculo
+        UPDATE vinculo
         SET estado = 'inactivo', doc_salida_id = ?
         WHERE id = ?
         "#,
@@ -171,8 +171,8 @@ pub async fn renuncia_por_vinculo(
 
     sqlx::query(
         r#"
-        UPDATE Plaza p
-        JOIN Vinculo v ON p.codigo = v.plaza_id
+        UPDATE plaza p
+        JOIN vinculo v ON p.codigo = v.plaza_id
         SET p.estado = 'vacante'
         WHERE v.id = ?
         "#,
@@ -191,9 +191,9 @@ pub async fn renuncia_por_vinculo(
           ds.fecha,
           ds.descripcion,
           CONCAT_WS('-', ds.tipo_documento_id, ds.numero, ds.year) AS documento
-        FROM Vinculo v
-        INNER JOIN Documento ds ON v.doc_salida_id = ds.id
-        INNER JOIN Cargo cr ON v.cargo_id = cr.id
+        FROM vinculo v
+        INNER JOIN documento ds ON v.doc_salida_id = ds.id
+        INNER JOIN cargo cr ON v.cargo_id = cr.id
         WHERE v.id = ?
         "#,
     )
@@ -251,9 +251,9 @@ pub async fn banco_por_dni(
                 cb.estado,
                 "asd" as dni
                 FROM
-                Persona p
-                inner join CuentaBancaria cb on cb.dni_persona = p.dni
-                inner join Banco b on cb.banco_id = b.id where p.dni = ? limit 1
+                persona p
+                inner join cuentabancaria cb on cb.dni_persona = p.dni
+                inner join banco b on cb.banco_id = b.id where p.dni = ? limit 1
         "#,
         dni.dni
     )
@@ -273,7 +273,7 @@ pub async fn grado_por_dni(
 ) -> Result<impl Responder, ApiError> {
     let datos = sqlx::query_as!(
         GradoAcademico,
-        r#"select id,dni,descripcion,abrv from GradoAcademico where dni = ?
+        r#"select id,dni,descripcion,abrv from gradoacademico where dni = ?
         "#,
         dni.dni
     )
@@ -294,7 +294,7 @@ pub async fn agregar_infobancaria(
 ) -> Result<impl Responder, ApiError> {
     let insert = sqlx::query(
         r#"
-        insert into CuentaBancaria (dni_persona, numero_cuenta, tipo_cuenta, banco_id, cci,estado)
+        insert into cuentabancaria (dni_persona, numero_cuenta, tipo_cuenta, banco_id, cci,estado)
         values (?, ?, ?, ?, ?,1)
         "#,
     )
@@ -328,7 +328,7 @@ pub async fn editar_datos_bancarios(
 ) -> Result<impl Responder, ApiError> {
     let insert = sqlx::query(
         r#"
-        update CuentaBancaria set numero_cuenta = ? , tipo_cuenta = ? , banco_id = ?, cci = ? , estado = ?
+        update cuentabancaria set numero_cuenta = ? , tipo_cuenta = ? , banco_id = ?, cci = ? , estado = ?
         where id = ?
         "#,
     )
@@ -343,7 +343,7 @@ pub async fn editar_datos_bancarios(
 
     match insert {
         Ok(result) => {
-            let row = sqlx::query!("SELECT nombre FROM Banco WHERE id = ?", doc.banco)
+            let row = sqlx::query!("SELECT nombre FROM banco WHERE id = ?", doc.banco)
                 .fetch_one(&data.db)
                 .await;
 
@@ -372,7 +372,7 @@ pub async fn agregar_gradoacademico(
 ) -> Result<impl Responder, ApiError> {
     let insert = sqlx::query(
         r#"
-        insert into GradoAcademico (descripcion, abrv, dni)
+        insert into gradoacademico (descripcion, abrv, dni)
         values (?, ?, ?)
         "#,
     )
@@ -758,7 +758,7 @@ pub async fn conctaco_por_dni(
     let key = key::key::DB_KEY;
     let datos = sqlx::query_as!(
         ContactoEmergencia,
-        r#"select persona_dni,nombre,relacion,cast(aes_decrypt(telefono,?) as char) telefono from ContactoEmergencia  where persona_dni = ?
+        r#"select persona_dni,nombre,relacion,cast(aes_decrypt(telefono,?) as char) telefono from contactoemergencia  where persona_dni = ?
         "#,
         key,
         dni.dni
@@ -801,12 +801,12 @@ pub async fn buscar_vacantes(data: web::Data<AppState>) -> Result<impl Responder
         pl.codigo,
         v.sueldo
         FROM
-        Vinculo AS v
-        INNER JOIN Documento AS d ON v.doc_salida_id = d.id
-        INNER JOIN Persona AS pe ON v.dni = pe.dni
-        INNER JOIN Plaza AS pl ON v.plaza_id = pl.codigo
-        INNER JOIN Area AS ar ON v.area_id = ar.id
-        INNER JOIN Cargo AS cr ON v.cargo_id = cr.id
+        vinculo AS v
+        INNER JOIN documento AS d ON v.doc_salida_id = d.id
+        INNER JOIN persona AS pe ON v.dni = pe.dni
+        INNER JOIN plaza AS pl ON v.plaza_id = pl.codigo
+        INNER JOIN area AS ar ON v.area_id = ar.id
+        INNER JOIN cargo AS cr ON v.cargo_id = cr.id
         WHERE
         v.estado = 'inactivo'
         AND d.fecha >= DATE_SUB(CURDATE(), INTERVAL 3 MONTH)
@@ -857,10 +857,10 @@ pub async fn buscar_por_plaza(
         r.id regimen_id,
         r.decreto regimen
         from
-        Plaza p
-        inner join CargoEstructural ce on p.cargoestructural = ce.codigo
-        inner join GruposOcupacionales go on p.grupoocupacional = go.codigo
-        inner join Regimen r on p.regimen = r.id
+        plaza p
+        inner join cargoestructural ce on p.cargoestructural = ce.codigo
+        inner join gruposocupacionales go on p.grupoocupacional = go.codigo
+        inner join regimen r on p.regimen = r.id
         where p.codigo = ?
         "#,
     )

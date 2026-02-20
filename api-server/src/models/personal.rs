@@ -30,7 +30,7 @@ pub struct Vinculos {
     pub numero_doc_ingreso: Option<String>,
     pub descrip_ingreso: Option<String>,
     pub fecha_ingreso: Option<NaiveDate>,
-    pub area: String,
+    pub area: Option<String>,
     pub cargo: String,
     pub regimen: Option<String>,
     pub sueldo: Option<f64>,
@@ -119,7 +119,7 @@ pub struct DocumentoSindicato {
 pub struct LegajoPersonal {
     pub id: i32,
     pub persona: String,
-    pub dni: String,
+    pub dni: Option<String>,
     pub fecha: Option<String>,
     pub estado: Option<String>,
     pub descrip: Option<String>,

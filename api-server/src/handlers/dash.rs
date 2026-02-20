@@ -27,8 +27,8 @@ pub async fn cumpleaños(data: web::Data<AppState>) -> Result<impl Responder, Ap
             p.fecha_nacimiento nacimiento,
             TIMESTAMPDIFF(YEAR, p.fecha_nacimiento, CURRENT_DATE) AS edad
             FROM
-            Persona p
-            INNER JOIN Vinculo v ON p.dni = v.dni
+            persona p
+            INNER JOIN vinculo v ON p.dni = v.dni
             WHERE
             v.estado = 'activo'
             AND (
@@ -77,9 +77,9 @@ pub async fn info(data: web::Data<AppState>) -> Result<impl Responder, ApiError>
         select
             count(*) as "cantidad!",
             (
-                select count(*) from Vinculo where estado = 'activo'
+                select count(*) from vinculo where estado = 'activo'
             ) as "activos!"
-        from Vinculo
+        from vinculo
         "#
     )
     .fetch_one(&data.db)
@@ -96,8 +96,8 @@ pub async fn info(data: web::Data<AppState>) -> Result<impl Responder, ApiError>
         select
             count(v.id) as "cantidad!",
             r.decreto as "nombre!"
-        from Vinculo v
-        inner join Regimen r on v.regimen = r.id
+        from vinculo v
+        inner join regimen r on v.regimen = r.id
         where v.estado = 'activo' 
         group by r.estructura
         order by r.nombre
@@ -113,8 +113,8 @@ pub async fn info(data: web::Data<AppState>) -> Result<impl Responder, ApiError>
         select
             count(v.id) as "cantidad!",
             p.sexo as "nombre!"
-        from Vinculo v
-        inner join Persona p on p.dni = v.dni
+        from vinculo v
+        inner join persona p on p.dni = v.dni
         where v.estado = 'activo'
         group by p.sexo
         "#
@@ -129,9 +129,9 @@ pub async fn info(data: web::Data<AppState>) -> Result<impl Responder, ApiError>
         select
             count(*) as "cantidad!",
             s.nombre as "nombre!"
-        from Vinculo v
+        from vinculo v
         inner join vinculo_sindicato vs on vs.vinculo_id = v.id
-        inner join Sindicato s on vs.sindicato_id = s.id
+        inner join sindicato s on vs.sindicato_id = s.id
         where v.estado = 'activo'
         group by vs.sindicato_id
         "#
@@ -159,8 +159,8 @@ pub async fn personal_area_report(data: web::Data<AppState>) -> Result<impl Resp
         ar.nombre nombre,
         count(v.area_id) cantidad
         from
-        Vinculo v
-        inner join Area ar on v.area_id = ar.id
+        vinculo v
+        inner join area ar on v.area_id = ar.id
         WHERE
         v.estado = 'activo'
         and ar.activo = 1
@@ -187,9 +187,9 @@ pub async fn renuncias_año(data: web::Data<AppState>) -> Result<impl Responder,
         ar.nombre nombre,
         count(*) cantidad
         from
-        Vinculo v
-        inner join Documento ds on v.doc_salida_id = ds.id
-        inner join Area ar on v.area_id = ar.id
+        vinculo v
+        inner join documento ds on v.doc_salida_id = ds.id
+        inner join area ar on v.area_id = ar.id
         where
         v.estado = 'inactivo'
         and year(ds.fecha) = year(now())
@@ -213,7 +213,7 @@ pub async fn bancos_report(data: web::Data<AppState>) -> Result<impl Responder, 
     let data = sqlx::query_as!(
         BancosReport,
         r#"
-        select id,nombre from Banco
+        select id,nombre from banco
         "#,
     )
     .fetch_all(&data.db)
@@ -241,12 +241,12 @@ pub async fn reporte_personal_activo(
         s.nombre sindicato,
         rg.nombre regimen
         from
-        Vinculo v
-        inner join Persona p on v.dni = p.dni
-        inner join Cargo cr on v.cargo_id = cr.id
-        inner join Area ar on v.area_id = ar.id
-        inner join Documento dc on v.doc_ingreso_id = dc.id
-        inner join Regimen rg on v.regimen = rg.id
+        vinculo v
+        inner join persona p on v.dni = p.dni
+        inner join cargo cr on v.cargo_id = cr.id
+        inner join area ar on v.area_id = ar.id
+        inner join documento dc on v.doc_ingreso_id = dc.id
+        inner join regimen rg on v.regimen = rg.id
         left join Documento dcs on v.doc_salida_id = dcs.id
         left join vinculo_sindicato vs on vs.vinculo_id = v.id
         left join Sindicato s on vs.sindicato_id = s.id where v.estado = 'activo'
@@ -332,11 +332,11 @@ pub async fn organigrama(data: web::Data<AppState>) -> Result<impl Responder, Ap
             CAST(p.dni AS CHAR) AS dni,
             a.nivel AS nivel
         FROM
-            Area a
-            LEFT JOIN Vinculo v ON a.id = v.area_id
+            area a
+            LEFT JOIN vinculo v ON a.id = v.area_id
             AND v.estado = 'activo'
             AND v.cargo_id IN (30, 381, 614)
-            LEFT JOIN Persona p ON v.dni = p.dni
+            LEFT JOIN persona p ON v.dni = p.dni
         WHERE
             a.activo = 1
         GROUP BY
@@ -428,7 +428,7 @@ pub async fn report_legajos(data: web::Data<AppState>) -> Result<impl Responder,
             dni
         ) AS ultimo_registro ON l.dni = ultimo_registro.dni
         AND l.fecha = ultimo_registro.ultima_fecha
-        INNER JOIN Persona p ON l.dni = p.dni
+        INNER JOIN persona p ON l.dni = p.dni
         INNER JOIN usuario u ON l.user = u.id
         WHERE
         l.estado = 'prestamo'
@@ -457,12 +457,12 @@ pub async fn report_renuncias(data: web::Data<AppState>) -> Result<impl Responde
             cr.nombre AS cargo,
             pl.codigo
         FROM
-            Vinculo AS v
-            INNER JOIN Documento AS d ON v.doc_salida_id = d.id
-            INNER JOIN Persona AS pe ON v.dni = pe.dni
-            INNER JOIN Plaza AS pl ON v.plaza_id = pl.codigo
-            INNER JOIN Area AS ar ON v.area_id = ar.id
-            INNER JOIN Cargo AS cr ON v.cargo_id = cr.id
+            vinculo AS v
+            INNER JOIN documento AS d ON v.doc_salida_id = d.id
+            INNER JOIN persona AS pe ON v.dni = pe.dni
+            INNER JOIN plaza AS pl ON v.plaza_id = pl.codigo
+            INNER JOIN area AS ar ON v.area_id = ar.id
+            INNER JOIN cargo AS cr ON v.cargo_id = cr.id
         WHERE
             v.estado = 'inactivo'
             AND (
@@ -486,7 +486,7 @@ pub async fn report_renuncias(data: web::Data<AppState>) -> Result<impl Responde
 #[derive(Deserialize, serde::Serialize)]
 pub struct ReporteDocumento {
     pub id: i32,
-    pub nombre: String,
+    pub nombre: Option<String>,
     pub sigla: Option<String>,
 }
 
@@ -494,7 +494,7 @@ pub async fn reporte_documentos(data: web::Data<AppState>) -> Result<impl Respon
     let data = sqlx::query_as!(
         ReporteDocumento,
         r#"
-        SELECT id, nombre, sigla FROM TipoDocumento
+        SELECT id, nombre, sigla FROM tipodocumento
         "#
     )
     .fetch_all(&data.db)
