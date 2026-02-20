@@ -23,6 +23,6 @@ WORKDIR /app
 
 COPY --from=builder /app/target/release/api-server /app/api-server
 
-EXPOSE 4000
+EXPOSE 4010
 
 CMD ["./api-server"]
