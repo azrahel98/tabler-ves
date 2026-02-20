@@ -150,7 +150,7 @@ pub async fn renuncia_por_vinculo(
     .bind(&doc.fecha)
     .bind(&doc.fecha_valida)
     .bind(&doc.descripcion)
-    .execute(&mut tx)
+    .execute(&mut *tx)
     .await
     .map_err(|e| ApiError::InternalError(format!("Insert Documento error: {}", e)))?;
 
@@ -165,7 +165,7 @@ pub async fn renuncia_por_vinculo(
     )
     .bind(new_doc_id)
     .bind(doc.id)
-    .execute(&mut tx)
+    .execute(&mut *tx)
     .await
     .map_err(|e| ApiError::InternalError(format!("Update Vinculo error: {}", e)))?;
 
@@ -178,7 +178,7 @@ pub async fn renuncia_por_vinculo(
         "#,
     )
     .bind(doc.id)
-    .execute(&mut tx)
+    .execute(&mut *tx)
     .await
     .map_err(|e| ApiError::InternalError(format!("Update Plaza error: {}", e)))?;
 
@@ -198,7 +198,7 @@ pub async fn renuncia_por_vinculo(
         "#,
     )
     .bind(doc.id)
-    .fetch_one(&mut tx)
+    .fetch_one(&mut *tx)
     .await
     .map_err(|e| ApiError::InternalError(format!("Select after update error: {}", e)))?;
 

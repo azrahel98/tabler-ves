@@ -7,45 +7,39 @@
     "
     class="sidebar fixed left-0 top-0 z-9999 flex h-screen w-[260px] flex-col overflow-y-hidden border-r border-gray-200 bg-white dark:border-gray-800 dark:bg-black lg:static lg:translate-x-0 transition-all duration-300"
   >
-    <!-- SIDEBAR HEADER -->
     <div
       :class="sidebarToggle ? 'justify-center' : 'justify-start px-4'"
       class="flex items-center gap-2 pt-8 sidebar-header pb-7"
     >
       <router-link to="/">
         <span class="logo flex items-center gap-2">
-          <!-- Full Logo -->
           <img
             class="dark:hidden"
             :class="sidebarToggle ? 'hidden' : 'block'"
-            src="./images/logo/logo.svg"
-            alt="Logo"
+            src="/logo.svg"
+            alt="Logossdfads"
           />
           <img
             class="hidden dark:block"
             :class="sidebarToggle ? 'hidden' : 'block'"
-            src="./images/logo/logo-dark.svg"
+            src="/logo-dark.svg"
             alt="Logo"
           />
 
-          <!-- Icon Logo (shown when collapsed) -->
           <img
             class="logo-icon w-8 h-8"
             :class="sidebarToggle ? 'block' : 'hidden'"
-            src="./images/logo/logo-icon.svg"
+            src="/logo-icon.svg"
             alt="Logo"
           />
         </span>
       </router-link>
     </div>
-    <!-- SIDEBAR HEADER -->
 
     <div
       class="flex flex-col overflow-y-auto duration-300 mx-0 px-3 ease-linear no-scrollbar"
     >
-      <!-- Sidebar Menu -->
       <nav class="mt-5 py-2 lg:mt-9 px-0">
-        <!-- Menu Group -->
         <div>
           <h3
             class="mb-4 text-xs font-semibold text-gray-500 uppercase tracking-wider"
