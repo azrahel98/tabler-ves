@@ -1,18 +1,3 @@
-# ---------- STAGE 1: BUILD ----------
-FROM rust:latest as builder
-
-WORKDIR /app
-
-COPY Cargo.toml Cargo.lock ./
-RUN mkdir src
-RUN echo "fn main() {}" > src/main.rs
-RUN cargo build --release --bin api-server
-RUN rm -rf src
-
-COPY . .
-RUN cargo build --release --bin api-server
-
-# ---------- STAGE 2: RUNTIME ----------
 FROM debian:bookworm-slim
 
 RUN apt-get update && \
@@ -21,8 +6,8 @@ RUN apt-get update && \
 
 WORKDIR /app
 
-COPY --from=builder /app/target/release/api-server /app/api-server
+COPY api-server /app/api-server
 
-EXPOSE 4010
+EXPOSE 4000
 
 CMD ["./api-server"]

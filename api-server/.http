@@ -1,12 +1,12 @@
-@baseUrl = http://127.0.0.1:8080
+@baseUrl = https://apives.odeploy.work
 @contentType = application/json
 @TokenHash = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwiZXhwIjoxNzcxMTk1NzAwLCJsdmwiOjEsIm5vbWJyZSI6IlJhdWwgQ2hlcmNjYSBMb3BleiJ9.k3zVn3VT9-m30XtbmF3FhxVuHgK96meP-IpT8GX8Y7c
 POST {{baseUrl}}/login/
 Content-Type: {{contentType}}
 
 {
-    "username": "rscl2",
-    "password":"unodostres",
+    "username": "rscl",
+    "password":"unodos",
     "asdf":2
 }
 
