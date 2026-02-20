@@ -24,7 +24,7 @@ async fn main() -> std::io::Result<()> {
 
     let database_url = std::env::var("DATABASE_URL").expect("DATABASE_URL must be set");
     let port: u16 = std::env::var("PORT")
-        .unwrap_or_else(|_| "4000".to_string())
+        .unwrap_or_else(|_| "4010".to_string())
         .parse()
         .expect("PORT must be a number");
 
