@@ -1,12 +1,28 @@
-FROM rust:1.86.0 as builder
-WORKDIR /app
-COPY . .
+# ---------- STAGE 1: BUILD ----------
+FROM rust:1.75 as builder
 
-# Ya no necesitas ENV SQLX_OFFLINE=true porque no hay macros de compilación
+WORKDIR /app
+
+COPY Cargo.toml Cargo.lock ./
+RUN mkdir src
+RUN echo "fn main() {}" > src/main.rs
+RUN cargo build --release --bin api-server
+RUN rm -rf src
+
+COPY . .
 RUN cargo build --release --bin api-server
 
+# ---------- STAGE 2: RUNTIME ----------
 FROM debian:bookworm-slim
-# Instalar librerías necesarias para MariaDB/MySQL si usas native-tls
-RUN apt-get update && apt-get install -y libssl-dev ca-certificates && rm -rf /var/lib/apt/lists/*
-COPY --from=builder /app/target/release/api-server /usr/local/bin/
-CMD ["api-server"]
+
+RUN apt-get update && \
+    apt-get install -y ca-certificates libssl3 && \
+    rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+COPY --from=builder /app/target/release/api-server /app/api-server
+
+EXPOSE 4000
+
+CMD ["./api-server"]
