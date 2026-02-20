@@ -92,7 +92,6 @@
   import { ref } from 'vue'
   import { usePersonalStore } from '../../stores/personal'
   import { storeToRefs } from 'pinia'
-  import { useRouter } from 'vue-router'
   import { Search, SlidersHorizontal } from 'lucide-vue-next'
   import CardSearch from '../../components/search/card.vue'
 
@@ -102,7 +101,6 @@
   const lastSearchQuery = ref('')
   const loading = ref(false)
   const hasSearched = ref(false)
-  const router = useRouter()
 
   const handleSearch = async () => {
     if (searchQuery.value.trim()) {
@@ -115,9 +113,5 @@
         hasSearched.value = true
       }
     }
-  }
-
-  const goToProfile = (dni: string) => {
-    router.push({ name: 'personal-profile', params: { dni } })
   }
 </script>
