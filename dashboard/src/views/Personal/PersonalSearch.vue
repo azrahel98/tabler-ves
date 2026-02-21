@@ -80,7 +80,7 @@
           </span>
         </div>
 
-        <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5">
+        <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
           <CardSearch v-for="person in resultadosBusqueda" :key="person.dni" :person="person" />
         </div>
       </div>

@@ -8,15 +8,10 @@
     <div class="absolute inset-x-0 top-0 h-24 bg-linear-to-r from-primary/20 to-primary/5 dark:from-primary/30 dark:to-primary/10"></div>
     <div class="relative z-10 mb-5 h-16 w-16 overflow-hidden rounded-full bg-white shadow-md dark:border-boxdark dark:bg-boxdark">
       <img
-        :src="
-          person.sexo === 'M'
-            ? `https://ui-avatars.com/api/?name=${encodeURIComponent(person.nombre)}&background=0D8ABC&color=fff&size=200`
-            : person.sexo === 'F'
-              ? `https://ui-avatars.com/api/?name=${encodeURIComponent(person.nombre)}&background=F472B6&color=fff&size=200`
-              : `https://ui-avatars.com/api/?name=${encodeURIComponent(person.nombre)}&background=random&color=fff&size=200`
-        "
+        :src="person.sexo === 'M' ? '/M.svg' : person.sexo === 'F' ? '/F.svg' : `https://ui-avatars.com/api/?name=${encodeURIComponent(person.nombre)}&background=random&color=fff&size=200`"
         :alt="person.nombre"
-        class="h-full w-full object-cover" />
+        class="h-full w-full object-cover"
+        :class="person.estado === 'activo' ? 'bg-green-200' : person.estado === 'inactivo' ? 'bg-red-100' : 'bg-purple-500'" />
     </div>
 
     <h4
@@ -30,16 +25,6 @@
         <IdCard class="h-4 w-4" />
         <span class="text-xs">DNI: {{ person.dni }}</span>
       </div>
-    </div>
-
-    <!-- Status Badge -->
-    <div class="mt-auto w-full border-t border-stroke pt-4 text-center dark:border-strokedark">
-      <span
-        :class="person.estado === 'activo' ? 'border border-success/20 bg-success/10 text-success' : 'border border-danger/20 bg-danger/10 text-danger'"
-        class="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wider">
-        <span class="h-1.5 w-1.5 rounded-full" :class="person.estado === 'activo' ? 'bg-success' : 'bg-danger'"></span>
-        {{ person.estado || 'Desconocido' }}
-      </span>
     </div>
   </RouterLink>
 </template>
