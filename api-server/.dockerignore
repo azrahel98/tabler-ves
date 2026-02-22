@@ -3,7 +3,7 @@
 .gitignore
 
 # Rust build artifacts
-target/
+
 
 # Environment variables (should be injected at runtime)
 .env

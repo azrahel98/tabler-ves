@@ -439,7 +439,7 @@ pub async fn editar_perfil(
 
     let insert = sqlx::query(
         r#"
-        update Persona set telf1 = aes_encrypt(?,?), direccion = aes_encrypt(?,?) , email = aes_encrypt(?,?), ruc = ?
+        update persona set telf1 = aes_encrypt(?,?), direccion = aes_encrypt(?,?) , email = aes_encrypt(?,?), ruc = ?
         where dni = ? 
         "#,
     )
@@ -494,7 +494,7 @@ pub async fn agregar_sindicato(
 
     let documento_id = sqlx::query(
         r#"
-        INSERT INTO Documento (tipo, fecha, descripcion)
+        INSERT INTO documento (tipo, fecha, descripcion)
         VALUES ('Doc.Adm', ?, ?)
         "#,
     )
@@ -720,7 +720,7 @@ pub async fn contacto_emergencia_add(
     let key = key::key::DB_KEY;
     let query = sqlx::query(
         r#"
-        INSERT INTO ContactoEmergencia (persona_dni, nombre, telefono, relacion)
+        INSERT INTO contactoemergencia (persona_dni, nombre, telefono, relacion)
         VALUES (?, ?,aes_encrypt(?,?), ?)
         ON DUPLICATE KEY UPDATE
           nombre = VALUES(nombre),

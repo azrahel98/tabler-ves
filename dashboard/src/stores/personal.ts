@@ -33,18 +33,8 @@ export const usePersonalStore = defineStore('personal', () => {
     cargando.value = true
     try {
       const res = await api.post('/personal/por_dni', { dni })
-      perfilActual.value = res.data
-
-      const date = new Date()
-      await Promise.all([
-        obtenerVinculos(dni),
-        obtenerInfoBancaria(dni),
-        obtenerGrados(dni),
-        obtenerContacto(dni),
-        obtenerAsistencia(dni, date.getMonth() + 1, date.getFullYear()),
-        obtenerHistorial(dni),
-        obtenerLegajo(dni),
-      ])
+      perfilActual.value = await res.data
+      await Promise.all([obtenerVinculos(dni), obtenerInfoBancaria(dni), obtenerContacto(dni)])
     } finally {
       cargando.value = false
     }
@@ -99,7 +89,23 @@ export const usePersonalStore = defineStore('personal', () => {
 
   async function actualizarPerfil(data: any) {
     await api.post('/personal/editar_por_dni', data)
-    await obtenerPerfil(data.dni)
+    const res = await api.post('/personal/por_dni', { dni: data.dni })
+    perfilActual.value = await res.data
+  }
+
+  async function registrarRenuncia(id: number, datos: any) {
+    cargando.value = true
+    try {
+      await api.post('/personal/renuncia_por_vinculo', {
+        id,
+        ...datos,
+      })
+      if (perfilActual.value?.dni) {
+        await obtenerVinculos(perfilActual.value.dni)
+      }
+    } finally {
+      cargando.value = false
+    }
   }
 
   return {
@@ -125,5 +131,6 @@ export const usePersonalStore = defineStore('personal', () => {
     obtenerHistorial,
     obtenerLegajo,
     actualizarPerfil,
+    registrarRenuncia,
   }
 })

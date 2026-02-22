@@ -5,7 +5,7 @@
       params: { dni: person.dni },
     }"
     class="group relative flex cursor-pointer flex-col items-center overflow-hidden rounded-2xl border border-stroke bg-white p-6 shadow-default transition-all duration-300 hover:-translate-y-1 hover:shadow-xl dark:border-strokedark dark:bg-boxdark">
-    <div class="absolute inset-x-0 top-0 h-24 bg-linear-to-r from-primary/20 to-primary/5 dark:from-primary/30 dark:to-primary/10"></div>
+    <div class="absolute inset-x-0 top-0 h-24"></div>
     <div class="relative z-10 mb-5 h-16 w-16 overflow-hidden rounded-full bg-white shadow-md dark:border-boxdark dark:bg-boxdark">
       <img
         :src="person.sexo === 'M' ? '/M.svg' : person.sexo === 'F' ? '/F.svg' : `https://ui-avatars.com/api/?name=${encodeURIComponent(person.nombre)}&background=random&color=fff&size=200`"

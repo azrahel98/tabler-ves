@@ -1,51 +1,68 @@
 <template>
-  <div class="rounded-2xl border border-stroke bg-white p-6 shadow-sm dark:border-strokedark dark:bg-boxdark">
-    <div class="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-black dark:text-white mb-6">
-      <svg class="h-5 w-5 text-primary" fill="currentColor" viewBox="0 0 24 24">
-        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
-      </svg>
-      PERSONAL INFORMATION
+  <div class="rounded-2xl border border-stroke bg-white h-min p-6 shadow-sm dark:border-strokedark dark:bg-boxdark">
+    <div class="flex items-center justify-between gap-1 text-xs font-bold uppercase tracking-wider text-black dark:text-white mb-6">
+      <div class="flex items-center gap-1">
+        <svg class="h-5 w-5 text-primary" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+        </svg>
+        Informacion Personal
+      </div>
+      <button
+        @click="isEditModalOpen = true"
+        class="rounded-full p-1.5 text-slate-500 hover:bg-slate-100 hover:text-primary dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-primary transition-colors"
+        title="Editar Información">
+        <Pencil class="h-4 w-4" />
+      </button>
     </div>
 
-    <div class="space-y-5">
+    <div class="space-y-3 flex flex-col justify-between">
       <div>
         <p class="text-[10px] font-medium uppercase tracking-wider text-gray-400">Telefono Celular</p>
-        <p class="mt-1 font-medium text-black dark:text-white">{{ perfilActual.telf || '999999999' }}</p>
+        <p class="font-medium text-sm text-black dark:text-white">{{ perfilActual.telf || '999999999' }}</p>
       </div>
       <div>
         <p class="text-[10px] font-medium uppercase tracking-wider text-gray-400">Correo electronico</p>
-        <p class="mt-1 font-medium text-black dark:text-white">{{ perfilActual.email || 'juan.perez@company.com' }}</p>
+        <p class="font-medium text-sm text-black dark:text-white">{{ perfilActual.email || 'juan.perez@company.com' }}</p>
       </div>
       <div>
         <p class="text-[10px] font-medium uppercase tracking-wider text-gray-400">Direccion</p>
-        <p class="mt-1 font-medium text-black dark:text-white">{{ perfilActual.direccion || 'xx 12 xx lima xx' }}</p>
+        <p class="font-medium text-sm text-black dark:text-white">{{ perfilActual.direccion || 'xx 12 xx lima xx' }}</p>
       </div>
       <div>
         <p class="text-[10px] font-medium uppercase tracking-wider text-gray-400">DNI / RUC</p>
-        <p class="mt-1 font-medium text-black dark:text-white">
+        <p class="font-medium text-sm text-black dark:text-white">
           {{ perfilActual.dni }} <span v-if="perfilActual.ruc" class="text-gray-400">| {{ perfilActual.ruc }}</span>
         </p>
       </div>
       <div class="grid grid-cols-2 gap-4">
         <div>
           <p class="text-[10px] font-medium uppercase tracking-wider text-gray-400">FECHA DE NACIMIENTO</p>
-          <p class="mt-1 font-medium text-black dark:text-white">{{ formatUTC(perfilActual.nacimiento) }}</p>
+          <p class="font-medium text-sm text-black dark:text-white">{{ formatUTC(perfilActual.nacimiento) }}</p>
         </div>
         <div>
           <p class="text-[10px] font-medium uppercase tracking-wider text-gray-400">SEXO</p>
-          <p class="mt-1 font-medium text-black dark:text-white">{{ perfilActual.sexo === 'M' ? 'Masculino' : perfilActual.sexo === 'F' ? 'Femenino' : '-' }}</p>
+          <p class="font-medium text-sm text-black dark:text-white">{{ perfilActual.sexo === 'M' ? 'Masculino' : perfilActual.sexo === 'F' ? 'Femenino' : '-' }}</p>
         </div>
       </div>
     </div>
+
+    <EditInfoModal :isOpen="isEditModalOpen" :perfil="perfilActual" @close="isEditModalOpen = false" @save="handleSave" />
   </div>
 </template>
 
 <script setup lang="ts">
+  import { ref } from 'vue'
   import { addMinutes, format } from 'date-fns'
   import { usePersonalStore } from '../../stores/personal'
+  import { storeToRefs } from 'pinia'
   import { es } from 'date-fns/locale'
+  import { Pencil } from 'lucide-vue-next'
+  import EditInfoModal from './modals/EditInfoModal.vue'
 
-  const { perfilActual } = usePersonalStore()
+  const personalStore = usePersonalStore()
+  const { perfilActual } = storeToRefs(personalStore)
+
+  const isEditModalOpen = ref(false)
 
   const formatUTC = (dateString: string) => {
     if (!dateString) return '-'
@@ -54,5 +71,13 @@
     const dateCorrected = addMinutes(date, date.getTimezoneOffset())
 
     return format(dateCorrected, "d 'de' MMMM 'del' yyyy", { locale: es })
+  }
+
+  const handleSave = async () => {
+    try {
+      isEditModalOpen.value = false
+    } catch (error) {
+      console.error('Error al guardar', error)
+    }
   }
 </script>
