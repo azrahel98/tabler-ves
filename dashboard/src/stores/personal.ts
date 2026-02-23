@@ -34,7 +34,7 @@ export const usePersonalStore = defineStore('personal', () => {
     try {
       const res = await api.post('/personal/por_dni', { dni })
       perfilActual.value = await res.data
-      await Promise.all([obtenerVinculos(dni), obtenerInfoBancaria(dni), obtenerContacto(dni)])
+      await Promise.all([obtenerVinculos(dni), obtenerInfoBancaria(dni), obtenerContacto(dni), obtenerGrados(dni)])
     } finally {
       cargando.value = false
     }
@@ -108,6 +108,27 @@ export const usePersonalStore = defineStore('personal', () => {
     }
   }
 
+  async function actualizarBanco(data: any) {
+    await api.post('/personal/editar_infobancaria', data)
+    if (perfilActual.value?.dni) {
+      await obtenerInfoBancaria(perfilActual.value.dni)
+    }
+  }
+
+  async function agregarBanco(data: any) {
+    await api.post('/personal/agregar_infobancaria', data)
+    if (perfilActual.value?.dni) {
+      await obtenerInfoBancaria(perfilActual.value.dni)
+    }
+  }
+
+  async function agregarGrado(data: any) {
+    await api.post('/personal/agregar_gradoa', data)
+    if (perfilActual.value?.dni) {
+      await obtenerGrados(perfilActual.value.dni)
+    }
+  }
+
   return {
     resultadosBusqueda,
     perfilActual,
@@ -132,5 +153,8 @@ export const usePersonalStore = defineStore('personal', () => {
     obtenerLegajo,
     actualizarPerfil,
     registrarRenuncia,
+    actualizarBanco,
+    agregarBanco,
+    agregarGrado,
   }
 })

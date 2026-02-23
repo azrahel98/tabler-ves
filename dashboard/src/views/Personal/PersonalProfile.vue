@@ -9,12 +9,15 @@
           <vinculo />
         </div>
 
+        <vinculos-tabla />
+
         <legajo-folder />
       </div>
 
       <div class="col-span-1 md:col-span-2 lg:col-span-1 xl:col-span-1 space-y-6">
         <banco />
         <grado />
+        <historial />
       </div>
     </div>
   </div>
@@ -31,6 +34,8 @@
   import Banco from '../../components/perfil/banco.vue'
   import Grado from '../../components/perfil/grado.vue'
   import LegajoFolder from '../../components/perfil/legajo/folder.vue'
+  import VinculosTabla from '../../components/perfil/vinculos-tabla.vue'
+  import Historial from '../../components/perfil/historial.vue'
 
   const route = useRoute()
   const personalStore = usePersonalStore()

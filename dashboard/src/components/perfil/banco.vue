@@ -8,6 +8,7 @@
         Información Bancaria
       </div>
       <button
+        v-if="esAdmin"
         @click="openModal(infoBancaria ? true : false)"
         class="rounded-full flex items-center gap-1 px-2 py-1 text-slate-500 hover:bg-slate-100 hover:text-primary dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-primary transition-colors"
         :title="infoBancaria ? 'Editar Información' : 'Agregar Información'">
@@ -49,9 +50,11 @@
   import { usePersonalStore } from '../../stores/personal'
   import { Pencil, Plus } from 'lucide-vue-next'
   import EditBancoModal from './modals/EditBancoModal.vue'
+  import { useAutenticacionStore } from '../../stores/auth'
 
   const store = usePersonalStore()
   const { infoBancaria } = storeToRefs(store)
+  const { esAdmin } = storeToRefs(useAutenticacionStore())
 
   const isModalOpen = ref(false)
   const isEditMode = ref(false)
@@ -63,11 +66,13 @@
 
   const handleSave = async (datos: any) => {
     try {
+      const dni = store.perfilActual?.dni
+      if (!dni) return
       if (isEditMode.value) {
-        console.log('Editando info bancaria', datos)
-        // store.editarInfoBancaria(datos)
+        datos.banco = datos.banco.toString()
+        await store.actualizarBanco({ ...datos, dni })
       } else {
-        console.log('Agregando info bancaria', datos)
+        await store.agregarBanco({ ...datos, dni })
       }
       isModalOpen.value = false
     } catch (error) {

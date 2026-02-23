@@ -91,7 +91,10 @@ pub struct DatosBancariosResponse {
 #[derive(Debug, Serialize, Deserialize, FromRow)]
 pub struct GradoAcademico {
     pub id: i32,
-    pub descripcion: Option<String>,
+    pub profesion: String,
+    pub universidad: String,
+    pub colegiatura: Option<String>,
+    pub nivel_academico: String,
     pub abrv: String,
     pub dni: String,
 }

@@ -226,6 +226,7 @@ pub async fn renuncia_por_vinculo(
         &req,
         &data.db,
         "registro de renuncia",
+        json_value.get("dni").unwrap().as_str().unwrap(),
         Some(&serde_json::to_string(&json_value).unwrap_or_default()),
     )
     .await
@@ -273,11 +274,11 @@ pub async fn grado_por_dni(
 ) -> Result<impl Responder, ApiError> {
     let datos = sqlx::query_as!(
         GradoAcademico,
-        r#"select id,dni,descripcion,abrv from gradoacademico where dni = ?
+        r#"select * from gradoacademico where dni = ?
         "#,
         dni.dni
     )
-    .fetch_optional(&data.db)
+    .fetch_all(&data.db)
     .await
     .map_err(|e| {
         eprintln!("Database error: {:?}", e);
@@ -312,6 +313,7 @@ pub async fn agregar_infobancaria(
                 &req,
                 &data.db,
                 "ingresar cuenta bancaria",
+                &doc.dni,
                 Some(&serde_json::to_string(&doc).unwrap_or_default()),
             )
             .await;
@@ -356,6 +358,7 @@ pub async fn editar_datos_bancarios(
                 &req,
                 &data.db,
                 "actualizar cuenta bancaria",
+                &doc.dni,
                 Some(&serde_json::to_string(&doc).unwrap_or_default()),
             )
             .await;
@@ -365,67 +368,61 @@ pub async fn editar_datos_bancarios(
     }
 }
 
-pub async fn agregar_gradoacademico(
+pub async fn upsert_gradoacademico(
     data: web::Data<AppState>,
     doc: web::Json<GradoAcademico>,
     req: HttpRequest,
 ) -> Result<impl Responder, ApiError> {
-    let insert = sqlx::query(
+    let es_actualizacion = doc.id > 0;
+    let accion = if es_actualizacion {
+        "editar grado academico"
+    } else {
+        "agrega grado academico"
+    };
+
+    let query_result = sqlx::query(
         r#"
-        insert into gradoacademico (descripcion, abrv, dni)
-        values (?, ?, ?)
+        INSERT INTO gradoacademico (id, profesion, universidad, colegiatura, nivel_academico, abrv, dni)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+        ON DUPLICATE KEY UPDATE 
+            profesion = VALUES(profesion),
+            universidad = VALUES(universidad),
+            colegiatura = VALUES(colegiatura),
+            nivel_academico = VALUES(nivel_academico),
+            abrv = VALUES(abrv),
+            dni = VALUES(dni)
         "#,
     )
-    .bind(&doc.descripcion)
+    .bind(doc.id)
+    .bind(&doc.profesion)
+    .bind(&doc.universidad)
+    .bind(&doc.colegiatura)
+    .bind(&doc.nivel_academico)
     .bind(&doc.abrv)
     .bind(&doc.dni)
     .execute(&data.db)
     .await;
 
-    match insert {
+    match query_result {
         Ok(result) => {
             let _ = registrar_historial(
                 &req,
                 &data.db,
-                "agrega grado academico",
+                accion,
+                &doc.dni,
                 Some(&serde_json::to_string(&doc).unwrap_or_default()),
             )
             .await;
-            Ok(HttpResponse::Ok().json(format!("Rows affected: {}", result.rows_affected())))
-        }
-        Err(e) => Err(ApiError::InternalError(format!("Database error: {}", e))),
-    }
-}
 
-pub async fn editar_gradoacademico(
-    data: web::Data<AppState>,
-    doc: web::Json<GradoAcademico>,
-    req: HttpRequest,
-) -> Result<impl Responder, ApiError> {
-    let insert = sqlx::query(
-        r#"
-        update GradoAcademico set descripcion = ?, abrv = ?
-        where id = ? 
-        "#,
-    )
-    .bind(&doc.descripcion)
-    .bind(&doc.abrv)
-    .bind(doc.id)
-    .execute(&data.db)
-    .await;
-
-    match insert {
-        Ok(result) => {
-            let _ = registrar_historial(
-                &req,
-                &data.db,
-                "editar grado academico",
-                Some(&serde_json::to_string(&doc).unwrap_or_default()),
-            )
-            .await;
-            Ok(HttpResponse::Ok().json(format!("Rows affected: {}", result.rows_affected())))
+            Ok(HttpResponse::Ok().json(format!(
+                "Operación exitosa. Filas afectadas: {}",
+                result.rows_affected()
+            )))
         }
-        Err(e) => Err(ApiError::InternalError(format!("Database error: {}", e))),
+        Err(e) => Err(ApiError::InternalError(format!(
+            "Error de base de datos: {}",
+            e
+        ))),
     }
 }
 
@@ -475,6 +472,7 @@ pub async fn editar_perfil(
                 &req,
                 &data.db,
                 "editar informacion personal",
+                &perfil.dni,
                 Some(&diff.to_string()),
             )
             .await;
@@ -530,6 +528,7 @@ pub async fn agregar_sindicato(
         &req,
         &data.db,
         "afiliar al sindicato",
+        doc.dni.as_deref().unwrap_or(""),
         Some(&serde_json::to_string(&doc).unwrap_or_default()),
     )
     .await;
@@ -674,6 +673,7 @@ pub async fn agregar_evento_legajo(
                 &req,
                 &data.db,
                 "cambiar legajo",
+                doc.dni.as_deref().unwrap_or(""),
                 Some(&serde_json::to_string(&doc).unwrap_or_default()),
             )
             .await;
@@ -742,6 +742,7 @@ pub async fn contacto_emergencia_add(
                 &req,
                 &data.db,
                 "insert or update contacto de emergencia",
+                &contacto.persona_dni,
                 Some(&serde_json::to_string(&contacto.0).unwrap_or_default()),
             )
             .await;

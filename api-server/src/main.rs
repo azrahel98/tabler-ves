@@ -46,6 +46,7 @@ async fn main() -> std::io::Result<()> {
     {
         Ok(pool) => {
             println!("✅Connection to the database is successful!");
+            println!("AQUIIIIIIIII LA URI {}", database_url);
             println!("🚀 Server running on port {}", port);
             pool
         }

@@ -14,7 +14,7 @@
         </span>
       </div>
       <button
-        v-if="vinculoActual && !tieneRenuncia"
+        v-if="vinculoActual && !tieneRenuncia && esAdmin"
         @click="isRenunciaModalOpen = true"
         class="rounded-full flex items-center gap-1 px-2 py-1 text-slate-500 hover:bg-red-50 hover:text-red-500 dark:text-slate-400 dark:hover:bg-red-900/20 dark:hover:text-red-400 transition-colors"
         title="Registrar Renuncia">
@@ -83,7 +83,7 @@
 
     <div v-else class="text-sm text-gray-500 text-center py-4">No hay vínculo laboral activo.</div>
 
-    <RenunciaModal :isOpen="isRenunciaModalOpen" @close="isRenunciaModalOpen = false" @save="handleRenuncia" />
+    <RenunciaModal v-if="esAdmin" :isOpen="isRenunciaModalOpen" @close="isRenunciaModalOpen = false" @save="handleRenuncia" />
   </div>
 </template>
 
@@ -93,9 +93,11 @@
   import { usePersonalStore } from '../../stores/personal'
   import { UserMinus } from 'lucide-vue-next'
   import RenunciaModal from './modals/RenunciaModal.vue'
+  import { useAutenticacionStore } from '../../stores/auth'
 
   const store = usePersonalStore()
   const { vinculos } = storeToRefs(store)
+  const { esAdmin } = storeToRefs(useAutenticacionStore())
 
   const isRenunciaModalOpen = ref(false)
 

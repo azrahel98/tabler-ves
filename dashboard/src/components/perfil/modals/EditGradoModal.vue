@@ -1,7 +1,44 @@
 <template>
   <Modal :isOpen="isOpen" :title="isEdit ? 'Editar Grado Académico' : 'Agregar Grado Académico'" @close="close">
     <form @submit.prevent="guardar" class="space-y-4">
-      <div class="grid grid-cols-1 gap-4">
+      <div class="grid grid-cols-2 gap-4">
+        <!-- Profesión -->
+        <div class="col-span-2">
+          <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">Profesión</label>
+          <input
+            type="text"
+            v-model="form.profesion"
+            class="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+            placeholder="Ej: Ingeniero de Sistemas"
+            required />
+        </div>
+
+        <!-- Universidad -->
+        <div class="col-span-2">
+          <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">Universidad</label>
+          <input
+            type="text"
+            v-model="form.universidad"
+            class="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+            placeholder="Ej: Universidad Nacional de Piura" />
+        </div>
+
+        <!-- Nivel Académico -->
+        <div>
+          <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">Nivel Académico</label>
+          <select
+            v-model="form.nivel_academico"
+            class="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+            required>
+            <option value="">Seleccione</option>
+            <option value="TECNICO">Técnico</option>
+            <option value="BACHILLER">Bachiller</option>
+            <option value="TITULADO">Titulado</option>
+            <option value="MAGISTER">Maestría</option>
+            <option value="DOCTOR">Doctorado</option>
+          </select>
+        </div>
+
         <!-- Abreviatura -->
         <div>
           <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">Abreviatura</label>
@@ -9,19 +46,18 @@
             type="text"
             v-model="form.abrv"
             class="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary dark:border-slate-700 dark:bg-slate-800 dark:text-white"
-            placeholder="Ej: Ing., Lic., Mag."
+            placeholder="Ej: ING, LIC, BACH"
             required />
         </div>
 
-        <!-- Descripción -->
-        <div>
-          <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">Descripción Completa</label>
+        <!-- Colegiatura -->
+        <div class="col-span-2">
+          <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">Colegiatura</label>
           <input
             type="text"
-            v-model="form.descripcion"
+            v-model="form.colegiatura"
             class="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary dark:border-slate-700 dark:bg-slate-800 dark:text-white"
-            placeholder="Ingeniero de Sistemas"
-            required />
+            placeholder="Nro. de colegiatura (opcional)" />
         </div>
       </div>
     </form>
@@ -45,7 +81,12 @@
 
 <script setup lang="ts">
   import { ref, watch } from 'vue'
+  import { storeToRefs } from 'pinia'
+  import { usePersonalStore } from '../../../stores/personal'
   import Modal from '../../ui/Modal.vue'
+
+  const store = usePersonalStore()
+  const { perfilActual } = storeToRefs(store)
 
   const props = defineProps<{
     isOpen: boolean
@@ -59,25 +100,34 @@
   }>()
 
   const form = ref({
-    id: null,
-    descripcion: '',
+    id: null as number | null,
+    profesion: '',
+    universidad: '',
+    colegiatura: '',
+    nivel_academico: '',
     abrv: '',
   })
 
   watch(
     () => [props.isOpen, props.grado],
-    ([isOpen, info]) => {
+    ([isOpen]) => {
       if (isOpen) {
-        if (props.isEdit && info) {
+        if (props.isEdit && props.grado) {
           form.value = {
-            id: info.id,
-            descripcion: info.descripcion || '',
-            abrv: info.abrv || '',
+            id: props.grado.id,
+            profesion: props.grado.profesion || '',
+            universidad: props.grado.universidad || '',
+            colegiatura: props.grado.colegiatura || '',
+            nivel_academico: props.grado.nivel_academico || '',
+            abrv: props.grado.abrv || '',
           }
         } else {
           form.value = {
             id: null,
-            descripcion: '',
+            profesion: '',
+            universidad: '',
+            colegiatura: '',
+            nivel_academico: '',
             abrv: '',
           }
         }
@@ -90,6 +140,10 @@
   }
 
   const guardar = () => {
-    emit('save', form.value)
+    const payload = {
+      ...form.value,
+      dni: perfilActual.value?.dni,
+    }
+    emit('save', payload)
   }
 </script>

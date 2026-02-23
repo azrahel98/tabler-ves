@@ -473,49 +473,35 @@ Grado académico de un trabajador.
 **Respuesta:**
 
 ```json
-{ "id": 1, "descripcion": "Ingeniero de Sistemas", "abrv": "Ing.", "dni": "12345678" }
+{
+  "id": 1, "profesion": "Ingeniero de Sistemas",
+  "universidad": "UNMSM", "colegiatura": "CIP 12345",
+  "nivel_academico": "Titulado", "abrv": "Ing.", "dni": "12345678"
+}
 ```
 
 ---
 
 ### `POST /personal/agregar_gradoa`
 
-Agregar grado académico.
+Agregar o actualizar grado académico (upsert). Si `id` es `0` se inserta, si `id > 0` se actualiza.
 
 **Body:**
 
-| Campo        | Tipo    | Requerido |
-|--------------|---------|-----------|
-| `id`         | number  | sí        |
-| `descripcion`| string? | no        |
-| `abrv`       | string  | sí        |
-| `dni`        | string  | sí        |
+| Campo            | Tipo    | Requerido |
+|------------------|---------|-----------|
+| `id`             | number  | sí        |
+| `profesion`      | string  | sí        |
+| `universidad`    | string  | sí        |
+| `colegiatura`    | string? | no        |
+| `nivel_academico`| string  | sí        |
+| `abrv`           | string  | sí        |
+| `dni`            | string  | sí        |
 
 **Respuesta:**
 
 ```json
-"Rows affected: 1"
-```
-
----
-
-### `POST /personal/editar_gradoa`
-
-Editar grado académico.
-
-**Body:**
-
-| Campo        | Tipo    | Requerido |
-|--------------|---------|-----------|
-| `id`         | number  | sí        |
-| `descripcion`| string? | no        |
-| `abrv`       | string  | sí        |
-| `dni`        | string  | sí        |
-
-**Respuesta:**
-
-```json
-"Rows affected: 1"
+"Operación exitosa. Filas afectadas: 1"
 ```
 
 ---

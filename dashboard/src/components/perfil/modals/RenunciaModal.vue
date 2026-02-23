@@ -21,7 +21,8 @@
             <input
               type="number"
               v-model="form.numeroDocumento"
-              class="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500 dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+              :disabled="esSunat"
+              class="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500 dark:border-slate-700 dark:bg-slate-800 dark:text-white disabled:opacity-50 disabled:cursor-not-allowed"
               placeholder="001" />
           </div>
           <div>
@@ -29,13 +30,14 @@
             <input
               type="number"
               v-model="form.añoDocumento"
-              class="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500 dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+              :disabled="esSunat"
+              class="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500 dark:border-slate-700 dark:bg-slate-800 dark:text-white disabled:opacity-50 disabled:cursor-not-allowed"
               placeholder="2024" />
           </div>
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">Fecha</label>
+          <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">Fecha de Cesse</label>
           <input
             type="date"
             v-model="form.fecha"
@@ -44,8 +46,8 @@
         </div>
 
         <!-- Fecha Válida -->
-        <div>
-          <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">Fecha de Cese Efectiva</label>
+        <div v-if="!esSunat">
+          <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">Fecha del Documento</label>
           <input
             type="date"
             v-model="form.fechaValida"
@@ -57,6 +59,7 @@
           <textarea
             v-model="form.descripcion"
             rows="3"
+            :disabled="esSunat"
             class="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500 dark:border-slate-700 dark:bg-slate-800 dark:text-white"
             placeholder="Motivos de la renuncia..."
             required></textarea>
@@ -82,7 +85,7 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, watch, toRef } from 'vue'
+  import { ref, watch, toRef, computed } from 'vue'
   import { storeToRefs } from 'pinia'
   import { useTableroStore } from '../../../stores/dashboard'
   import Modal from '../../ui/Modal.vue'
@@ -102,6 +105,23 @@
   const cargandoDocumentos = ref(false)
   let yaCargados = false
 
+  const esSunat = computed(() => {
+    const seleccionado = documentos.value.find((d: any) => d.id == form.value.tipoDocumento)
+    return seleccionado?.nombre?.toUpperCase() === 'SUNAT'
+  })
+
+  watch(esSunat, (val) => {
+    if (val) {
+      form.value.numeroDocumento = null
+      form.value.fechaValida = null
+      form.value.añoDocumento = null as any
+      form.value.descripcion = 'REGISTRADO VALIDADO POR TREGISTRO'
+    } else {
+      form.value.añoDocumento = new Date().getFullYear()
+      form.value.descripcion = ''
+    }
+  })
+
   watch(toRef(props, 'isOpen'), async (abierto) => {
     if (abierto && !yaCargados) {
       cargandoDocumentos.value = true
@@ -118,10 +138,10 @@
 
   const form = ref({
     tipoDocumento: '',
-    numeroDocumento: null,
-    añoDocumento: new Date().getFullYear(),
+    numeroDocumento: null as number | null,
+    añoDocumento: new Date().getFullYear() as number | null,
     fecha: new Date().toISOString().split('T')[0],
-    fechaValida: '',
+    fechaValida: null as string | null,
     descripcion: '',
   })
 
@@ -130,7 +150,12 @@
   }
 
   const guardar = () => {
-    form.value.tipoDocumento = form.value.tipoDocumento.toString()
-    emit('save', form.value)
+    const payload = {
+      ...form.value,
+      tipoDocumento: form.value.tipoDocumento.toString(),
+      numeroDocumento: esSunat.value ? null : form.value.numeroDocumento,
+      añoDocumento: esSunat.value ? null : form.value.añoDocumento,
+    }
+    emit('save', payload)
   }
 </script>

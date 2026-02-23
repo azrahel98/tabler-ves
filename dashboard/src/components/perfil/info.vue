@@ -8,6 +8,7 @@
         Informacion Personal
       </div>
       <button
+        v-if="esAdmin"
         @click="isEditModalOpen = true"
         class="rounded-full p-1.5 text-slate-500 hover:bg-slate-100 hover:text-primary dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-primary transition-colors"
         title="Editar Información">
@@ -18,15 +19,15 @@
     <div class="space-y-3 flex flex-col justify-between">
       <div>
         <p class="text-[10px] font-medium uppercase tracking-wider text-gray-400">Telefono Celular</p>
-        <p class="font-medium text-sm text-black dark:text-white">{{ perfilActual.telf || '999999999' }}</p>
+        <p class="font-medium text-sm text-black dark:text-white">{{ perfilActual.telf || 'No tiene registros' }}</p>
       </div>
       <div>
         <p class="text-[10px] font-medium uppercase tracking-wider text-gray-400">Correo electronico</p>
-        <p class="font-medium text-sm text-black dark:text-white">{{ perfilActual.email || 'juan.perez@company.com' }}</p>
+        <p class="font-medium text-sm text-black dark:text-white">{{ perfilActual.email || 'No tiene registros' }}</p>
       </div>
       <div>
         <p class="text-[10px] font-medium uppercase tracking-wider text-gray-400">Direccion</p>
-        <p class="font-medium text-sm text-black dark:text-white">{{ perfilActual.direccion || 'xx 12 xx lima xx' }}</p>
+        <p class="font-medium text-sm text-black dark:text-white">{{ perfilActual.direccion || 'No tiene registros' }}</p>
       </div>
       <div>
         <p class="text-[10px] font-medium uppercase tracking-wider text-gray-400">DNI / RUC</p>
@@ -37,7 +38,7 @@
       <div class="grid grid-cols-2 gap-4">
         <div>
           <p class="text-[10px] font-medium uppercase tracking-wider text-gray-400">FECHA DE NACIMIENTO</p>
-          <p class="font-medium text-sm text-black dark:text-white">{{ formatUTC(perfilActual.nacimiento) }}</p>
+          <p class="font-medium text-sm text-black dark:text-white">{{ formatUTC(perfilActual.nacimiento) || 'No tiene registros' }}</p>
         </div>
         <div>
           <p class="text-[10px] font-medium uppercase tracking-wider text-gray-400">SEXO</p>
@@ -46,7 +47,7 @@
       </div>
     </div>
 
-    <EditInfoModal :isOpen="isEditModalOpen" :perfil="perfilActual" @close="isEditModalOpen = false" @save="handleSave" />
+    <EditInfoModal v-if="esAdmin" :isOpen="isEditModalOpen" :perfil="perfilActual" @close="isEditModalOpen = false" @save="handleSave" />
   </div>
 </template>
 
@@ -58,9 +59,11 @@
   import { es } from 'date-fns/locale'
   import { Pencil } from 'lucide-vue-next'
   import EditInfoModal from './modals/EditInfoModal.vue'
+  import { useAutenticacionStore } from '../../stores/auth'
 
   const personalStore = usePersonalStore()
   const { perfilActual } = storeToRefs(personalStore)
+  const { esAdmin } = storeToRefs(useAutenticacionStore())
 
   const isEditModalOpen = ref(false)
 

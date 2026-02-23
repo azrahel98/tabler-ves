@@ -5,7 +5,7 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
     cfg.service(
         web::scope("/personal")
             .wrap(JWT)
-            .route("/agregar_gradoa", web::post().to(agregar_gradoacademico))
+            .route("/agregar_gradoa", web::post().to(upsert_gradoacademico))
             .route(
                 "/agregar_infobancaria",
                 web::post().to(agregar_infobancaria),
@@ -13,7 +13,6 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
             .route("/agregar_sindicato", web::post().to(agregar_sindicato))
             .route("/banco_por_dni", web::post().to(banco_por_dni))
             .route("/buscar", web::post().to(buscar_por_nombre))
-            .route("/editar_gradoa", web::post().to(editar_gradoacademico))
             .route(
                 "/editar_infobancaria",
                 web::post().to(editar_datos_bancarios),
