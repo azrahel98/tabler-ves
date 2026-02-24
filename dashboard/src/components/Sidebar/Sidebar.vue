@@ -1,12 +1,12 @@
 <template>
   <aside
     :class="sidebarToggle ? 'translate-x-0 lg:w-[90px] px-0' : '-translate-x-full px-5'"
-    class="sidebar fixed left-0 top-0 z-9999 flex h-screen w-[260px] flex-col overflow-y-hidden border-r border-gray-200 bg-white dark:border-gray-800 dark:bg-black lg:static lg:translate-x-0 transition-all duration-300">
+    class="sidebar fixed left-0 top-0 z-9999 flex h-screen w-[260px] flex-col overflow-y-hidden border-r border-gray-200 bg-white dark:border-gray-800 dark:bg-black lg:static lg:translate-x-0">
     <div :class="sidebarToggle ? 'justify-center' : 'justify-start px-4'" class="flex items-center gap-2 pt-8 sidebar-header pb-7">
       <router-link to="/">
         <span class="logo flex items-center gap-2">
-          <img class="dark:hidden" :class="sidebarToggle ? 'hidden' : 'block'" src="/logo.svg" alt="Logossdfads" />
-          <img class="hidden dark:block" :class="sidebarToggle ? 'hidden' : 'block'" src="/logo-dark.svg" alt="Logo" />
+          <img class="dark:hidden" :class="sidebarToggle ? 'hidden' : 'block'" src="/logo-icon.svg" alt="Logossdfads" />
+          <img class="hidden dark:block" :class="sidebarToggle ? 'hidden' : 'block'" src="/logo-icon.svg" alt="Logo" />
 
           <img class="logo-icon w-8 h-8" :class="sidebarToggle ? 'block' : 'hidden'" src="/logo-icon.svg" alt="Logo" />
         </span>

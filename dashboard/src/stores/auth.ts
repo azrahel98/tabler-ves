@@ -2,45 +2,67 @@ import { defineStore } from 'pinia'
 import { jwtDecode } from 'jwt-decode'
 import api from '../services/api'
 
-function decodificar(token: string): any | null {
+interface JwtPayload {
+  exp: number
+  lvl: number
+  username: string
+}
+
+function decodificar(token: string): JwtPayload | null {
   try {
-    return jwtDecode(token)
+    return jwtDecode<JwtPayload>(token)
   } catch {
     return null
   }
 }
 
+function estaExpirado(exp: number): boolean {
+  return exp * 1000 < Date.now()
+}
+
 export const useAutenticacionStore = defineStore('autenticacion', {
   state: () => {
-    const token = localStorage.getItem('token') || (null as string | null)
+    const token = localStorage.getItem('token')
     const usuario = token ? decodificar(token) : null
+
+    if (usuario && estaExpirado(usuario.exp)) {
+      localStorage.removeItem('token')
+      return { token: null, usuario: null }
+    }
+
     return { token, usuario }
   },
+
   getters: {
-    estaAutenticado: (state) => !!state.token,
-    esAdmin: (state) => state.usuario!.lvl === 1,
+    estaAutenticado: (state) => !!state.token && !!state.usuario && !estaExpirado(state.usuario.exp),
+
+    esAdmin: (state) => state.usuario?.lvl === 1,
   },
+
   actions: {
-    async iniciarSesion(usuario: string, contrasena: string) {
-      try {
-        const response = await api.post('/login/', {
-          username: usuario,
-          password: contrasena,
-        })
-        this.token = response.data.token
-        if (this.token) {
-          localStorage.setItem('token', this.token)
-          this.usuario = decodificar(this.token)
-        }
-      } catch (error) {
-        console.error('Login failed:', error)
-        throw error
+    async iniciarSesion(username: string, password: string) {
+      const response = await api.post('/login/', { username, password })
+
+      this.token = response.data.token
+
+      if (this.token) {
+        localStorage.setItem('token', this.token)
+        this.usuario = decodificar(this.token)
       }
     },
+
     cerrarSesion() {
       this.token = null
       this.usuario = null
       localStorage.removeItem('token')
+    },
+
+    verificarToken() {
+      if (this.usuario && estaExpirado(this.usuario.exp)) {
+        this.cerrarSesion()
+        return false
+      }
+      return true
     },
   },
 })
