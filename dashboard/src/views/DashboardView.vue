@@ -12,7 +12,14 @@
         <div class="col-span-12 space-y-6 xl:col-span-4">
           <Table title="Cumpleaños Proximos" :columns="['Nombre', 'Dia']" uri="">
             <slot>
-              <div class="flex items-center justify-between border-b border-gray-100 py-3 dark:border-gray-800" v-for="x in filteredBirthdays" :key="x.dni">
+              <RouterLink
+                class="flex items-center justify-between border-b border-gray-100 py-3 dark:border-gray-800"
+                v-for="x in filteredBirthdays"
+                :key="x.dni"
+                :to="{
+                  name: 'personal-profile',
+                  params: { dni: x.dni },
+                }">
                 <div class="flex flex-col">
                   <span class="text-theme-sm text-gray-800 dark:text-white/90 font-medium">
                     {{ x.nombre }}
@@ -28,13 +35,20 @@
                   Hoy
                 </span>
                 <span v-else class="text-xs text-gray-500 dark:text-gray-400"> En {{ x.daysUntil }} días </span>
-              </div>
+              </RouterLink>
             </slot>
           </Table>
         </div>
         <div class="col-span-12 space-y-6 xl:col-span-4">
           <Table title="Renuncias Recientes" :columns="['Servidor', 'Fecha']" uri="">
-            <div class="flex items-center justify-between border-b border-gray-100 py-3 dark:border-gray-800 last:border-none" v-for="item in renunciasFormateadas" :key="item.id">
+            <RouterLink
+              class="flex items-center justify-between border-b border-gray-100 py-3 dark:border-gray-800 last:border-none"
+              v-for="item in renunciasFormateadas"
+              :key="item.id"
+              :to="{
+                name: 'personal-profile',
+                params: { dni: item.dni },
+              }">
               <div class="flex flex-col">
                 <span class="text-sm font-medium text-gray-800 dark:text-white/90">
                   {{ item.nombre }}
@@ -61,7 +75,7 @@
 
                 <span v-if="item.daysSince > 1" class="text-[10px] text-gray-400"> Hace {{ item.daysSince }} días </span>
               </div>
-            </div>
+            </RouterLink>
           </Table>
         </div>
       </div>

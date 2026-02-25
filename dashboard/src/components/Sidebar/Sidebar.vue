@@ -48,7 +48,7 @@
               </router-link>
             </li>
 
-            <li>
+            <li v-if="esAdmin">
               <router-link
                 to="/sindicato"
                 class="relative flex items-center gap-2.5 rounded-sm py-2 menu-item-inactive"
@@ -104,7 +104,11 @@
   import { LayoutDashboard, Users, KeyRound, Network, Shield } from 'lucide-vue-next'
   import { storeToRefs } from 'pinia'
   import router from '../../router'
+  import { useAutenticacionStore } from '../../stores/auth'
 
   const configuracionStore = useConfiguracionStore()
   const { menuLateralAbierto: sidebarToggle } = storeToRefs(configuracionStore)
+
+  const user = useAutenticacionStore()
+  const { esAdmin } = storeToRefs(user)
 </script>

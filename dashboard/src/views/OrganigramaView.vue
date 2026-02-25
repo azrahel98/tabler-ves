@@ -26,22 +26,30 @@
         <p class="text-sm text-gray-400 dark:text-gray-500 mt-1">No se encontró información jerárquica disponible</p>
       </div>
 
-      <div v-else class="rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900 overflow-hidden">
-        <table class="w-full text-sm">
-          <thead>
-            <tr class="border-b border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/50">
-              <th class="px-5 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-gray-400 w-10"></th>
-              <th class="px-4 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-gray-400">Área / Gerencia</th>
-              <th class="px-4 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-gray-400">Jefe Responsable</th>
-              <th class="px-4 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-gray-400">DNI</th>
-              <th class="px-4 py-3 text-center text-[10px] font-bold uppercase tracking-wider text-gray-400">Sub-áreas</th>
-            </tr>
-          </thead>
-          <tbody>
-            <FilaOrganigrama v-for="nodo in organigrama" :key="nodo.id" :nodo="nodo" :nivel="0" />
-          </tbody>
-        </table>
-      </div>
+      <template v-else>
+        <!-- Móvil: tarjetas -->
+        <div class="md:hidden flex flex-col gap-1">
+          <FilaOrganigrama v-for="nodo in organigrama" :key="'m-' + nodo.id" :nodo="nodo" :nivel="0" modo="tarjeta" />
+        </div>
+
+        <!-- Desktop: tabla -->
+        <div class="hidden md:block rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900 overflow-hidden">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="border-b border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/50">
+                <th class="px-5 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-gray-400 w-10"></th>
+                <th class="px-4 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-gray-400">Área / Gerencia</th>
+                <th class="px-4 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-gray-400">Jefe Responsable</th>
+                <th class="px-4 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-gray-400">DNI</th>
+                <th class="px-4 py-3 text-center text-[10px] font-bold uppercase tracking-wider text-gray-400">Sub-áreas</th>
+              </tr>
+            </thead>
+            <tbody>
+              <FilaOrganigrama v-for="nodo in organigrama" :key="nodo.id" :nodo="nodo" :nivel="0" modo="tabla" />
+            </tbody>
+          </table>
+        </div>
+      </template>
     </div>
   </main>
 </template>

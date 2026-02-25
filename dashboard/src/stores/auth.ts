@@ -5,7 +5,7 @@ import api from '../services/api'
 interface JwtPayload {
   exp: number
   lvl: number
-  username: string
+  nombre: string
 }
 
 export function decodificar(token: string): JwtPayload | null {
