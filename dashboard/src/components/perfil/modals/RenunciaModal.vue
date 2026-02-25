@@ -45,7 +45,6 @@
             required />
         </div>
 
-        <!-- Fecha Válida -->
         <div v-if="!esSunat">
           <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">Fecha del Documento</label>
           <input

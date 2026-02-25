@@ -13,14 +13,62 @@
           {{ tieneRenuncia ? 'Inactivo' : 'Activo' }}
         </span>
       </div>
-      <button
-        v-if="vinculoActual && !tieneRenuncia && esAdmin"
-        @click="isRenunciaModalOpen = true"
-        class="rounded-full flex items-center gap-1 px-2 py-1 text-slate-500 hover:bg-red-50 hover:text-red-500 dark:text-slate-400 dark:hover:bg-red-900/20 dark:hover:text-red-400 transition-colors"
-        title="Registrar Renuncia">
-        <UserMinus class="h-4 w-4" />
-        <span class="text-[10px] font-medium">Renunciar</span>
-      </button>
+      <div class="flex items-center gap-1">
+        <Popover v-if="vinculoActual" posicion="abajo" alineacion="fin" ancho="300px" :mostrarFlecha="true" :mostrarCerrar="true" titulo="Detalle del Vínculo">
+          <template #disparador>
+            <button
+              class="rounded-full p-1.5 text-slate-400 hover:bg-blue-50 hover:text-blue-500 dark:hover:bg-blue-900/20 dark:hover:text-blue-400 transition-colors"
+              title="Ver detalles adicionales">
+              <Info class="h-4 w-4" />
+            </button>
+          </template>
+
+          <div class="space-y-2.5 text-sm">
+            <div v-if="vinculoActual.cargo_estructural" class="detalle-fila">
+              <span class="detalle-etiqueta">Cargo Estructural</span>
+              <span class="detalle-valor">{{ vinculoActual.cargo_estructural }}</span>
+            </div>
+            <div v-if="vinculoActual.grupo_ocupacional" class="detalle-fila">
+              <span class="detalle-etiqueta">Grupo Ocupacional</span>
+              <span class="detalle-valor">{{ vinculoActual.grupo_ocupacional }}</span>
+            </div>
+            <div v-if="vinculoActual.codigo" class="detalle-fila">
+              <span class="detalle-etiqueta">Código Plaza</span>
+              <span class="detalle-valor">{{ vinculoActual.codigo }}</span>
+            </div>
+            <div v-if="vinculoActual.sindicato" class="detalle-fila">
+              <span class="detalle-etiqueta">Sindicato</span>
+              <span class="detalle-valor">{{ vinculoActual.sindicato }}</span>
+            </div>
+            <template v-if="vinculoActual.tipo_evento">
+              <div class="border-t border-gray-200 dark:border-gray-700 my-2"></div>
+              <div class="detalle-fila">
+                <span class="detalle-etiqueta">Evento</span>
+                <span class="detalle-valor"
+                  >{{ vinculoActual.tipo_evento }} <span v-if="vinculoActual.estado_evento" class="text-gray-400">· {{ vinculoActual.estado_evento }}</span></span
+                >
+              </div>
+              <div v-if="vinculoActual.doc_evento_tipo" class="detalle-fila">
+                <span class="detalle-etiqueta">Doc. Evento</span>
+                <span class="detalle-valor">{{ vinculoActual.doc_evento_tipo }} {{ vinculoActual.numero_doc_evento }}</span>
+              </div>
+              <div v-if="vinculoActual.fecha_evento" class="detalle-fila">
+                <span class="detalle-etiqueta">Fecha Evento</span>
+                <span class="detalle-valor">{{ vinculoActual.fecha_evento }}</span>
+              </div>
+            </template>
+          </div>
+        </Popover>
+
+        <button
+          v-if="vinculoActual && !tieneRenuncia && esAdmin"
+          @click="isRenunciaModalOpen = true"
+          class="rounded-full flex items-center gap-1 px-2 py-1 text-slate-500 hover:bg-red-50 hover:text-red-500 dark:text-slate-400 dark:hover:bg-red-900/20 dark:hover:text-red-400 transition-colors"
+          title="Registrar Renuncia">
+          <UserMinus class="h-4 w-4" />
+          <span class="text-[10px] font-medium">Renunciar</span>
+        </button>
+      </div>
     </div>
 
     <div v-if="vinculoActual" class="space-y-4">
@@ -58,7 +106,6 @@
         <p class="mt-1 font-medium text-sm text-black dark:text-white leading-relaxed">{{ vinculoActual.descrip_ingreso }}</p>
       </div>
 
-      <!-- Sección de Renuncia -->
       <div v-if="tieneRenuncia" class="mt-4 pt-4 border-t border-red-200 dark:border-red-800/40">
         <div class="flex items-center gap-2 mb-3">
           <UserMinus class="h-4 w-4 text-red-500" />
@@ -91,8 +138,9 @@
   import { ref, computed } from 'vue'
   import { storeToRefs } from 'pinia'
   import { usePersonalStore } from '../../stores/personal'
-  import { UserMinus } from 'lucide-vue-next'
+  import { UserMinus, Info } from 'lucide-vue-next'
   import RenunciaModal from './modals/RenunciaModal.vue'
+  import Popover from '../ui/Popover.vue'
   import { useAutenticacionStore } from '../../stores/auth'
 
   const store = usePersonalStore()
@@ -120,3 +168,30 @@
     }
   }
 </script>
+
+<style scoped>
+  .detalle-fila {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .detalle-etiqueta {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-gray-400);
+  }
+
+  .detalle-valor {
+    font-weight: 500;
+    color: var(--color-gray-800);
+    word-break: break-word;
+  }
+
+  :root.dark .detalle-valor,
+  .dark .detalle-valor {
+    color: var(--color-gray-200);
+  }
+</style>

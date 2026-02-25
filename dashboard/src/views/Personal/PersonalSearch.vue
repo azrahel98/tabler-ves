@@ -55,8 +55,8 @@
       </div>
     </div>
     <div class="flex flex-col gap-8 pt-2">
-      <div v-if="loading" class="flex items-center justify-center py-20">
-        <div class="h-12 w-12 animate-spin rounded-full border-4 border-solid border-primary border-t-transparent"></div>
+      <div v-if="loading">
+        <Loading size="lg" fullPage />
       </div>
 
       <div
@@ -94,6 +94,7 @@
   import { storeToRefs } from 'pinia'
   import { Search, SlidersHorizontal } from 'lucide-vue-next'
   import CardSearch from '../../components/search/card.vue'
+  import Loading from '../../components/ui/Loading.vue'
 
   const personalStore = usePersonalStore()
   const { resultadosBusqueda } = storeToRefs(personalStore)

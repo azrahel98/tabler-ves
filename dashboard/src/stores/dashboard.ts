@@ -68,9 +68,6 @@ export const useTableroStore = defineStore("tablero", () => {
         obtenerCumpleanos(),
         obtenerReporteAreas(),
 
-        // obtenerPersonalActivo(), // Might be too heavy to load initially?
-        // obtenerHistorial(), // Needs DNI?
-        // obtenerOrganigrama(),
         obtenerListaRenuncias(),
       ]);
     } catch (e) {

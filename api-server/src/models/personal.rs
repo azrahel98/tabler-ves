@@ -99,6 +99,12 @@ pub struct GradoAcademico {
     pub dni: String,
 }
 
+#[derive(Debug, Serialize, Deserialize)]
+pub struct VinculosSindicato {
+    pub id_vinculo: i32,
+    pub dni: String,
+}
+
 #[derive(Debug, Serialize, Deserialize, FromRow)]
 pub struct DocumentoSindicato {
     pub id: Option<i32>,
@@ -113,9 +119,7 @@ pub struct DocumentoSindicato {
     pub fecha_valida: Option<String>,
     pub descripcion: String,
     pub sindicato: i32,
-    pub id_vinculo: i32,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub dni: Option<String>,
+    pub vinculos: Vec<VinculosSindicato>,
 }
 
 #[derive(Debug, Serialize, Deserialize, FromRow)]
@@ -143,4 +147,15 @@ pub struct ContactoEmergencia {
     pub nombre: String,
     pub relacion: String,
     pub telefono: Option<String>,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct NuevoVinculo {
+    pub personal: Perfil,
+    pub airshp: String,
+    pub documento: Documento,
+    pub regimen: i32,
+    pub cargo: i32,
+    pub area: i32,
+    pub sueldo: f64,
 }

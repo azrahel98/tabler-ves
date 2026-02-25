@@ -32,23 +32,10 @@ api.interceptors.request.use((config) => {
       return Promise.reject('Token expirado')
     }
 
-    config.headers.Authorization = `Bearer ${authStore.token}`
+    config.headers.Authorization = `${authStore.token}`
   }
 
   return config
 })
-
-// api.interceptors.response.use(
-//   (response) => response,
-//   (error) => {
-//     if (error.response && error.response.status === 401) {
-//       if (error.config.url && !error.config.url.endsWith('/login/')) {
-//         localStorage.removeItem('token')
-//         window.location.href = '/login'
-//       }
-//     }
-//     return Promise.reject(error)
-//   }
-// )
 
 export default api

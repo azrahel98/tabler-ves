@@ -23,7 +23,7 @@ Autenticación de usuario.
 **Body:**
 
 | Campo      | Tipo   | Requerido |
-|------------|--------|-----------|
+| ---------- | ------ | --------- |
 | `username` | string | sí        |
 | `password` | string | sí        |
 
@@ -42,7 +42,7 @@ Cambiar contraseña.
 **Body:**
 
 | Campo     | Tipo   | Requerido |
-|-----------|--------|-----------|
+| --------- | ------ | --------- |
 | `id`      | number | sí        |
 | `oldpass` | string | sí        |
 | `newpass` | string | sí        |
@@ -89,7 +89,12 @@ Cumpleaños próximos.
 
 ```json
 [
-  { "dni": "12345678", "nombre": "Apellido Nombre", "nacimiento": "1990-01-15", "edad": 36 }
+  {
+    "dni": "12345678",
+    "nombre": "Apellido Nombre",
+    "nacimiento": "1990-01-15",
+    "edad": 36
+  }
 ]
 ```
 
@@ -169,14 +174,19 @@ Historial de operaciones filtrado por DNI.
 **Body:**
 
 | Campo | Tipo   | Requerido |
-|-------|--------|-----------|
+| ----- | ------ | --------- |
 | `dni` | string | sí        |
 
 **Respuesta:**
 
 ```json
 [
-  { "operacion": "editar", "detalle": "...", "fecha": "2024-01-15 10:30:00", "nombre": "Admin" }
+  {
+    "operacion": "editar",
+    "detalle": "...",
+    "fecha": "2024-01-15 10:30:00",
+    "nombre": "Admin"
+  }
 ]
 ```
 
@@ -215,9 +225,14 @@ Legajos en estado préstamo.
 ```json
 [
   {
-    "id": 1, "nombre": "Apellido Nombre", "dni": "12345678",
-    "estado": "prestamo", "persona": "Juan", "userid": 1,
-    "usuario": "Admin", "fecha": "2024-01-15T10:30:00"
+    "id": 1,
+    "nombre": "Apellido Nombre",
+    "dni": "12345678",
+    "estado": "prestamo",
+    "persona": "Juan",
+    "userid": 1,
+    "usuario": "Admin",
+    "fecha": "2024-01-15T10:30:00"
   }
 ]
 ```
@@ -235,9 +250,13 @@ Renuncias recientes (últimos 120 días).
 ```json
 [
   {
-    "id": 1, "dni": "12345678", "nombre": "Apellido Nombre",
-    "fecha": "2024-01-15", "cargo": "Analista",
-    "area": "Gerencia", "codigo": "P001"
+    "id": 1,
+    "dni": "12345678",
+    "nombre": "Apellido Nombre",
+    "fecha": "2024-01-15",
+    "cargo": "Analista",
+    "area": "Gerencia",
+    "codigo": "P001"
   }
 ]
 ```
@@ -269,14 +288,19 @@ Buscar trabajadores por nombre.
 **Body:**
 
 | Campo    | Tipo   | Requerido |
-|----------|--------|-----------|
+| -------- | ------ | --------- |
 | `nombre` | string | sí        |
 
 **Respuesta:**
 
 ```json
 [
-  { "nombre": "Nombre Apellido", "dni": "12345678", "estado": "activo", "sexo": "M" }
+  {
+    "nombre": "Nombre Apellido",
+    "dni": "12345678",
+    "estado": "activo",
+    "sexo": "M"
+  }
 ]
 ```
 
@@ -289,17 +313,21 @@ Perfil de un trabajador.
 **Body:**
 
 | Campo | Tipo   | Requerido |
-|-------|--------|-----------|
+| ----- | ------ | --------- |
 | `dni` | string | sí        |
 
 **Respuesta:**
 
 ```json
 {
-  "dni": "12345678", "nombre": "Nombre Apellido",
-  "telf": "999999999", "direccion": "Av. Ejemplo 123",
-  "email": "correo@mail.com", "ruc": "10123456789",
-  "nacimiento": "1990-01-15", "sexo": "M"
+  "dni": "12345678",
+  "nombre": "Nombre Apellido",
+  "telf": "999999999",
+  "direccion": "Av. Ejemplo 123",
+  "email": "correo@mail.com",
+  "ruc": "10123456789",
+  "nacimiento": "1990-01-15",
+  "sexo": "M"
 }
 ```
 
@@ -311,16 +339,16 @@ Editar datos personales.
 
 **Body:**
 
-| Campo       | Tipo    | Requerido |
-|-------------|---------|-----------|
-| `dni`       | string  | sí        |
-| `nombre`    | string? | no        |
-| `telf`      | string? | no        |
-| `direccion` | string? | no        |
-| `email`     | string? | no        |
-| `ruc`       | string? | no        |
-| `nacimiento`| string  | sí        |
-| `sexo`      | string? | no        |
+| Campo        | Tipo    | Requerido |
+| ------------ | ------- | --------- |
+| `dni`        | string  | sí        |
+| `nombre`     | string? | no        |
+| `telf`       | string? | no        |
+| `direccion`  | string? | no        |
+| `email`      | string? | no        |
+| `ruc`        | string? | no        |
+| `nacimiento` | string  | sí        |
+| `sexo`       | string? | no        |
 
 **Respuesta:**
 
@@ -337,7 +365,7 @@ Vínculos laborales de un trabajador.
 **Body:**
 
 | Campo | Tipo   | Requerido |
-|-------|--------|-----------|
+| ----- | ------ | --------- |
 | `dni` | string | sí        |
 
 **Respuesta:**
@@ -345,17 +373,29 @@ Vínculos laborales de un trabajador.
 ```json
 [
   {
-    "id": 1, "dni": "12345678", "doc_ingreso": "RA",
-    "numero_doc_ingreso": "001", "descrip_ingreso": "...",
-    "fecha_ingreso": "2020-01-15", "area": "Gerencia",
-    "cargo": "Analista", "regimen": "D.L. 276",
-    "sueldo": 2500.0, "codigo": "P001",
-    "cargo_estructural": "...", "grupo_ocupacional": "...",
-    "estado": "activo", "doc_salida": null,
-    "descrip_salida": null, "fecha_salida": null,
-    "numero_doc_salida": null, "sindicato": null,
-    "tipo_evento": null, "estado_evento": null,
-    "doc_evento_tipo": null, "numero_doc_evento": null,
+    "id": 1,
+    "dni": "12345678",
+    "doc_ingreso": "RA",
+    "numero_doc_ingreso": "001",
+    "descrip_ingreso": "...",
+    "fecha_ingreso": "2020-01-15",
+    "area": "Gerencia",
+    "cargo": "Analista",
+    "regimen": "D.L. 276",
+    "sueldo": 2500.0,
+    "codigo": "P001",
+    "cargo_estructural": "...",
+    "grupo_ocupacional": "...",
+    "estado": "activo",
+    "doc_salida": null,
+    "descrip_salida": null,
+    "fecha_salida": null,
+    "numero_doc_salida": null,
+    "sindicato": null,
+    "tipo_evento": null,
+    "estado_evento": null,
+    "doc_evento_tipo": null,
+    "numero_doc_evento": null,
     "fecha_evento": null
   }
 ]
@@ -369,23 +409,29 @@ Registrar renuncia de un vínculo.
 
 **Body:**
 
-| Campo            | Tipo    | Requerido |
-|------------------|---------|-----------|
-| `id`             | number? | sí (vinculo id) |
-| `tipoDocumento`  | string? | no        |
-| `numeroDocumento`| number? | no        |
-| `añoDocumento`   | number? | no        |
-| `fecha`          | string  | sí        |
-| `fechaValida`    | string? | no        |
-| `descripcion`    | string  | sí        |
+| Campo             | Tipo    | Requerido       |
+| ----------------- | ------- | --------------- |
+| `id`              | number? | sí (vinculo id) |
+| `tipoDocumento`   | string? | no              |
+| `numeroDocumento` | number? | no              |
+| `añoDocumento`    | number? | no              |
+| `fecha`           | string  | sí              |
+| `fechaValida`     | string? | no              |
+| `conv`            | number? | no              |
+| `descripcion`     | string  | sí              |
+| `funcion`         | number? | no              |
+| `sueldo`          | number? | no              |
 
 **Respuesta:**
 
 ```json
 {
-  "dni": "12345678", "nombre": "Analista",
-  "estado": "inactivo", "fecha": "2024-06-15",
-  "descripcion": "Renuncia voluntaria", "documento": "RA-001-2024"
+  "dni": "12345678",
+  "nombre": "Analista",
+  "estado": "inactivo",
+  "fecha": "2024-06-15",
+  "descripcion": "Renuncia voluntaria",
+  "documento": "RA-001-2024"
 }
 ```
 
@@ -398,16 +444,20 @@ Datos bancarios de un trabajador.
 **Body:**
 
 | Campo | Tipo   | Requerido |
-|-------|--------|-----------|
+| ----- | ------ | --------- |
 | `dni` | string | sí        |
 
 **Respuesta:**
 
 ```json
 {
-  "id": 1, "numero_cuenta": "123456789",
-  "tipo_cuenta": "AHORRO", "cci": "00212345678901234567",
-  "banco": "BCP", "estado": 1, "dni": "12345678"
+  "id": 1,
+  "numero_cuenta": "123456789",
+  "tipo_cuenta": "AHORRO",
+  "cci": "00212345678901234567",
+  "banco": "BCP",
+  "estado": 1,
+  "dni": "12345678"
 }
 ```
 
@@ -420,7 +470,7 @@ Agregar cuenta bancaria.
 **Body:**
 
 | Campo           | Tipo    | Requerido |
-|-----------------|---------|-----------|
+| --------------- | ------- | --------- |
 | `numero_cuenta` | string  | sí        |
 | `tipo_cuenta`   | string  | sí        |
 | `cci`           | string? | no        |
@@ -443,7 +493,7 @@ Editar cuenta bancaria.
 **Body:**
 
 | Campo           | Tipo    | Requerido |
-|-----------------|---------|-----------|
+| --------------- | ------- | --------- |
 | `id`            | number  | sí        |
 | `numero_cuenta` | string  | sí        |
 | `tipo_cuenta`   | string? | no        |
@@ -462,22 +512,37 @@ Editar cuenta bancaria.
 
 ### `POST /personal/grado_por_dni`
 
-Grado académico de un trabajador.
+Grados académicos de un trabajador.
 
 **Body:**
 
 | Campo | Tipo   | Requerido |
-|-------|--------|-----------|
+| ----- | ------ | --------- |
 | `dni` | string | sí        |
 
 **Respuesta:**
 
 ```json
-{
-  "id": 1, "profesion": "Ingeniero de Sistemas",
-  "universidad": "UNMSM", "colegiatura": "CIP 12345",
-  "nivel_academico": "Titulado", "abrv": "Ing.", "dni": "12345678"
-}
+[
+  {
+    "id": 15,
+    "profesion": "ABOGADO",
+    "universidad": "UNIVERSIDAD DE PIURA",
+    "colegiatura": null,
+    "nivel_academico": "TITULADO",
+    "abrv": "ABOG",
+    "dni": "41662616"
+  },
+  {
+    "id": 16,
+    "profesion": "CONTADORA",
+    "universidad": "UNIVERSIDAD PRIVADA DEL NORTE",
+    "colegiatura": null,
+    "nivel_academico": "BACHILLER",
+    "abrv": "BACH",
+    "dni": "41662616"
+  }
+]
 ```
 
 ---
@@ -488,15 +553,15 @@ Agregar o actualizar grado académico (upsert). Si `id` es `0` se inserta, si `i
 
 **Body:**
 
-| Campo            | Tipo    | Requerido |
-|------------------|---------|-----------|
-| `id`             | number  | sí        |
-| `profesion`      | string  | sí        |
-| `universidad`    | string  | sí        |
-| `colegiatura`    | string? | no        |
-| `nivel_academico`| string  | sí        |
-| `abrv`           | string  | sí        |
-| `dni`            | string  | sí        |
+| Campo             | Tipo    | Requerido |
+| ----------------- | ------- | --------- |
+| `id`              | number  | sí        |
+| `profesion`       | string  | sí        |
+| `universidad`     | string  | sí        |
+| `colegiatura`     | string? | no        |
+| `nivel_academico` | string  | sí        |
+| `abrv`            | string  | sí        |
+| `dni`             | string  | sí        |
 
 **Respuesta:**
 
@@ -508,20 +573,28 @@ Agregar o actualizar grado académico (upsert). Si `id` es `0` se inserta, si `i
 
 ### `POST /personal/agregar_sindicato`
 
-Afiliar vínculo a sindicato.
+Afiliar vínculos a sindicato.
 
 **Body:**
 
-| Campo            | Tipo    | Requerido |
-|------------------|---------|-----------|
-| `tipoDocumento`  | string? | no        |
-| `numeroDocumento`| number? | no        |
-| `añoDocumento`   | number? | no        |
-| `fecha`          | string  | sí        |
-| `fechaValida`    | string? | no        |
-| `descripcion`    | string  | sí        |
-| `sindicato`      | number  | sí (id)   |
-| `id_vinculo`     | number  | sí        |
+| Campo             | Tipo    | Requerido |
+| ----------------- | ------- | --------- |
+| `id`              | number? | no        |
+| `tipoDocumento`   | string? | no        |
+| `numeroDocumento` | number? | no        |
+| `añoDocumento`    | number? | no        |
+| `fecha`           | string  | sí        |
+| `fechaValida`     | string? | no        |
+| `descripcion`     | string  | sí        |
+| `sindicato`       | number  | sí (id)   |
+| `vinculos`        | array   | sí        |
+
+**Estructura de `vinculos`:**
+
+| Campo        | Tipo   | Requerido |
+| ------------ | ------ | --------- |
+| `id_vinculo` | number | sí        |
+| `dni`        | string | sí        |
 
 **Respuesta:**
 
@@ -552,7 +625,7 @@ Registros de legajo de un trabajador.
 **Body:**
 
 | Campo | Tipo   | Requerido |
-|-------|--------|-----------|
+| ----- | ------ | --------- |
 | `dni` | string | sí        |
 
 **Respuesta:**
@@ -560,9 +633,14 @@ Registros de legajo de un trabajador.
 ```json
 [
   {
-    "id": 1, "persona": "Juan Pérez", "dni": "12345678",
-    "fecha": "2024-01-15", "estado": "prestamo",
-    "descrip": "Legajo completo", "nuevo": 0, "user": 1
+    "id": 1,
+    "persona": "Juan Pérez",
+    "dni": "12345678",
+    "fecha": "2024-01-15",
+    "estado": "prestamo",
+    "descrip": "Legajo completo",
+    "nuevo": 0,
+    "user": 1
   }
 ]
 ```
@@ -575,16 +653,16 @@ Agregar evento de legajo.
 
 **Body:**
 
-| Campo    | Tipo    | Requerido |
-|----------|---------|-----------|
-| `id`     | number  | sí        |
-| `persona`| string  | sí        |
-| `dni`    | string  | sí        |
-| `fecha`  | string? | no        |
-| `estado` | string? | no        |
-| `descrip`| string? | no        |
-| `nuevo`  | number  | sí (1 = nuevo estado) |
-| `user`   | number? | no        |
+| Campo     | Tipo    | Requerido             |
+| --------- | ------- | --------------------- |
+| `id`      | number  | sí                    |
+| `persona` | string  | sí                    |
+| `dni`     | string  | sí                    |
+| `fecha`   | string? | no                    |
+| `estado`  | string? | no                    |
+| `descrip` | string? | no                    |
+| `nuevo`   | number  | sí (1 = nuevo estado) |
+| `user`    | number? | no                    |
 
 **Respuesta:**
 
@@ -601,7 +679,7 @@ Reporte de asistencia mensual.
 **Body:**
 
 | Campo | Tipo   | Requerido |
-|-------|--------|-----------|
+| ----- | ------ | --------- |
 | `dni` | string | sí        |
 | `mes` | number | sí        |
 | `año` | number | sí        |
@@ -620,12 +698,12 @@ Agregar o actualizar contacto de emergencia.
 
 **Body:**
 
-| Campo        | Tipo    | Requerido |
-|--------------|---------|-----------|
-| `persona_dni`| string  | sí        |
-| `nombre`     | string  | sí        |
-| `relacion`   | string  | sí        |
-| `telefono`   | string? | no        |
+| Campo         | Tipo    | Requerido |
+| ------------- | ------- | --------- |
+| `persona_dni` | string  | sí        |
+| `nombre`      | string  | sí        |
+| `relacion`    | string  | sí        |
+| `telefono`    | string? | no        |
 
 **Respuesta:**
 
@@ -642,13 +720,18 @@ Contacto de emergencia de un trabajador.
 **Body:**
 
 | Campo | Tipo   | Requerido |
-|-------|--------|-----------|
+| ----- | ------ | --------- |
 | `dni` | string | sí        |
 
 **Respuesta:**
 
 ```json
-{ "persona_dni": "12345678", "nombre": "María", "relacion": "Madre", "telefono": "999999999" }
+{
+  "persona_dni": "12345678",
+  "nombre": "María",
+  "relacion": "Madre",
+  "telefono": "999999999"
+}
 ```
 
 ---
@@ -664,10 +747,15 @@ Vacantes recientes (últimos 3 meses).
 ```json
 [
   {
-    "id": 1, "dni": "12345678", "nombre": "Apellido Nombre",
-    "fecha": "2024-06-15", "fechavalida": "2024-06-20",
-    "area": "Gerencia", "cargo": "Analista",
-    "codigo": "P001", "sueldo": 2500.0
+    "id": 1,
+    "dni": "12345678",
+    "nombre": "Apellido Nombre",
+    "fecha": "2024-06-15",
+    "fechavalida": "2024-06-20",
+    "area": "Gerencia",
+    "cargo": "Analista",
+    "codigo": "P001",
+    "sueldo": 2500.0
   }
 ]
 ```
@@ -680,17 +768,21 @@ Detalle de una plaza por código.
 
 **Body:**
 
-| Campo   | Tipo   | Requerido |
-|---------|--------|-----------|
-| `codigo`| string | sí        |
+| Campo    | Tipo   | Requerido |
+| -------- | ------ | --------- |
+| `codigo` | string | sí        |
 
 **Respuesta:**
 
 ```json
 {
-  "codigo": "P001", "cargo_estructural": "CE001",
-  "cargo_descripcion": "Analista", "grupo_ocupacional": "GO001",
-  "grupo_descripcion": "Profesional", "condicion": "Nombrado",
-  "regimen_id": 1, "regimen": "D.L. 276"
+  "codigo": "P001",
+  "cargo_estructural": "CE001",
+  "cargo_descripcion": "Analista",
+  "grupo_ocupacional": "GO001",
+  "grupo_descripcion": "Profesional",
+  "condicion": "Nombrado",
+  "regimen_id": 1,
+  "regimen": "D.L. 276"
 }
 ```

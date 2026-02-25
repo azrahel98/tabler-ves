@@ -2,7 +2,6 @@
   <header class="sticky top-0 z-99999 flex w-full border-gray-200 bg-white lg:border-b dark:border-gray-800 dark:bg-gray-900">
     <div class="flex grow flex-col items-center justify-between lg:flex-row lg:px-6">
       <div class="flex w-full items-center justify-between gap-2 border-b border-gray-200 px-3 py-3 sm:gap-4 lg:justify-normal lg:border-b-0 lg:px-0 lg:py-4 dark:border-gray-800">
-        <!-- Hamburger Toggle BTN -->
         <button
           :class="sidebarToggle ? 'lg:bg-transparent dark:lg:bg-transparent bg-gray-100 dark:bg-gray-800' : ''"
           class="z-99999 flex h-10 w-10 items-center justify-center rounded-lg border-gray-200 text-gray-500 lg:h-11 lg:w-11 lg:border dark:border-gray-800 dark:text-gray-400"
@@ -23,7 +22,6 @@
               fill="" />
           </svg>
 
-          <!-- cross icon -->
           <svg :class="sidebarToggle ? 'block lg:hidden' : 'hidden'" class="fill-current" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path
               fill-rule="evenodd"
@@ -32,14 +30,12 @@
               fill="" />
           </svg>
         </button>
-        <!-- Hamburger Toggle BTN -->
 
         <a href="index.html" class="lg:hidden">
-          <img class="dark:hidden" src="/logo.svg" alt="Logo" />
-          <img class="hidden dark:block" src="/logo-dark.svg" alt="Logo" />
+          <img class="dark:hidden" src="/logo-icon.svg" alt="Logo" />
+          <img class="hidden dark:block" src="/logo-icon.svg" alt="Logo" />
         </a>
 
-        <!-- Application nav menu button -->
         <button
           class="z-99999 flex h-10 w-10 items-center justify-center rounded-lg text-gray-700 hover:bg-gray-100 lg:hidden dark:text-gray-400 dark:hover:bg-gray-800"
           :class="menuToggle ? 'bg-gray-100 dark:bg-gray-800' : ''"
@@ -52,7 +48,6 @@
               fill="" />
           </svg>
         </button>
-        <!-- Application nav menu button -->
 
         <div class="hidden lg:block">
           <Buscar />
@@ -61,7 +56,6 @@
 
       <div :class="menuToggle ? 'flex' : 'hidden'" class="shadow-theme-md w-full items-center justify-between gap-4 px-5 py-4 lg:flex lg:justify-end lg:px-0 lg:shadow-none">
         <div class="2xsm:gap-3 flex items-center gap-2">
-          <!-- Dark Mode Toggler -->
           <button
             class="hover:text-dark-900 relative flex h-11 w-11 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white"
             @click.prevent="darkMode = !darkMode">
@@ -78,9 +72,7 @@
                 fill="currentColor" />
             </svg>
           </button>
-          <!-- Dark Mode Toggler -->
 
-          <!-- Notification Menu Area -->
           <div class="relative" ref="notificationRef">
             <button
               class="hover:text-dark-900 relative flex h-11 w-11 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white">
@@ -96,7 +88,6 @@
               </svg>
             </button>
 
-            <!-- Dropdown Start -->
             <div
               v-show="notificationOpen"
               class="shadow-theme-lg dark:bg-gray-dark absolute -right-[240px] mt-[17px] flex h-[480px] w-[350px] flex-col rounded-2xl border border-gray-200 bg-white p-3 sm:w-[361px] lg:right-0 dark:border-gray-800">
@@ -306,12 +297,9 @@
                 View All Notification
               </a>
             </div>
-            <!-- Dropdown End -->
           </div>
-          <!-- Notification Menu Area -->
         </div>
 
-        <!-- User Area -->
         <div class="relative" ref="userDropdownRef">
           <a class="flex items-center text-gray-700 dark:text-gray-400" href="#" @click.prevent="userDropdownOpen = !userDropdownOpen">
             <span class="mr-3 h-11 w-11 overflow-hidden rounded-full">
@@ -332,7 +320,6 @@
             </svg>
           </a>
 
-          <!-- Dropdown Start -->
           <div
             v-show="userDropdownOpen"
             class="shadow-theme-lg dark:bg-gray-dark absolute right-0 mt-[17px] flex w-[260px] flex-col rounded-2xl border border-gray-200 bg-white p-3 dark:border-gray-800">
@@ -417,9 +404,7 @@
               Sign out
             </button>
           </div>
-          <!-- Dropdown End -->
         </div>
-        <!-- User Area -->
       </div>
     </div>
   </header>
@@ -451,7 +436,6 @@
   const notificationRef = ref<HTMLElement | null>(null)
   const userDropdownRef = ref<HTMLElement | null>(null)
 
-  // Search Logic Removed
 
   const handleClickOutside = (event: MouseEvent) => {
     if (notificationRef.value && !notificationRef.value.contains(event.target as Node)) {

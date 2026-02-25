@@ -21,6 +21,7 @@
             <th class="pb-3 pr-4 text-left">Ingreso</th>
             <th class="pb-3 pr-4 text-left">Salida</th>
             <th class="pb-3 pr-4 text-right">Sueldo</th>
+            <th class="pb-3 text-center">Detalle</th>
             <th v-if="esAdmin" class="pb-3 text-center">Acción</th>
           </tr>
         </thead>
@@ -39,6 +40,76 @@
             <td class="py-3 pr-4 text-gray-500 dark:text-gray-400 whitespace-nowrap">{{ v.fecha_ingreso }}</td>
             <td class="py-3 pr-4 text-gray-500 dark:text-gray-400 whitespace-nowrap">{{ v.fecha_salida || '—' }}</td>
             <td class="py-3 pr-4 text-right text-black dark:text-white font-medium whitespace-nowrap">S/ {{ v.sueldo }}</td>
+
+            <td class="py-3 text-center">
+              <Popover posicion="abajo" alineacion="fin" ancho="320px" :mostrarFlecha="true" :mostrarCerrar="true" titulo="Información Adicional">
+                <template #disparador>
+                  <button
+                    class="rounded-full p-1.5 text-slate-400 hover:bg-blue-50 hover:text-blue-500 dark:hover:bg-blue-900/20 dark:hover:text-blue-400 transition-colors"
+                    title="Ver detalles">
+                    <Info class="h-4 w-4" />
+                  </button>
+                </template>
+
+                <div class="space-y-2.5 text-sm">
+                  <div v-if="v.doc_ingreso" class="detalle-fila">
+                    <span class="detalle-etiqueta">Doc. Ingreso</span>
+                    <span class="detalle-valor">{{ v.doc_ingreso }} {{ v.numero_doc_ingreso }}</span>
+                  </div>
+                  <div v-if="v.descrip_ingreso" class="detalle-fila">
+                    <span class="detalle-etiqueta">Descripción Ingreso</span>
+                    <span class="detalle-valor">{{ v.descrip_ingreso }}</span>
+                  </div>
+                  <div v-if="v.cargo_estructural" class="detalle-fila">
+                    <span class="detalle-etiqueta">Cargo Estructural</span>
+                    <span class="detalle-valor">{{ v.cargo_estructural }}</span>
+                  </div>
+                  <div v-if="v.grupo_ocupacional" class="detalle-fila">
+                    <span class="detalle-etiqueta">Grupo Ocupacional</span>
+                    <span class="detalle-valor">{{ v.grupo_ocupacional }}</span>
+                  </div>
+                  <div v-if="v.codigo" class="detalle-fila">
+                    <span class="detalle-etiqueta">Código Plaza</span>
+                    <span class="detalle-valor">{{ v.codigo }}</span>
+                  </div>
+                  <div v-if="v.sindicato" class="detalle-fila">
+                    <span class="detalle-etiqueta">Sindicato</span>
+                    <span class="detalle-valor">{{ v.sindicato }}</span>
+                  </div>
+
+                  <template v-if="v.fecha_salida">
+                    <div class="border-t border-gray-200 dark:border-gray-700 my-2"></div>
+                    <div v-if="v.doc_salida" class="detalle-fila">
+                      <span class="detalle-etiqueta">Doc. Salida</span>
+                      <span class="detalle-valor">{{ v.doc_salida }} {{ v.numero_doc_salida }}</span>
+                    </div>
+                    <div v-if="v.descrip_salida" class="detalle-fila">
+                      <span class="detalle-etiqueta">Descripción Salida</span>
+                      <span class="detalle-valor">{{ v.descrip_salida }}</span>
+                    </div>
+                  </template>
+
+                  <template v-if="v.tipo_evento">
+                    <div class="border-t border-gray-200 dark:border-gray-700 my-2"></div>
+                    <div class="detalle-fila">
+                      <span class="detalle-etiqueta">Evento</span>
+                      <span class="detalle-valor"
+                        >{{ v.tipo_evento }} <span v-if="v.estado_evento" class="text-gray-400">· {{ v.estado_evento }}</span></span
+                      >
+                    </div>
+                    <div v-if="v.doc_evento_tipo" class="detalle-fila">
+                      <span class="detalle-etiqueta">Doc. Evento</span>
+                      <span class="detalle-valor">{{ v.doc_evento_tipo }} {{ v.numero_doc_evento }}</span>
+                    </div>
+                    <div v-if="v.fecha_evento" class="detalle-fila">
+                      <span class="detalle-etiqueta">Fecha Evento</span>
+                      <span class="detalle-valor">{{ v.fecha_evento }}</span>
+                    </div>
+                  </template>
+                </div>
+              </Popover>
+            </td>
+
             <td class="py-3 text-center" v-if="esAdmin">
               <button
                 v-if="!v.fecha_salida"
@@ -53,7 +124,6 @@
       </table>
     </div>
 
-    <!-- Mobile: Cards -->
     <div class="md:hidden space-y-3">
       <div v-for="v in vinculos" :key="v.id" class="rounded-xl border border-stroke/60 dark:border-strokedark/60 p-4 space-y-2">
         <div class="flex items-center justify-between">
@@ -64,8 +134,68 @@
               class="text-[10px] font-semibold px-2 py-0.5 rounded-full whitespace-nowrap">
               {{ v.fecha_salida ? 'Inactivo' : 'Activo' }}
             </span>
+
+            <Popover posicion="abajo" alineacion="fin" ancho="280px" :mostrarFlecha="true" :mostrarCerrar="true" titulo="Información Adicional">
+              <template #disparador>
+                <button
+                  class="rounded-full p-1 text-slate-400 hover:bg-blue-50 hover:text-blue-500 dark:hover:bg-blue-900/20 dark:hover:text-blue-400 transition-colors"
+                  title="Ver detalles">
+                  <Info class="h-3.5 w-3.5" />
+                </button>
+              </template>
+
+              <div class="space-y-2.5 text-xs">
+                <div v-if="v.doc_ingreso" class="detalle-fila">
+                  <span class="detalle-etiqueta">Doc. Ingreso</span>
+                  <span class="detalle-valor">{{ v.doc_ingreso }} {{ v.numero_doc_ingreso }}</span>
+                </div>
+                <div v-if="v.descrip_ingreso" class="detalle-fila">
+                  <span class="detalle-etiqueta">Descripción</span>
+                  <span class="detalle-valor">{{ v.descrip_ingreso }}</span>
+                </div>
+                <div v-if="v.cargo_estructural" class="detalle-fila">
+                  <span class="detalle-etiqueta">Cargo Estructural</span>
+                  <span class="detalle-valor">{{ v.cargo_estructural }}</span>
+                </div>
+                <div v-if="v.grupo_ocupacional" class="detalle-fila">
+                  <span class="detalle-etiqueta">Grupo Ocupacional</span>
+                  <span class="detalle-valor">{{ v.grupo_ocupacional }}</span>
+                </div>
+                <div v-if="v.codigo" class="detalle-fila">
+                  <span class="detalle-etiqueta">Código Plaza</span>
+                  <span class="detalle-valor">{{ v.codigo }}</span>
+                </div>
+                <div v-if="v.sindicato" class="detalle-fila">
+                  <span class="detalle-etiqueta">Sindicato</span>
+                  <span class="detalle-valor">{{ v.sindicato }}</span>
+                </div>
+                <template v-if="v.fecha_salida">
+                  <div class="border-t border-gray-200 dark:border-gray-700 my-2"></div>
+                  <div v-if="v.doc_salida" class="detalle-fila">
+                    <span class="detalle-etiqueta">Doc. Salida</span>
+                    <span class="detalle-valor">{{ v.doc_salida }} {{ v.numero_doc_salida }}</span>
+                  </div>
+                  <div v-if="v.descrip_salida" class="detalle-fila">
+                    <span class="detalle-etiqueta">Descripción Salida</span>
+                    <span class="detalle-valor">{{ v.descrip_salida }}</span>
+                  </div>
+                </template>
+                <template v-if="v.tipo_evento">
+                  <div class="border-t border-gray-200 dark:border-gray-700 my-2"></div>
+                  <div class="detalle-fila">
+                    <span class="detalle-etiqueta">Evento</span>
+                    <span class="detalle-valor">{{ v.tipo_evento }}</span>
+                  </div>
+                  <div v-if="v.fecha_evento" class="detalle-fila">
+                    <span class="detalle-etiqueta">Fecha Evento</span>
+                    <span class="detalle-valor">{{ v.fecha_evento }}</span>
+                  </div>
+                </template>
+              </div>
+            </Popover>
+
             <button
-              v-if="!v.fecha_salida"
+              v-if="!v.fecha_salida && esAdmin"
               @click="abrirRenuncia(v)"
               class="rounded-full p-1 text-slate-400 hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-900/20 dark:hover:text-red-400 transition-colors"
               title="Registrar Renuncia">
@@ -103,8 +233,9 @@
   import { ref } from 'vue'
   import { storeToRefs } from 'pinia'
   import { usePersonalStore } from '../../stores/personal'
-  import { UserMinus } from 'lucide-vue-next'
+  import { UserMinus, Info } from 'lucide-vue-next'
   import RenunciaModal from './modals/RenunciaModal.vue'
+  import Popover from '../ui/Popover.vue'
   import { useAutenticacionStore } from '../../stores/auth'
 
   const store = usePersonalStore()
@@ -128,3 +259,30 @@
     }
   }
 </script>
+
+<style scoped>
+  .detalle-fila {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .detalle-etiqueta {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-gray-400);
+  }
+
+  .detalle-valor {
+    font-weight: 500;
+    color: var(--color-gray-800);
+    word-break: break-word;
+  }
+
+  :root.dark .detalle-valor,
+  .dark .detalle-valor {
+    color: var(--color-gray-200);
+  }
+</style>

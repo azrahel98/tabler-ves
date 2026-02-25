@@ -2,7 +2,6 @@
   <Modal :isOpen="isOpen" :title="isEdit ? 'Editar Grado Académico' : 'Agregar Grado Académico'" @close="close">
     <form @submit.prevent="guardar" class="space-y-4">
       <div class="grid grid-cols-2 gap-4">
-        <!-- Profesión -->
         <div class="col-span-2">
           <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">Profesión</label>
           <input
@@ -13,7 +12,6 @@
             required />
         </div>
 
-        <!-- Universidad -->
         <div class="col-span-2">
           <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">Universidad</label>
           <input
@@ -23,7 +21,6 @@
             placeholder="Ej: Universidad Nacional de Piura" />
         </div>
 
-        <!-- Nivel Académico -->
         <div>
           <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">Nivel Académico</label>
           <select
@@ -39,7 +36,6 @@
           </select>
         </div>
 
-        <!-- Abreviatura -->
         <div>
           <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">Abreviatura</label>
           <input
@@ -50,7 +46,6 @@
             required />
         </div>
 
-        <!-- Colegiatura -->
         <div class="col-span-2">
           <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">Colegiatura</label>
           <input

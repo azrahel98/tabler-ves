@@ -2,15 +2,12 @@
   <Teleport to="body">
     <Transition name="modal">
       <div v-if="isOpen" class="relative z-[999999]" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-        <!-- Backdrop -->
         <div class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm transition-opacity" @click="close"></div>
 
-        <!-- Modal Panel -->
         <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
           <div class="flex min-h-full items-start justify-center p-4 pt-16 text-center sm:pt-20 sm:p-0">
             <div
               class="relative transform overflow-hidden rounded-xl bg-white dark:bg-slate-900 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg border dark:border-slate-800">
-              <!-- Header -->
               <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 px-6 py-4">
                 <h3 v-if="title" class="text-lg font-semibold text-slate-900 dark:text-slate-100" id="modal-title">
                   {{ title }}
@@ -26,12 +23,10 @@
                 </button>
               </div>
 
-              <!-- Body (Formularios Personalizados) -->
               <div class="px-6 py-4">
                 <slot></slot>
               </div>
 
-              <!-- Footer -->
               <div v-if="$slots.footer" class="border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 px-6 py-4 sm:flex sm:flex-row-reverse sm:px-6">
                 <slot name="footer"></slot>
               </div>

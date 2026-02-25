@@ -8,7 +8,7 @@ interface JwtPayload {
   username: string
 }
 
-function decodificar(token: string): JwtPayload | null {
+export function decodificar(token: string): JwtPayload | null {
   try {
     return jwtDecode<JwtPayload>(token)
   } catch {
@@ -35,7 +35,6 @@ export const useAutenticacionStore = defineStore('autenticacion', {
 
   getters: {
     estaAutenticado: (state) => !!state.token && !!state.usuario && !estaExpirado(state.usuario.exp),
-
     esAdmin: (state) => state.usuario?.lvl === 1,
   },
 

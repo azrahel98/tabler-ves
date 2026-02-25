@@ -485,15 +485,15 @@ pub async fn editar_perfil(
 
 pub async fn agregar_sindicato(
     data: web::Data<AppState>,
-    mut doc: web::Json<DocumentoSindicato>,
+    doc: web::Json<DocumentoSindicato>,
     req: HttpRequest,
 ) -> Result<impl Responder, ApiError> {
     let mut tx = data.db.begin().await?;
 
     let documento_id = sqlx::query(
         r#"
-        INSERT INTO documento (tipo, fecha, descripcion)
-        VALUES ('Doc.Adm', ?, ?)
+        INSERT INTO documento (tipo_documento_id, fecha, descripcion)
+        VALUES (4, ?, ?)
         "#,
     )
     .bind(&doc.fecha)
@@ -502,36 +502,30 @@ pub async fn agregar_sindicato(
     .await?
     .last_insert_id();
 
-    sqlx::query(
-        r#"
-        INSERT INTO vinculo_sindicato (vinculo_id, sindicato_id, documento_afiliacion)
-        VALUES (?, ?, ?)
-        "#,
-    )
-    .bind(doc.id_vinculo)
-    .bind(doc.sindicato)
-    .bind(documento_id)
-    .execute(&mut *tx)
-    .await?;
-
-    let row = sqlx::query("SELECT dni FROM vinculo WHERE id = ?")
-        .bind(doc.id_vinculo)
-        .fetch_one(&mut *tx)
+    for vinculo in &doc.vinculos {
+        sqlx::query(
+            r#"
+            INSERT INTO vinculo_sindicato (vinculo_id, sindicato_id, documento_afiliacion)
+            VALUES (?, ?, ?)
+            "#,
+        )
+        .bind(vinculo.id_vinculo)
+        .bind(doc.sindicato)
+        .bind(documento_id)
+        .execute(&mut *tx)
         .await?;
 
-    let dni: String = row.try_get("dni")?;
-
-    doc.0.dni = Some(dni);
+        let _ = registrar_historial(
+            &req,
+            &data.db,
+            "afiliar al sindicato",
+            &vinculo.dni,
+            Some(&serde_json::to_string(&doc).unwrap_or_default()),
+        )
+        .await;
+    }
 
     tx.commit().await?;
-    let _ = registrar_historial(
-        &req,
-        &data.db,
-        "afiliar al sindicato",
-        doc.dni.as_deref().unwrap_or(""),
-        Some(&serde_json::to_string(&doc).unwrap_or_default()),
-    )
-    .await;
 
     Ok(HttpResponse::Ok().json("Se registraron correctamente los datos"))
 }

@@ -2,7 +2,6 @@
   <Modal :isOpen="isOpen" title="Editar Información Personal" @close="close">
     <form @submit.prevent="guardar" class="space-y-4">
       <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <!-- Teléfono -->
         <div>
           <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">Teléfono / Celular</label>
           <input
@@ -12,7 +11,6 @@
             placeholder="999999999" />
         </div>
 
-        <!-- Correo Electrónico -->
         <div>
           <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">Correo Electrónico</label>
           <input
@@ -22,7 +20,6 @@
             placeholder="correo@ejemplo.com" />
         </div>
 
-        <!-- Dirección -->
         <div class="sm:col-span-2">
           <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">Dirección</label>
           <input
@@ -32,7 +29,6 @@
             placeholder="Av. Ejemplo 123" />
         </div>
 
-        <!-- RUC -->
         <div>
           <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">RUC</label>
           <input
@@ -42,7 +38,6 @@
             placeholder="10123456789" />
         </div>
 
-        <!-- Sexo -->
         <div>
           <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">Sexo</label>
           <select
@@ -53,7 +48,6 @@
           </select>
         </div>
 
-        <!-- Fecha de Nacimiento -->
         <div class="sm:col-span-2">
           <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">Fecha de Nacimiento</label>
           <input
