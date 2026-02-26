@@ -111,13 +111,21 @@
             </td>
 
             <td class="py-3 text-center" v-if="esAdmin">
-              <button
-                v-if="!v.fecha_salida"
-                @click="abrirRenuncia(v)"
-                class="rounded-full p-1.5 text-slate-400 hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-900/20 dark:hover:text-red-400 transition-colors"
-                title="Registrar Renuncia">
-                <UserMinus class="h-4 w-4" />
-              </button>
+              <div class="flex items-center justify-center gap-1">
+                <button
+                  v-if="!v.fecha_salida"
+                  @click="abrirRenuncia(v)"
+                  class="rounded-full p-1.5 text-slate-400 hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-900/20 dark:hover:text-red-400 transition-colors"
+                  title="Registrar Renuncia">
+                  <UserMinus class="h-4 w-4" />
+                </button>
+                <button
+                  @click="abrirEliminar(v)"
+                  class="rounded-full p-1.5 text-slate-400 hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-900/20 dark:hover:text-rose-400 transition-colors"
+                  title="Eliminar Vínculo">
+                  <Trash2 class="h-4 w-4" />
+                </button>
+              </div>
             </td>
           </tr>
         </tbody>
@@ -201,6 +209,13 @@
               title="Registrar Renuncia">
               <UserMinus class="h-3.5 w-3.5" />
             </button>
+            <button
+              v-if="esAdmin"
+              @click="abrirEliminar(v)"
+              class="rounded-full p-1 text-slate-400 hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-900/20 dark:hover:text-rose-400 transition-colors"
+              title="Eliminar Vínculo">
+              <Trash2 class="h-3.5 w-3.5" />
+            </button>
           </div>
         </div>
         <p class="text-xs text-gray-500 dark:text-gray-400 truncate">{{ v.area }}</p>
@@ -226,6 +241,7 @@
     </div>
 
     <RenunciaModal v-if="esAdmin" :isOpen="isRenunciaOpen" @close="isRenunciaOpen = false" @save="handleRenuncia" />
+    <ConfirmarEliminarModal v-if="esAdmin" :isOpen="isEliminarOpen" :vinculo="vinculoSeleccionado" @close="isEliminarOpen = false" @confirm="handleEliminar" />
   </div>
 </template>
 
@@ -233,8 +249,9 @@
   import { ref } from 'vue'
   import { storeToRefs } from 'pinia'
   import { usePersonalStore } from '../../stores/personal'
-  import { UserMinus, Info } from 'lucide-vue-next'
+  import { UserMinus, Info, Trash2 } from 'lucide-vue-next'
   import RenunciaModal from './modals/RenunciaModal.vue'
+  import ConfirmarEliminarModal from './modals/ConfirmarEliminarModal.vue'
   import Popover from '../ui/Popover.vue'
   import { useAutenticacionStore } from '../../stores/auth'
 
@@ -243,11 +260,17 @@
   const { esAdmin } = storeToRefs(useAutenticacionStore())
 
   const isRenunciaOpen = ref(false)
+  const isEliminarOpen = ref(false)
   const vinculoSeleccionado = ref<any>(null)
 
   const abrirRenuncia = (vinculo: any) => {
     vinculoSeleccionado.value = vinculo
     isRenunciaOpen.value = true
+  }
+
+  const abrirEliminar = (vinculo: any) => {
+    vinculoSeleccionado.value = vinculo
+    isEliminarOpen.value = true
   }
 
   const handleRenuncia = async (datosRenuncia: any) => {
@@ -256,6 +279,15 @@
       isRenunciaOpen.value = false
     } catch (error) {
       console.error('Error al registrar renuncia', error)
+    }
+  }
+
+  const handleEliminar = async (id: number) => {
+    try {
+      await store.eliminarVinculo(id)
+      isEliminarOpen.value = false
+    } catch (error) {
+      console.error('Error al eliminar vínculo', error)
     }
   }
 </script>

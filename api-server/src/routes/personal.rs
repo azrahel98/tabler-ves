@@ -35,6 +35,22 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
             .route("/agregar_contacto", web::post().to(contacto_emergencia_add))
             .route("/buscar_vacantes", web::post().to(buscar_vacantes))
             .route("/buscar_por_plaza", web::post().to(buscar_por_plaza))
-            .route("/contacto_dni", web::post().to(conctaco_por_dni)),
+            .route("/contacto_dni", web::post().to(conctaco_por_dni))
+            .route(
+                "/registrar_trabajador",
+                web::post().to(registrar_trabajador),
+            )
+            .route("/consultar_dni", web::post().to(consultar_dni_reniec))
+            .route("/eliminar_vinculo", web::post().to(eliminar_vinculo))
+            .route("/buscar_areas", web::post().to(buscar_areas))
+            .route("/buscar_cargos", web::post().to(buscar_cargos))
+            .route(
+                "/upsert_evento_vinculo",
+                web::post().to(upsert_evento_vinculo),
+            )
+            .route(
+                "/delete_evento_vinculo",
+                web::post().to(delete_evento_vinculo),
+            ),
     );
 }

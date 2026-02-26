@@ -150,12 +150,42 @@ pub struct ContactoEmergencia {
 }
 
 #[derive(Serialize, Deserialize)]
+pub struct PerfilInput {
+    pub dni: String,
+    pub amaterno: String,
+    pub apaterno: String,
+    pub nombre: String,
+    pub telf: Option<String>,
+    pub direccion: Option<String>,
+    pub email: Option<String>,
+    pub ruc: Option<String>,
+    pub nacimiento: NaiveDate,
+    pub sexo: Option<String>,
+}
+
+#[derive(Serialize, Deserialize)]
 pub struct NuevoVinculo {
-    pub personal: Perfil,
+    pub personal: PerfilInput,
     pub airshp: String,
     pub documento: Documento,
     pub regimen: i32,
     pub cargo: i32,
     pub area: i32,
     pub sueldo: f64,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct EventoVinculoPayload {
+    pub id: Option<i32>,
+    pub vinculo_id: i32,
+    pub tipo_evento: String,
+    pub nueva_area_id: Option<i32>,
+    pub documento_inicio: Documento,
+    pub documento_salida: Option<Documento>,
+    pub estado: Option<String>,
+}
+
+#[derive(Deserialize)]
+pub struct DeleteEventoVinculoPayload {
+    pub id: i32,
 }

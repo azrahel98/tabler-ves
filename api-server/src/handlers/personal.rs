@@ -2,8 +2,9 @@ use crate::{
     AppState, key,
     middleware::error::ApiError,
     models::personal::{
-        AsistenciaVw, ContactoEmergencia, DatosBancarios, DatosBancariosResponse, Documento,
-        DocumentoSindicato, GradoAcademico, LegajoPersonal, Perfil, Persona, Vinculos,
+        AsistenciaVw, ContactoEmergencia, DatosBancarios, DatosBancariosResponse,
+        DeleteEventoVinculoPayload, Documento, DocumentoSindicato, EventoVinculoPayload,
+        GradoAcademico, LegajoPersonal, NuevoVinculo, Perfil, PerfilInput, Persona, Vinculos,
     },
 };
 use actix_web::{
@@ -770,15 +771,17 @@ pub async fn conctaco_por_dni(
 
 #[derive(Deserialize, serde::Serialize)]
 pub struct Vacante {
-    pub id: i32,
-    pub dni: String,
+    pub id: Option<i32>,
+    pub dni: Option<String>,
     pub nombre: Option<String>,
     pub fecha: Option<NaiveDate>,
     pub fechavalida: Option<NaiveDate>,
-    pub area: String,
-    pub cargo: String,
-    pub codigo: String,
+    pub area: Option<String>,
+    pub cargo: Option<String>,
+    pub codigo: Option<String>,
     pub sueldo: Option<f64>,
+    pub area_id: Option<i32>,
+    pub cargo_id: Option<i32>,
 }
 
 pub async fn buscar_vacantes(data: web::Data<AppState>) -> Result<impl Responder, ApiError> {
@@ -788,25 +791,25 @@ pub async fn buscar_vacantes(data: web::Data<AppState>) -> Result<impl Responder
         SELECT
         v.id,
         v.dni,
-        CONCAT_WS(' ', pe.apaterno, pe.amaterno, pe.nombre) nombre,
+        CONCAT_WS(' ', pe.apaterno, pe.amaterno, pe.nombre) AS nombre,
         d.fecha,
-        d.fecha_valida fechavalida,
-        ar.nombre AS  area,
-        cr.nombre AS  cargo,
+        d.fecha_valida AS fechavalida,
+        ar.nombre AS area,
+        ar.id as area_id,
+        cr.nombre AS cargo,
+        cr.id as cargo_id,
         pl.codigo,
         v.sueldo
-        FROM
-        vinculo AS v
-        INNER JOIN documento AS d ON v.doc_salida_id = d.id
-        INNER JOIN persona AS pe ON v.dni = pe.dni
-        INNER JOIN plaza AS pl ON v.plaza_id = pl.codigo
-        INNER JOIN area AS ar ON v.area_id = ar.id
-        INNER JOIN cargo AS cr ON v.cargo_id = cr.id
-        WHERE
-        v.estado = 'inactivo'
-        AND d.fecha >= DATE_SUB(CURDATE(), INTERVAL 3 MONTH)
-        ORDER BY
-        d.fecha DESC
+        FROM plaza AS pl
+        LEFT JOIN vinculo AS v ON pl.codigo = v.plaza_id
+        LEFT JOIN documento AS d ON v.doc_salida_id = d.id
+        LEFT JOIN persona AS pe ON v.dni = pe.dni
+        LEFT JOIN area AS ar ON v.area_id = ar.id
+        LEFT JOIN cargo AS cr ON v.cargo_id = cr.id
+        WHERE 
+        pl.estado = 'vacante'
+        ORDER BY 
+        d.fecha DESC;
         "#
     )
     .fetch_all(&data.db)
@@ -868,4 +871,556 @@ pub async fn buscar_por_plaza(
     })?;
 
     Ok(HttpResponse::Ok().json(plaza))
+}
+
+pub async fn registrar_trabajador(
+    data: web::Data<AppState>,
+    body: web::Json<NuevoVinculo>,
+    req: HttpRequest,
+) -> Result<impl Responder, ApiError> {
+    let key = key::key::DB_KEY;
+    let mut tx = data.db.begin().await?;
+
+    sqlx::query(
+        r#"
+        INSERT INTO persona (dni, nombre, apaterno, amaterno, telf1, direccion, email, ruc, fecha_nacimiento, sexo)
+        VALUES (?, ?, ?, ?, aes_encrypt(?,?), aes_encrypt(?,?), aes_encrypt(?,?), ?, ?, ?)
+        ON DUPLICATE KEY UPDATE
+            nombre = VALUES(nombre),
+            apaterno = VALUES(apaterno),
+            amaterno = VALUES(amaterno),
+            telf1 = VALUES(telf1),
+            direccion = VALUES(direccion),
+            email = VALUES(email),
+            ruc = VALUES(ruc),
+            fecha_nacimiento = VALUES(fecha_nacimiento),
+            sexo = VALUES(sexo)
+        "#,
+    )
+    .bind(&body.personal.dni)
+    .bind(&body.personal.nombre)
+    .bind(&body.personal.apaterno)
+    .bind(&body.personal.amaterno)
+    .bind(&body.personal.telf)
+    .bind(&key)
+    .bind(&body.personal.direccion)
+    .bind(&key)
+    .bind(&body.personal.email)
+    .bind(&key)
+    .bind(&body.personal.ruc)
+    .bind(&body.personal.nacimiento)
+    .bind(&body.personal.sexo)
+    .execute(&mut *tx)
+    .await
+    .map_err(|e| ApiError::InternalError(format!("Upsert Persona error: {}", e)))?;
+
+    let doc_result = sqlx::query(
+        r#"
+        INSERT INTO documento (tipo_documento_id, numero, year, fecha, fecha_valida, descripcion)
+        VALUES (?, ?, ?, ?, ?, ?)
+        "#,
+    )
+    .bind(&body.documento.tipo)
+    .bind(body.documento.numero)
+    .bind(body.documento.año)
+    .bind(&body.documento.fecha)
+    .bind(&body.documento.fecha_valida)
+    .bind(&body.documento.descripcion)
+    .execute(&mut *tx)
+    .await
+    .map_err(|e| ApiError::InternalError(format!("Insert Documento error: {}", e)))?;
+
+    let doc_id = doc_result.last_insert_id();
+
+    sqlx::query(
+        r#"
+        INSERT INTO vinculo (dni, doc_ingreso_id, area_id, cargo_id, plaza_id, sueldo, estado,regimen)
+        VALUES (?, ?, ?, ?, ?, ?, 'activo',?)
+        "#,
+    )
+    .bind(&body.personal.dni)
+    .bind(doc_id)
+    .bind(body.area)
+    .bind(body.cargo)
+    .bind(&body.airshp)
+    .bind(body.sueldo)
+    .bind(body.regimen)
+    .execute(&mut *tx)
+    .await
+    .map_err(|e| ApiError::InternalError(format!("Insert Vinculo error: {}", e)))?;
+
+    sqlx::query(
+        r#"
+        UPDATE plaza SET estado = 'ocupado' WHERE codigo = ?
+        "#,
+    )
+    .bind(&body.airshp)
+    .execute(&mut *tx)
+    .await
+    .map_err(|e| ApiError::InternalError(format!("Update Plaza error: {}", e)))?;
+
+    tx.commit().await?;
+
+    let _ = registrar_historial(
+        &req,
+        &data.db,
+        "registrar nuevo trabajador",
+        &body.personal.dni,
+        Some(&serde_json::to_string(&body.personal).unwrap_or_default()),
+    )
+    .await;
+
+    Ok(HttpResponse::Ok().json("Trabajador registrado correctamente"))
+}
+
+pub async fn consultar_dni_reniec(
+    data: web::Data<AppState>,
+    body: web::Json<PerfilDni>,
+) -> Result<impl Responder, ApiError> {
+    let key = key::key::DB_KEY;
+
+    let local = sqlx::query_as!(
+        PerfilInput,
+        r#"
+        SELECT
+            p.dni,
+            p.amaterno,
+            p.apaterno,
+            p.nombre,
+            CAST(AES_DECRYPT(p.telf1, ?) AS CHAR) AS telf,
+            CAST(AES_DECRYPT(p.direccion, ?) AS CHAR) AS direccion,
+            CAST(AES_DECRYPT(p.email, ?) AS CHAR) AS email,
+            p.ruc,
+            p.fecha_nacimiento AS nacimiento,
+            p.sexo
+        FROM persona p
+        WHERE p.dni = ?
+        "#,
+        key,
+        key,
+        key,
+        body.dni
+    )
+    .fetch_optional(&data.db)
+    .await
+    .map_err(|e| {
+        eprintln!("Database error: {:?}", e);
+        ApiError::InternalError("Error al consultar persona local".into())
+    })?;
+
+    if let Some(perfil) = local {
+        return Ok(HttpResponse::Ok().json(perfil));
+    }
+
+    let token = std::env::var("APINET")
+        .map_err(|_| ApiError::InternalError("APINET no configurado".into()))?;
+
+    let client = reqwest::Client::new();
+    let response = client
+        .get("https://api.decolecta.com/v1/reniec/dni")
+        .query(&[("numero", &body.dni)])
+        .header("Content-Type", "application/json")
+        .header("Authorization", format!("Bearer {}", token))
+        .send()
+        .await
+        .map_err(|e| ApiError::InternalError(format!("Error al consultar RENIEC: {}", e)))?;
+
+    if !response.status().is_success() {
+        return Err(ApiError::InternalError(format!(
+            "RENIEC respondió con error: {}",
+            response.status()
+        )));
+    }
+
+    let api_data: Value = response
+        .json()
+        .await
+        .map_err(|e| ApiError::InternalError(format!("Error al parsear respuesta: {}", e)))?;
+
+    println!("{:?}", api_data);
+
+    let nacimiento_str = api_data["fechaNacimiento"].as_str().unwrap_or("1900-01-01");
+    let nacimiento = NaiveDate::parse_from_str(nacimiento_str, "%Y-%m-%d")
+        .or_else(|_| NaiveDate::parse_from_str(nacimiento_str, "%d/%m/%Y"))
+        .unwrap_or(NaiveDate::from_ymd_opt(1900, 1, 1).unwrap());
+
+    let perfil = PerfilInput {
+        dni: body.dni.clone(),
+        apaterno: api_data["first_last_name"]
+            .as_str()
+            .unwrap_or("")
+            .to_string(),
+        amaterno: api_data["second_last_name"]
+            .as_str()
+            .unwrap_or("")
+            .to_string(),
+        nombre: api_data["first_name"].as_str().unwrap_or("").to_string(),
+        telf: None,
+        direccion: None,
+        email: None,
+        ruc: None,
+        nacimiento,
+        sexo: None,
+    };
+
+    Ok(HttpResponse::Ok().json(perfil))
+}
+
+#[derive(Deserialize)]
+pub struct EliminarVinculoBody {
+    pub id: i32,
+}
+
+pub async fn eliminar_vinculo(
+    data: web::Data<AppState>,
+    body: web::Json<EliminarVinculoBody>,
+    req: HttpRequest,
+) -> Result<impl Responder, ApiError> {
+    let mut tx = data.db.begin().await?;
+
+    let vinculo = sqlx::query(
+        r#"
+        SELECT v.dni, v.doc_ingreso_id, v.doc_salida_id, v.plaza_id
+        FROM vinculo v
+        WHERE v.id = ?
+        "#,
+    )
+    .bind(body.id)
+    .fetch_optional(&mut *tx)
+    .await
+    .map_err(|e| ApiError::InternalError(format!("Error al buscar vínculo: {}", e)))?
+    .ok_or_else(|| ApiError::NotFound("Vínculo no encontrado".into()))?;
+
+    let dni: String = vinculo.get("dni");
+    let doc_ingreso_id: Option<i64> = vinculo.get("doc_ingreso_id");
+    let doc_salida_id: Option<i64> = vinculo.get("doc_salida_id");
+    let plaza_id: Option<String> = vinculo.get("plaza_id");
+
+    sqlx::query("DELETE FROM vinculo_sindicato WHERE vinculo_id = ?")
+        .bind(body.id)
+        .execute(&mut *tx)
+        .await
+        .map_err(|e| ApiError::InternalError(format!("Error al eliminar sindicato: {}", e)))?;
+
+    sqlx::query("DELETE FROM vinculo WHERE id = ?")
+        .bind(body.id)
+        .execute(&mut *tx)
+        .await
+        .map_err(|e| ApiError::InternalError(format!("Error al eliminar vínculo: {}", e)))?;
+
+    if let Some(doc_id) = doc_ingreso_id {
+        sqlx::query("DELETE FROM documento WHERE id = ?")
+            .bind(doc_id)
+            .execute(&mut *tx)
+            .await
+            .map_err(|e| {
+                ApiError::InternalError(format!("Error al eliminar doc ingreso: {}", e))
+            })?;
+    }
+
+    if let Some(doc_id) = doc_salida_id {
+        sqlx::query("DELETE FROM documento WHERE id = ?")
+            .bind(doc_id)
+            .execute(&mut *tx)
+            .await
+            .map_err(|e| ApiError::InternalError(format!("Error al eliminar doc salida: {}", e)))?;
+    }
+
+    if let Some(ref codigo) = plaza_id {
+        sqlx::query("UPDATE plaza SET estado = 'vacante' WHERE codigo = ?")
+            .bind(codigo)
+            .execute(&mut *tx)
+            .await
+            .map_err(|e| ApiError::InternalError(format!("Error al liberar plaza: {}", e)))?;
+    }
+
+    tx.commit().await?;
+
+    let _ = registrar_historial(
+        &req,
+        &data.db,
+        "eliminar vínculo",
+        &dni,
+        Some(&format!("vinculo_id: {}, plaza: {:?}", body.id, plaza_id)),
+    )
+    .await;
+
+    Ok(HttpResponse::Ok().json("Vínculo eliminado correctamente"))
+}
+
+pub async fn buscar_areas(data: web::Data<AppState>) -> Result<impl Responder, ApiError> {
+    let areas = sqlx::query("SELECT id, nombre FROM area ORDER BY nombre")
+        .fetch_all(&data.db)
+        .await
+        .map_err(|e| {
+            eprintln!("Database error: {:?}", e);
+            ApiError::InternalError("Error al obtener áreas".into())
+        })?;
+
+    let resultado: Vec<Value> = areas
+        .iter()
+        .map(|row| {
+            json!({
+                "id": row.get::<i32, _>("id"),
+                "nombre": row.get::<String, _>("nombre"),
+            })
+        })
+        .collect();
+
+    Ok(HttpResponse::Ok().json(resultado))
+}
+
+pub async fn buscar_cargos(data: web::Data<AppState>) -> Result<impl Responder, ApiError> {
+    let cargos = sqlx::query("SELECT id, nombre FROM cargo ORDER BY nombre")
+        .fetch_all(&data.db)
+        .await
+        .map_err(|e| {
+            eprintln!("Database error: {:?}", e);
+            ApiError::InternalError("Error al obtener cargos".into())
+        })?;
+
+    let resultado: Vec<Value> = cargos
+        .iter()
+        .map(|row| {
+            json!({
+                "id": row.get::<i32, _>("id"),
+                "nombre": row.get::<String, _>("nombre"),
+            })
+        })
+        .collect();
+
+    Ok(HttpResponse::Ok().json(resultado))
+}
+
+pub async fn upsert_evento_vinculo(
+    data: web::Data<AppState>,
+    payload: web::Json<EventoVinculoPayload>,
+    _req: HttpRequest,
+) -> Result<impl Responder, ApiError> {
+    let mut tx = data
+        .db
+        .begin()
+        .await
+        .map_err(|e| ApiError::InternalError(format!("DB transaction begin error: {}", e)))?;
+
+    let doc_inicio_id = if let Some(id) = payload.documento_inicio.id {
+        if id > 0 {
+            sqlx::query(
+                r#"
+                UPDATE documento 
+                SET tipo_documento_id = ?, numero = ?, year = ?, fecha = ?, fecha_valida = ?, descripcion = ?, sueldo = ?
+                WHERE id = ?
+                "#,
+            )
+            .bind(&payload.documento_inicio.tipo)
+            .bind(payload.documento_inicio.numero)
+            .bind(payload.documento_inicio.año)
+            .bind(&payload.documento_inicio.fecha)
+            .bind(&payload.documento_inicio.fecha_valida)
+            .bind(&payload.documento_inicio.descripcion)
+            .bind(payload.documento_inicio.sueldo)
+            .bind(id)
+            .execute(&mut *tx)
+            .await
+            .map_err(|e| ApiError::InternalError(format!("Update Documento Inicio error: {}", e)))?;
+            id
+        } else {
+            let insert_result = sqlx::query(
+                r#"
+                INSERT INTO documento (tipo_documento_id, numero, year, fecha, fecha_valida, descripcion, sueldo)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+                "#,
+            )
+            .bind(&payload.documento_inicio.tipo)
+            .bind(payload.documento_inicio.numero)
+            .bind(payload.documento_inicio.año)
+            .bind(&payload.documento_inicio.fecha)
+            .bind(&payload.documento_inicio.fecha_valida)
+            .bind(&payload.documento_inicio.descripcion)
+            .bind(payload.documento_inicio.sueldo)
+            .execute(&mut *tx)
+            .await
+            .map_err(|e| ApiError::InternalError(format!("Insert Documento Inicio error: {}", e)))?;
+            insert_result.last_insert_id() as i32
+        }
+    } else {
+        let insert_result = sqlx::query(
+            r#"
+            INSERT INTO documento (tipo_documento_id, numero, year, fecha, fecha_valida, descripcion, sueldo)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+            "#,
+        )
+        .bind(&payload.documento_inicio.tipo)
+        .bind(payload.documento_inicio.numero)
+        .bind(payload.documento_inicio.año)
+        .bind(&payload.documento_inicio.fecha)
+        .bind(&payload.documento_inicio.fecha_valida)
+        .bind(&payload.documento_inicio.descripcion)
+        .bind(payload.documento_inicio.sueldo)
+        .execute(&mut *tx)
+        .await
+        .map_err(|e| ApiError::InternalError(format!("Insert Documento Inicio error: {}", e)))?;
+        insert_result.last_insert_id() as i32
+    };
+
+    let doc_salida_id = if let Some(ref doc_salida) = payload.documento_salida {
+        if let Some(id) = doc_salida.id {
+            if id > 0 {
+                sqlx::query(
+                    r#"
+                    UPDATE documento 
+                    SET tipo_documento_id = ?, numero = ?, year = ?, fecha = ?, fecha_valida = ?, descripcion = ?, sueldo = ?
+                    WHERE id = ?
+                    "#,
+                )
+                .bind(&doc_salida.tipo)
+                .bind(doc_salida.numero)
+                .bind(doc_salida.año)
+                .bind(&doc_salida.fecha)
+                .bind(&doc_salida.fecha_valida)
+                .bind(&doc_salida.descripcion)
+                .bind(doc_salida.sueldo)
+                .bind(id)
+                .execute(&mut *tx)
+                .await
+                .map_err(|e| ApiError::InternalError(format!("Update Documento Salida error: {}", e)))?;
+                Some(id)
+            } else {
+                let insert_result = sqlx::query(
+                    r#"
+                    INSERT INTO documento (tipo_documento_id, numero, year, fecha, fecha_valida, descripcion, sueldo)
+                    VALUES (?, ?, ?, ?, ?, ?, ?)
+                    "#,
+                )
+                .bind(&doc_salida.tipo)
+                .bind(doc_salida.numero)
+                .bind(doc_salida.año)
+                .bind(&doc_salida.fecha)
+                .bind(&doc_salida.fecha_valida)
+                .bind(&doc_salida.descripcion)
+                .bind(doc_salida.sueldo)
+                .execute(&mut *tx)
+                .await
+                .map_err(|e| ApiError::InternalError(format!("Insert Documento Salida error: {}", e)))?;
+                Some(insert_result.last_insert_id() as i32)
+            }
+        } else {
+            let insert_result = sqlx::query(
+                r#"
+                INSERT INTO documento (tipo_documento_id, numero, year, fecha, fecha_valida, descripcion, sueldo)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+                "#,
+            )
+            .bind(&doc_salida.tipo)
+            .bind(doc_salida.numero)
+            .bind(doc_salida.año)
+            .bind(&doc_salida.fecha)
+            .bind(&doc_salida.fecha_valida)
+            .bind(&doc_salida.descripcion)
+            .bind(doc_salida.sueldo)
+            .execute(&mut *tx)
+            .await
+            .map_err(|e| ApiError::InternalError(format!("Insert Documento Salida error: {}", e)))?;
+            Some(insert_result.last_insert_id() as i32)
+        }
+    } else {
+        None
+    };
+
+    let is_update = payload.id.unwrap_or(0) > 0;
+
+    if is_update {
+        sqlx::query(
+            r#"
+            UPDATE eventovinculo 
+            SET vinculo_id = ?, tipo_evento = ?, nueva_area_id = ?, documento_inicio = ?, documento_salida = ?, estado = ?
+            WHERE id = ?
+            "#,
+        )
+        .bind(payload.vinculo_id)
+        .bind(&payload.tipo_evento)
+        .bind(payload.nueva_area_id)
+        .bind(doc_inicio_id)
+        .bind(doc_salida_id)
+        .bind(payload.estado.as_deref().unwrap_or("activo"))
+        .bind(payload.id.unwrap())
+        .execute(&mut *tx)
+        .await
+        .map_err(|e| ApiError::InternalError(format!("Update eventovinculo error: {}", e)))?;
+    } else {
+        sqlx::query(
+            r#"
+            INSERT INTO eventovinculo (vinculo_id, tipo_evento, nueva_area_id, documento_inicio, documento_salida, estado)
+            VALUES (?, ?, ?, ?, ?, ?)
+            "#,
+        )
+        .bind(payload.vinculo_id)
+        .bind(&payload.tipo_evento)
+        .bind(payload.nueva_area_id)
+        .bind(doc_inicio_id)
+        .bind(doc_salida_id)
+        .bind(payload.estado.as_deref().unwrap_or("activo"))
+        .execute(&mut *tx)
+        .await
+        .map_err(|e| ApiError::InternalError(format!("Insert eventovinculo error: {}", e)))?;
+    }
+
+    tx.commit()
+        .await
+        .map_err(|e| ApiError::InternalError(format!("Commit error: {}", e)))?;
+
+    Ok(HttpResponse::Ok().json("Operación exitosa en evento vinculo"))
+}
+
+pub async fn delete_evento_vinculo(
+    data: web::Data<AppState>,
+    payload: web::Json<DeleteEventoVinculoPayload>,
+    _req: HttpRequest,
+) -> Result<impl Responder, ApiError> {
+    let mut tx = data
+        .db
+        .begin()
+        .await
+        .map_err(|e| ApiError::InternalError(format!("DB transaction begin error: {}", e)))?;
+
+    #[derive(sqlx::FromRow)]
+    struct EventoDocs {
+        documento_inicio: i32,
+        documento_salida: Option<i32>,
+    }
+
+    let docs: EventoDocs =
+        sqlx::query_as("SELECT documento_inicio, documento_salida FROM eventovinculo WHERE id = ?")
+            .bind(payload.id)
+            .fetch_one(&mut *tx)
+            .await
+            .map_err(|e| ApiError::InternalError(format!("Error fetching eventovinculo: {}", e)))?;
+
+    sqlx::query("DELETE FROM eventovinculo WHERE id = ?")
+        .bind(payload.id)
+        .execute(&mut *tx)
+        .await
+        .map_err(|e| ApiError::InternalError(format!("Error deleting eventovinculo: {}", e)))?;
+
+    sqlx::query("DELETE FROM documento WHERE id = ?")
+        .bind(docs.documento_inicio)
+        .execute(&mut *tx)
+        .await
+        .map_err(|e| ApiError::InternalError(format!("Error deleting documento inicio: {}", e)))?;
+
+    if let Some(ds) = docs.documento_salida {
+        sqlx::query("DELETE FROM documento WHERE id = ?")
+            .bind(ds)
+            .execute(&mut *tx)
+            .await
+            .map_err(|e| {
+                ApiError::InternalError(format!("Error deleting documento salida: {}", e))
+            })?;
+    }
+
+    tx.commit()
+        .await
+        .map_err(|e| ApiError::InternalError(format!("Commit error: {}", e)))?;
+
+    Ok(HttpResponse::Ok().json("Evento vinculo eliminado correctamente"))
 }

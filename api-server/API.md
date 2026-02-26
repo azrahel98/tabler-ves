@@ -786,3 +786,174 @@ Detalle de una plaza por código.
   "regimen": "D.L. 276"
 }
 ```
+
+---
+
+### `POST /personal/registrar_trabajador`
+
+Registrar un nuevo trabajador con persona, documento y vínculo.
+
+**Body:**
+
+| Campo       | Tipo   | Requerido         |
+| ----------- | ------ | ----------------- |
+| `personal`  | object | sí                |
+| `airshp`    | string | sí (plaza código) |
+| `documento` | object | sí                |
+| `regimen`   | number | sí (id)           |
+| `cargo`     | number | sí (id)           |
+| `area`      | number | sí (id)           |
+| `sueldo`    | number | sí                |
+
+**Estructura de `personal`:**
+
+| Campo        | Tipo    | Requerido |
+| ------------ | ------- | --------- |
+| `dni`        | string  | sí        |
+| `amaterno`   | string  | sí        |
+| `apaterno`   | string  | sí        |
+| `nombre`     | string  | sí        |
+| `telf`       | string? | no        |
+| `direccion`  | string? | no        |
+| `email`      | string? | no        |
+| `ruc`        | string? | no        |
+| `nacimiento` | string  | sí        |
+| `sexo`       | string? | no        |
+
+**Respuesta:**
+
+```json
+"Trabajador registrado correctamente"
+```
+
+---
+
+### `POST /personal/consultar_dni`
+
+Consultar datos de una persona por DNI. Primero busca en la base de datos local; si no existe, consulta la API de RENIEC.
+
+**Body:**
+
+| Campo | Tipo   | Requerido |
+| ----- | ------ | --------- |
+| `dni` | string | sí        |
+
+**Respuesta:**
+
+```json
+{
+  "dni": "12345678",
+  "apaterno": "GARCIA",
+  "amaterno": "LOPEZ",
+  "nombre": "JUAN",
+  "telf": "999999999",
+  "direccion": "Av. Ejemplo 123",
+  "email": "correo@mail.com",
+  "ruc": "10123456789",
+  "nacimiento": "1990-01-15",
+  "sexo": "M"
+}
+```
+
+---
+
+### `POST /personal/eliminar_vinculo`
+
+Eliminar un vínculo laboral. También elimina los documentos asociados (ingreso y salida) y libera la plaza poniéndola en estado `'vacante'`.
+
+**Body:**
+
+| Campo | Tipo   | Requerido       |
+| ----- | ------ | --------------- |
+| `id`  | number | sí (vinculo id) |
+
+**Respuesta:**
+
+```json
+"Vínculo eliminado correctamente"
+```
+
+---
+
+### `POST /personal/buscar_areas`
+
+Lista de áreas disponibles.
+
+**Body:** vacío
+
+**Respuesta:**
+
+```json
+[{ "id": 1, "nombre": "Gerencia Municipal" }]
+```
+
+---
+
+### `POST /personal/buscar_cargos`
+
+Lista de cargos disponibles.
+
+**Body:** vacío
+
+**Respuesta:**
+
+```json
+[{ "id": 1, "nombre": "Analista" }]
+```
+
+---
+
+### `POST /personal/upsert_evento_vinculo`
+
+Agregar o actualizar un evento de vínculo laboral (desplazamiento, encargo, etc). Si `id` es `null`, se inserta un nuevo evento.
+
+**Body:**
+
+| Campo              | Tipo    | Requerido |
+| ------------------ | ------- | --------- |
+| `id`               | number? | no        |
+| `vinculo_id`       | number  | sí        |
+| `tipo_evento`      | string  | sí        |
+| `nueva_area_id`    | number? | no        |
+| `documento_inicio` | object  | sí        |
+| `documento_salida` | object? | no        |
+| `estado`           | string? | no        |
+
+**Estructura de `documento_inicio` / `documento_salida`:**
+
+| Campo             | Tipo    | Requerido |
+| ----------------- | ------- | --------- |
+| `id`              | number? | no        |
+| `tipoDocumento`   | string? | no        |
+| `numeroDocumento` | number? | no        |
+| `añoDocumento`    | number? | no        |
+| `fecha`           | string  | sí        |
+| `fechaValida`     | string? | no        |
+| `conv`            | number? | no        |
+| `descripcion`     | string  | sí        |
+| `funcion`         | number? | no        |
+| `sueldo`          | number? | no        |
+
+**Respuesta:**
+
+```json
+"Operación exitosa"
+```
+
+---
+
+### `POST /personal/delete_evento_vinculo`
+
+Eliminar un evento de vínculo laboral y sus documentos asociados.
+
+**Body:**
+
+| Campo | Tipo   | Requerido |
+| ----- | ------ | --------- |
+| `id`  | number | sí        |
+
+**Respuesta:**
+
+```json
+"Evento vinculo eliminado correctamente"
+```

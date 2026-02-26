@@ -59,6 +59,17 @@
               </router-link>
             </li>
 
+            <li v-if="esAdmin">
+              <router-link
+                to="/nuevo-vinculo"
+                class="relative flex items-center gap-2.5 rounded-sm py-2 menu-item-inactive"
+                :class="sidebarToggle ? 'justify-center px-0' : 'px-4'"
+                active-class="bg-gray-100 dark:bg-gray-700 text-primary dark:text-white">
+                <UserPlus class="size-5" />
+                <span class="text-sm" :class="sidebarToggle ? 'lg:hidden' : ''">Nuevo Vínculo</span>
+              </router-link>
+            </li>
+
             <li>
               <router-link
                 v-if="router.currentRoute.value.name == 'personal-profile'"
@@ -101,7 +112,7 @@
 
 <script setup lang="ts">
   import { useConfiguracionStore } from '../../stores/layout'
-  import { LayoutDashboard, Users, KeyRound, Network, Shield } from 'lucide-vue-next'
+  import { LayoutDashboard, Users, KeyRound, Network, Shield, UserPlus } from 'lucide-vue-next'
   import { storeToRefs } from 'pinia'
   import router from '../../router'
   import { useAutenticacionStore } from '../../stores/auth'

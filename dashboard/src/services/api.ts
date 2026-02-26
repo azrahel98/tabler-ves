@@ -2,7 +2,8 @@ import axios from 'axios'
 import { useAutenticacionStore } from '../stores/auth'
 
 const api = axios.create({
-  baseURL: 'https://apives.odeploy.work',
+  // baseURL: 'https://apives.odeploy.work',
+  baseURL: 'http://127.0.0.1:4010',
   headers: {
     'Content-Type': 'application/json',
   },

@@ -68,6 +68,14 @@
           <UserMinus class="h-4 w-4" />
           <span class="text-[10px] font-medium">Renunciar</span>
         </button>
+        <button
+          v-if="vinculoActual && esAdmin"
+          @click="isEliminarModalOpen = true"
+          class="rounded-full flex items-center gap-1 px-2 py-1 text-slate-500 hover:bg-rose-50 hover:text-rose-600 dark:text-slate-400 dark:hover:bg-rose-900/20 dark:hover:text-rose-400 transition-colors"
+          title="Eliminar Vínculo">
+          <Trash2 class="h-4 w-4" />
+          <span class="text-[10px] font-medium">Eliminar</span>
+        </button>
       </div>
     </div>
 
@@ -106,6 +114,34 @@
         <p class="mt-1 font-medium text-sm text-black dark:text-white leading-relaxed">{{ vinculoActual.descrip_ingreso }}</p>
       </div>
 
+      <div v-if="vinculoActual.tipo_evento && !tieneRenuncia" class="mt-4 pt-4 border-t border-blue-100 dark:border-blue-900/30">
+        <div class="flex items-center justify-between mb-3">
+          <div class="flex items-center gap-2">
+            <Calendar class="h-4 w-4 text-blue-500" />
+            <p class="text-[10px] font-bold uppercase tracking-wider text-blue-500">Evento Activo</p>
+          </div>
+          <span
+            v-if="vinculoActual.estado_evento"
+            class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 normal-case tracking-normal border border-blue-200 dark:border-blue-800">
+            {{ vinculoActual.estado_evento }}
+          </span>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <p class="text-[10px] font-medium uppercase tracking-wider text-gray-400">Tipo de Evento</p>
+            <p class="mt-1 font-medium text-sm text-black dark:text-white">{{ vinculoActual.tipo_evento }}</p>
+          </div>
+          <div v-if="vinculoActual.fecha_evento">
+            <p class="text-[10px] font-medium uppercase tracking-wider text-gray-400">Fecha</p>
+            <p class="mt-1 font-medium text-sm text-black dark:text-white">{{ vinculoActual.fecha_evento }}</p>
+          </div>
+          <div v-if="vinculoActual.doc_evento_tipo" class="col-span-2">
+            <p class="text-[10px] font-medium uppercase tracking-wider text-gray-400">Documento Soporte</p>
+            <p class="mt-1 font-medium text-sm text-black dark:text-white">{{ vinculoActual.doc_evento_tipo }} {{ vinculoActual.numero_doc_evento }}</p>
+          </div>
+        </div>
+      </div>
+
       <div v-if="tieneRenuncia" class="mt-4 pt-4 border-t border-red-200 dark:border-red-800/40">
         <div class="flex items-center gap-2 mb-3">
           <UserMinus class="h-4 w-4 text-red-500" />
@@ -131,6 +167,7 @@
     <div v-else class="text-sm text-gray-500 text-center py-4">No hay vínculo laboral activo.</div>
 
     <RenunciaModal v-if="esAdmin" :isOpen="isRenunciaModalOpen" @close="isRenunciaModalOpen = false" @save="handleRenuncia" />
+    <ConfirmarEliminarModal v-if="esAdmin" :isOpen="isEliminarModalOpen" :vinculo="vinculoActual" @close="isEliminarModalOpen = false" @confirm="handleEliminar" />
   </div>
 </template>
 
@@ -138,8 +175,9 @@
   import { ref, computed } from 'vue'
   import { storeToRefs } from 'pinia'
   import { usePersonalStore } from '../../stores/personal'
-  import { UserMinus, Info } from 'lucide-vue-next'
+  import { UserMinus, Info, Trash2, Calendar } from 'lucide-vue-next'
   import RenunciaModal from './modals/RenunciaModal.vue'
+  import ConfirmarEliminarModal from './modals/ConfirmarEliminarModal.vue'
   import Popover from '../ui/Popover.vue'
   import { useAutenticacionStore } from '../../stores/auth'
 
@@ -148,6 +186,7 @@
   const { esAdmin } = storeToRefs(useAutenticacionStore())
 
   const isRenunciaModalOpen = ref(false)
+  const isEliminarModalOpen = ref(false)
 
   const vinculoActual = computed(() => {
     return vinculos.value.length > 0 ? vinculos.value[0] : null
@@ -165,6 +204,15 @@
       isRenunciaModalOpen.value = false
     } catch (error) {
       console.error('Error al registrar renuncia', error)
+    }
+  }
+
+  const handleEliminar = async (id: number) => {
+    try {
+      await store.eliminarVinculo(id)
+      isEliminarModalOpen.value = false
+    } catch (error) {
+      console.error('Error al eliminar vínculo', error)
     }
   }
 </script>

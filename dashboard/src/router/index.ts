@@ -53,6 +53,11 @@ const router = createRouter({
           name: 'sindicato',
           component: () => import('../views/SindicatoView.vue'),
         },
+        {
+          path: 'nuevo-vinculo',
+          name: 'nuevo-vinculo',
+          component: () => import('../views/NuevoVinculoView.vue'),
+        },
       ],
     },
   ],
