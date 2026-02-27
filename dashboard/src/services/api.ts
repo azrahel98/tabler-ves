@@ -2,9 +2,9 @@ import axios from 'axios'
 import { useAutenticacionStore } from '../stores/auth'
 
 export const baseURL = 'https://apives.odeploy.work'
+// export const baseURL = 'http://127.0.0.1:4010'
 
 const api = axios.create({
-  // baseURL: 'https://apives.odeploy.work',
   baseURL: baseURL,
   headers: {
     'Content-Type': 'application/json',

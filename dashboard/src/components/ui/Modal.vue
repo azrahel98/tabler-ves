@@ -1,13 +1,14 @@
 <template>
   <Teleport to="body">
     <Transition name="modal">
-      <div v-if="isOpen" class="relative z-[999999]" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+      <div v-if="isOpen" class="relative z-999999" aria-labelledby="modal-title" role="dialog" aria-modal="true">
         <div class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm transition-opacity" @click="close"></div>
 
         <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
           <div class="flex min-h-full items-start justify-center p-4 pt-16 text-center sm:pt-20 sm:p-0">
             <div
-              class="relative transform overflow-hidden rounded-xl bg-white dark:bg-slate-900 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg border dark:border-slate-800">
+              class="relative transform overflow-hidden rounded-xl bg-white dark:bg-slate-900 text-left shadow-xl transition-all sm:my-8 w-11/12 border dark:border-slate-800"
+              :class="maxWidth">
               <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 px-6 py-4">
                 <h3 v-if="title" class="text-lg font-semibold text-slate-900 dark:text-slate-100" id="modal-title">
                   {{ title }}
@@ -42,10 +43,16 @@
   import { watch, onUnmounted } from 'vue'
   import { X } from 'lucide-vue-next'
 
-  const props = defineProps<{
-    isOpen: boolean
-    title?: string
-  }>()
+  const props = withDefaults(
+    defineProps<{
+      isOpen: boolean
+      title?: string
+      maxWidth?: string
+    }>(),
+    {
+      maxWidth: 'sm:max-w-lg',
+    }
+  )
 
   const emit = defineEmits<{
     (e: 'close'): void

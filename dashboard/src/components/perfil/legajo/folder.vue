@@ -75,8 +75,9 @@
       </template>
     </Modal>
 
-    <!-- Modal de Vista Previa -->
-    <Modal :isOpen="mostrarVistaPrevia" @close="cerrarVistaPrevia">
+    <PreviewModal :isOpen="mostrarVistaPrevia" @close="cerrarVistaPrevia" :url="urlPrevia" :documentoActual="documentoActual" :urlPrevia="urlPrevia" />
+
+    <!-- <Modal :isOpen="mostrarVistaPrevia" @close="cerrarVistaPrevia">
       <template #header>
         <h3 class="text-lg font-bold text-black dark:text-white flex items-center gap-2 m-0 truncate" :title="documentoActual?.original_name">
           {{ documentoActual?.original_name || 'Vista Previa' }}
@@ -111,12 +112,13 @@
           </button>
         </div>
       </template>
-    </Modal>
+    </Modal> -->
   </div>
 </template>
 
 <script setup lang="ts">
   import LegajoItem from './items.vue'
+  import PreviewModal from './PreviewModal.vue'
   import Modal from '../../ui/Modal.vue'
   import { ref, watch } from 'vue'
   import { storeToRefs } from 'pinia'
@@ -139,7 +141,6 @@
   const mostrarModal = ref(false)
   const nombreArchivoOpcional = ref('')
 
-  // Estado para la vista previa
   const mostrarVistaPrevia = ref(false)
   const urlPrevia = ref<string | null>(null)
   const documentoActual = ref<any>(null)
@@ -162,9 +163,8 @@
   const abrirVistaPrevia = async (doc: any) => {
     documentoActual.value = doc
     mostrarVistaPrevia.value = true
-    urlPrevia.value = null // Resetea antes de cargar
+    urlPrevia.value = null 
     
-    // Genera la URL de descarga directa
     if (doc.file_hash) {
        urlPrevia.value = `${apiUrlBase}/fileserver/${doc.file_hash}`
     } else {
@@ -180,17 +180,7 @@
     urlPrevia.value = null
   }
 
-  const formatFecha = (fechaStr: string) => {
-    if (!fechaStr) return ''
-    const date = new Date(fechaStr)
-    return date.toLocaleDateString('es-PE', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    })
-  }
+
 
   const buscarDocumentos = async () => {
     const dni = perfilActual.value?.dni
