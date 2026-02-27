@@ -3,10 +3,10 @@
     <form @submit.prevent="guardar" class="space-y-4">
       <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
-          <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">Tipo Documento</label>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tipo Documento</label>
           <select
             v-model="form.tipoDocumento"
-            class="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500 dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+            class="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-3 py-2.5 text-sm text-gray-800 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 disabled:opacity-60 disabled:bg-gray-50 dark:disabled:bg-gray-800"
             :disabled="cargandoDocumentos">
             <option value="" disabled>
               {{ cargandoDocumentos ? 'Cargando...' : 'Seleccionar tipo' }}
@@ -17,49 +17,49 @@
 
         <div class="grid grid-cols-2 gap-2">
           <div>
-            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">Número</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Número</label>
             <input
               type="number"
               v-model="form.numeroDocumento"
               :disabled="esSunat"
-              class="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500 dark:border-slate-700 dark:bg-slate-800 dark:text-white disabled:opacity-50 disabled:cursor-not-allowed"
+              class="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-3 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 disabled:opacity-60 disabled:bg-gray-50 dark:disabled:bg-gray-800"
               placeholder="001" />
           </div>
           <div>
-            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">Año</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Año</label>
             <input
               type="number"
               v-model="form.añoDocumento"
               :disabled="esSunat"
-              class="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500 dark:border-slate-700 dark:bg-slate-800 dark:text-white disabled:opacity-50 disabled:cursor-not-allowed"
+              class="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-3 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 disabled:opacity-60 disabled:bg-gray-50 dark:disabled:bg-gray-800"
               placeholder="2024" />
           </div>
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">Fecha de Cesse</label>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Fecha de Cese</label>
           <input
             type="date"
             v-model="form.fecha"
-            class="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500 dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+            class="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-3 py-2.5 text-sm text-gray-800 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
             required />
         </div>
 
         <div v-if="!esSunat">
-          <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">Fecha del Documento</label>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Fecha del Documento</label>
           <input
             type="date"
             v-model="form.fechaValida"
-            class="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500 dark:border-slate-700 dark:bg-slate-800 dark:text-white" />
+            class="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-3 py-2.5 text-sm text-gray-800 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90" />
         </div>
 
         <div class="sm:col-span-2">
-          <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">Descripción / Motivo</label>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Descripción / Motivo</label>
           <textarea
             v-model="form.descripcion"
             rows="3"
             :disabled="esSunat"
-            class="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500 dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+            class="w-full rounded-lg border border-gray-300 bg-transparent px-3 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 disabled:opacity-60 disabled:bg-gray-50 dark:disabled:bg-gray-800"
             placeholder="Motivos de la renuncia..."
             required></textarea>
         </div>
@@ -70,13 +70,13 @@
       <button
         type="button"
         @click="close"
-        class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50 dark:bg-slate-800 dark:text-slate-100 dark:ring-slate-700 dark:hover:bg-slate-700 sm:mt-0 sm:w-auto">
+        class="mt-3 inline-flex w-full justify-center rounded-lg bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 transition dark:bg-gray-800 dark:text-gray-300 dark:ring-gray-700 dark:hover:bg-gray-700 sm:mt-0 sm:w-auto">
         Cancelar
       </button>
       <button
         type="button"
         @click="guardar"
-        class="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto">
+        class="inline-flex w-full justify-center items-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-red-700 transition sm:ml-3 sm:w-auto">
         Registrar Renuncia
       </button>
     </template>
@@ -104,6 +104,15 @@
   const cargandoDocumentos = ref(false)
   let yaCargados = false
 
+  const form = ref({
+    tipoDocumento: '',
+    numeroDocumento: null as number | null,
+    añoDocumento: new Date().getFullYear() as number | null,
+    fecha: new Date().toISOString().split('T')[0],
+    fechaValida: null as string | null,
+    descripcion: '',
+  })
+
   const esSunat = computed(() => {
     const seleccionado = documentos.value.find((d: any) => d.id == form.value.tipoDocumento)
     return seleccionado?.nombre?.toUpperCase() === 'SUNAT'
@@ -122,26 +131,29 @@
   })
 
   watch(toRef(props, 'isOpen'), async (abierto) => {
-    if (abierto && !yaCargados) {
-      cargandoDocumentos.value = true
-      try {
-        await tableroStore.obtenerDocumentos()
-        yaCargados = true
-      } catch (e) {
-        console.error('Error al cargar tipos de documento', e)
-      } finally {
-        cargandoDocumentos.value = false
+    if (abierto) {
+      // Form reset logic needed when opening
+      form.value = {
+        tipoDocumento: '',
+        numeroDocumento: null,
+        añoDocumento: new Date().getFullYear(),
+        fecha: new Date().toISOString().split('T')[0],
+        fechaValida: null,
+        descripcion: '',
+      }
+
+      if (!yaCargados) {
+        cargandoDocumentos.value = true
+        try {
+          await tableroStore.obtenerDocumentos()
+          yaCargados = true
+        } catch (e) {
+          console.error('Error al cargar tipos de documento', e)
+        } finally {
+          cargandoDocumentos.value = false
+        }
       }
     }
-  })
-
-  const form = ref({
-    tipoDocumento: '',
-    numeroDocumento: null as number | null,
-    añoDocumento: new Date().getFullYear() as number | null,
-    fecha: new Date().toISOString().split('T')[0],
-    fechaValida: null as string | null,
-    descripcion: '',
   })
 
   const close = () => {

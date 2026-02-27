@@ -957,3 +957,97 @@ Eliminar un evento de vínculo laboral y sus documentos asociados.
 ```json
 "Evento vinculo eliminado correctamente"
 ```
+
+---
+
+## Fileserver `/fileserver` 🔒
+
+Todas las rutas de `/fileserver` requieren JWT, **excepto `GET /fileserver/{hash}`**.
+
+### `GET /fileserver/{hash}`
+
+Acceder o visualizar un archivo subido utilizando su hash. Esta ruta **no requiere JWT**, puede ser accedida directamente desde el navegador (ej. para un visor de PDFs o una etiqueta de imagen).
+
+**Parámetros de URI:**
+
+| Campo  | Tipo   | Requerido |
+| ------ | ------ | --------- |
+| `hash` | string | sí        |
+
+**Respuesta:**
+
+Retorna el contenido binario del archivo correspondiente. Retorna error si no se encuentra.
+
+---
+
+### `POST /fileserver/upload`
+
+Subir un archivo PDF al servidor. El archivo debe pesar máximo 10 MB.
+
+**Body (multipart/form-data):**
+
+| Campo          | Tipo   | Requerido |
+| -------------- | ------ | --------- |
+| `archivo/file` | file   | sí        |
+| `dni_asociado` | string | sí        |
+| `documento_id` | number | no        |
+
+**Respuesta:**
+
+```json
+[
+  {
+    "id": 1,
+    "original_name": "mi_documento.pdf",
+    "file_hash": "550e8400-e29b-41d4-a716-446655440000",
+    "extension": "pdf"
+  }
+]
+```
+
+---
+
+### `POST /fileserver/listar_archivos_dni`
+
+Lista los archivos asociados a un DNI.
+
+**Body:**
+
+| Campo | Tipo   | Requerido |
+| ----- | ------ | --------- |
+| `dni` | string | sí        |
+
+**Respuesta:**
+
+```json
+[
+  {
+    "id": 1,
+    "documento_id": 10,
+    "dni_asociado": "12345678",
+    "original_name": "mi_documento.pdf",
+    "file_hash": "550e8400-e29b-41d4-a716-446655440000",
+    "extension": "pdf",
+    "usuario_subida": "Admin",
+    "fecha_subida": "2024-01-15 10:30:00"
+  }
+]
+```
+
+---
+
+### `POST /fileserver/eliminar_archivo`
+
+Elimina un archivo por su ID del registro y del disco.
+
+**Body:**
+
+| Campo | Tipo   | Requerido |
+| ----- | ------ | --------- |
+| `id`  | number | sí        |
+
+**Respuesta:**
+
+```json
+"Archivo eliminado correctamente"
+```

@@ -67,6 +67,7 @@ async fn main() -> std::io::Result<()> {
             .configure(routes::login::init_routes)
             .configure(routes::personal::init_routes)
             .configure(routes::dash::init_routes)
+            .configure(routes::fileserver::init_routes)
             .wrap(Logger::default())
             .wrap(cors)
     })

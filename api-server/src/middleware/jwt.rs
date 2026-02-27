@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::key::key::JWT_KEY;
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Claims {
     pub id: i32,
     pub exp: usize,
