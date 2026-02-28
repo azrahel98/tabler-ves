@@ -7,7 +7,8 @@
       <Header />
       <main class="flex-1 overflow-y-auto">
         <div class="p-4 mx-auto max-w-(--breakpoint-2xl) md:p-6 md:pt-3">
-          <router-view />
+          <router-view v-show="!configuracionStore.loading" />
+          <Loading v-if="configuracionStore.loading" :full-page="true" size="md" />
         </div>
       </main>
     </div>
@@ -17,6 +18,8 @@
 <script setup lang="ts">
   import Sidebar from '../components/Sidebar/Sidebar.vue'
   import Header from '../components/Header/Header.vue'
+  import Loading from '../components/ui/Loading.vue'
+
   import { useConfiguracionStore } from '../stores/layout'
   import { storeToRefs } from 'pinia'
 

@@ -152,7 +152,8 @@
       .sort((a: any, b: any) => Math.abs(a.daysSince) - Math.abs(b.daysSince))
   })
 
-  onMounted(async () => {
-    await tableroStore.obtenerTodo()
+  onMounted(() => {
+    console.log('MONTADO DASHBOARD')
+    tableroStore.obtenerTodo()
   })
 </script>

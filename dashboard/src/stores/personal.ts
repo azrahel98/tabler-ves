@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import api from '../services/api'
 import { ref } from 'vue'
+import { useConfiguracionStore } from './layout'
 
 export const usePersonalStore = defineStore('personal', () => {
   const resultadosBusqueda = ref<any[]>([])
@@ -30,13 +31,14 @@ export const usePersonalStore = defineStore('personal', () => {
   }
 
   async function obtenerPerfil(dni: string) {
-    cargando.value = true
+    const store = useConfiguracionStore()
     try {
+      store.setLoading(true)
       const res = await api.post('/personal/por_dni', { dni })
       perfilActual.value = await res.data
       await Promise.all([obtenerVinculos(dni), obtenerInfoBancaria(dni), obtenerContacto(dni), obtenerGrados(dni)])
     } finally {
-      cargando.value = false
+      store.setLoading(false)
     }
   }
 
