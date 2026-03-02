@@ -5,7 +5,7 @@
         <div class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm transition-opacity" @click="close"></div>
 
         <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
-          <div class="flex min-h-full items-start justify-center p-4 pt-16 text-center sm:pt-20 sm:p-0">
+          <div class="flex min-h-full items-start justify-center p-4 pt-1 sm:pt-6 sm:p-0">
             <div
               class="relative transform overflow-hidden rounded-xl bg-white dark:bg-slate-900 text-left shadow-xl transition-all sm:my-8 w-11/12 border dark:border-slate-800"
               :class="maxWidth">

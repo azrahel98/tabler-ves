@@ -58,6 +58,16 @@ const router = createRouter({
           name: 'nuevo-vinculo',
           component: () => import('../views/NuevoVinculoView.vue'),
         },
+        {
+          path: 'area/:id',
+          name: 'area-personal',
+          component: () => import('../views/reporte/AreaView.vue'),
+        },
+        {
+          path: 'sindicato/:nombre',
+          name: 'sindicato-personal',
+          component: () => import('../views/reporte/SindicatoPersonalView.vue'),
+        },
       ],
     },
   ],

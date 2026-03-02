@@ -84,7 +84,7 @@
 </template>
 
 <script setup lang="ts">
-  import { onMounted, computed } from 'vue'
+  import { onMounted, computed, onUnmounted } from 'vue'
   import Metrica from '../components/dashboard/metrica.vue'
   import Table from '../components/dashboard/table.vue'
   import Circulo from '../components/dashboard/circulo.vue'
@@ -153,7 +153,11 @@
   })
 
   onMounted(() => {
-    console.log('MONTADO DASHBOARD')
     tableroStore.obtenerTodo()
+  })
+
+  onUnmounted(() => {
+    console.log('DESMONTANDO DASHBOARD')
+    tableroStore.limpiarDatos()
   })
 </script>

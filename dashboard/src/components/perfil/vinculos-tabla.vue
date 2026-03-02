@@ -26,12 +26,18 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="v in vinculos" :key="v.id" class="border-b border-stroke/50 dark:border-strokedark/50 last:border-0 hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors">
+          <tr
+            v-for="v in vinculos"
+            v-memo="[v.id, v.estado]"
+            :key="v.id"
+            class="border-b border-stroke/50 dark:border-strokedark/50 last:border-0 hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors">
             <td class="py-3 pr-4">
               <span
-                :class="v.fecha_salida ? 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400' : 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400'"
-                class="text-[10px] font-semibold px-2 py-0.5 rounded-full whitespace-nowrap">
-                {{ v.fecha_salida ? 'Inactivo' : 'Activo' }}
+                :class="
+                  v.estado === 'activo' ? 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400'
+                "
+                class="text-[10px] font-semibold px-2 py-0.5 uppercase rounded-full whitespace-nowrap">
+                {{ v.estado }}
               </span>
             </td>
             <td class="py-3 pr-4 text-black dark:text-white font-medium max-w-[200px] truncate" :title="v.area">{{ v.area }}</td>

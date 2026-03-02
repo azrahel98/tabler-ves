@@ -231,25 +231,27 @@ pub async fn reporte_personal_activo(
 ) -> Result<impl Responder, ApiError> {
     let data = sqlx::query(
         r#"
-        select
-        cast(p.dni as char) dni,
-        concat(p.apaterno, " ", p.amaterno, " ", p.nombre) nombre,
-        dc.fecha ingreso,
-        dcs.fecha renuncia,
-        ar.nombre area,
-        cr.nombre cargo,
-        s.nombre sindicato,
-        rg.nombre regimen
-        from
-        vinculo v
-        inner join persona p on v.dni = p.dni
-        inner join cargo cr on v.cargo_id = cr.id
-        inner join area ar on v.area_id = ar.id
-        inner join documento dc on v.doc_ingreso_id = dc.id
-        inner join regimen rg on v.regimen = rg.id
-        left join Documento dcs on v.doc_salida_id = dcs.id
-        left join vinculo_sindicato vs on vs.vinculo_id = v.id
-        left join Sindicato s on vs.sindicato_id = s.id where v.estado = 'activo'
+select
+  cast(p.dni as char) dni,
+  concat(p.apaterno, " ", p.amaterno, " ", p.nombre) nombre,
+  dc.fecha ingreso,
+  dcs.fecha renuncia,
+  ar.nombre area,
+  cr.nombre cargo,
+  s.nombre sindicato,
+  rg.nombre regimen
+from
+  vinculo v
+  inner join persona p on v.dni = p.dni
+  inner join cargo cr on v.cargo_id = cr.id
+  inner join area ar on v.area_id = ar.id
+  inner join documento dc on v.doc_ingreso_id = dc.id
+  inner join regimen rg on v.regimen = rg.id
+  left join documento dcs on v.doc_salida_id = dcs.id
+  left join vinculo_sindicato vs on vs.vinculo_id = v.id
+  left join sindicato s on vs.sindicato_id = s.id
+where
+  v.estado = 'activo'
         "#,
     )
     .fetch_all(&data.db)

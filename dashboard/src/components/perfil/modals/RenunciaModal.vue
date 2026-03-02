@@ -69,15 +69,18 @@
     <template #footer>
       <button
         type="button"
-        @click="close"
-        class="mt-3 inline-flex w-full justify-center rounded-lg bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 transition dark:bg-gray-800 dark:text-gray-300 dark:ring-gray-700 dark:hover:bg-gray-700 sm:mt-0 sm:w-auto">
-        Cancelar
+        @click="guardar"
+        class="inline-flex w-full justify-center items-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-red-700 transition sm:ml-3 sm:w-auto"
+        :disabled="isSubmitting">
+        <Loader2 v-if="isSubmitting" class="h-4 w-4 animate-spin" />
+        Registrar Renuncia
       </button>
       <button
         type="button"
-        @click="guardar"
-        class="inline-flex w-full justify-center items-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-red-700 transition sm:ml-3 sm:w-auto">
-        Registrar Renuncia
+        @click="close"
+        class="mt-3 inline-flex w-full justify-center rounded-lg bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 transition dark:bg-gray-800 dark:text-gray-300 dark:ring-gray-700 dark:hover:bg-gray-700 sm:mt-0 sm:w-auto"
+        :disabled="isSubmitting">
+        Cancelar
       </button>
     </template>
   </Modal>
@@ -88,6 +91,7 @@
   import { storeToRefs } from 'pinia'
   import { useTableroStore } from '../../../stores/dashboard'
   import Modal from '../../ui/Modal.vue'
+  import { Loader2 } from 'lucide-vue-next'
 
   const props = defineProps<{
     isOpen: boolean
@@ -102,6 +106,7 @@
   const { documentos } = storeToRefs(tableroStore)
 
   const cargandoDocumentos = ref(false)
+  const isSubmitting = ref(false)
   let yaCargados = false
 
   const form = ref({
@@ -132,6 +137,7 @@
 
   watch(toRef(props, 'isOpen'), async (abierto) => {
     if (abierto) {
+      isSubmitting.value = false
       // Form reset logic needed when opening
       form.value = {
         tipoDocumento: '',
@@ -157,10 +163,12 @@
   })
 
   const close = () => {
+    if (isSubmitting.value) return
     emit('close')
   }
 
   const guardar = () => {
+    isSubmitting.value = true
     const payload = {
       ...form.value,
       tipoDocumento: form.value.tipoDocumento.toString(),
@@ -168,5 +176,6 @@
       añoDocumento: esSunat.value ? null : form.value.añoDocumento,
     }
     emit('save', payload)
+    // The parent component is responsible for setting isOpen to false, resetting isSubmitting
   }
 </script>

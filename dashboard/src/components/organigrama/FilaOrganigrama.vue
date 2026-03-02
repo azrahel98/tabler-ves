@@ -1,5 +1,4 @@
 <template>
-  <!-- Modo Tabla (desktop) -->
   <template v-if="modo === 'tabla'">
     <template v-for="fila in filas" :key="fila.key">
       <tr :class="fila.clases">
@@ -14,7 +13,13 @@
         </td>
 
         <td class="px-4 py-3 font-semibold text-gray-900 dark:text-white" :style="{ paddingLeft: fila.paddingLeft }">
-          {{ nodo.area }}
+          <router-link
+            :to="{
+              name: 'area-personal',
+              params: { id: nodo.id },
+            }">
+            {{ nodo.area }}
+          </router-link>
         </td>
 
         <RouterLink

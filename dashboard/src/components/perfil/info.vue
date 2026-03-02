@@ -54,12 +54,14 @@
 <script setup lang="ts">
   import { ref } from 'vue'
   import { addMinutes, format } from 'date-fns'
+  import { defineAsyncComponent } from 'vue'
   import { usePersonalStore } from '../../stores/personal'
   import { storeToRefs } from 'pinia'
   import { es } from 'date-fns/locale'
   import { Pencil } from 'lucide-vue-next'
-  import EditInfoModal from './modals/EditInfoModal.vue'
   import { useAutenticacionStore } from '../../stores/auth'
+
+  const EditInfoModal = defineAsyncComponent(() => import('./modals/EditInfoModal.vue'))
 
   const personalStore = usePersonalStore()
   const { perfilActual } = storeToRefs(personalStore)

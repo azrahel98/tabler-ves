@@ -12,6 +12,7 @@ mod routes;
 
 pub struct AppState {
     pub db: MySqlPool,
+    pub cliente_http: reqwest::Client,
 }
 
 #[actix_web::main]
@@ -46,7 +47,7 @@ async fn main() -> std::io::Result<()> {
     {
         Ok(pool) => {
             println!("✅Connection to the database is successful!");
-            println!("AQUIIIIIIIII LA URI {}", database_url);
+            println!("✅ URI de base de datos: {}", database_url);
             println!("🚀 Server running on port {}", port);
             pool
         }
@@ -63,7 +64,10 @@ async fn main() -> std::io::Result<()> {
             .allow_any_header()
             .allow_any_method();
         App::new()
-            .app_data(web::Data::new(AppState { db: pool.clone() }))
+            .app_data(web::Data::new(AppState {
+                db: pool.clone(),
+                cliente_http: reqwest::Client::new(),
+            }))
             .configure(routes::login::init_routes)
             .configure(routes::personal::init_routes)
             .configure(routes::dash::init_routes)

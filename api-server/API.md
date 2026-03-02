@@ -12,6 +12,9 @@ Todas las rutas devuelven errores con la misma estructura:
 { "code": 400 | 401 | 404 | 500, "error": "Mensaje descriptivo" }
 ```
 
+> Los errores `400` de validación incluyen el campo y el motivo, por ejemplo:
+> `{ "code": 400, "error": "dni: Debe tener exactamente 8 dígitos numéricos" }`
+
 ---
 
 ## Login `/login`
@@ -22,10 +25,10 @@ Autenticación de usuario.
 
 **Body:**
 
-| Campo      | Tipo   | Requerido |
-| ---------- | ------ | --------- |
-| `username` | string | sí        |
-| `password` | string | sí        |
+| Campo      | Tipo   | Requerido | Validación                |
+| ---------- | ------ | --------- | ------------------------- |
+| `username` | string | sí        | No puede estar vacío      |
+| `password` | string | sí        | No puede estar vacío      |
 
 **Respuesta:**
 
@@ -41,11 +44,11 @@ Cambiar contraseña.
 
 **Body:**
 
-| Campo     | Tipo   | Requerido |
-| --------- | ------ | --------- |
-| `id`      | number | sí        |
-| `oldpass` | string | sí        |
-| `newpass` | string | sí        |
+| Campo     | Tipo   | Requerido | Validación                              |
+| --------- | ------ | --------- | --------------------------------------- |
+| `id`      | number | sí        | > 0                                     |
+| `oldpass` | string | sí        | No puede estar vacía                    |
+| `newpass` | string | sí        | Mínimo 4 caracteres                     |
 
 **Respuesta:**
 
@@ -287,9 +290,9 @@ Buscar trabajadores por nombre.
 
 **Body:**
 
-| Campo    | Tipo   | Requerido |
-| -------- | ------ | --------- |
-| `nombre` | string | sí        |
+| Campo    | Tipo   | Requerido | Validación             |
+| -------- | ------ | --------- | ---------------------- |
+| `nombre` | string | sí        | No puede estar vacío   |
 
 **Respuesta:**
 
@@ -312,9 +315,9 @@ Perfil de un trabajador.
 
 **Body:**
 
-| Campo | Tipo   | Requerido |
-| ----- | ------ | --------- |
-| `dni` | string | sí        |
+| Campo | Tipo   | Requerido | Validación                       |
+| ----- | ------ | --------- | -------------------------------- |
+| `dni` | string | sí        | 8 dígitos numéricos exactamente  |
 
 **Respuesta:**
 
@@ -339,16 +342,16 @@ Editar datos personales.
 
 **Body:**
 
-| Campo        | Tipo    | Requerido |
-| ------------ | ------- | --------- |
-| `dni`        | string  | sí        |
-| `nombre`     | string? | no        |
-| `telf`       | string? | no        |
-| `direccion`  | string? | no        |
-| `email`      | string? | no        |
-| `ruc`        | string? | no        |
-| `nacimiento` | string  | sí        |
-| `sexo`       | string? | no        |
+| Campo        | Tipo    | Requerido | Validación                      |
+| ------------ | ------- | --------- | ------------------------------- |
+| `dni`        | string  | sí        | 8 dígitos numéricos exactamente |
+| `nombre`     | string? | no        |                                 |
+| `telf`       | string? | no        |                                 |
+| `direccion`  | string? | no        |                                 |
+| `email`      | string? | no        |                                 |
+| `ruc`        | string? | no        |                                 |
+| `nacimiento` | string  | sí        | Formato `YYYY-MM-DD`            |
+| `sexo`       | string? | no        |                                 |
 
 **Respuesta:**
 
@@ -364,9 +367,9 @@ Vínculos laborales de un trabajador.
 
 **Body:**
 
-| Campo | Tipo   | Requerido |
-| ----- | ------ | --------- |
-| `dni` | string | sí        |
+| Campo | Tipo   | Requerido | Validación                       |
+| ----- | ------ | --------- | -------------------------------- |
+| `dni` | string | sí        | 8 dígitos numéricos exactamente  |
 
 **Respuesta:**
 
@@ -409,18 +412,18 @@ Registrar renuncia de un vínculo.
 
 **Body:**
 
-| Campo             | Tipo    | Requerido       |
-| ----------------- | ------- | --------------- |
-| `id`              | number? | sí (vinculo id) |
-| `tipoDocumento`   | string? | no              |
-| `numeroDocumento` | number? | no              |
-| `añoDocumento`    | number? | no              |
-| `fecha`           | string  | sí              |
-| `fechaValida`     | string? | no              |
-| `conv`            | number? | no              |
-| `descripcion`     | string  | sí              |
-| `funcion`         | number? | no              |
-| `sueldo`          | number? | no              |
+| Campo             | Tipo    | Requerido       | Validación                     |
+| ----------------- | ------- | --------------- | ------------------------------ |
+| `id`              | number? | sí (vinculo id) |                                |
+| `tipoDocumento`   | string? | no              |                                |
+| `numeroDocumento` | number? | no              |                                |
+| `añoDocumento`    | number? | no              |                                |
+| `fecha`           | string  | sí              | No puede estar vacía           |
+| `fechaValida`     | string? | no              |                                |
+| `conv`            | number? | no              |                                |
+| `descripcion`     | string  | sí              | No puede estar vacía           |
+| `funcion`         | number? | no              |                                |
+| `sueldo`          | number? | no              |                                |
 
 **Respuesta:**
 
@@ -443,9 +446,9 @@ Datos bancarios de un trabajador.
 
 **Body:**
 
-| Campo | Tipo   | Requerido |
-| ----- | ------ | --------- |
-| `dni` | string | sí        |
+| Campo | Tipo   | Requerido | Validación                       |
+| ----- | ------ | --------- | -------------------------------- |
+| `dni` | string | sí        | 8 dígitos numéricos exactamente  |
 
 **Respuesta:**
 
@@ -469,14 +472,14 @@ Agregar cuenta bancaria.
 
 **Body:**
 
-| Campo           | Tipo    | Requerido |
-| --------------- | ------- | --------- |
-| `numero_cuenta` | string  | sí        |
-| `tipo_cuenta`   | string  | sí        |
-| `cci`           | string? | no        |
-| `banco`         | number  | sí (id)   |
-| `estado`        | number  | sí        |
-| `dni`           | string  | sí        |
+| Campo           | Tipo    | Requerido | Validación                       |
+| --------------- | ------- | --------- | -------------------------------- |
+| `numero_cuenta` | string  | sí        | 6-30 caracteres                  |
+| `tipo_cuenta`   | string  | sí        | No puede estar vacío             |
+| `cci`           | string? | no        |                                  |
+| `banco`         | number  | sí (id)   |                                  |
+| `estado`        | number  | sí        |                                  |
+| `dni`           | string  | sí        | 8 dígitos numéricos exactamente  |
 
 **Respuesta:**
 
@@ -492,15 +495,15 @@ Editar cuenta bancaria.
 
 **Body:**
 
-| Campo           | Tipo    | Requerido |
-| --------------- | ------- | --------- |
-| `id`            | number  | sí        |
-| `numero_cuenta` | string  | sí        |
-| `tipo_cuenta`   | string? | no        |
-| `cci`           | string? | no        |
-| `banco`         | string  | sí        |
-| `estado`        | number  | sí        |
-| `dni`           | string  | sí        |
+| Campo           | Tipo    | Requerido | Validación                       |
+| --------------- | ------- | --------- | -------------------------------- |
+| `id`            | number  | sí        |                                  |
+| `numero_cuenta` | string  | sí        | 6-30 caracteres                  |
+| `tipo_cuenta`   | string? | no        |                                  |
+| `cci`           | string? | no        |                                  |
+| `banco`         | string  | sí        |                                  |
+| `estado`        | number  | sí        |                                  |
+| `dni`           | string  | sí        | 8 dígitos numéricos exactamente  |
 
 **Respuesta:**
 
@@ -516,9 +519,9 @@ Grados académicos de un trabajador.
 
 **Body:**
 
-| Campo | Tipo   | Requerido |
-| ----- | ------ | --------- |
-| `dni` | string | sí        |
+| Campo | Tipo   | Requerido | Validación                       |
+| ----- | ------ | --------- | -------------------------------- |
+| `dni` | string | sí        | 8 dígitos numéricos exactamente  |
 
 **Respuesta:**
 
@@ -553,15 +556,15 @@ Agregar o actualizar grado académico (upsert). Si `id` es `0` se inserta, si `i
 
 **Body:**
 
-| Campo             | Tipo    | Requerido |
-| ----------------- | ------- | --------- |
-| `id`              | number  | sí        |
-| `profesion`       | string  | sí        |
-| `universidad`     | string  | sí        |
-| `colegiatura`     | string? | no        |
-| `nivel_academico` | string  | sí        |
-| `abrv`            | string  | sí        |
-| `dni`             | string  | sí        |
+| Campo             | Tipo    | Requerido | Validación                       |
+| ----------------- | ------- | --------- | -------------------------------- |
+| `id`              | number  | sí        |                                  |
+| `profesion`       | string  | sí        | Mínimo 2 caracteres              |
+| `universidad`     | string  | sí        | Mínimo 2 caracteres              |
+| `colegiatura`     | string? | no        |                                  |
+| `nivel_academico` | string  | sí        | Mínimo 2 caracteres              |
+| `abrv`            | string  | sí        | No puede estar vacío             |
+| `dni`             | string  | sí        | 8 dígitos numéricos exactamente  |
 
 **Respuesta:**
 
@@ -577,17 +580,17 @@ Afiliar vínculos a sindicato.
 
 **Body:**
 
-| Campo             | Tipo    | Requerido |
-| ----------------- | ------- | --------- |
-| `id`              | number? | no        |
-| `tipoDocumento`   | string? | no        |
-| `numeroDocumento` | number? | no        |
-| `añoDocumento`    | number? | no        |
-| `fecha`           | string  | sí        |
-| `fechaValida`     | string? | no        |
-| `descripcion`     | string  | sí        |
-| `sindicato`       | number  | sí (id)   |
-| `vinculos`        | array   | sí        |
+| Campo             | Tipo    | Requerido | Validación                    |
+| ----------------- | ------- | --------- | ----------------------------- |
+| `id`              | number? | no        |                               |
+| `tipoDocumento`   | string? | no        |                               |
+| `numeroDocumento` | number? | no        |                               |
+| `añoDocumento`    | number? | no        |                               |
+| `fecha`           | string  | sí        | No puede estar vacía          |
+| `fechaValida`     | string? | no        |                               |
+| `descripcion`     | string  | sí        | No puede estar vacía          |
+| `sindicato`       | number  | sí (id)   |                               |
+| `vinculos`        | array   | sí        |                               |
 
 **Estructura de `vinculos`:**
 
@@ -624,9 +627,9 @@ Registros de legajo de un trabajador.
 
 **Body:**
 
-| Campo | Tipo   | Requerido |
-| ----- | ------ | --------- |
-| `dni` | string | sí        |
+| Campo | Tipo   | Requerido | Validación                      |
+| ----- | ------ | --------- | ------------------------------- |
+| `dni` | string | sí        | 8 dígitos numéricos exactamente |
 
 **Respuesta:**
 
@@ -653,16 +656,16 @@ Agregar evento de legajo.
 
 **Body:**
 
-| Campo     | Tipo    | Requerido             |
-| --------- | ------- | --------------------- |
-| `id`      | number  | sí                    |
-| `persona` | string  | sí                    |
-| `dni`     | string  | sí                    |
-| `fecha`   | string? | no                    |
-| `estado`  | string? | no                    |
-| `descrip` | string? | no                    |
-| `nuevo`   | number  | sí (1 = nuevo estado) |
-| `user`    | number? | no                    |
+| Campo     | Tipo    | Requerido             | Validación              |
+| --------- | ------- | --------------------- | ----------------------- |
+| `id`      | number  | sí                    |                         |
+| `persona` | string  | sí                    | Mínimo 2 caracteres     |
+| `dni`     | string  | sí                    |                         |
+| `fecha`   | string? | no                    |                         |
+| `estado`  | string? | no                    |                         |
+| `descrip` | string? | no                    |                         |
+| `nuevo`   | number  | sí (1 = nuevo estado) |                         |
+| `user`    | number? | no                    |                         |
 
 **Respuesta:**
 
@@ -678,11 +681,11 @@ Reporte de asistencia mensual.
 
 **Body:**
 
-| Campo | Tipo   | Requerido |
-| ----- | ------ | --------- |
-| `dni` | string | sí        |
-| `mes` | number | sí        |
-| `año` | number | sí        |
+| Campo | Tipo   | Requerido | Validación                       |
+| ----- | ------ | --------- | -------------------------------- |
+| `dni` | string | sí        | 8 dígitos numéricos exactamente  |
+| `mes` | number | sí        | Entre 1 y 12                     |
+| `año` | number | sí        | Entre 2000 y 2100                |
 
 **Respuesta:**
 
@@ -698,12 +701,12 @@ Agregar o actualizar contacto de emergencia.
 
 **Body:**
 
-| Campo         | Tipo    | Requerido |
-| ------------- | ------- | --------- |
-| `persona_dni` | string  | sí        |
-| `nombre`      | string  | sí        |
-| `relacion`    | string  | sí        |
-| `telefono`    | string? | no        |
+| Campo         | Tipo    | Requerido | Validación                       |
+| ------------- | ------- | --------- | -------------------------------- |
+| `persona_dni` | string  | sí        | 8 dígitos numéricos exactamente  |
+| `nombre`      | string  | sí        | Mínimo 2 caracteres              |
+| `relacion`    | string  | sí        | Mínimo 2 caracteres              |
+| `telefono`    | string? | no        |                                  |
 
 **Respuesta:**
 
@@ -719,9 +722,9 @@ Contacto de emergencia de un trabajador.
 
 **Body:**
 
-| Campo | Tipo   | Requerido |
-| ----- | ------ | --------- |
-| `dni` | string | sí        |
+| Campo | Tipo   | Requerido | Validación                       |
+| ----- | ------ | --------- | -------------------------------- |
+| `dni` | string | sí        | 8 dígitos numéricos exactamente  |
 
 **Respuesta:**
 
@@ -795,30 +798,30 @@ Registrar un nuevo trabajador con persona, documento y vínculo.
 
 **Body:**
 
-| Campo       | Tipo   | Requerido         |
-| ----------- | ------ | ----------------- |
-| `personal`  | object | sí                |
-| `airshp`    | string | sí (plaza código) |
-| `documento` | object | sí                |
-| `regimen`   | number | sí (id)           |
-| `cargo`     | number | sí (id)           |
-| `area`      | number | sí (id)           |
-| `sueldo`    | number | sí                |
+| Campo       | Tipo   | Requerido         | Validación                       |
+| ----------- | ------ | ----------------- | -------------------------------- |
+| `personal`  | object | sí                | Ver estructura abajo             |
+| `airshp`    | string | sí (plaza código) | No puede estar vacío             |
+| `documento` | object | sí                | Ver estructura abajo             |
+| `regimen`   | number | sí (id)           | > 0                              |
+| `cargo`     | number | sí (id)           | > 0                              |
+| `area`      | number | sí (id)           | > 0                              |
+| `sueldo`    | number | sí                | ≥ 0                              |
 
 **Estructura de `personal`:**
 
-| Campo        | Tipo    | Requerido |
-| ------------ | ------- | --------- |
-| `dni`        | string  | sí        |
-| `amaterno`   | string  | sí        |
-| `apaterno`   | string  | sí        |
-| `nombre`     | string  | sí        |
-| `telf`       | string? | no        |
-| `direccion`  | string? | no        |
-| `email`      | string? | no        |
-| `ruc`        | string? | no        |
-| `nacimiento` | string  | sí        |
-| `sexo`       | string? | no        |
+| Campo        | Tipo    | Requerido | Validación                       |
+| ------------ | ------- | --------- | -------------------------------- |
+| `dni`        | string  | sí        | 8 dígitos numéricos exactamente  |
+| `amaterno`   | string  | sí        | Mínimo 1 carácter                |
+| `apaterno`   | string  | sí        | Mínimo 1 carácter                |
+| `nombre`     | string  | sí        | Mínimo 1 carácter                |
+| `telf`       | string? | no        |                                  |
+| `direccion`  | string? | no        |                                  |
+| `email`      | string? | no        |                                  |
+| `ruc`        | string? | no        |                                  |
+| `nacimiento` | string  | sí        | Formato `YYYY-MM-DD`             |
+| `sexo`       | string? | no        |                                  |
 
 **Respuesta:**
 
@@ -834,9 +837,9 @@ Consultar datos de una persona por DNI. Primero busca en la base de datos local;
 
 **Body:**
 
-| Campo | Tipo   | Requerido |
-| ----- | ------ | --------- |
-| `dni` | string | sí        |
+| Campo | Tipo   | Requerido | Validación                       |
+| ----- | ------ | --------- | -------------------------------- |
+| `dni` | string | sí        | 8 dígitos numéricos exactamente  |
 
 **Respuesta:**
 
@@ -863,9 +866,9 @@ Eliminar un vínculo laboral. También elimina los documentos asociados (ingreso
 
 **Body:**
 
-| Campo | Tipo   | Requerido       |
-| ----- | ------ | --------------- |
-| `id`  | number | sí (vinculo id) |
+| Campo | Tipo   | Requerido       | Validación |
+| ----- | ------ | --------------- | ---------- |
+| `id`  | number | sí (vinculo id) | > 0        |
 
 **Respuesta:**
 
@@ -909,30 +912,30 @@ Agregar o actualizar un evento de vínculo laboral (desplazamiento, encargo, etc
 
 **Body:**
 
-| Campo              | Tipo    | Requerido |
-| ------------------ | ------- | --------- |
-| `id`               | number? | no        |
-| `vinculo_id`       | number  | sí        |
-| `tipo_evento`      | string  | sí        |
-| `nueva_area_id`    | number? | no        |
-| `documento_inicio` | object  | sí        |
-| `documento_salida` | object? | no        |
-| `estado`           | string? | no        |
+| Campo              | Tipo    | Requerido | Validación                      |
+| ------------------ | ------- | --------- | ------------------------------- |
+| `id`               | number? | no        |                                 |
+| `vinculo_id`       | number  | sí        | > 0                             |
+| `tipo_evento`      | string  | sí        | No puede estar vacío            |
+| `nueva_area_id`    | number? | no        |                                 |
+| `documento_inicio` | object  | sí        | Ver estructura abajo            |
+| `documento_salida` | object? | no        | Ver estructura abajo            |
+| `estado`           | string? | no        |                                 |
 
 **Estructura de `documento_inicio` / `documento_salida`:**
 
-| Campo             | Tipo    | Requerido |
-| ----------------- | ------- | --------- |
-| `id`              | number? | no        |
-| `tipoDocumento`   | string? | no        |
-| `numeroDocumento` | number? | no        |
-| `añoDocumento`    | number? | no        |
-| `fecha`           | string  | sí        |
-| `fechaValida`     | string? | no        |
-| `conv`            | number? | no        |
-| `descripcion`     | string  | sí        |
-| `funcion`         | number? | no        |
-| `sueldo`          | number? | no        |
+| Campo             | Tipo    | Requerido | Validación            |
+| ----------------- | ------- | --------- | --------------------- |
+| `id`              | number? | no        |                       |
+| `tipoDocumento`   | string? | no        |                       |
+| `numeroDocumento` | number? | no        |                       |
+| `añoDocumento`    | number? | no        |                       |
+| `fecha`           | string  | sí        | No puede estar vacía  |
+| `fechaValida`     | string? | no        |                       |
+| `conv`            | number? | no        |                       |
+| `descripcion`     | string  | sí        | No puede estar vacía  |
+| `funcion`         | number? | no        |                       |
+| `sueldo`          | number? | no        |                       |
 
 **Respuesta:**
 
@@ -948,9 +951,9 @@ Eliminar un evento de vínculo laboral y sus documentos asociados.
 
 **Body:**
 
-| Campo | Tipo   | Requerido |
-| ----- | ------ | --------- |
-| `id`  | number | sí        |
+| Campo | Tipo   | Requerido | Validación |
+| ----- | ------ | --------- | ---------- |
+| `id`  | number | sí        | > 0        |
 
 **Respuesta:**
 

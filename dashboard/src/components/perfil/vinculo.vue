@@ -36,10 +36,11 @@
               <span class="detalle-etiqueta">Código Plaza</span>
               <span class="detalle-valor">{{ vinculoActual.codigo }}</span>
             </div>
-            <div v-if="vinculoActual.sindicato" class="detalle-fila">
+
+            <RouterLink :to="{ name: 'sindicato-personal', params: { nombre: vinculoActual.sindicato } }" v-if="vinculoActual.sindicato" class="detalle-fila">
               <span class="detalle-etiqueta">Sindicato</span>
               <span class="detalle-valor">{{ vinculoActual.sindicato }}</span>
-            </div>
+            </RouterLink>
             <template v-if="vinculoActual.tipo_evento">
               <div class="border-t border-gray-200 dark:border-gray-700 my-2"></div>
               <div class="detalle-fila">
@@ -60,6 +61,14 @@
           </div>
         </Popover>
 
+        <button
+          v-if="vinculoActual && !tieneRenuncia && esAdmin"
+          @click="isEventoModalOpen = true"
+          class="rounded-full flex items-center gap-1 px-2 py-1 text-slate-500 hover:bg-blue-50 hover:text-blue-500 dark:text-slate-400 dark:hover:bg-blue-900/20 dark:hover:text-blue-400 transition-colors"
+          title="Registrar Evento">
+          <ArrowLeftRight class="h-4 w-4" />
+          <span class="text-[10px] font-medium">Evento</span>
+        </button>
         <button
           v-if="vinculoActual && !tieneRenuncia && esAdmin"
           @click="isRenunciaModalOpen = true"
@@ -168,18 +177,28 @@
 
     <RenunciaModal v-if="esAdmin" :isOpen="isRenunciaModalOpen" @close="isRenunciaModalOpen = false" @save="handleRenuncia" />
     <ConfirmarEliminarModal v-if="esAdmin" :isOpen="isEliminarModalOpen" :vinculo="vinculoActual" @close="isEliminarModalOpen = false" @confirm="handleEliminar" />
+    <EventoVinculoModal
+      v-if="esAdmin"
+      :isOpen="isEventoModalOpen"
+      :vinculoId="vinculoActual?.id ?? null"
+      :eventoActual="vinculoActual"
+      @close="isEventoModalOpen = false"
+      @guardado="handleEventoGuardado" />
   </div>
 </template>
 
 <script setup lang="ts">
   import { ref, computed } from 'vue'
   import { storeToRefs } from 'pinia'
+  import { defineAsyncComponent } from 'vue'
   import { usePersonalStore } from '../../stores/personal'
-  import { UserMinus, Info, Trash2, Calendar } from 'lucide-vue-next'
-  import RenunciaModal from './modals/RenunciaModal.vue'
-  import ConfirmarEliminarModal from './modals/ConfirmarEliminarModal.vue'
+  import { UserMinus, Info, Trash2, Calendar, ArrowLeftRight } from 'lucide-vue-next'
   import Popover from '../ui/Popover.vue'
   import { useAutenticacionStore } from '../../stores/auth'
+
+  const RenunciaModal = defineAsyncComponent(() => import('./modals/RenunciaModal.vue'))
+  const ConfirmarEliminarModal = defineAsyncComponent(() => import('./modals/ConfirmarEliminarModal.vue'))
+  const EventoVinculoModal = defineAsyncComponent(() => import('./modals/EventoVinculoModal.vue'))
 
   const store = usePersonalStore()
   const { vinculos } = storeToRefs(store)
@@ -187,6 +206,7 @@
 
   const isRenunciaModalOpen = ref(false)
   const isEliminarModalOpen = ref(false)
+  const isEventoModalOpen = ref(false)
 
   const vinculoActual = computed(() => {
     return vinculos.value.length > 0 ? vinculos.value[0] : null
@@ -213,6 +233,13 @@
       isEliminarModalOpen.value = false
     } catch (error) {
       console.error('Error al eliminar vínculo', error)
+    }
+  }
+
+  const handleEventoGuardado = async () => {
+    isEventoModalOpen.value = false
+    if (store.perfilActual?.dni) {
+      await store.obtenerVinculos(store.perfilActual.dni)
     }
   }
 </script>

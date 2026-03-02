@@ -24,7 +24,7 @@
 </template>
 
 <script setup lang="ts">
-  import { onMounted, watch } from 'vue'
+  import { onMounted, onUnmounted, watch } from 'vue'
   import { useRoute } from 'vue-router'
   import { usePersonalStore } from '../../stores/personal'
   import { storeToRefs } from 'pinia'
@@ -49,8 +49,11 @@
   watch(
     () => route.params.dni as string,
     async (newDni) => {
-      console.log('DNI CAMBIADO', newDni)
       await personalStore.obtenerPerfil(newDni)
     }
   )
+
+  onUnmounted(() => {
+    personalStore.limpiarDatos()
+  })
 </script>

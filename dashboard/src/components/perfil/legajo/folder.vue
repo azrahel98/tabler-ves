@@ -77,50 +77,12 @@
 
     <PreviewModal :isOpen="mostrarVistaPrevia" @close="cerrarVistaPrevia" :url="urlPrevia" :documentoActual="documentoActual" :urlPrevia="urlPrevia" />
 
-    <!-- <Modal :isOpen="mostrarVistaPrevia" @close="cerrarVistaPrevia">
-      <template #header>
-        <h3 class="text-lg font-bold text-black dark:text-white flex items-center gap-2 m-0 truncate" :title="documentoActual?.original_name">
-          {{ documentoActual?.original_name || 'Vista Previa' }}
-        </h3>
-      </template>
-      <div class="w-full h-[65vh] flex flex-col items-center justify-center bg-gray-50 dark:bg-meta-4 rounded-xl overflow-hidden my-4 relative">
-        <iframe
-          v-if="urlPrevia"
-          :src="urlPrevia"
-          class="w-full h-full border-0 absolute inset-0"
-          title="Vista previa del documento PDF">
-        </iframe>
-        <div v-else class="flex flex-col items-center justify-center text-gray-500 z-10 w-full h-full absolute inset-0 bg-white dark:bg-boxdark">
-          <Loader2 class="h-8 w-8 animate-spin mb-4 text-primary" />
-          <p>Cargando vista previa...</p>
-        </div>
-      </div>
-      <template #footer>
-        <div class="flex justify-between w-full">
-          <a
-            v-if="urlPrevia"
-            :href="urlPrevia"
-            :download="documentoActual?.original_name"
-            class="rounded-lg border border-stroke px-4 py-2 text-sm font-medium text-primary hover:bg-gray-100 dark:border-strokedark dark:hover:bg-meta-4 transition-colors">
-            Descargar
-          </a>
-          <span v-else></span>
-          <button
-            @click="cerrarVistaPrevia"
-            class="rounded-lg bg-primary px-6 py-2 text-sm font-medium text-white hover:bg-opacity-90 transition-colors">
-            Cerrar
-          </button>
-        </div>
-      </template>
-    </Modal> -->
-  </div>
+     </div>
 </template>
 
 <script setup lang="ts">
   import LegajoItem from './items.vue'
-  import PreviewModal from './PreviewModal.vue'
-  import Modal from '../../ui/Modal.vue'
-  import { ref, watch } from 'vue'
+  import { ref, watch,defineAsyncComponent } from 'vue'
   import { storeToRefs } from 'pinia'
   import { usePersonalStore } from '../../../stores/personal'
   import api from '../../../services/api'
@@ -129,6 +91,9 @@
 
   const personalStore = usePersonalStore()
   const { perfilActual } = storeToRefs(personalStore)
+
+  const PreviewModal = defineAsyncComponent(() => import('./PreviewModal.vue'))
+  const Modal = defineAsyncComponent(() => import('../../ui/Modal.vue'))
 
   const archivo = ref<File | null>(null)
   const errorArchivo = ref('')

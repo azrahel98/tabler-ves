@@ -72,6 +72,18 @@ export const useTableroStore = defineStore('tablero', () => {
     }
   }
 
+  function limpiarDatos() {
+    resumen.value = null
+    cumpleanos.value = []
+    reporteAreas.value = []
+    personalActivo.value = []
+    historial.value = []
+    organigrama.value = []
+    listaRenuncias.value = []
+    documentos.value = []
+    bancos.value = []
+  }
+
   return {
     resumen,
     cumpleanos,
@@ -92,5 +104,6 @@ export const useTableroStore = defineStore('tablero', () => {
     obtenerDocumentos,
     obtenerBancos,
     obtenerTodo,
+    limpiarDatos,
   }
 })

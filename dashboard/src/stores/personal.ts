@@ -4,7 +4,6 @@ import { ref } from 'vue'
 import { useConfiguracionStore } from './layout'
 
 export const usePersonalStore = defineStore('personal', () => {
-  const resultadosBusqueda = ref<any[]>([])
   const perfilActual = ref<any>(null)
   const vinculos = ref<any[]>([])
   const infoBancaria = ref<any>(null)
@@ -14,21 +13,6 @@ export const usePersonalStore = defineStore('personal', () => {
   const historialCambios = ref<any[]>([])
   const legajo = ref<any[]>([])
   const cargando = ref(false)
-
-  async function buscar(nombre: string) {
-    cargando.value = true
-    try {
-      const res = await api.post('/personal/buscar', { nombre })
-      resultadosBusqueda.value = res.data
-    } finally {
-      cargando.value = false
-    }
-  }
-
-  async function buscarGlobal(nombre: string) {
-    const res = await api.post('/personal/buscar', { nombre })
-    return res.data
-  }
 
   async function obtenerPerfil(dni: string) {
     const store = useConfiguracionStore()
@@ -155,8 +139,19 @@ export const usePersonalStore = defineStore('personal', () => {
     }
   }
 
+  function limpiarDatos() {
+    perfilActual.value = null
+    vinculos.value = []
+    infoBancaria.value = null
+    grados.value = null
+    contactoEmergencia.value = null
+    asistencia.value = []
+    historialCambios.value = []
+    legajo.value = []
+    cargando.value = false
+  }
+
   return {
-    resultadosBusqueda,
     perfilActual,
     vinculos,
     infoBancaria,
@@ -166,8 +161,6 @@ export const usePersonalStore = defineStore('personal', () => {
     historialCambios,
     legajo,
     cargando,
-    buscar,
-    buscarGlobal,
     obtenerPerfil,
     updateProfile: actualizarPerfil,
     obtenerVinculos,
@@ -184,5 +177,6 @@ export const usePersonalStore = defineStore('personal', () => {
     agregarBanco,
     agregarGrado,
     upsertEvento,
+    limpiarDatos,
   }
 })

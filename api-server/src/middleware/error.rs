@@ -58,3 +58,27 @@ impl From<sqlx::Error> for ApiError {
         ApiError::InternalError(format!("Error en la base de datos: {}", error))
     }
 }
+
+/// Valida un struct que implemente `Validate` y convierte los errores
+/// en un `ApiError::BadRequest` con un mensaje legible en español.
+///
+/// Uso: `validar(&payload)?;`
+pub fn validar<T: validator::Validate>(dato: &T) -> Result<(), ApiError> {
+    dato.validate().map_err(|errores| {
+        let mensaje = errores
+            .field_errors()
+            .iter()
+            .map(|(campo, lista)| {
+                let detalle = lista
+                    .iter()
+                    .filter_map(|e| e.message.as_ref())
+                    .map(|m| m.as_ref())
+                    .collect::<Vec<_>>()
+                    .join(", ");
+                format!("{}: {}", campo, detalle)
+            })
+            .collect::<Vec<_>>()
+            .join(" | ");
+        ApiError::BadRequest(mensaje)
+    })
+}

@@ -1,7 +1,10 @@
 use crate::{
     AppState,
     key::{self, key::DB_KEY},
-    middleware::{error::ApiError, jwt::generate_token},
+    middleware::{
+        error::{ApiError, validar},
+        jwt::generate_token,
+    },
     models::login::Usuario,
 };
 use actix_web::{
@@ -10,31 +13,21 @@ use actix_web::{
 };
 
 use serde::{Deserialize, Serialize};
+use validator::Validate;
 
-#[derive(Deserialize, Serialize)]
+#[derive(Deserialize, Serialize, Validate)]
 pub struct LoginRequest {
+    #[validate(length(min = 1, message = "El usuario es requerido"))]
     username: String,
+    #[validate(length(min = 1, message = "La contraseña es requerida"))]
     password: String,
-}
-
-impl LoginRequest {
-    pub fn validate(&self) -> Result<(), ApiError> {
-        if self.username.trim().is_empty() {
-            return Err(ApiError::BadRequest("username is required".into()));
-        }
-        if self.password.trim().is_empty() {
-            return Err(ApiError::BadRequest("password is required".into()));
-        }
-
-        Ok(())
-    }
 }
 
 pub async fn login(
     data: web::Data<AppState>,
     login: web::Json<LoginRequest>,
 ) -> Result<impl Responder, ApiError> {
-    login.validate()?;
+    validar(&login.0)?;
 
     let key = key::key::DB_KEY;
 
@@ -78,10 +71,16 @@ pub async fn login(
     Ok(HttpResponse::Ok().json(json_response))
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Validate)]
 pub struct ChangePass {
+    #[validate(range(min = 1, message = "ID de usuario inválido"))]
     pub id: i32,
+    #[validate(length(min = 1, message = "La contraseña actual es requerida"))]
     pub oldpass: String,
+    #[validate(length(
+        min = 4,
+        message = "La nueva contraseña debe tener al menos 4 caracteres"
+    ))]
     pub newpass: String,
 }
 
@@ -89,6 +88,7 @@ pub async fn change_pass(
     data: web::Data<AppState>,
     pass: web::Json<ChangePass>,
 ) -> Result<impl Responder, ApiError> {
+    validar(&pass.0)?;
     let key = DB_KEY;
 
     let db_pass = sqlx::query_scalar!(

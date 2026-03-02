@@ -51,6 +51,8 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
             .route(
                 "/delete_evento_vinculo",
                 web::post().to(delete_evento_vinculo),
-            ),
+            )
+            .route("/por_area", web::post().to(personal_por_area))
+            .route("/por_sindicato", web::post().to(personal_por_sindicato)),
     );
 }
