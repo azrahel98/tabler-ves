@@ -5,15 +5,15 @@
         <div class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm transition-opacity" @click="close"></div>
 
         <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
-          <div class="flex min-h-full items-start justify-center p-4 pt-1 sm:pt-6 sm:p-0">
-            <div
-              class="relative transform overflow-hidden rounded-xl bg-white dark:bg-slate-900 text-left shadow-xl transition-all sm:my-8 w-11/12 border dark:border-slate-800"
-              :class="maxWidth">
-              <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 px-6 py-4">
+          <div class="flex min-h-full items-center justify-center p-4 sm:p-0">
+            <div class="relative transform overflow-hidden rounded-xl bg-white dark:bg-slate-900 text-left shadow-xl transition-all w-11/12 border dark:border-slate-800" :class="maxWidth">
+              <div
+                class="flex items-center justify-between px-4 py-3"
+                :class="title || $slots.header ? 'border-b border-slate-200 dark:border-slate-800 px-6 py-4' : 'absolute top-0 right-0 z-30'">
                 <h3 v-if="title" class="text-lg font-semibold text-slate-900 dark:text-slate-100" id="modal-title">
                   {{ title }}
                 </h3>
-                <slot name="header" v-else></slot>
+                <slot name="header" v-else-if="$slots.header"></slot>
 
                 <button
                   @click="close"
@@ -24,7 +24,7 @@
                 </button>
               </div>
 
-              <div class="px-6 py-4">
+              <div :class="title || $slots.header ? 'px-6 py-4' : 'pt-0 px-6 pb-4'">
                 <slot></slot>
               </div>
 
@@ -79,19 +79,19 @@
 </script>
 
 <style scoped>
-  .modal-enter-active,
-  .modal-leave-active {
-    transition: opacity 0.3s ease;
-  }
-
   .modal-enter-from,
   .modal-leave-to {
     opacity: 0;
   }
 
+  .modal-enter-active,
+  .modal-leave-active {
+    transition: opacity 0.15s ease;
+  }
+
   .modal-enter-active .transform,
   .modal-leave-active .transform {
-    transition: all 0.3s ease;
+    transition: all 0.15s ease-out;
   }
 
   .modal-enter-from .transform,

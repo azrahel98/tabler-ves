@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import { ref, watch } from 'vue'
 
 export const useConfiguracionStore = defineStore('configuracion', () => {
-  const menuLateralAbierto = ref(false)
+  const menuLateralAbierto = ref(true)
   const loading = ref(false)
   const modoOscuro = ref(JSON.parse(localStorage.getItem('modoOscuro') || 'false'))
 

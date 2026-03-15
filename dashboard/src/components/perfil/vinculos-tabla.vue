@@ -1,5 +1,5 @@
 <template>
-  <div v-if="vinculos.length > 1" class="rounded-2xl border border-stroke bg-white p-6 shadow-sm dark:border-strokedark dark:bg-boxdark">
+  <div v-if="vinculos.length > 0" class="rounded-2xl border border-stroke bg-white p-6 shadow-sm dark:border-strokedark dark:bg-boxdark">
     <div class="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-black dark:text-white mb-6">
       <svg class="h-5 w-5 text-primary" fill="currentColor" viewBox="0 0 24 24">
         <path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm-1 9h-2v2H9v-2H7v-2h2V7h2v2h2v2zm-1-6V3.5L17.5 9H12z" />
@@ -11,10 +11,10 @@
     </div>
 
     <div class="hidden md:block overflow-x-auto">
-      <table class="w-full text-sm">
+      <table class="w-full text-xs">
         <thead>
-          <tr class="border-b border-stroke dark:border-strokedark text-[10px] font-bold uppercase tracking-wider text-gray-400">
-            <th class="pb-3 pr-4 text-left">Estado</th>
+          <tr class="border-b border-stroke dark:border-strokedark text-2xs font-bold uppercase text-gray-400">
+            <th class="pb-3 pr-4 text-left"></th>
             <th class="pb-3 pr-4 text-left">Área</th>
             <th class="pb-3 pr-4 text-left">Cargo</th>
             <th class="pb-3 pr-4 text-left">Régimen</th>
@@ -30,24 +30,24 @@
             v-for="v in vinculos"
             v-memo="[v.id, v.estado]"
             :key="v.id"
-            class="border-b border-stroke/50 dark:border-strokedark/50 last:border-0 hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors">
-            <td class="py-3 pr-4">
-              <span
-                :class="
-                  v.estado === 'activo' ? 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400'
-                "
-                class="text-[10px] font-semibold px-2 py-0.5 uppercase rounded-full whitespace-nowrap">
-                {{ v.estado }}
+            class="border-b border-stroke/50 dark:border-strokedark/50 last:border-0 hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors text-xs">
+            <td>
+              <span class="flex items-center">
+                <span :class="v.estado === 'activo' ? 'bg-emerald-500' : 'bg-red-500'" class="inline-block w-2 h-2 rounded-full shrink-0"> </span>
+                <span
+                  :class="v.estado === 'activo' ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'"
+                  class="text-[10px] font-semibold uppercase whitespace-nowrap">
+                </span>
               </span>
             </td>
-            <td class="py-3 pr-4 text-black dark:text-white font-medium max-w-[200px] truncate" :title="v.area">{{ v.area }}</td>
-            <td class="py-3 pr-4 text-black dark:text-white max-w-[160px] truncate" :title="v.cargo">{{ v.cargo }}</td>
-            <td class="py-3 pr-4 text-gray-500 dark:text-gray-400 whitespace-nowrap">{{ v.regimen }}</td>
-            <td class="py-3 pr-4 text-gray-500 dark:text-gray-400 whitespace-nowrap">{{ v.fecha_ingreso }}</td>
-            <td class="py-3 pr-4 text-gray-500 dark:text-gray-400 whitespace-nowrap">{{ v.fecha_salida || '—' }}</td>
-            <td class="py-3 pr-4 text-right text-black dark:text-white font-medium whitespace-nowrap">S/ {{ v.sueldo }}</td>
+            <td class="pr-4 text-black dark:text-white font-medium max-w-[200px] truncate" :title="v.area">{{ v.area }}</td>
+            <td class="pr-4 text-black dark:text-white max-w-[160px] truncate" :title="v.cargo">{{ v.cargo }}</td>
+            <td class="pr-4 text-gray-500 dark:text-gray-400 whitespace-nowrap">{{ v.regimen }}</td>
+            <td class="pr-4 text-gray-500 dark:text-gray-400 whitespace-nowrap">{{ v.fecha_ingreso }}</td>
+            <td class="pr-4 text-gray-500 dark:text-gray-400 whitespace-nowrap">{{ v.fecha_salida || '—' }}</td>
+            <td class="pr-4 text-right text-black dark:text-white font-medium whitespace-nowrap">S/ {{ v.sueldo }}</td>
 
-            <td class="py-3 text-center">
+            <td class="text-center">
               <Popover posicion="abajo" alineacion="fin" ancho="320px" :mostrarFlecha="true" :mostrarCerrar="true" titulo="Información Adicional">
                 <template #disparador>
                   <button
@@ -117,21 +117,24 @@
             </td>
 
             <td class="py-3 text-center" v-if="esAdmin">
-              <div class="flex items-center justify-center gap-1">
-                <button
-                  v-if="!v.fecha_salida"
-                  @click="abrirRenuncia(v)"
-                  class="rounded-full p-1.5 text-slate-400 hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-900/20 dark:hover:text-red-400 transition-colors"
-                  title="Registrar Renuncia">
-                  <UserMinus class="h-4 w-4" />
-                </button>
-                <button
-                  @click="abrirEliminar(v)"
-                  class="rounded-full p-1.5 text-slate-400 hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-900/20 dark:hover:text-rose-400 transition-colors"
-                  title="Eliminar Vínculo">
-                  <Trash2 class="h-4 w-4" />
-                </button>
-              </div>
+              <Popover posicion="abajo" alineacion="fin" ancho="160px" :mostrarCerrar="false" :mostrarFlecha="false">
+                <template #disparador>
+                  <button class="rounded-full p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-700 dark:hover:text-slate-300 transition-colors">
+                    <MoreHorizontal class="h-4 w-4" />
+                  </button>
+                </template>
+
+                <div class="acciones-menu">
+                  <button v-if="!v.fecha_salida" @click="abrirRenuncia(v)" class="accion-item accion-item--renuncia">
+                    <UserMinus class="h-3.5 w-3.5" />
+                    <span>Renuncia</span>
+                  </button>
+                  <button @click="abrirEliminar(v)" class="accion-item accion-item--eliminar">
+                    <Trash2 class="h-3.5 w-3.5" />
+                    <span>Eliminar</span>
+                  </button>
+                </div>
+              </Popover>
             </td>
           </tr>
         </tbody>
@@ -208,20 +211,24 @@
               </div>
             </Popover>
 
-            <button
-              v-if="!v.fecha_salida && esAdmin"
-              @click="abrirRenuncia(v)"
-              class="rounded-full p-1 text-slate-400 hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-900/20 dark:hover:text-red-400 transition-colors"
-              title="Registrar Renuncia">
-              <UserMinus class="h-3.5 w-3.5" />
-            </button>
-            <button
-              v-if="esAdmin"
-              @click="abrirEliminar(v)"
-              class="rounded-full p-1 text-slate-400 hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-900/20 dark:hover:text-rose-400 transition-colors"
-              title="Eliminar Vínculo">
-              <Trash2 class="h-3.5 w-3.5" />
-            </button>
+            <Popover v-if="esAdmin" posicion="abajo" alineacion="fin" ancho="160px" :mostrarCerrar="false" :mostrarFlecha="false">
+              <template #disparador>
+                <button class="rounded-full p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-700 dark:hover:text-slate-300 transition-colors">
+                  <MoreHorizontal class="h-3.5 w-3.5" />
+                </button>
+              </template>
+
+              <div class="acciones-menu">
+                <button v-if="!v.fecha_salida" @click="abrirRenuncia(v)" class="accion-item accion-item--renuncia">
+                  <UserMinus class="h-3.5 w-3.5" />
+                  <span>Renuncia</span>
+                </button>
+                <button @click="abrirEliminar(v)" class="accion-item accion-item--eliminar">
+                  <Trash2 class="h-3.5 w-3.5" />
+                  <span>Eliminar</span>
+                </button>
+              </div>
+            </Popover>
           </div>
         </div>
         <p class="text-xs text-gray-500 dark:text-gray-400 truncate">{{ v.area }}</p>
@@ -255,7 +262,7 @@
   import { ref } from 'vue'
   import { storeToRefs } from 'pinia'
   import { usePersonalStore } from '../../stores/personal'
-  import { UserMinus, Info, Trash2 } from 'lucide-vue-next'
+  import { UserMinus, Info, Trash2, MoreHorizontal } from 'lucide-vue-next'
   import RenunciaModal from './modals/RenunciaModal.vue'
   import ConfirmarEliminarModal from './modals/ConfirmarEliminarModal.vue'
   import Popover from '../ui/Popover.vue'
@@ -322,5 +329,56 @@
   :root.dark .detalle-valor,
   .dark .detalle-valor {
     color: var(--color-gray-200);
+  }
+
+  /* ─── Dropdown de acciones ─── */
+  .acciones-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 4px 0;
+  }
+
+  .accion-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: 7px 12px;
+    border-radius: 6px;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--color-gray-600);
+    transition:
+      background-color 0.12s ease,
+      color 0.12s ease;
+    text-align: left;
+  }
+
+  :root.dark .accion-item,
+  .dark .accion-item {
+    color: var(--color-gray-300);
+  }
+
+  .accion-item--renuncia:hover {
+    background-color: #fff1f0;
+    color: #e53e3e;
+  }
+
+  :root.dark .accion-item--renuncia:hover,
+  .dark .accion-item--renuncia:hover {
+    background-color: rgba(229, 62, 62, 0.1);
+    color: #fc8181;
+  }
+
+  .accion-item--eliminar:hover {
+    background-color: #fff5f5;
+    color: #c53030;
+  }
+
+  :root.dark .accion-item--eliminar:hover,
+  .dark .accion-item--eliminar:hover {
+    background-color: rgba(197, 48, 48, 0.1);
+    color: #feb2b2;
   }
 </style>

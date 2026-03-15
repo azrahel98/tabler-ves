@@ -1,20 +1,20 @@
 <template>
   <div class="rounded-2xl border border-stroke bg-white p-6 shadow-sm dark:border-strokedark dark:bg-boxdark h-min">
-    <div class="flex items-center justify-between gap-2 text-xs font-bold uppercase tracking-wider text-black dark:text-white mb-6">
-      <div class="flex items-center gap-2">
+    <div class="flex flex-wrap items-center justify-between gap-2 text-xs font-bold uppercase text-black dark:text-white mb-6">
+      <div class="flex items-center gap-2 text">
         <svg class="h-5 w-5 text-primary" fill="currentColor" viewBox="0 0 24 24">
           <path d="M20 6h-4V4c0-1.11-.89-2-2-2h-4c-1.11 0-2 .89-2 2v2H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-6 0h-4V4h4v2z" />
         </svg>
-        Vinculo Laboral
+        Vinculo Laboralssd
         <span
           v-if="vinculoActual"
           :class="tieneRenuncia ? 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400' : 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400'"
-          class="text-[10px] font-semibold px-2 py-0.5 rounded-full normal-case tracking-normal">
+          class="text-xs font-semibold px-2 py-0.5 rounded-full normal-case tracking-normal">
           {{ tieneRenuncia ? 'Inactivo' : 'Activo' }}
         </span>
       </div>
       <div class="flex items-center gap-1">
-        <Popover v-if="vinculoActual" posicion="abajo" alineacion="fin" ancho="300px" :mostrarFlecha="true" :mostrarCerrar="true" titulo="Detalle del Vínculo">
+        <Popover v-if="vinculoActual && vinculoActual.codigo" posicion="abajo" alineacion="fin" ancho="300px" :mostrarFlecha="true" :mostrarCerrar="true" titulo="Detalle del Vínculo">
           <template #disparador>
             <button
               class="rounded-full p-1.5 text-slate-400 hover:bg-blue-50 hover:text-blue-500 dark:hover:bg-blue-900/20 dark:hover:text-blue-400 transition-colors"
@@ -61,114 +61,129 @@
           </div>
         </Popover>
 
-        <button
-          v-if="vinculoActual && !tieneRenuncia && esAdmin"
-          @click="isEventoModalOpen = true"
-          class="rounded-full flex items-center gap-1 px-2 py-1 text-slate-500 hover:bg-blue-50 hover:text-blue-500 dark:text-slate-400 dark:hover:bg-blue-900/20 dark:hover:text-blue-400 transition-colors"
-          title="Registrar Evento">
-          <ArrowLeftRight class="h-4 w-4" />
-          <span class="text-[10px] font-medium">Evento</span>
-        </button>
-        <button
-          v-if="vinculoActual && !tieneRenuncia && esAdmin"
-          @click="isRenunciaModalOpen = true"
-          class="rounded-full flex items-center gap-1 px-2 py-1 text-slate-500 hover:bg-red-50 hover:text-red-500 dark:text-slate-400 dark:hover:bg-red-900/20 dark:hover:text-red-400 transition-colors"
-          title="Registrar Renuncia">
-          <UserMinus class="h-4 w-4" />
-          <span class="text-[10px] font-medium">Renunciar</span>
-        </button>
-        <button
-          v-if="vinculoActual && esAdmin"
-          @click="isEliminarModalOpen = true"
-          class="rounded-full flex items-center gap-1 px-2 py-1 text-slate-500 hover:bg-rose-50 hover:text-rose-600 dark:text-slate-400 dark:hover:bg-rose-900/20 dark:hover:text-rose-400 transition-colors"
-          title="Eliminar Vínculo">
-          <Trash2 class="h-4 w-4" />
-          <span class="text-[10px] font-medium">Eliminar</span>
-        </button>
+        <div v-if="vinculoActual && esAdmin" class="relative" ref="menuAcciones">
+          <button
+            @click="accionesAbiertas = !accionesAbiertas"
+            class="rounded-full flex items-center gap-1 px-2 py-1 text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-700 transition-colors"
+            title="Acciones">
+            <ChevronDown class="h-3.5 w-3.5" />
+            <span class="text-xs font-medium">Acciones</span>
+          </button>
+
+          <Transition
+            enter-active-class="transition duration-100 ease-out"
+            enter-from-class="scale-95 opacity-0"
+            enter-to-class="scale-100 opacity-100"
+            leave-active-class="transition duration-75 ease-in"
+            leave-from-class="scale-100 opacity-100"
+            leave-to-class="scale-95 opacity-0">
+            <div
+              v-if="accionesAbiertas"
+              class="absolute right-0 top-full mt-1.5 z-50 min-w-[160px] rounded-xl border border-stroke bg-white shadow-lg dark:border-strokedark dark:bg-boxdark py-1 origin-top-right">
+              <button v-if="!tieneRenuncia" @click="abrirModal('evento')" class="accion-item hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-900/20 dark:hover:text-blue-400">
+                <ArrowLeftRight class="h-3.5 w-3.5" />
+                <span>Registrar Evento</span>
+              </button>
+
+              <button v-if="!tieneRenuncia" @click="abrirModal('renuncia')" class="accion-item hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400">
+                <UserMinus class="h-3.5 w-3.5" />
+                <span>Registrar Renuncia</span>
+              </button>
+
+              <div v-if="!tieneRenuncia" class="mx-3 my-1 border-t border-gray-100 dark:border-gray-700"></div>
+
+              <button @click="abrirModal('eliminar')" class="accion-item hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-900/20 dark:hover:text-rose-400">
+                <Trash2 class="h-3.5 w-3.5" />
+                <span>Eliminar Vínculo</span>
+              </button>
+            </div>
+          </Transition>
+        </div>
       </div>
     </div>
 
     <div v-if="vinculoActual" class="space-y-4">
-      <div class="grid grid-cols-2 gap-4">
-        <div>
-          <p class="text-[10px] font-medium uppercase tracking-wider text-gray-400">Área</p>
-          <p class="mt-1 font-medium text-sm text-black dark:text-white">{{ vinculoActual.area }}</p>
+      <div class="grid grid-cols-2 gap-x-2 gap-y-1">
+        <div class="col-span-2">
+          <p class="text-2xs font-semibold uppercase text-gray-400">Área</p>
+          <p class="mt-0.5 font-medium text-sm text-black dark:text-white">{{ vinculoActual.area }}</p>
         </div>
         <div>
-          <p class="text-[10px] font-medium uppercase tracking-wider text-gray-400">Cargo</p>
-          <p class="mt-1 font-medium text-sm text-black dark:text-white">{{ vinculoActual.cargo }}</p>
+          <p class="text-2xs font-semibold uppercase text-gray-400">Cargo</p>
+          <p class="mt-0.5 font-medium text-sm text-black dark:text-white">{{ vinculoActual.cargo }}</p>
         </div>
         <div>
-          <p class="text-[10px] font-medium uppercase tracking-wider text-gray-400">Régimen</p>
-          <p class="mt-1 font-medium text-sm text-black dark:text-white">{{ vinculoActual.regimen }}</p>
+          <p class="text-2xs font-semibold uppercase text-gray-400">Régimen</p>
+          <p class="mt-0.5 font-medium text-sm text-black dark:text-white">{{ vinculoActual.regimen }}</p>
         </div>
         <div>
-          <p class="text-[10px] font-medium uppercase tracking-wider text-gray-400">Sueldo / Código</p>
-          <p class="mt-1 font-medium text-sm text-black dark:text-white">
+          <p class="text-2xs font-semibold uppercase text-gray-400">Sueldo</p>
+          <p class="mt-0.5 text-sm font-semibold text-emerald-600 dark:text-emerald-400">
             S/ {{ vinculoActual.sueldo }}
-            <span v-if="vinculoActual.codigo" class="text-gray-400">| {{ vinculoActual.codigo }}</span>
+            <span v-if="vinculoActual.codigo" class="text-gray-400 font-normal text-xs">· {{ vinculoActual.codigo }}</span>
           </p>
         </div>
-        <div>
-          <p class="text-[10px] font-medium uppercase tracking-wider text-gray-400">Doc. Ingreso</p>
-          <p class="mt-1 font-medium text-sm text-black dark:text-white">{{ vinculoActual.doc_ingreso }} {{ vinculoActual.numero_doc_ingreso }}</p>
+        <div v-if="vinculoActual.numero_doc_ingreso">
+          <p class="text-2xs font-semibold uppercase text-gray-400">Doc. Ingreso</p>
+          <p class="mt-0.5 font-medium text-sm text-black dark:text-white">{{ vinculoActual.doc_ingreso }} N° {{ vinculoActual.numero_doc_ingreso }}</p>
         </div>
         <div>
-          <p class="text-[10px] font-medium uppercase tracking-wider text-gray-400">Fecha Ingreso</p>
-          <p class="mt-1 font-medium text-sm text-black dark:text-white">{{ vinculoActual.fecha_ingreso }}</p>
+          <p class="text-2xs font-semibold uppercase text-gray-400">Fecha Ingreso</p>
+          <p class="mt-0.5 font-medium text-sm text-black dark:text-white">{{ formatInTimeZone(vinculoActual.fecha_ingreso, 'America/Lima', 'dd/MM/yyyy') }}</p>
         </div>
-      </div>
-      <div v-if="vinculoActual.descrip_ingreso" class="mt-2">
-        <p class="text-[10px] font-medium uppercase tracking-wider text-gray-400">Descripción Ingreso</p>
-        <p class="mt-1 font-medium text-sm text-black dark:text-white leading-relaxed">{{ vinculoActual.descrip_ingreso }}</p>
       </div>
 
-      <div v-if="vinculoActual.tipo_evento && !tieneRenuncia" class="mt-4 pt-4 border-t border-blue-100 dark:border-blue-900/30">
-        <div class="flex items-center justify-between mb-3">
-          <div class="flex items-center gap-2">
-            <Calendar class="h-4 w-4 text-blue-500" />
-            <p class="text-[10px] font-bold uppercase tracking-wider text-blue-500">Evento Activo</p>
+      <div v-if="vinculoActual.descrip_ingreso">
+        <p class="text-xs font-semibold uppercase text-gray-400">Descripción Ingreso</p>
+        <p class="mt-0.5 font-medium text-sm text-black dark:text-white leading-relaxed">{{ vinculoActual.descrip_ingreso }}</p>
+      </div>
+
+      <div v-if="vinculoActual.tipo_evento && !tieneRenuncia" class="pl-3 border-l-2 border-blue-400 dark:border-blue-500 space-y-2.5">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-1.5">
+            <Calendar class="h-3.5 w-3.5 text-blue-500" />
+            <span class="text-xs font-bold uppercase text-blue-500">Evento Activo</span>
           </div>
           <span
             v-if="vinculoActual.estado_evento"
-            class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 normal-case tracking-normal border border-blue-200 dark:border-blue-800">
+            class="text-xs font-semibold px-2 py-0.5 rounded-full bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 normal-case tracking-normal border border-blue-200 dark:border-blue-800">
             {{ vinculoActual.estado_evento }}
           </span>
         </div>
-        <div class="grid grid-cols-2 gap-4">
+        <div class="grid grid-cols-2 gap-x-4 gap-y-2">
           <div>
-            <p class="text-[10px] font-medium uppercase tracking-wider text-gray-400">Tipo de Evento</p>
-            <p class="mt-1 font-medium text-sm text-black dark:text-white">{{ vinculoActual.tipo_evento }}</p>
+            <p class="text-xs font-semibold uppercase text-gray-400">Tipo de Evento</p>
+            <p class="mt-0.5 font-medium text-sm text-black dark:text-white">{{ vinculoActual.tipo_evento }}</p>
           </div>
           <div v-if="vinculoActual.fecha_evento">
-            <p class="text-[10px] font-medium uppercase tracking-wider text-gray-400">Fecha</p>
-            <p class="mt-1 font-medium text-sm text-black dark:text-white">{{ vinculoActual.fecha_evento }}</p>
+            <p class="text-xs font-semibold uppercase text-gray-400">Fecha</p>
+            <p class="mt-0.5 font-medium text-sm text-black dark:text-white">{{ formatInTimeZone(vinculoActual.fecha_evento, 'America/Lima', 'dd/MM/yyyy') }}</p>
           </div>
           <div v-if="vinculoActual.doc_evento_tipo" class="col-span-2">
-            <p class="text-[10px] font-medium uppercase tracking-wider text-gray-400">Documento Soporte</p>
-            <p class="mt-1 font-medium text-sm text-black dark:text-white">{{ vinculoActual.doc_evento_tipo }} {{ vinculoActual.numero_doc_evento }}</p>
+            <p class="text-xs font-semibold uppercase text-gray-400">Documento Soporte</p>
+            <p class="mt-0.5 font-medium text-sm text-black dark:text-white">{{ vinculoActual.doc_evento_tipo }} {{ vinculoActual.numero_doc_evento }}</p>
           </div>
         </div>
       </div>
 
-      <div v-if="tieneRenuncia" class="mt-4 pt-4 border-t border-red-200 dark:border-red-800/40">
-        <div class="flex items-center gap-2 mb-3">
-          <UserMinus class="h-4 w-4 text-red-500" />
-          <p class="text-[10px] font-bold uppercase tracking-wider text-red-500">Datos de Renuncia</p>
+      <div v-if="tieneRenuncia" class="flex flex-col gap-1.5">
+        <div class="flex items-center gap-1.5">
+          <UserMinus class="h-3 w-3 text-red-500" />
+          <span class="text-2xs font-semibold uppercase text-red-500">Datos de Renuncia</span>
         </div>
-        <div class="grid grid-cols-2 gap-4">
+        <div class="grid grid-cols-2 gap-x-4 gap-y-1.5">
           <div v-if="vinculoActual.doc_salida">
-            <p class="text-[10px] font-medium uppercase tracking-wider text-gray-400">Doc. Salida</p>
-            <p class="mt-1 font-medium text-sm text-black dark:text-white">{{ vinculoActual.doc_salida }} {{ vinculoActual.numero_doc_salida }}</p>
+            <p class="text-2xs font-semibold uppercase text-gray-400 leading-none">Doc. Salida</p>
+            <p class="mt-0.5 font-medium text-sm text-black dark:text-white">{{ vinculoActual.doc_salida }} {{ vinculoActual.numero_doc_salida }}</p>
           </div>
           <div>
-            <p class="text-[10px] font-medium uppercase tracking-wider text-gray-400">Fecha Salida</p>
-            <p class="mt-1 font-medium text-sm text-black dark:text-white">{{ vinculoActual.fecha_salida }}</p>
+            <p class="text-2xs font-semibold uppercase text-gray-400 leading-none">Fecha Salida</p>
+            <p class="mt-0.5 font-medium text-sm text-black dark:text-white">{{ formatInTimeZone(vinculoActual.fecha_salida, 'America/Lima', 'dd/MM/yyyy') }}</p>
           </div>
-        </div>
-        <div v-if="vinculoActual.descrip_salida" class="mt-3">
-          <p class="text-[10px] font-medium uppercase tracking-wider text-gray-400">Descripción Salida</p>
-          <p class="mt-1 font-medium text-sm text-black dark:text-white leading-relaxed">{{ vinculoActual.descrip_salida }}</p>
+          <div v-if="vinculoActual.descrip_salida" class="col-span-2">
+            <p class="text-2xs font-semibold uppercase text-gray-400 leading-none">Descripción Salida</p>
+            <p class="mt-0.5 font-medium text-sm text-black dark:text-white leading-relaxed">{{ vinculoActual.descrip_salida }}</p>
+          </div>
         </div>
       </div>
     </div>
@@ -188,13 +203,14 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, computed } from 'vue'
+  import { ref, computed, onMounted, onUnmounted } from 'vue'
   import { storeToRefs } from 'pinia'
   import { defineAsyncComponent } from 'vue'
   import { usePersonalStore } from '../../stores/personal'
-  import { UserMinus, Info, Trash2, Calendar, ArrowLeftRight } from 'lucide-vue-next'
+  import { UserMinus, Info, Trash2, Calendar, ArrowLeftRight, ChevronDown } from 'lucide-vue-next'
   import Popover from '../ui/Popover.vue'
   import { useAutenticacionStore } from '../../stores/auth'
+  import { formatInTimeZone } from 'date-fns-tz'
 
   const RenunciaModal = defineAsyncComponent(() => import('./modals/RenunciaModal.vue'))
   const ConfirmarEliminarModal = defineAsyncComponent(() => import('./modals/ConfirmarEliminarModal.vue'))
@@ -207,6 +223,24 @@
   const isRenunciaModalOpen = ref(false)
   const isEliminarModalOpen = ref(false)
   const isEventoModalOpen = ref(false)
+  const accionesAbiertas = ref(false)
+  const menuAcciones = ref<HTMLElement | null>(null)
+
+  const abrirModal = (tipo: 'evento' | 'renuncia' | 'eliminar') => {
+    accionesAbiertas.value = false
+    if (tipo === 'evento') isEventoModalOpen.value = true
+    if (tipo === 'renuncia') isRenunciaModalOpen.value = true
+    if (tipo === 'eliminar') isEliminarModalOpen.value = true
+  }
+
+  const manejarClickFuera = (evento: MouseEvent) => {
+    if (menuAcciones.value && !menuAcciones.value.contains(evento.target as Node)) {
+      accionesAbiertas.value = false
+    }
+  }
+
+  onMounted(() => document.addEventListener('click', manejarClickFuera))
+  onUnmounted(() => document.removeEventListener('click', manejarClickFuera))
 
   const vinculoActual = computed(() => {
     return vinculos.value.length > 0 ? vinculos.value[0] : null
@@ -268,5 +302,24 @@
   :root.dark .detalle-valor,
   .dark .detalle-valor {
     color: var(--color-gray-200);
+  }
+
+  .accion-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: 7px 14px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #64748b;
+    transition:
+      background-color 0.15s,
+      color 0.15s;
+    text-align: left;
+  }
+
+  :root.dark .accion-item {
+    color: #94a3b8;
   }
 </style>

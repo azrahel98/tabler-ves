@@ -80,20 +80,42 @@
   }
 
   const calcularPosicion = () => {
-    if (!disparadorRef.value) return
+    if (!disparadorRef.value || !panelRef.value) return
 
     const rect = disparadorRef.value.getBoundingClientRect()
+    const panelRect = panelRef.value.getBoundingClientRect()
     const gap = 8
+    const margin = 8
     let top = 0
     let left = 0
-    const anchoNum = parseInt(props.ancho) || 280
+    
+    // Usamos el ancho definido o el tamaño real del panel
+    const anchoNum = parseInt(props.ancho) || panelRect.width || 280
+    const altoNum = panelRect.height || 0
 
-    switch (props.posicion) {
+    // Posición dinámica con prevención de desbordamiento (flip)
+    let posicionEfectiva = props.posicion
+
+    if (props.posicion === 'abajo') {
+      const espacioAbajo = window.innerHeight - rect.bottom
+      const espacioArriba = rect.top
+      if (espacioAbajo < altoNum + gap + margin && espacioArriba > altoNum + gap + margin) {
+        posicionEfectiva = 'arriba'
+      }
+    } else if (props.posicion === 'arriba') {
+      const espacioArriba = rect.top
+      const espacioAbajo = window.innerHeight - rect.bottom
+      if (espacioArriba < altoNum + gap + margin && espacioAbajo > altoNum + gap + margin) {
+        posicionEfectiva = 'abajo'
+      }
+    }
+
+    switch (posicionEfectiva) {
       case 'abajo':
         top = rect.bottom + gap
         break
       case 'arriba':
-        top = rect.top - gap
+        top = rect.top - gap - altoNum
         break
       case 'izquierda':
         left = rect.left - gap - anchoNum
@@ -103,7 +125,7 @@
         break
     }
 
-    if (props.posicion === 'abajo' || props.posicion === 'arriba') {
+    if (posicionEfectiva === 'abajo' || posicionEfectiva === 'arriba') {
       switch (props.alineacion) {
         case 'inicio':
           left = rect.left
@@ -121,20 +143,24 @@
           top = rect.top
           break
         case 'centro':
-          top = rect.top + rect.height / 2
+          top = rect.top + rect.height / 2 - altoNum / 2
           break
         case 'fin':
-          top = rect.bottom
+          top = rect.bottom - altoNum
           break
       }
     }
 
-    const margin = 8
+    // Prevención final de desbordes en los bordes de la pantalla
     if (left < margin) left = margin
     if (left + anchoNum > window.innerWidth - margin) {
       left = window.innerWidth - anchoNum - margin
     }
+    
     if (top < margin) top = margin
+    if (top + altoNum > window.innerHeight - margin) {
+      top = window.innerHeight - altoNum - margin
+    }
 
     posicionPanel.value = { top: `${top}px`, left: `${left}px` }
   }
@@ -145,13 +171,28 @@
     left: posicionPanel.value.left,
   }))
 
+  let resizeObserver: ResizeObserver | null = null
+
   watch(abierto, (val) => {
     if (val) {
       window.addEventListener('resize', calcularPosicion)
       window.addEventListener('scroll', calcularPosicion, true)
+      
+      nextTick(() => {
+        if (panelRef.value) {
+          resizeObserver = new ResizeObserver(() => {
+            calcularPosicion()
+          })
+          resizeObserver.observe(panelRef.value)
+        }
+      })
     } else {
       window.removeEventListener('resize', calcularPosicion)
       window.removeEventListener('scroll', calcularPosicion, true)
+      if (resizeObserver) {
+        resizeObserver.disconnect()
+        resizeObserver = null
+      }
     }
   })
 

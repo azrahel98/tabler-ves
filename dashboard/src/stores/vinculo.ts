@@ -21,13 +21,8 @@ export const useVinculoStore = defineStore('vinculo', () => {
   const areaSeleccionada = ref<{ nombre: string; id: number } | null>(null)
   const cargoSeleccionado = ref<{ nombre: string; id: number } | null>(null)
 
-  // Lista dinámica de IDs de pasos
-  const pasosIds = computed(() => {
-    const lista = ['plaza']
-    if (necesitaAreaCargo.value) lista.push('area-cargo')
-    lista.push('dni', 'datos', 'documento', 'resumen')
-    return lista
-  })
+  // Pasos del asistente (siempre son 3)
+  const pasosIds = computed(() => ['plaza', 'trabajador', 'confirmar'])
 
   const totalPasos = computed(() => pasosIds.value.length)
 
@@ -35,17 +30,12 @@ export const useVinculoStore = defineStore('vinculo', () => {
 
   // Nombres legibles para el stepper
   const pasosNombres = computed(() => {
-    return pasosIds.value.map((id) => {
-      const nombres: Record<string, string> = {
-        plaza: 'Plaza Vacante',
-        'area-cargo': 'Área y Cargo',
-        dni: 'Buscar DNI',
-        datos: 'Datos Personales',
-        documento: 'Documento',
-        resumen: 'Resumen',
-      }
-      return nombres[id] || id
-    })
+    const nombres: Record<string, string> = {
+      plaza: 'Plaza Vacante',
+      trabajador: 'Trabajador',
+      confirmar: 'Confirmar',
+    }
+    return pasosIds.value.map((id) => nombres[id] || id)
   })
 
   const formularioPersonal = ref({

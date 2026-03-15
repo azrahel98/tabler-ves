@@ -276,14 +276,21 @@ pub async fn ver_archivo(
     if let Some(record) = file_record {
         let upload_dir_str =
             std::env::var("UPLOAD_DIR").unwrap_or_else(|_| "./uploads".to_string());
-        let mut file_path = PathBuf::from(upload_dir_str);
+        let mut file_path = PathBuf::from(upload_dir_str.clone());
 
         let extension = record
             .extension
             .clone()
             .unwrap_or_else(|| "pdf".to_string());
         file_path.push(format!("{}.{}", hash, extension));
+        let absolute_path = std::fs::canonicalize(&file_path).unwrap_or_else(|_| file_path.clone());
 
+        println!("\n--- DEBUG ARCHIVO ---");
+        println!("Variable UPLOAD_DIR: {}", upload_dir_str);
+        println!("Buscando archivo en: {:?}", file_path);
+        println!("Ruta absoluta calculada: {:?}", absolute_path);
+        println!("¿El archivo existe?: {}", file_path.exists());
+        println!("----------------------\n");
         if file_path.exists() {
             let named_file = NamedFile::open(file_path)
                 .map_err(|e| ApiError::InternalError(format!("Error opening file: {}", e)))?;
