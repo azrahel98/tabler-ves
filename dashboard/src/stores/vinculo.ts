@@ -21,8 +21,15 @@ export const useVinculoStore = defineStore('vinculo', () => {
   const areaSeleccionada = ref<{ nombre: string; id: number } | null>(null)
   const cargoSeleccionado = ref<{ nombre: string; id: number } | null>(null)
 
-  // Pasos del asistente (siempre son 3)
-  const pasosIds = computed(() => ['plaza', 'trabajador', 'confirmar'])
+  // Pasos del asistente
+  const pasosIds = computed(() => {
+    const pasos = ['plaza']
+    if (necesitaAreaCargo.value) {
+      pasos.push('area-cargo')
+    }
+    pasos.push('dni', 'datos', 'documento', 'resumen')
+    return pasos
+  })
 
   const totalPasos = computed(() => pasosIds.value.length)
 
@@ -32,8 +39,11 @@ export const useVinculoStore = defineStore('vinculo', () => {
   const pasosNombres = computed(() => {
     const nombres: Record<string, string> = {
       plaza: 'Plaza Vacante',
-      trabajador: 'Trabajador',
-      confirmar: 'Confirmar',
+      'area-cargo': 'Área y Cargo',
+      dni: 'Buscar DNI',
+      datos: 'Datos Personales',
+      documento: 'Documento',
+      resumen: 'Resumen',
     }
     return pasosIds.value.map((id) => nombres[id] || id)
   })

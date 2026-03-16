@@ -2,14 +2,24 @@
   <main>
     <div class="p-4 pt-1 mx-auto max-w-(--breakpoint-2xl) m|d:p-6">
       <div class="grid grid-cols-12 gap-4 md:gap-6">
-        <div class="col-span-12 space-y-6 xl:col-span-7">
+        <!-- Métricas Principales -->
+        <div class="col-span-12 space-y-6">
           <Metrica />
         </div>
-        <div class="col-span-12 space-y-6 xl:col-span-5">
+
+        <!-- Fila de Gráficos (3 columnas XL) -->
+        <div class="col-span-12 space-y-6 xl:col-span-4">
           <Circulo />
         </div>
-
         <div class="col-span-12 space-y-6 xl:col-span-4">
+          <GraficoSexo />
+        </div>
+        <div class="col-span-12 space-y-6 xl:col-span-4">
+          <GraficoSindicato />
+        </div>
+
+        <!-- Fila de Tablas (2 columnas XL) -->
+        <div class="col-span-12 space-y-6 xl:col-span-6">
           <Table title="Cumpleaños Proximos" :columns="['Nombre', 'Dia']" uri="">
             <slot>
               <RouterLink
@@ -39,7 +49,7 @@
             </slot>
           </Table>
         </div>
-        <div class="col-span-12 space-y-6 xl:col-span-4">
+        <div class="col-span-12 space-y-6 xl:col-span-6">
           <Table title="Renuncias Recientes" :columns="['Servidor', 'Fecha']" uri="">
             <RouterLink
               class="flex items-center justify-between border-b border-gray-100 py-3 dark:border-gray-800 last:border-none"
@@ -78,6 +88,9 @@
             </RouterLink>
           </Table>
         </div>
+        <div class="col-span-12 space-y-6 xl:col-span-12">
+          <Mapa geojson-url="/map.geojson" />
+        </div>
       </div>
     </div>
   </main>
@@ -88,10 +101,13 @@
   import Metrica from '../components/dashboard/metrica.vue'
   import Table from '../components/dashboard/table.vue'
   import Circulo from '../components/dashboard/circulo.vue'
+  import GraficoSexo from '../components/dashboard/grafico-sexo.vue'
+  import GraficoSindicato from '../components/dashboard/grafico-sindicato.vue'
   import { useTableroStore } from '../stores/dashboard'
   import { storeToRefs } from 'pinia'
   import { differenceInDays, isBefore, startOfDay, addYears, format, parseISO, isValid } from 'date-fns'
   import { es } from 'date-fns/locale'
+  import Mapa from '../components/dashboard/mapa.vue'
 
   const tableroStore = useTableroStore()
   const { cumpleanos, listaRenuncias } = storeToRefs(tableroStore)

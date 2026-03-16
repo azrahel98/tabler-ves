@@ -1174,13 +1174,14 @@ pub async fn eliminar_vinculo(
 }
 
 pub async fn buscar_areas(data: web::Data<AppState>) -> Result<impl Responder, ApiError> {
-    let areas = sqlx::query("SELECT id, nombre,activo,nivel FROM area ORDER BY nombre")
-        .fetch_all(&data.db)
-        .await
-        .map_err(|e| {
-            eprintln!("Database error: {:?}", e);
-            ApiError::InternalError("Error al obtener áreas".into())
-        })?;
+    let areas =
+        sqlx::query("SELECT id, nombre,activo,nivel FROM area where activo = true ORDER BY nombre")
+            .fetch_all(&data.db)
+            .await
+            .map_err(|e| {
+                eprintln!("Database error: {:?}", e);
+                ApiError::InternalError("Error al obtener áreas".into())
+            })?;
 
     let resultado: Vec<Value> = areas
         .iter()
@@ -1189,7 +1190,7 @@ pub async fn buscar_areas(data: web::Data<AppState>) -> Result<impl Responder, A
                 "id": row.get::<i32, _>("id"),
                 "nombre": row.get::<String, _>("nombre"),
                 "activo": row.get::<bool, _>("activo"),
-                "nivel": row.get::<String, _>("nivel"),
+                "nivel": row.get::<Option<i32>, _>("nivel"),
             })
         })
         .collect();
@@ -1198,13 +1199,14 @@ pub async fn buscar_areas(data: web::Data<AppState>) -> Result<impl Responder, A
 }
 
 pub async fn buscar_cargos(data: web::Data<AppState>) -> Result<impl Responder, ApiError> {
-    let cargos = sqlx::query("SELECT id, nombre,activo FROM cargo ORDER BY nombre")
-        .fetch_all(&data.db)
-        .await
-        .map_err(|e| {
-            eprintln!("Database error: {:?}", e);
-            ApiError::InternalError("Error al obtener cargos".into())
-        })?;
+    let cargos =
+        sqlx::query("SELECT id, nombre,activo FROM cargo where activo = true ORDER BY nombre")
+            .fetch_all(&data.db)
+            .await
+            .map_err(|e| {
+                eprintln!("Database error: {:?}", e);
+                ApiError::InternalError("Error al obtener cargos".into())
+            })?;
 
     let resultado: Vec<Value> = cargos
         .iter()
@@ -1264,7 +1266,6 @@ pub async fn upsert_evento_vinculo(
         .await
         .map_err(|e| ApiError::InternalError(format!("Error al insertar evento: {}", e)))?;
 
-        // Si es abandono, marcar el vínculo como pendiente
         if payload.tipo_evento == "abandono" {
             sqlx::query("UPDATE vinculo SET estado = 'pendiente' WHERE id = ?")
                 .bind(payload.vinculo_id)
@@ -1332,8 +1333,6 @@ pub async fn upsert_evento_vinculo(
 
     Ok(HttpResponse::Ok().json("Operación exitosa"))
 }
-
-// ── Buscar personal por área ─────────────────────────────────────────────────
 
 #[derive(Deserialize, Validate)]
 pub struct BuscarPorArea {

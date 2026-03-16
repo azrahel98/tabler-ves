@@ -106,47 +106,7 @@
               </div>
             </div>
 
-            <!-- Área y Cargo (solo cuando la vacante no tiene) -->
-            <Transition name="slide-abajo">
-              <div v-if="necesitaAreaCargo" class="mt-4 pt-4 border-t border-brand-200 dark:border-brand-800 space-y-3">
-                <div class="flex items-center gap-2">
-                  <AlertTriangle class="h-4 w-4 text-amber-500" />
-                  <p class="text-xs font-semibold text-amber-700 dark:text-amber-400">
-                    Esta plaza no tiene área ni cargo asignado. Complete la siguiente información:
-                  </p>
-                </div>
 
-                <div v-if="cargandoDatos" class="text-center py-4">
-                  <Loading size="sm" />
-                </div>
-
-                <div v-else class="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                  <!-- Área -->
-                  <div>
-                    <label class="block text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1 uppercase tracking-wide">Área *</label>
-                    <select
-                      v-model="areaId"
-                      @change="onCambioArea"
-                      class="h-10 w-full rounded-lg border border-gray-300 bg-white px-3 text-sm text-gray-800 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">
-                      <option value="" disabled>Seleccionar área</option>
-                      <option v-for="area in areas" :key="area.id" :value="area.id">{{ area.nombre }}</option>
-                    </select>
-                  </div>
-
-                  <!-- Cargo -->
-                  <div>
-                    <label class="block text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1 uppercase tracking-wide">Cargo *</label>
-                    <select
-                      v-model="cargoId"
-                      @change="onCambioCargo"
-                      class="h-10 w-full rounded-lg border border-gray-300 bg-white px-3 text-sm text-gray-800 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">
-                      <option value="" disabled>Seleccionar cargo</option>
-                      <option v-for="cargo in cargos" :key="cargo.id" :value="cargo.id">{{ cargo.nombre }}</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-            </Transition>
           </div>
         </Transition>
 
@@ -168,16 +128,13 @@
   import { ref, computed, onMounted } from 'vue'
   import { useVinculoStore } from '../../stores/vinculo'
   import { storeToRefs } from 'pinia'
-  import { MapPin, RefreshCw, Check, ArrowRight, AlertTriangle } from 'lucide-vue-next'
+  import { MapPin, RefreshCw, Check, ArrowRight } from 'lucide-vue-next'
   import Loading from '../ui/Loading.vue'
 
   const store = useVinculoStore()
-  const { vacantes, cargando, plazaSeleccionada, necesitaAreaCargo, areas, cargos, areaSeleccionada, cargoSeleccionado } = storeToRefs(store)
+  const { vacantes, cargando, plazaSeleccionada } = storeToRefs(store)
 
   const cargandoPlaza = ref(false)
-  const cargandoDatos = ref(false)
-  const areaId = ref<number | string>(areaSeleccionada.value?.id || '')
-  const cargoId = ref<number | string>(cargoSeleccionado.value?.id || '')
 
   onMounted(async () => {
     if (vacantes.value.length === 0) {
@@ -186,9 +143,7 @@
   })
 
   const puedeAvanzar = computed(() => {
-    if (!plazaSeleccionada.value) return false
-    if (necesitaAreaCargo.value) return !!areaId.value && !!cargoId.value
-    return true
+    return !!plazaSeleccionada.value
   })
 
   const recargar = async () => {
@@ -200,43 +155,13 @@
     try {
       await store.buscarPlaza(vacante.codigo)
       store.seleccionarVacante(vacante)
-
-      // Si requiere área/cargo, cargar listas
-      if (necesitaAreaCargo.value) {
-        cargandoDatos.value = true
-        await Promise.all([
-          areas.value.length === 0 ? store.obtenerAreas() : Promise.resolve(),
-          cargos.value.length === 0 ? store.obtenerCargos() : Promise.resolve(),
-        ])
-        cargandoDatos.value = false
-      }
     } finally {
       cargandoPlaza.value = false
     }
   }
 
-  const onCambioArea = () => {
-    const encontrada = areas.value.find((a: any) => a.id === Number(areaId.value))
-    if (encontrada) store.areaSeleccionada = { nombre: encontrada.nombre, id: encontrada.id }
-  }
-
-  const onCambioCargo = () => {
-    const encontrado = cargos.value.find((c: any) => c.id === Number(cargoId.value))
-    if (encontrado) store.cargoSeleccionado = { nombre: encontrado.nombre, id: encontrado.id }
-  }
-
   const confirmar = () => {
     if (!puedeAvanzar.value) return
-
-    // Guardar selecciones de área/cargo si se hicieron
-    if (necesitaAreaCargo.value) {
-      const area = areas.value.find((a: any) => a.id === Number(areaId.value))
-      if (area) store.areaSeleccionada = { nombre: area.nombre, id: area.id }
-
-      const cargo = cargos.value.find((c: any) => c.id === Number(cargoId.value))
-      if (cargo) store.cargoSeleccionado = { nombre: cargo.nombre, id: cargo.id }
-    }
-
     store.avanzar()
   }
 </script>

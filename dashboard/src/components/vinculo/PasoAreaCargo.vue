@@ -24,25 +24,23 @@
         <!-- Área -->
         <div>
           <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Área *</label>
-          <select
+          <SearchableSelect
             v-model="areaId"
+            :options="areas"
+            placeholder="Seleccionar área"
             @change="onCambioArea"
-            class="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-3 py-2.5 text-sm text-gray-800 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">
-            <option value="" disabled>Seleccionar área</option>
-            <option v-for="area in areas" :key="area.id" :value="area.id">{{ area.nombre }}</option>
-          </select>
+          />
         </div>
 
         <!-- Cargo -->
         <div>
           <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Cargo *</label>
-          <select
+          <SearchableSelect
             v-model="cargoId"
+            :options="cargos"
+            placeholder="Seleccionar cargo"
             @change="onCambioCargo"
-            class="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-3 py-2.5 text-sm text-gray-800 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">
-            <option value="" disabled>Seleccionar cargo</option>
-            <option v-for="cargo in cargos" :key="cargo.id" :value="cargo.id">{{ cargo.nombre }}</option>
-          </select>
+          />
         </div>
 
         <!-- Resumen de selección -->
@@ -93,6 +91,7 @@
   import { storeToRefs } from 'pinia'
   import { ArrowLeft, ArrowRight, Check, Shield } from 'lucide-vue-next'
   import Loading from '../ui/Loading.vue'
+  import SearchableSelect from '../ui/SearchableSelect.vue'
 
   const store = useVinculoStore()
   const { areas, cargos, areaSeleccionada, cargoSeleccionado, plazaSeleccionada: plaza } = storeToRefs(store)

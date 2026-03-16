@@ -30,7 +30,7 @@
             v-for="v in vinculos"
             v-memo="[v.id, v.estado]"
             :key="v.id"
-            class="border-b border-stroke/50 dark:border-strokedark/50 last:border-0 hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors text-xs">
+            class="border-b border-stroke/50 dark:border-strokedark/50 last:border-0 hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors text-sm">
             <td>
               <span class="flex items-center">
                 <span :class="v.estado === 'activo' ? 'bg-emerald-500' : 'bg-red-500'" class="inline-block w-2 h-2 rounded-full shrink-0"> </span>
