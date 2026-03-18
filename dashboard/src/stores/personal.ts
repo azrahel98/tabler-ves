@@ -127,6 +127,13 @@ export const usePersonalStore = defineStore('personal', () => {
     }
   }
 
+  async function agregarContacto(data: any) {
+    await api.post('/personal/agregar_contacto', data)
+    if (perfilActual.value?.dni) {
+      await obtenerContacto(perfilActual.value.dni)
+    }
+  }
+
   async function upsertEvento(data: any) {
     cargando.value = true
     try {
@@ -176,6 +183,7 @@ export const usePersonalStore = defineStore('personal', () => {
     actualizarBanco,
     agregarBanco,
     agregarGrado,
+    agregarContacto,
     upsertEvento,
     limpiarDatos,
   }

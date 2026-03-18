@@ -15,6 +15,7 @@
       </div>
 
       <div class="col-span-1 md:col-span-2 lg:col-span-1 xl:col-span-1 space-y-6">
+        <contacto />
         <banco />
         <grado />
         <historial />
@@ -32,6 +33,7 @@
   import Info from '../../components/perfil/info.vue'
   import Vinculo from '../../components/perfil/vinculo.vue'
   import Banco from '../../components/perfil/banco.vue'
+  import Contacto from '../../components/perfil/contacto.vue'
   import Grado from '../../components/perfil/grado.vue'
   import LegajoFolder from '../../components/perfil/legajo/folder.vue'
   import VinculosTabla from '../../components/perfil/vinculos-tabla.vue'

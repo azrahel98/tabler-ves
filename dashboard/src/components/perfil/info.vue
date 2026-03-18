@@ -29,6 +29,16 @@
         <p class="text-[10px] font-medium uppercase tracking-wider text-gray-400">Direccion</p>
         <p class="font-medium text-sm text-black dark:text-white">{{ perfilActual.direccion || 'No tiene registros' }}</p>
       </div>
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <p class="text-[10px] font-medium uppercase tracking-wider text-gray-400">Region</p>
+          <p class="font-medium text-sm text-black dark:text-white">{{ perfilActual.region || 'No tiene registros' }}</p>
+        </div>
+        <div>
+          <p class="text-[10px] font-medium uppercase tracking-wider text-gray-400">Distrito</p>
+          <p class="font-medium text-sm text-black dark:text-white">{{ perfilActual.distrito || 'No tiene registros' }}</p>
+        </div>
+      </div>
       <div>
         <p class="text-[10px] font-medium uppercase tracking-wider text-gray-400">DNI / RUC</p>
         <p class="font-medium text-sm text-black dark:text-white">

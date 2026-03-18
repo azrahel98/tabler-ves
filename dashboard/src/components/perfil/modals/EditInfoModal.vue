@@ -30,6 +30,24 @@
         </div>
 
         <div>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Región</label>
+          <input
+            type="text"
+            v-model="form.region"
+            class="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-3 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
+            placeholder="Lima" />
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Distrito</label>
+          <input
+            type="text"
+            v-model="form.distrito"
+            class="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-3 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
+            placeholder="Miraflores" />
+        </div>
+
+        <div>
           <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">RUC</label>
           <input
             type="text"
@@ -105,6 +123,8 @@
     telf: '',
     email: '',
     direccion: '',
+    region: '',
+    distrito: '',
     ruc: '',
     nacimiento: '',
     sexo: '',
@@ -120,6 +140,8 @@
           telf: newVal.telf || '',
           email: newVal.email || '',
           direccion: newVal.direccion || '',
+          region: newVal.region || '',
+          distrito: newVal.distrito || '',
           ruc: newVal.ruc || '',
           nacimiento: newVal.nacimiento ? newVal.nacimiento.split('T')[0] : '',
           sexo: newVal.sexo || '',
