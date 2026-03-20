@@ -75,7 +75,9 @@ async fn get_perfil_by_dni(data: web::Data<AppState>, dni: String) -> Result<Per
         cast(aes_decrypt(p.email,?) as char)  email,
         p.ruc,
         p.fecha_nacimiento nacimiento,
-        p.sexo
+        p.sexo,
+        p.region,
+        p.distrito
         from
         vinculo v
         inner join persona p on v.dni = p.dni
@@ -905,8 +907,8 @@ pub async fn registrar_trabajador(
 
     sqlx::query(
         r#"
-        INSERT INTO persona (dni, nombre, apaterno, amaterno, telf1, direccion, email, ruc, fecha_nacimiento, sexo)
-        VALUES (?, ?, ?, ?, aes_encrypt(?,?), aes_encrypt(?,?), aes_encrypt(?,?), ?, ?, ?)
+        INSERT INTO persona (dni, nombre, apaterno, amaterno, telf1, direccion, email, ruc, fecha_nacimiento, sexo,region,distrito)
+        VALUES (?, ?, ?, ?, aes_encrypt(?,?), aes_encrypt(?,?), aes_encrypt(?,?), ?, ?, ?,?,?)
         ON DUPLICATE KEY UPDATE
             nombre = VALUES(nombre),
             apaterno = VALUES(apaterno),
@@ -916,7 +918,9 @@ pub async fn registrar_trabajador(
             email = VALUES(email),
             ruc = VALUES(ruc),
             fecha_nacimiento = VALUES(fecha_nacimiento),
-            sexo = VALUES(sexo)
+            sexo = VALUES(sexo),
+            region = VALUES(region),
+            distrito = VALUES(distrito)
         "#,
     )
     .bind(&body.personal.dni)
@@ -932,6 +936,8 @@ pub async fn registrar_trabajador(
     .bind(&body.personal.ruc)
     .bind(&body.personal.nacimiento)
     .bind(&body.personal.sexo)
+    .bind(&body.personal.region)
+    .bind(&body.personal.distrito)
     .execute(&mut *tx)
     .await
     .map_err(|e| ApiError::InternalError(format!("Upsert Persona error: {}", e)))?;
@@ -1015,7 +1021,9 @@ pub async fn consultar_dni_reniec(
             CAST(AES_DECRYPT(p.email, ?) AS CHAR) AS email,
             p.ruc,
             p.fecha_nacimiento AS nacimiento,
-            p.sexo
+            p.sexo,
+            p.region,
+            p.distrito
         FROM persona p
         WHERE p.dni = ?
         "#,
@@ -1084,6 +1092,8 @@ pub async fn consultar_dni_reniec(
         ruc: None,
         nacimiento,
         sexo: None,
+        region: None,
+        distrito: None,
     };
 
     Ok(HttpResponse::Ok().json(perfil))
@@ -1225,7 +1235,7 @@ pub async fn buscar_cargos(data: web::Data<AppState>) -> Result<impl Responder, 
 pub async fn upsert_evento_vinculo(
     data: web::Data<AppState>,
     payload: web::Json<EventoVinculoPayload>,
-    _req: HttpRequest,
+    req: HttpRequest,
 ) -> Result<impl Responder, ApiError> {
     validar(&payload.0)?;
     let mut tx = data
@@ -1327,9 +1337,65 @@ pub async fn upsert_evento_vinculo(
         ));
     }
 
+    let row = sqlx::query(
+        r#"
+        SELECT
+            pe.dni,
+            CONCAT_WS(' ', pe.apaterno, pe.amaterno, pe.nombre) AS persona_nombre,
+            cr.nombre AS cargo,
+            ar.nombre AS area
+        FROM vinculo v
+        INNER JOIN persona pe ON v.dni = pe.dni
+        LEFT JOIN cargo cr ON v.cargo_id = cr.id
+        LEFT JOIN area ar ON v.area_id = ar.id
+        WHERE v.id = ?
+        "#,
+    )
+    .bind(payload.vinculo_id)
+    .fetch_one(&mut *tx)
+    .await
+    .map_err(|e| ApiError::InternalError(format!("Error fetching vinculo info: {}", e)))?;
+
+    let dni: String = row.try_get("dni").unwrap_or_default();
+    let persona_nombre: String = row.try_get("persona_nombre").unwrap_or_default();
+    let cargo: String = row.try_get("cargo").unwrap_or_default();
+    let area: String = row.try_get("area").unwrap_or_default();
+
+    let doc_desc = if let Some(ref doc) = payload.documento_inicio {
+        doc.descripcion.clone()
+    } else if let Some(ref doc) = payload.documento_salida {
+        doc.descripcion.clone()
+    } else {
+        String::new()
+    };
+
+    let accion = if payload.documento_inicio.is_some() {
+        format!("registrar evento {}", payload.tipo_evento)
+    } else {
+        format!("cerrar evento {}", payload.tipo_evento)
+    };
+
+    let payload_historico = serde_json::json!({
+        "dni": dni,
+        "nombre": persona_nombre,
+        "cargo": cargo,
+        "area": area,
+        "tipo_evento": payload.tipo_evento,
+        "descripcion": doc_desc,
+    });
+
     tx.commit()
         .await
         .map_err(|e| ApiError::InternalError(format!("Commit error: {}", e)))?;
+
+    let _ = registrar_historial(
+        &req,
+        &data.db,
+        &accion,
+        &dni,
+        Some(&payload_historico.to_string()),
+    )
+    .await;
 
     Ok(HttpResponse::Ok().json("Operación exitosa"))
 }

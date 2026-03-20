@@ -89,6 +89,14 @@
             <span class="text-xs text-gray-500 dark:text-gray-400">Email</span>
             <p class="font-medium text-gray-800 dark:text-white/90">{{ persona.email }}</p>
           </div>
+          <div v-if="persona.region">
+            <span class="text-xs text-gray-500 dark:text-gray-400">Región</span>
+            <p class="font-medium text-gray-800 dark:text-white/90">{{ persona.region }}</p>
+          </div>
+          <div v-if="persona.distrito">
+            <span class="text-xs text-gray-500 dark:text-gray-400">Distrito</span>
+            <p class="font-medium text-gray-800 dark:text-white/90">{{ persona.distrito }}</p>
+          </div>
         </div>
       </div>
 

@@ -102,6 +102,25 @@
         </div>
       </div>
 
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Región</label>
+          <input
+            type="text"
+            v-model="formulario.region"
+            placeholder="Ej. Lima"
+            class="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-3 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Distrito</label>
+          <input
+            type="text"
+            v-model="formulario.distrito"
+            placeholder="Ej. Miraflores"
+            class="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-3 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90" />
+        </div>
+      </div>
+
       <div class="flex items-center justify-between pt-4">
         <button
           @click="store.retroceder()"

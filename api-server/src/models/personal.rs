@@ -35,6 +35,8 @@ pub struct Perfil {
     pub ruc: Option<String>,
     pub nacimiento: NaiveDate,
     pub sexo: Option<String>,
+    pub region: Option<String>,
+    pub distrito: Option<String>,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -206,6 +208,8 @@ pub struct PerfilInput {
     pub ruc: Option<String>,
     pub nacimiento: NaiveDate,
     pub sexo: Option<String>,
+    pub region: Option<String>,
+    pub distrito: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, Validate)]

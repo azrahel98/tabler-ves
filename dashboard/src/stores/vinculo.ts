@@ -59,6 +59,8 @@ export const useVinculoStore = defineStore('vinculo', () => {
     ruc: '',
     nacimiento: '',
     sexo: '',
+    region: '',
+    distrito: '',
   })
 
   const formularioDocumento = ref({
@@ -96,6 +98,8 @@ export const useVinculoStore = defineStore('vinculo', () => {
         ruc: res.data.ruc || '',
         nacimiento: res.data.nacimiento || '',
         sexo: res.data.sexo || '',
+        region: res.data.region || '',
+        distrito: res.data.distrito || '',
       }
       return res.data
     } finally {
@@ -209,6 +213,8 @@ export const useVinculoStore = defineStore('vinculo', () => {
       ruc: '',
       nacimiento: '',
       sexo: '',
+      region: '',
+      distrito: '',
     }
     formularioDocumento.value = {
       tipoDocumento: '',
