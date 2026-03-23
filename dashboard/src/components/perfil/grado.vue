@@ -20,8 +20,8 @@
 
     <div v-if="grados && grados.length" class="space-y-2">
       <div
-        v-for="grado in grados"
-        :key="grado.id"
+        v-for="(grado, index) in grados"
+        :key="grado.id ?? index"
         class="flex items-center justify-between gap-3 group rounded-xl px-3 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
         <div class="flex items-center gap-3 min-w-0">
           <div class="min-w-0">

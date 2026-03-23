@@ -11,6 +11,7 @@ export interface Persona {
   ruc: string | null
   nacimiento: string | null
   sexo: string | null
+  estado?: string | null
 }
 
 export interface Vinculo {
@@ -70,9 +71,10 @@ export interface ContactoEmergencia {
 
 export interface Resumen {
   total: number
-  por_regimen: { regimen: string; cantidad: number }[]
-  por_sexo: { sexo: string; cantidad: number }[]
-  por_sindicato: { sindicato: string; cantidad: number }[]
+  activos: number
+  por_regimen: { nombre: string; cantidad: number }[]
+  por_sexo: { nombre: string; cantidad: number }[]
+  por_sindicato: { nombre: string; cantidad: number }[]
 }
 
 export interface ReporteArea {
@@ -108,6 +110,8 @@ export interface Renuncia {
 export interface NodoOrganigrama {
   id: number
   area: string
+  jefe: string | null
+  dni: string | null
   subgerencias: NodoOrganigrama[]
 }
 

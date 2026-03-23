@@ -20,6 +20,7 @@ interface Plaza {
   cargo_id: number | null
   regimen_id: number | null
   cargo_descripcion: string | null
+  grupo_descripcion: string | null
   regimen: string | null
   condicion: string | null
 }

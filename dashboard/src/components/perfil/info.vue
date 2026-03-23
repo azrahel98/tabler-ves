@@ -16,7 +16,7 @@
       </button>
     </div>
 
-    <div class="space-y-3 flex flex-col justify-between">
+    <div v-if="perfilActual" class="space-y-3 flex flex-col justify-between">
       <div>
         <p class="text-[10px] font-medium uppercase tracking-wider text-gray-400">Telefono Celular</p>
         <p class="font-medium text-sm text-black dark:text-white">{{ perfilActual.telf || 'No tiene registros' }}</p>
@@ -79,7 +79,7 @@
 
   const isEditModalOpen = ref(false)
 
-  const formatUTC = (dateString: string) => {
+  const formatUTC = (dateString: string | null) => {
     if (!dateString) return '-'
     const date = new Date(dateString)
 

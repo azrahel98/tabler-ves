@@ -165,7 +165,7 @@
           region: newVal.region || '',
           distrito: newVal.distrito || '',
           ruc: newVal.ruc || '',
-          nacimiento: newVal.nacimiento ? newVal.nacimiento.split('T')[0] : '',
+          nacimiento: newVal.nacimiento ? (newVal.nacimiento.split('T')[0] ?? '') : '',
           sexo: newVal.sexo || '',
         }
       }

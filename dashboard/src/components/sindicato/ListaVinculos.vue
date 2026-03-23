@@ -28,9 +28,9 @@
                     ? '/M.svg'
                     : trabajador.sexo === 'F'
                       ? '/F.svg'
-                      : `https://ui-avatars.com/api/?name=${encodeURIComponent(trabajador.nombre)}&background=random&color=fff&size=200`
+                      : `https://ui-avatars.com/api/?name=${encodeURIComponent(trabajador.nombre || '')}&background=random&color=fff&size=200`
                 "
-                :alt="trabajador.nombre"
+                :alt="trabajador.nombre ?? undefined"
                 class="h-full w-full rounded-full object-cover"
                 :class="trabajador.estado === 'activo' ? 'bg-green-200' : 'bg-red-100'" />
             </div>

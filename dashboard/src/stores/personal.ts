@@ -8,10 +8,10 @@ export const usePersonalStore = defineStore('personal', () => {
   const perfilActual = ref<Persona | null>(null)
   const vinculos = ref<Vinculo[]>([])
   const infoBancaria = ref<InfoBancaria | null>(null)
-  const grados = ref<GradoAcademico | null>(null)
+  const grados = ref<GradoAcademico[]>([])
   const contactoEmergencia = ref<ContactoEmergencia | null>(null)
   const asistencia = ref<Record<string, unknown>[]>([])
-  const historialCambios = ref<Record<string, unknown>[]>([])
+  const historialCambios = ref<{ operacion: string; detalle: string; fecha: string; nombre: string }[]>([])
   const legajo = ref<Legajo[]>([])
   const cargando = ref(false)
 
@@ -153,7 +153,7 @@ export const usePersonalStore = defineStore('personal', () => {
     perfilActual.value = null
     vinculos.value = []
     infoBancaria.value = null
-    grados.value = null
+    grados.value = []
     contactoEmergencia.value = null
     asistencia.value = []
     historialCambios.value = []

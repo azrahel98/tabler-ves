@@ -46,9 +46,9 @@
                     ? '/M.svg'
                     : persona.sexo === 'F'
                       ? '/F.svg'
-                      : `https://ui-avatars.com/api/?name=${encodeURIComponent(persona.nombre)}&background=random&color=fff&size=200`
+                      : `https://ui-avatars.com/api/?name=${encodeURIComponent(persona.nombre || '')}&background=random&color=fff&size=200`
                 "
-                :alt="persona.nombre"
+                :alt="persona.nombre ?? undefined"
                 class="h-full w-full rounded-full object-cover"
                 :class="persona.estado === 'activo' ? 'bg-green-200' : 'bg-red-100'" />
             </div>

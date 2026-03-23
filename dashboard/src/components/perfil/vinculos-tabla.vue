@@ -40,8 +40,8 @@
                 </span>
               </span>
             </td>
-            <td class="pr-4 text-black dark:text-white font-medium max-w-[200px] truncate" :title="v.area">{{ v.area }}</td>
-            <td class="pr-4 text-black dark:text-white max-w-[160px] truncate" :title="v.cargo">{{ v.cargo }}</td>
+            <td class="pr-4 text-black dark:text-white font-medium max-w-[200px] truncate" :title="v.area ?? undefined">{{ v.area }}</td>
+            <td class="pr-4 text-black dark:text-white max-w-[160px] truncate" :title="v.cargo ?? undefined">{{ v.cargo }}</td>
             <td class="pr-4 text-gray-500 dark:text-gray-400 whitespace-nowrap">{{ v.regimen }}</td>
             <td class="pr-4 text-gray-500 dark:text-gray-400 whitespace-nowrap">{{ v.fecha_ingreso }}</td>
             <td class="pr-4 text-gray-500 dark:text-gray-400 whitespace-nowrap">{{ v.fecha_salida || '—' }}</td>
