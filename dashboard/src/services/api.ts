@@ -2,7 +2,7 @@ import axios from 'axios'
 import { useAutenticacionStore } from '../stores/auth'
 import router from '../router'
 
-export const baseURL = 'http://127.0.0.1:4010'
+export const baseURL = 'https://apives.odeploy.work'
 
 const api = axios.create({
   baseURL,
