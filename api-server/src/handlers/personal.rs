@@ -451,7 +451,7 @@ pub async fn editar_perfil(
 
     let insert = sqlx::query(
         r#"
-        update persona set telf1 = aes_encrypt(?,?), direccion = aes_encrypt(?,?) , email = aes_encrypt(?,?), ruc = ?
+        update persona set telf1 = aes_encrypt(?,?), direccion = aes_encrypt(?,?) , email = aes_encrypt(?,?), ruc = ?,region = ?,distrito = ?
         where dni = ? 
         "#,
     )
@@ -462,9 +462,13 @@ pub async fn editar_perfil(
     .bind(perfil.email.clone())
     .bind(&key)
     .bind(perfil.ruc.clone())
+    .bind(perfil.region.clone())
+    .bind(perfil.distrito.clone())
     .bind(perfil.dni.clone())
     .execute(&data.db)
     .await;
+
+    println!("{:?}", perfil.distrito.clone());
 
     match insert {
         Ok(result) => {

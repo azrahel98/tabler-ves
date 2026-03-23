@@ -1,179 +1,81 @@
 <template>
-  <main>
-    <div class="p-4 pt-1 mx-auto max-w-(--breakpoint-2xl) m|d:p-6">
-      <div class="grid grid-cols-12 gap-4 md:gap-6">
-        <!-- Métricas Principales -->
-        <div class="col-span-12 space-y-6">
-          <Metrica />
-        </div>
-
-        <!-- Fila de Gráficos (3 columnas XL) -->
-        <div class="col-span-12 space-y-6 xl:col-span-4">
-          <Circulo />
-        </div>
-        <div class="col-span-12 space-y-6 xl:col-span-4">
-          <GraficoSexo />
-        </div>
-        <div class="col-span-12 space-y-6 xl:col-span-4">
-          <GraficoSindicato />
-        </div>
-
-        <!-- Fila de Tablas (2 columnas XL) -->
-        <div class="col-span-12 space-y-6 xl:col-span-6">
-          <Table title="Cumpleaños Proximos" :columns="['Nombre', 'Dia']" uri="">
-            <slot>
-              <RouterLink
-                class="flex items-center justify-between border-b border-gray-100 py-3 dark:border-gray-800"
-                v-for="x in filteredBirthdays"
-                :key="x.dni"
-                :to="{
-                  name: 'personal-profile',
-                  params: { dni: x.dni },
-                }">
-                <div class="flex flex-col">
-                  <span class="text-theme-sm text-gray-800 dark:text-white/90 font-medium">
-                    {{ x.nombre }}
-                  </span>
-                  <span class="text-xs text-gray-500 dark:text-gray-400">
-                    {{ x.formattedDate }}
-                  </span>
-                </div>
-
-                <span
-                  v-if="x.daysUntil === 0"
-                  class="inline-flex items-center rounded-full bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20 dark:bg-green-500/10 dark:text-green-400 dark:ring-green-500/20">
-                  Hoy
-                </span>
-                <span v-else class="text-xs text-gray-500 dark:text-gray-400"> En {{ x.daysUntil }} días </span>
-              </RouterLink>
-            </slot>
-          </Table>
-        </div>
-        <div class="col-span-12 space-y-6 xl:col-span-6">
-          <Table title="Renuncias Recientes" :columns="['Servidor', 'Fecha']" uri="">
-            <RouterLink
-              class="flex items-center justify-between border-b border-gray-100 py-3 dark:border-gray-800 last:border-none"
-              v-for="item in renunciasFormateadas"
-              :key="item.id"
-              :to="{
-                name: 'personal-profile',
-                params: { dni: item.dni },
-              }">
-              <div class="flex flex-col">
-                <span class="text-sm font-medium text-gray-800 dark:text-white/90">
-                  {{ item.nombre }}
-                </span>
-                <div class="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
-                  <span>{{ item.cargo }}</span>
-                </div>
-              </div>
-
-              <div class="flex flex-col items-end gap-1">
-                <span
-                  v-if="item.daysSince === 0"
-                  class="inline-flex items-center rounded-full bg-green-50 px-2.5 py-0.5 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20 dark:bg-green-500/10 dark:text-green-400 dark:ring-green-500/20">
-                  Hoy
-                </span>
-                <span
-                  v-else-if="item.daysSince === 1"
-                  class="inline-flex items-center rounded-full bg-gray-50 px-2.5 py-0.5 text-xs font-medium text-gray-700 ring-1 ring-inset ring-gray-600/20 dark:bg-gray-500/10 dark:text-gray-400 dark:ring-gray-500/20">
-                  Ayer
-                </span>
-                <span v-else class="text-xs font-medium text-gray-500 dark:text-gray-400">
-                  {{ item.formattedDate }}
-                </span>
-
-                <span v-if="item.daysSince > 1" class="text-[10px] text-gray-400"> Hace {{ item.daysSince }} días </span>
-              </div>
-            </RouterLink>
-          </Table>
-        </div>
-        <div class="col-span-12 space-y-6 xl:col-span-12">
-          <Mapa geojson-url="/map.geojson" />
-        </div>
+  <main class="p-4 pt-1 mx-auto max-w-(--breakpoint-2xl) md:p-6">
+    <div class="space-y-6">
+      <!-- Header: Título + Exportar -->
+      <div class="flex items-center justify-between">
+        <h2 class="text-xl font-bold text-gray-800 dark:text-white/90">Dashboard</h2>
+        <button @click="excel" class="inline-flex items-center gap-2 rounded-lg bg-brand-500 px-4 py-2.5 text-sm font-medium text-white shadow-theme-xs transition-colors hover:bg-brand-600">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+            <path
+              fill-rule="evenodd"
+              d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"
+              clip-rule="evenodd" />
+          </svg>
+          Exportar Excel
+        </button>
       </div>
+
+      <!-- KPIs -->
+      <Metrica />
+
+      <!-- Gráficos de distribución: donuts -->
+      <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3 md:gap-6">
+        <Circulo />
+        <GraficoSexo />
+        <GraficoSindicato />
+      </div>
+
+      <!-- Listas -->
+      <div class="grid grid-cols-1 gap-4 lg:grid-cols-2 md:gap-6">
+        <Cumpleanos />
+        <Renuncias />
+        <NuevosTrabajadores />
+        <EventosVinculo />
+      </div>
+
+      <!-- Mapa -->
+      <Mapa geojson-url="/map.geojson" />
     </div>
   </main>
 </template>
 
 <script setup lang="ts">
-  import { onMounted, computed, onUnmounted } from 'vue'
+  import { onMounted, onUnmounted } from 'vue'
   import Metrica from '../components/dashboard/metrica.vue'
-  import Table from '../components/dashboard/table.vue'
   import Circulo from '../components/dashboard/circulo.vue'
   import GraficoSexo from '../components/dashboard/grafico-sexo.vue'
   import GraficoSindicato from '../components/dashboard/grafico-sindicato.vue'
-  import { useTableroStore } from '../stores/dashboard'
-  import { storeToRefs } from 'pinia'
-  import { differenceInDays, isBefore, startOfDay, addYears, format, parseISO, isValid } from 'date-fns'
-  import { es } from 'date-fns/locale'
+  import Cumpleanos from '../components/dashboard/cumpleanos.vue'
+  import Renuncias from '../components/dashboard/renuncias.vue'
+  import NuevosTrabajadores from '../components/dashboard/nuevos-trabajadores.vue'
+  import EventosVinculo from '../components/dashboard/eventos-vinculo.vue'
   import Mapa from '../components/dashboard/mapa.vue'
+  import { useTableroStore } from '../stores/dashboard'
+  import api from '../services/api'
 
   const tableroStore = useTableroStore()
-  const { cumpleanos, listaRenuncias } = storeToRefs(tableroStore)
 
-  const filteredBirthdays = computed(() => {
-    if (!cumpleanos.value?.length) return []
-
-    const today = startOfDay(new Date())
-    const currentYear = today.getFullYear()
-
-    return cumpleanos.value
-      .map((b: any) => {
-        const birthDate = parseISO(b.nacimiento)
-        if (!isValid(birthDate)) return null
-
-        let nextBirthday = new Date(currentYear, birthDate.getMonth(), birthDate.getDate())
-
-        if (isBefore(nextBirthday, today)) {
-          nextBirthday = addYears(nextBirthday, 1)
-        }
-
-        return {
-          ...b,
-          birthdayDate: nextBirthday,
-          daysUntil: differenceInDays(nextBirthday, today),
-          formattedDate: format(nextBirthday, "d 'de' MMMM", { locale: es }),
-        }
-      })
-      .filter(Boolean)
-      .sort((a: any, b: any) => a.daysUntil - b.daysUntil)
-      .slice(0, 6)
-  })
-
-  const renunciasFormateadas = computed(() => {
-    if (!listaRenuncias.value?.length) return []
-    const today = startOfDay(new Date())
-
-    return listaRenuncias.value
-      .map((item: any) => {
-        const resignationDate = parseISO(item.fecha)
-        if (!isValid(resignationDate))
-          return {
-            ...item,
-            formattedDate: item.fecha,
-            daysSince: 999,
-          }
-
-        const daysSince = differenceInDays(today, resignationDate)
-
-        return {
-          ...item,
-          daysSince,
-          formattedDate: format(resignationDate, "d 'de' MMMM, yyyy", {
-            locale: es,
-          }),
-        }
-      })
-      .sort((a: any, b: any) => Math.abs(a.daysSince) - Math.abs(b.daysSince))
-  })
+  const excel = async () => {
+    try {
+      const respuesta = await api.post('/dash/exportar_excel', {}, { responseType: 'blob' })
+      const url = window.URL.createObjectURL(new Blob([respuesta.data]))
+      const enlace = document.createElement('a')
+      enlace.href = url
+      enlace.setAttribute('download', 'reporte.xlsx')
+      document.body.appendChild(enlace)
+      enlace.click()
+      document.body.removeChild(enlace)
+      window.URL.revokeObjectURL(url)
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   onMounted(() => {
     tableroStore.obtenerTodo()
   })
 
   onUnmounted(() => {
-    console.log('DESMONTANDO DASHBOARD')
     tableroStore.limpiarDatos()
   })
 </script>

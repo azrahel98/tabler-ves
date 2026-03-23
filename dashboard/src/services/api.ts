@@ -1,11 +1,11 @@
 import axios from 'axios'
 import { useAutenticacionStore } from '../stores/auth'
+import router from '../router'
 
-export const baseURL = 'https://apives.odeploy.work'
-// export const baseURL = 'http://127.0.0.1:4010'
+export const baseURL = 'http://127.0.0.1:4010'
 
 const api = axios.create({
-  baseURL: baseURL,
+  baseURL,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -13,32 +13,36 @@ const api = axios.create({
 
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token')
-    if (token) {
-      config.headers['token'] = token
+    const authStore = useAutenticacionStore()
+
+    if (authStore.token) {
+      const valido = authStore.verificarToken()
+
+      if (!valido) {
+        router.push({ name: 'login' })
+        return Promise.reject('Token expirado')
+      }
+
+      config.headers['token'] = authStore.token
     }
+
     return config
   },
+  (error) => Promise.reject(error)
+)
+
+api.interceptors.response.use(
+  (response) => response,
   (error) => {
+    if (error.response?.status === 401 || error.response?.status === 403) {
+      if (router.currentRoute.value.name !== 'login') {
+        const authStore = useAutenticacionStore()
+        authStore.cerrarSesion()
+        router.push({ name: 'login' })
+      }
+    }
     return Promise.reject(error)
   }
 )
-
-api.interceptors.request.use((config) => {
-  const authStore = useAutenticacionStore()
-
-  if (authStore.token) {
-    const valido = authStore.verificarToken()
-
-    if (!valido) {
-      window.location.href = '/login'
-      return Promise.reject('Token expirado')
-    }
-
-    config.headers.Authorization = `${authStore.token}`
-  }
-
-  return config
-})
 
 export default api

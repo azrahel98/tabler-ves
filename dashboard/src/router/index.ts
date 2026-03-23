@@ -77,11 +77,14 @@ const middleware = async (_to: RouteLocationNormalized, _from: RouteLocationNorm
   const store = useAutenticacionStore()
   const token = localStorage.getItem('token')
   if (token == null) {
-    return next({
-      name: 'login',
-    })
+    return next({ name: 'login' })
   }
+
   store.usuario = decodificar(token)
+
+  if (!store.verificarToken()) {
+    return next({ name: 'login' })
+  }
 
   return next()
 }

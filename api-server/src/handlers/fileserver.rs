@@ -255,6 +255,89 @@ pub async fn eliminar_archivo(
     }
 }
 
+#[derive(Deserialize)]
+pub struct AsignarDocumentoInput {
+    pub id: i32,
+    pub documento_id: Option<i32>,
+}
+
+pub async fn asignar_documento(
+    state: web::Data<AppState>,
+    input: web::Json<AsignarDocumentoInput>,
+) -> Result<impl Responder, ApiError> {
+    sqlx::query!(
+        r#"
+        UPDATE fileserver SET documento_id = ? WHERE id = ?
+        "#,
+        input.documento_id,
+        input.id
+    )
+    .execute(&state.db)
+    .await
+    .map_err(|e| ApiError::InternalError(format!("Database error: {}", e)))?;
+
+    Ok(HttpResponse::Ok().json(json!({ "message": "Documento asignado correctamente" })))
+}
+
+#[derive(Deserialize)]
+pub struct DocumentosPorDniInput {
+    pub dni: String,
+}
+
+pub async fn documentos_por_dni(
+    state: web::Data<AppState>,
+    input: web::Json<DocumentosPorDniInput>,
+) -> Result<impl Responder, ApiError> {
+    let records = sqlx::query!(
+        r#"
+        SELECT
+  d.id,
+  CONCAT(td.nombre, ' N° ', d.numero, '-', d.year, '-', td.sigla) AS descripcion_doc,
+  d.fecha,
+  d.descripcion
+FROM
+  vinculo v
+  LEFT JOIN documento d   ON d.id = v.doc_ingreso_id
+  LEFT JOIN tipodocumento td ON td.id = d.tipo_documento_id
+WHERE
+  v.dni = ?
+  AND d.id IS NOT NULL and d.numero is not null
+
+UNION ALL
+
+SELECT
+  ds.id,
+  CONCAT(tds.nombre, ' N° ', ds.numero, '-', ds.year, '-', tds.sigla) AS descripcion_doc,
+  ds.fecha,
+  ds.descripcion
+FROM
+  vinculo v
+  LEFT JOIN documento ds   ON ds.id = v.doc_salida_id
+  LEFT JOIN tipodocumento tds ON tds.id = ds.tipo_documento_id
+WHERE
+  v.dni = ?
+  AND ds.id IS NOT NULL and ds.numero is not null;
+        "#,
+        input.dni,
+        input.dni,
+    )
+    .fetch_all(&state.db)
+    .await
+    .map_err(|e| ApiError::InternalError(format!("Database error: {}", e)))?;
+
+    let mut results = Vec::new();
+    for rec in records {
+        results.push(json!({
+            "id": rec.id,
+            "sigla": rec.descripcion_doc,
+            "fecha": rec.fecha,
+            "descripcion": rec.descripcion,
+        }));
+    }
+
+    Ok(HttpResponse::Ok().json(results))
+}
+
 pub async fn ver_archivo(
     state: web::Data<AppState>,
     path: web::Path<String>,

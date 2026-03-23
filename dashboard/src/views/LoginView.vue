@@ -12,18 +12,28 @@ const nick = ref("");
 const password = ref("");
 const showPassword = ref(false);
 const errorMessage = ref("");
+const loading = ref(false);
 
 const handleLogin = async () => {
   errorMessage.value = "";
+
+  if (!nick.value.trim() || !password.value) {
+    errorMessage.value = "Completá todos los campos.";
+    return;
+  }
+
+  loading.value = true;
   try {
     await autenticacionStore.iniciarSesion(nick.value, password.value);
     router.push("/");
   } catch (error: any) {
-    if (error.response && error.response.data && error.response.data.error) {
+    if (error.response?.data?.error) {
       errorMessage.value = error.response.data.error;
     } else {
-      errorMessage.value = "Login failed. Please check your credentials.";
+      errorMessage.value = "Error al iniciar sesión. Verificá tus credenciales.";
     }
+  } finally {
+    loading.value = false;
   }
 };
 </script>
@@ -122,9 +132,20 @@ const handleLogin = async () => {
                   <div>
                     <button
                       type="submit"
-                      class="flex items-center justify-center w-full px-4 py-3 text-sm font-medium text-white transition rounded-lg bg-brand-500 shadow-theme-xs hover:bg-brand-600"
+                      :disabled="loading"
+                      class="flex items-center justify-center w-full px-4 py-3 text-sm font-medium text-white transition rounded-lg bg-brand-500 shadow-theme-xs hover:bg-brand-600 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      Iniciar Sesión
+                      <svg
+                        v-if="loading"
+                        class="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                      </svg>
+                      {{ loading ? "Iniciando..." : "Iniciar Sesión" }}
                     </button>
                   </div>
                   <div

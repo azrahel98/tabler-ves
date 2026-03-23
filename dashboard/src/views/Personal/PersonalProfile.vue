@@ -44,7 +44,6 @@
   const { perfilActual } = storeToRefs(personalStore)
 
   onMounted(async () => {
-    console.log('DNI', route.params.dni)
     await personalStore.obtenerPerfil(route.params.dni as string)
   })
 

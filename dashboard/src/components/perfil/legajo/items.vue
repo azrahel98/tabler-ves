@@ -20,13 +20,17 @@
       <p class="text-2xs text-gray-400 dark:text-gray-500 mt-0.5 truncate">
         {{ formatFecha(item.fecha_subida) }}
       </p>
+      <span v-if="item.documento_id" class="inline-flex items-center gap-0.5 mt-1 px-1.5 py-0.5 rounded-full bg-green-50 text-green-600 dark:bg-green-900/30 dark:text-green-400 text-3xs font-medium" title="Documento asociado">
+        <LinkIcon class="h-2.5 w-2.5" />
+        Vinculado
+      </span>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
   import { computed } from 'vue'
-  import { FileText, Trash2 } from 'lucide-vue-next'
+  import { FileText, Trash2, Link as LinkIcon } from 'lucide-vue-next'
   import { useAutenticacionStore } from '../../../stores/auth'
 
   const store = useAutenticacionStore()

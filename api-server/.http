@@ -1,6 +1,6 @@
-@baseUrl = https://apives.odeploy.work
+@baseUrl = http://127.0.0.1:4010
 @contentType = application/json
-@TokenHash = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwiZXhwIjoxNzcxMTk1NzAwLCJsdmwiOjEsIm5vbWJyZSI6IlJhdWwgQ2hlcmNjYSBMb3BleiJ9.k3zVn3VT9-m30XtbmF3FhxVuHgK96meP-IpT8GX8Y7c
+@TokenHash = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwiZXhwIjoxNzc0MjE2MTMzLCJsdmwiOjEsIm5vbWJyZSI6IlJhdWwgQ2hlcmNjYSBMb3BleiJ9.RzuqhgrUxSn5lScnM40yU7OVnPL5vJlj7VjrtPjj31U
 POST {{baseUrl}}/login/
 Content-Type: {{contentType}}
 
@@ -64,3 +64,32 @@ Token: {{TokenHash}}
   "newpass": "unodos",
   "id": 2
 }
+
+
+##########
+POST {{baseUrl}}/dash/exportar_excel
+Content-Type: application/json
+Token: {{TokenHash}}
+
+{
+  "oldpass": "asdf",
+  "newpass": "unodos",
+  "id": 2
+}
+
+
+
+######
+POST https://constanciasapi.sunedu.gob.pe/api/Token/generar-token
+Content-Type: application/json; charset=utf-8
+
+{"subject":"constancias-app"}
+
+#####
+Post https://constanciasapi.sunedu.gob.pe/api/VerificaGrados/obtener-grados-nac-ext-ct-verifica
+Content-Type: application/json; charset=utf-8
+Origin: https://constanciasweb.sunedu.gob.pe
+Referer: https://constanciasweb.sunedu.gob.pe
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjb25zdGFuY2lhcy1hcHAiLCJqdGkiOiI1ZWZhYWIzYi1mMWVhLTRiZmUtODI3Ny1hOTA4OGNlZjlkMjAiLCJleHAiOjE3NzQyMTk1MTIsImlzcyI6IkNvbnN0YW5jaWFzQXBwIiwiYXVkIjoiaHR0cHM6Ly9lbmxpbmVhLnN1bmVkdS5nb2IucGUvIn0.MCIli8GH7ElzW_c11tK3BPR7-aTS_5XvelGQQqZI7k0
+
+{"Token":"0.HjJiScFTgTfr0NsNqTaUMgieG3p3E7XtmuS-eWICph3G6mPCr6w48vxAN-RFCO2F38xDKuH0JvWt3k1HBWRFiTjbUuvIDxwTytNe1dWnqsBZugOu-pwH-Hgx31V5vYPXI7yLs4obtUZw4oLmAXs2nGJ7Lk9gngjcBa6iLlzm5itiXtsOpAss9kEcM_7wuEPRTiMEYFVP6hzp_UO_gPcaGUmQaY8c7ofSfkDAaUU8jnePOSd6mmLxoL5tza_jKjw8k7Z4X-8F5CsRVbeQ0xewc2zY9XkawdZGxZFyyH_zNsAaYGF6Uz_Jx7trj5Vc5xJmFhPYUJp2pkVhXt4i8z47PLCIOaLFIn2-xm5T_sawMYOk3zeMFWFU1akiZ8b0bkfZCIFgm-IFnneCNUyXMkWdP7ocNt4W5zEask1HWai9dwQPZ-Ps6mo5arzvjOjs-zkhjw6H8e5nirmg_pi6GdGRtbnFgLMZYnwaM1cWTOWWDvrYM7i050UGJUSho1pCt1D8UlyqrXwuMI_Z8VwCeO70nO21yGqn-R5e03c2cCo6709Ae4hZ96Wq8tUHYWdBiildL1jNzLdnz5t4a3sqQCp4pNXDCsrQeil4v06p7bD2cb2SXGKzyiEULcXPbQlY5tlHYrUjqyeFKs6bRc9gb__PWuanhQO3AUQZO-oZsDsu-EHN74n0tOOmhqMcbjAp_qyNt4M9Knxc8vnkn7kFjpgjXLTIbzVDMK0FBw7ki_50n_7V2CNh45ohBqsBtHM59cYjbOfCbFD3EDA9zsvxLsRZp12VU6MAO7blvcjfYQkNaOX43A2x8gxnW6-AE6UPAjIpDrDYYU1PsRSTNqdfw89CSjGBiVhwsETJQo6aWvKY_cniBmMRf4h3G7q84jlfDAaFNiKCePbbLwbb346_Yz5yPysh3lz4nA-FPAiS6LA60r0jkO99eibWndOsU1AQXPrh9eGMopz8t1Kj0L4FBd-xZQ.OjF5CQOsWkhgVHzfR0DScw.d935069a7119dccfdc414840982e86f4b36bec4e4f0a388501c30987d4d0f83b","IpAddress":"38.25.30.3","NumeroDocumento":"41662616","ApellidosNombres":""}

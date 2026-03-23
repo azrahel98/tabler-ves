@@ -53,6 +53,19 @@
           <p class="mt-1 text-[10px] text-gray-500">Si se deja en blanco, se usará el nombre original del archivo.</p>
         </div>
 
+        <div>
+          <label class="mb-2 block text-sm font-medium text-black dark:text-white">Asociar a documento (Opcional)</label>
+          <select
+            v-model="documentoSeleccionado"
+            class="w-full rounded-lg border-[1.5px] border-stroke bg-transparent px-4 py-2.5 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary">
+            <option :value="null">Sin asociar</option>
+            <option v-for="doc in documentosDisponibles" :key="doc.id" :value="doc.id">
+              {{ doc.sigla }}
+            </option>
+          </select>
+          <p class="mt-1 text-[10px] text-gray-500">Selecciona un documento administrativo para vincular a este archivo.</p>
+        </div>
+
         <p v-if="errorArchivo" class="text-xs text-red-500 font-medium">{{ errorArchivo }}</p>
         <p v-if="mensajeExito" class="text-xs text-green-500 font-medium">{{ mensajeExito }}</p>
       </div>
@@ -75,7 +88,7 @@
       </template>
     </Modal>
 
-    <PreviewModal :isOpen="mostrarVistaPrevia" @close="cerrarVistaPrevia" :url="urlPrevia" :documentoActual="documentoActual" :urlPrevia="urlPrevia" />
+    <PreviewModal :isOpen="mostrarVistaPrevia" @close="cerrarVistaPrevia" :url="urlPrevia" :documentoActual="documentoActual" :urlPrevia="urlPrevia" @documento-asignado="onDocumentoAsignado" />
 
      </div>
 </template>
@@ -105,6 +118,8 @@
 
   const mostrarModal = ref(false)
   const nombreArchivoOpcional = ref('')
+  const documentoSeleccionado = ref<number | null>(null)
+  const documentosDisponibles = ref<any[]>([])
 
   const mostrarVistaPrevia = ref(false)
   const urlPrevia = ref<string | null>(null)
@@ -112,13 +127,26 @@
   
   const apiUrlBase = baseURL
 
+  const cargarDocumentos = async () => {
+    const dni = perfilActual.value?.dni
+    if (!dni) return
+    try {
+      const response = await api.post('/fileserver/documentos_por_dni', { dni })
+      documentosDisponibles.value = response.data || []
+    } catch (error) {
+      console.error('Error al cargar documentos:', error)
+    }
+  }
+
   const abrirModal = () => {
     mostrarModal.value = true
     errorArchivo.value = ''
     mensajeExito.value = ''
     archivo.value = null
     nombreArchivoOpcional.value = ''
+    documentoSeleccionado.value = null
     if (inputArchivo.value) inputArchivo.value.value = ''
+    cargarDocumentos()
   }
 
   const cerrarModal = () => {
@@ -143,6 +171,13 @@
     mostrarVistaPrevia.value = false
     documentoActual.value = null
     urlPrevia.value = null
+  }
+
+  const onDocumentoAsignado = ({ fileId, documentoId }: { fileId: number; documentoId: number | null }) => {
+    const archivo = archivosSubidos.value.find((a) => a.id === fileId)
+    if (archivo) {
+      archivo.documento_id = documentoId
+    }
   }
 
 
@@ -244,6 +279,9 @@
 
       formData.append('file', archivo.value, nombreAEnviar)
       formData.append('dni_asociado', dni)
+      if (documentoSeleccionado.value) {
+        formData.append('documento_id', documentoSeleccionado.value.toString())
+      }
 
       const response = await api.post('/fileserver/upload', formData, {
         headers: {

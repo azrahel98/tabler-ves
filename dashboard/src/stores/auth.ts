@@ -3,6 +3,7 @@ import { jwtDecode } from 'jwt-decode'
 import api from '../services/api'
 
 interface JwtPayload {
+  id: number
   exp: number
   lvl: number
   nombre: string

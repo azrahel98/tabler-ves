@@ -7,26 +7,30 @@
           <input
             type="text"
             v-model="form.nombre"
-            class="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-3 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
-            required
+            class="h-11 w-full rounded-lg border bg-transparent px-3 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
+            :class="errores.nombre ? 'border-red-500' : 'border-gray-300'"
             placeholder="Juan Pérez" />
+          <p v-if="errores.nombre" class="mt-1 text-xs text-red-500">{{ errores.nombre }}</p>
         </div>
         <div>
           <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Parentezco / Relación</label>
           <input
             type="text"
             v-model="form.relacion"
-            class="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-3 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
-            required
+            class="h-11 w-full rounded-lg border bg-transparent px-3 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
+            :class="errores.relacion ? 'border-red-500' : 'border-gray-300'"
             placeholder="Padre / Madre / Esposo(a)" />
+          <p v-if="errores.relacion" class="mt-1 text-xs text-red-500">{{ errores.relacion }}</p>
         </div>
         <div>
           <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Teléfono</label>
           <input
             type="text"
             v-model="form.telefono"
-            class="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-3 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
+            class="h-11 w-full rounded-lg border bg-transparent px-3 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
+            :class="errores.telefono ? 'border-red-500' : 'border-gray-300'"
             placeholder="999999999" />
+          <p v-if="errores.telefono" class="mt-1 text-xs text-red-500">{{ errores.telefono }}</p>
         </div>
       </div>
     </form>
@@ -52,15 +56,17 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, watch } from 'vue'
+  import { ref, reactive, watch } from 'vue'
+  import { z } from 'zod/v4'
   import Modal from '../../ui/Modal.vue'
   import { usePersonalStore } from '../../../stores/personal'
   import { storeToRefs } from 'pinia'
   import { Loader2 } from 'lucide-vue-next'
+  import type { ContactoEmergencia } from '../../../types'
 
   const props = defineProps<{
     isOpen: boolean
-    contacto: any
+    contacto: ContactoEmergencia | null
   }>()
 
   const emit = defineEmits<{
@@ -70,6 +76,12 @@
   const personalStore = usePersonalStore()
   const { perfilActual } = storeToRefs(personalStore)
 
+  const contactoSchema = z.object({
+    nombre: z.string().min(1, 'El nombre es requerido'),
+    relacion: z.string().min(1, 'La relación es requerida'),
+    telefono: z.string().regex(/^\d{9}$/, 'El teléfono debe tener 9 dígitos').or(z.literal('')).optional(),
+  })
+
   const isSubmitting = ref(false)
 
   const form = ref({
@@ -77,6 +89,12 @@
     relacion: '',
     telefono: '',
   })
+
+  const errores = reactive<Record<string, string>>({})
+
+  function limpiarErrores() {
+    Object.keys(errores).forEach((k) => delete errores[k])
+  }
 
   watch(
     () => props.contacto,
@@ -96,11 +114,22 @@
 
   const close = () => {
     if (isSubmitting.value) return
+    limpiarErrores()
     emit('close')
   }
 
   const guardar = async () => {
-    if (!form.value.nombre || !form.value.relacion) return
+    limpiarErrores()
+    const resultado = contactoSchema.safeParse(form.value)
+    if (!resultado.success) {
+      for (const issue of resultado.error.issues) {
+        const campo = issue.path.join('.')
+        if (!errores[campo]) {
+          errores[campo] = issue.message
+        }
+      }
+      return
+    }
 
     isSubmitting.value = true
     try {

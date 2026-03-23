@@ -51,6 +51,7 @@
       <button
         type="submit"
         class="w-full bg-primary text-white p-3 rounded font-medium hover:bg-opacity-90"
+        :disabled="isSubmitting"
       >
         Cambiar Contraseña
       </button>
@@ -61,13 +62,16 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import api from "../services/api";
+import { useAutenticacionStore } from "../stores/auth";
 
+const authStore = useAutenticacionStore();
 
 const oldPassword = ref("");
 const newPassword = ref("");
 const confirmPassword = ref("");
 const message = ref("");
 const isError = ref(false);
+const isSubmitting = ref(false);
 
 const handleChangePassword = async () => {
   if (newPassword.value !== confirmPassword.value) {
@@ -76,11 +80,17 @@ const handleChangePassword = async () => {
     return;
   }
 
+  if (!authStore.usuario?.id) {
+    message.value = "No se pudo identificar al usuario";
+    isError.value = true;
+    return;
+  }
 
+  isSubmitting.value = true;
 
   try {
     await api.post("/login/changepass", {
-      id: 1,
+      id: authStore.usuario.id,
       oldpass: oldPassword.value,
       newpass: newPassword.value,
     });
@@ -92,6 +102,8 @@ const handleChangePassword = async () => {
   } catch (e) {
     message.value = "Error al cambiar la contraseña";
     isError.value = true;
+  } finally {
+    isSubmitting.value = false;
   }
 };
 </script>

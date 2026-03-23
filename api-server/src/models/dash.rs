@@ -72,3 +72,15 @@ pub struct ReporteRenuncias {
     pub area: String,
     pub codigo: String,
 }
+
+#[derive(Serialize)]
+pub struct RegimenPorcentaje {
+    pub nombre: String,
+    pub pct: f64,
+}
+
+#[derive(Serialize)]
+pub struct DistritoRegimen {
+    pub nombre: String,
+    pub regimenes: Vec<RegimenPorcentaje>,
+}

@@ -2,16 +2,17 @@ import { defineStore } from 'pinia'
 import api from '../services/api'
 import { ref } from 'vue'
 import { useConfiguracionStore } from './layout'
+import type { Persona, Vinculo, InfoBancaria, GradoAcademico, ContactoEmergencia, Legajo } from '../types'
 
 export const usePersonalStore = defineStore('personal', () => {
-  const perfilActual = ref<any>(null)
-  const vinculos = ref<any[]>([])
-  const infoBancaria = ref<any>(null)
-  const grados = ref<any>(null)
-  const contactoEmergencia = ref<any>(null)
-  const asistencia = ref<any[]>([])
-  const historialCambios = ref<any[]>([])
-  const legajo = ref<any[]>([])
+  const perfilActual = ref<Persona | null>(null)
+  const vinculos = ref<Vinculo[]>([])
+  const infoBancaria = ref<InfoBancaria | null>(null)
+  const grados = ref<GradoAcademico | null>(null)
+  const contactoEmergencia = ref<ContactoEmergencia | null>(null)
+  const asistencia = ref<Record<string, unknown>[]>([])
+  const historialCambios = ref<Record<string, unknown>[]>([])
+  const legajo = ref<Legajo[]>([])
   const cargando = ref(false)
 
   async function obtenerPerfil(dni: string) {
@@ -19,7 +20,7 @@ export const usePersonalStore = defineStore('personal', () => {
     try {
       store.setLoading(true)
       const res = await api.post('/personal/por_dni', { dni })
-      perfilActual.value = await res.data
+      perfilActual.value = res.data
       await Promise.all([obtenerVinculos(dni), obtenerInfoBancaria(dni), obtenerContacto(dni), obtenerGrados(dni)])
     } finally {
       store.setLoading(false)
@@ -73,13 +74,15 @@ export const usePersonalStore = defineStore('personal', () => {
     }
   }
 
-  async function actualizarPerfil(data: any) {
+  async function actualizarPerfil(data: Partial<Persona>) {
     await api.post('/personal/editar_por_dni', data)
-    const res = await api.post('/personal/por_dni', { dni: data.dni })
-    perfilActual.value = await res.data
+    if (data.dni) {
+      const res = await api.post('/personal/por_dni', { dni: data.dni })
+      perfilActual.value = res.data
+    }
   }
 
-  async function registrarRenuncia(id: number, datos: any) {
+  async function registrarRenuncia(id: number, datos: Record<string, unknown>) {
     cargando.value = true
     try {
       await api.post('/personal/renuncia_por_vinculo', {
@@ -106,35 +109,35 @@ export const usePersonalStore = defineStore('personal', () => {
     }
   }
 
-  async function actualizarBanco(data: any) {
+  async function actualizarBanco(data: Record<string, unknown>) {
     await api.post('/personal/editar_infobancaria', data)
     if (perfilActual.value?.dni) {
       await obtenerInfoBancaria(perfilActual.value.dni)
     }
   }
 
-  async function agregarBanco(data: any) {
+  async function agregarBanco(data: Record<string, unknown>) {
     await api.post('/personal/agregar_infobancaria', data)
     if (perfilActual.value?.dni) {
       await obtenerInfoBancaria(perfilActual.value.dni)
     }
   }
 
-  async function agregarGrado(data: any) {
+  async function agregarGrado(data: Record<string, unknown>) {
     await api.post('/personal/agregar_gradoa', data)
     if (perfilActual.value?.dni) {
       await obtenerGrados(perfilActual.value.dni)
     }
   }
 
-  async function agregarContacto(data: any) {
+  async function agregarContacto(data: Record<string, unknown>) {
     await api.post('/personal/agregar_contacto', data)
     if (perfilActual.value?.dni) {
       await obtenerContacto(perfilActual.value.dni)
     }
   }
 
-  async function upsertEvento(data: any) {
+  async function upsertEvento(data: Record<string, unknown>) {
     cargando.value = true
     try {
       await api.post('/personal/upsert_evento_vinculo', data)
@@ -169,7 +172,6 @@ export const usePersonalStore = defineStore('personal', () => {
     legajo,
     cargando,
     obtenerPerfil,
-    updateProfile: actualizarPerfil,
     obtenerVinculos,
     obtenerInfoBancaria,
     obtenerGrados,

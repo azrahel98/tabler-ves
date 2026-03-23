@@ -7,8 +7,10 @@
           <input
             type="text"
             v-model="form.telf"
-            class="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-3 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
+            class="h-11 w-full rounded-lg border bg-transparent px-3 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
+            :class="errores.telf ? 'border-red-500' : 'border-gray-300'"
             placeholder="999999999" />
+          <p v-if="errores.telf" class="mt-1 text-xs text-red-500">{{ errores.telf }}</p>
         </div>
 
         <div>
@@ -16,8 +18,10 @@
           <input
             type="email"
             v-model="form.email"
-            class="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-3 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
+            class="h-11 w-full rounded-lg border bg-transparent px-3 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
+            :class="errores.email ? 'border-red-500' : 'border-gray-300'"
             placeholder="correo@ejemplo.com" />
+          <p v-if="errores.email" class="mt-1 text-xs text-red-500">{{ errores.email }}</p>
         </div>
 
         <div class="sm:col-span-2">
@@ -52,18 +56,23 @@
           <input
             type="text"
             v-model="form.ruc"
-            class="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-3 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
+            class="h-11 w-full rounded-lg border bg-transparent px-3 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
+            :class="errores.ruc ? 'border-red-500' : 'border-gray-300'"
             placeholder="10123456789" />
+          <p v-if="errores.ruc" class="mt-1 text-xs text-red-500">{{ errores.ruc }}</p>
         </div>
 
         <div>
           <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Sexo</label>
           <select
             v-model="form.sexo"
-            class="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-3 py-2.5 text-sm text-gray-800 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">
+            class="h-11 w-full rounded-lg border bg-transparent px-3 py-2.5 text-sm text-gray-800 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
+            :class="errores.sexo ? 'border-red-500' : 'border-gray-300'">
+            <option value="">Seleccione</option>
             <option value="M">Masculino</option>
             <option value="F">Femenino</option>
           </select>
+          <p v-if="errores.sexo" class="mt-1 text-xs text-red-500">{{ errores.sexo }}</p>
         </div>
 
         <div class="sm:col-span-2">
@@ -71,8 +80,7 @@
           <input
             type="date"
             v-model="form.nacimiento"
-            class="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-3 py-2.5 text-sm text-gray-800 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
-            required />
+            class="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-3 py-2.5 text-sm text-gray-800 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90" />
         </div>
       </div>
     </form>
@@ -98,22 +106,30 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, watch } from 'vue'
+  import { ref, reactive, watch } from 'vue'
+  import { z } from 'zod/v4'
   import Modal from '../../ui/Modal.vue'
   import { usePersonalStore } from '../../../stores/personal'
   import { Loader2 } from 'lucide-vue-next'
+  import type { Persona } from '../../../types'
 
   const props = defineProps<{
     isOpen: boolean
-    perfil: any
+    perfil: Persona | null
   }>()
 
   const personalStore = usePersonalStore()
 
   const emit = defineEmits<{
     (e: 'close'): void
-    (e: 'save', data: any): void
   }>()
+
+  const infoSchema = z.object({
+    telf: z.string().regex(/^\d{9}$/, 'El teléfono debe tener 9 dígitos').or(z.literal('')).optional(),
+    email: z.email('Correo electrónico inválido').or(z.literal('')).optional(),
+    ruc: z.string().regex(/^\d{11}$/, 'El RUC debe tener 11 dígitos').or(z.literal('')).optional(),
+    sexo: z.enum(['M', 'F', ''], { error: 'Seleccione un sexo' }).optional(),
+  })
 
   const isSubmitting = ref(false)
 
@@ -129,6 +145,12 @@
     nacimiento: '',
     sexo: '',
   })
+
+  const errores = reactive<Record<string, string>>({})
+
+  function limpiarErrores() {
+    Object.keys(errores).forEach((k) => delete errores[k])
+  }
 
   watch(
     () => props.perfil,
@@ -153,13 +175,29 @@
 
   const close = () => {
     if (isSubmitting.value) return
+    limpiarErrores()
     emit('close')
   }
 
   const guardar = async () => {
+    limpiarErrores()
+    const resultado = infoSchema.safeParse(form.value)
+    if (!resultado.success) {
+      for (const issue of resultado.error.issues) {
+        const campo = issue.path.join('.')
+        if (!errores[campo]) {
+          errores[campo] = issue.message
+        }
+      }
+      return
+    }
+
     isSubmitting.value = true
     try {
-      await personalStore.updateProfile(form.value)
+      const payload = Object.fromEntries(
+        Object.entries(form.value).map(([k, v]) => [k, v === '' ? null : v])
+      )
+      await personalStore.actualizarPerfil(payload)
       emit('close')
     } catch (error) {
       console.error('Error al guardar', error)

@@ -81,8 +81,6 @@
 
   const handleSave = async (datos: any) => {
     try {
-      console.log(datos.id)
-      console.log(datos.id === null)
       if (datos.id == null) {
         datos.id = 0
       }

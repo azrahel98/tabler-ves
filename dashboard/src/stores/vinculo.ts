@@ -1,27 +1,46 @@
 import { defineStore } from 'pinia'
 import api from '../services/api'
 import { ref, computed } from 'vue'
+import type { Persona, Documento, Area, Cargo } from '../types'
+
+interface Vacante {
+  id: number
+  codigo: string
+  area_id: number | null
+  cargo_id: number | null
+  sueldo: number | null
+  regimen_id: number | null
+  area: string | null
+  cargo: string | null
+}
+
+interface Plaza {
+  codigo: string
+  area_id: number | null
+  cargo_id: number | null
+  regimen_id: number | null
+  cargo_descripcion: string | null
+  regimen: string | null
+  condicion: string | null
+}
 
 export const useVinculoStore = defineStore('vinculo', () => {
-  const vacantes = ref<any[]>([])
-  const plazaSeleccionada = ref<any>(null)
-  const vacanteSeleccionada = ref<any>(null)
-  const datosPersona = ref<any>(null)
-  const documentos = ref<any[]>([])
-  const areas = ref<any[]>([])
-  const cargos = ref<any[]>([])
+  const vacantes = ref<Vacante[]>([])
+  const plazaSeleccionada = ref<Plaza | null>(null)
+  const vacanteSeleccionada = ref<Vacante | null>(null)
+  const datosPersona = ref<Persona | null>(null)
+  const documentos = ref<Documento[]>([])
+  const areas = ref<Area[]>([])
+  const cargos = ref<Cargo[]>([])
   const pasoActual = ref(1)
   const guardando = ref(false)
   const cargando = ref(false)
 
-  // Indica si la vacante seleccionada no tiene area/cargo asignado
   const necesitaAreaCargo = ref(false)
 
-  // Selección manual de area y cargo cuando la vacante no los tiene
   const areaSeleccionada = ref<{ nombre: string; id: number } | null>(null)
   const cargoSeleccionado = ref<{ nombre: string; id: number } | null>(null)
 
-  // Pasos del asistente
   const pasosIds = computed(() => {
     const pasos = ['plaza']
     if (necesitaAreaCargo.value) {
@@ -35,7 +54,6 @@ export const useVinculoStore = defineStore('vinculo', () => {
 
   const pasoActualId = computed(() => pasosIds.value[pasoActual.value - 1])
 
-  // Nombres legibles para el stepper
   const pasosNombres = computed(() => {
     const nombres: Record<string, string> = {
       plaza: 'Plaza Vacante',
@@ -144,7 +162,7 @@ export const useVinculoStore = defineStore('vinculo', () => {
 
       const payload = {
         personal: Object.fromEntries(Object.entries(formularioPersonal.value).map(([k, v]) => [k, v === '' ? null : v])),
-        airshp: plaza.codigo,
+        airshp: plaza!.codigo,
         documento: {
           tipoDocumento: formularioDocumento.value.tipoDocumento ? String(formularioDocumento.value.tipoDocumento) : null,
           numeroDocumento: formularioDocumento.value.numeroDocumento,
@@ -152,7 +170,7 @@ export const useVinculoStore = defineStore('vinculo', () => {
           fecha: formularioDocumento.value.fecha,
           descripcion: formularioDocumento.value.descripcion,
         },
-        regimen: plazaSeleccionada.value.regimen_id,
+        regimen: plazaSeleccionada.value!.regimen_id,
         cargo: cargoFinal,
         area: areaFinal,
         sueldo: formularioDocumento.value.sueldo || 0,
@@ -160,15 +178,12 @@ export const useVinculoStore = defineStore('vinculo', () => {
 
       const res = await api.post('/personal/registrar_trabajador', payload)
       return res.data
-    } catch (error) {
-      console.error(error)
-      throw error
     } finally {
       guardando.value = false
     }
   }
 
-  function seleccionarVacante(vacante: any) {
+  function seleccionarVacante(vacante: Vacante) {
     vacanteSeleccionada.value = vacante
 
     necesitaAreaCargo.value = !vacante.area_id || !vacante.cargo_id

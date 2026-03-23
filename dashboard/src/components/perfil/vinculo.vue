@@ -5,7 +5,7 @@
         <svg class="h-5 w-5 text-primary" fill="currentColor" viewBox="0 0 24 24">
           <path d="M20 6h-4V4c0-1.11-.89-2-2-2h-4c-1.11 0-2 .89-2 2v2H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-6 0h-4V4h4v2z" />
         </svg>
-        Vinculo Laboralssd
+        Vínculo Laboral
         <span
           v-if="vinculoActual"
           :class="tieneRenuncia ? 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400' : 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400'"
@@ -178,7 +178,7 @@
           </div>
           <div>
             <p class="text-2xs font-semibold uppercase text-gray-400 leading-none">Fecha Salida</p>
-            <p class="mt-0.5 font-medium text-sm text-black dark:text-white">{{ formatInTimeZone(vinculoActual.fecha_salida, 'America/Lima', 'dd/MM/yyyy') }}</p>
+            <p class="mt-0.5 font-medium text-sm text-black dark:text-white">{{ formatInTimeZone(vinculoActual.fecha_salida!, 'America/Lima', 'dd/MM/yyyy') }}</p>
           </div>
           <div v-if="vinculoActual.descrip_salida" class="col-span-2">
             <p class="text-2xs font-semibold uppercase text-gray-400 leading-none">Descripción Salida</p>
@@ -251,10 +251,9 @@
   })
 
   const handleRenuncia = async (datosRenuncia: any) => {
+    if (!vinculoActual.value?.id) return
     try {
-      console.log(datosRenuncia)
       await store.registrarRenuncia(vinculoActual.value.id, datosRenuncia)
-
       isRenunciaModalOpen.value = false
     } catch (error) {
       console.error('Error al registrar renuncia', error)

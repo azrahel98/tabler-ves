@@ -1,11 +1,16 @@
 import { defineStore } from 'pinia'
 import api from '../services/api'
 import { ref } from 'vue'
+import type { Persona, Vinculo, Documento } from '../types'
+
+interface TrabajadorConVinculos extends Persona {
+  vinculos: (Vinculo & { yaAfiliado: boolean; seleccionado: boolean; nombrePersona: string | null })[]
+}
 
 export const useSindicatoStore = defineStore('sindicato', () => {
-  const resultados = ref<any[]>([])
-  const trabajadoresAgregados = ref<any[]>([])
-  const documentos = ref<any[]>([{ id: 4, sigla: '', nombre: 'Doc.Adm' }])
+  const resultados = ref<Persona[]>([])
+  const trabajadoresAgregados = ref<TrabajadorConVinculos[]>([])
+  const documentos = ref<Documento[]>([{ id: 4, sigla: '', nombre: 'Doc.Adm' }])
   const cargando = ref(false)
   const enviando = ref(false)
 
@@ -19,19 +24,19 @@ export const useSindicatoStore = defineStore('sindicato', () => {
     }
   }
 
-  async function obtenerVinculos(dni: string) {
+  async function obtenerVinculos(dni: string): Promise<Vinculo[]> {
     const res = await api.post('/personal/vinculos_por_dni', { dni })
     return res.data
   }
 
-  async function agregarTrabajador(persona: any) {
+  async function agregarTrabajador(persona: Persona) {
     const yaExiste = trabajadoresAgregados.value.some((t) => t.dni === persona.dni)
     if (yaExiste) return
 
     const vinculos = await obtenerVinculos(persona.dni)
     const vinculosActivos = vinculos
-      .filter((v: any) => v.estado === 'activo')
-      .map((v: any) => ({
+      .filter((v) => v.estado === 'activo')
+      .map((v) => ({
         ...v,
         yaAfiliado: !!v.sindicato,
         seleccionado: !v.sindicato,
@@ -53,7 +58,7 @@ export const useSindicatoStore = defineStore('sindicato', () => {
   function toggleVinculo(dni: string, idVinculo: number) {
     const trabajador = trabajadoresAgregados.value.find((t) => t.dni === dni)
     if (!trabajador) return
-    const vinculo = trabajador.vinculos.find((v: any) => v.id === idVinculo)
+    const vinculo = trabajador.vinculos.find((v) => v.id === idVinculo)
     if (vinculo && !vinculo.yaAfiliado) vinculo.seleccionado = !vinculo.seleccionado
   }
 
@@ -69,7 +74,7 @@ export const useSindicatoStore = defineStore('sindicato', () => {
     return vinculos
   }
 
-  async function enviarAfiliacion(datosDocumento: any) {
+  async function enviarAfiliacion(datosDocumento: Record<string, unknown>) {
     const vinculos = obtenerVinculosSeleccionados()
     if (vinculos.length === 0) throw new Error('No hay vínculos seleccionados')
 
