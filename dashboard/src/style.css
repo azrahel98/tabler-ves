@@ -330,6 +330,10 @@
   }
 }
 
+.badge {
+  @apply flex uppercase text-2xs align-middle w-min text-white px-2 rounded-2xl pt-0.5 font-medium;
+}
+
 .tableCheckbox:checked ~ span span {
   @apply opacity-100;
 }
