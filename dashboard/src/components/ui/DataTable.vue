@@ -55,7 +55,7 @@
             v-for="(fila, idx) in filasPagina"
             :key="idx"
             @click="$emit('click-fila', fila)"
-            class="border-b border-gray-100 dark:border-gray-800 last:border-none transition-colors"
+            class="border-b border-gray-100 text-xs dark:border-gray-800 last:border-none transition-colors"
             :class="clickable ? 'cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800/50' : ''">
             <td v-for="col in columnas" :key="col.clave" class="px-4 py-3 text-gray-700 dark:text-gray-300">
               <!-- Slot personalizado para la celda -->
@@ -182,7 +182,7 @@
   // ─── Estado ───────────────────────────────────────────────
   const busqueda = ref('')
   const paginaActual = ref(1)
-  const filasPorPagina = ref(10)
+  const filasPorPagina = ref(15)
   const columnaOrden = ref<string | null>(null)
   const direccionOrden = ref<'asc' | 'desc'>('asc')
 

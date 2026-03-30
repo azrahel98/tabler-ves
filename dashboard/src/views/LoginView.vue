@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import { useConfiguracionStore } from "../stores/layout";
 import { useAutenticacionStore } from "../stores/auth";
 import { useRouter } from "vue-router";
+import { Eye, EyeOff, Lock, User, Loader2, Sun, Moon, CircleCheck, XCircle, ArrowRight } from "lucide-vue-next";
 
 const configuracionStore = useConfiguracionStore();
 const autenticacionStore = useAutenticacionStore();
@@ -13,12 +14,23 @@ const password = ref("");
 const showPassword = ref(false);
 const errorMessage = ref("");
 const loading = ref(false);
+const mounted = ref(false);
+const nickFocused = ref(false);
+const passwordFocused = ref(false);
+const shakeError = ref(false);
+
+onMounted(() => {
+  setTimeout(() => (mounted.value = true), 100);
+});
 
 const handleLogin = async () => {
   errorMessage.value = "";
+  shakeError.value = false;
 
   if (!nick.value.trim() || !password.value) {
     errorMessage.value = "Completá todos los campos.";
+    shakeError.value = true;
+    setTimeout(() => (shakeError.value = false), 600);
     return;
   }
 
@@ -32,6 +44,8 @@ const handleLogin = async () => {
     } else {
       errorMessage.value = "Error al iniciar sesión. Verificá tus credenciales.";
     }
+    shakeError.value = true;
+    setTimeout(() => (shakeError.value = false), 600);
   } finally {
     loading.value = false;
   }
@@ -39,165 +53,241 @@ const handleLogin = async () => {
 </script>
 
 <template>
-  <div class="relative p-6 bg-white z-1 dark:bg-gray-900 sm:p-0">
-    <div
-      class="relative flex flex-col justify-center w-full h-screen dark:bg-gray-900 sm:p-0 lg:flex-row"
-    >
-      <div class="flex flex-col flex-1 w-full lg:w-1/2">
-        <div
-          class="flex flex-col justify-center flex-1 w-full max-w-md mx-auto"
-        >
-          <div>
-            <div class="mb-5 sm:mb-8">
-              <h1
-                class="mb-2 font-semibold text-gray-800 text-title-sm dark:text-white/90 sm:text-title-md"
-              >
-                Inicia Sesión
-              </h1>
-              <p class="text-sm text-gray-500 dark:text-gray-400">
-                Inicia sesión para acceder a tu cuenta.
-              </p>
-            </div>
-            <div>
-              <form @submit.prevent="handleLogin">
-                <div class="space-y-5">
-                  <div>
-                    <label
-                      class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400"
-                    >
-                      Nickname<span class="text-error-500">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      id="nick"
-                      name="nick"
-                      v-model="nick"
-                      placeholder="info@gmail.com"
-                      class="dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800"
-                    />
-                  </div>
-                  <div>
-                    <label
-                      class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400"
-                    >
-                      Password<span class="text-error-500">*</span>
-                    </label>
-                    <div class="relative">
-                      <input
-                        :type="showPassword ? 'text' : 'password'"
-                        v-model="password"
-                        placeholder="Enter your password"
-                        class="dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent py-2.5 pl-4 pr-11 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800"
-                      />
-                      <span
-                        @click="showPassword = !showPassword"
-                        class="absolute z-30 text-gray-500 -translate-y-1/2 cursor-pointer right-4 top-1/2 dark:text-gray-400"
-                      >
-                        <svg
-                          v-show="!showPassword"
-                          class="fill-current"
-                          width="20"
-                          height="20"
-                          viewBox="0 0 20 20"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            fill-rule="evenodd"
-                            clip-rule="evenodd"
-                            d="M10.0002 13.8619C7.23361 13.8619 4.86803 12.1372 3.92328 9.70241C4.86804 7.26761 7.23361 5.54297 10.0002 5.54297C12.7667 5.54297 15.1323 7.26762 16.0771 9.70243C15.1323 12.1372 12.7667 13.8619 10.0002 13.8619ZM10.0002 4.04297C6.48191 4.04297 3.49489 6.30917 2.4155 9.4593C2.3615 9.61687 2.3615 9.78794 2.41549 9.94552C3.49488 13.0957 6.48191 15.3619 10.0002 15.3619C13.5184 15.3619 16.5055 13.0957 17.5849 9.94555C17.6389 9.78797 17.6389 9.6169 17.5849 9.45932C16.5055 6.30919 13.5184 4.04297 10.0002 4.04297ZM9.99151 7.84413C8.96527 7.84413 8.13333 8.67606 8.13333 9.70231C8.13333 10.7286 8.96527 11.5605 9.99151 11.5605H10.0064C11.0326 11.5605 11.8646 10.7286 11.8646 9.70231C11.8646 8.67606 11.0326 7.84413 10.0064 7.84413H9.99151Z"
-                            fill="#98A2B3"
-                          />
-                        </svg>
-                        <svg
-                          v-show="showPassword"
-                          class="fill-current"
-                          width="20"
-                          height="20"
-                          viewBox="0 0 20 20"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            fill-rule="evenodd"
-                            clip-rule="evenodd"
-                            d="M4.63803 3.57709C4.34513 3.2842 3.87026 3.2842 3.57737 3.57709C3.28447 3.86999 3.28447 4.34486 3.57737 4.63775L4.85323 5.91362C3.74609 6.84199 2.89363 8.06395 2.4155 9.45936C2.3615 9.61694 2.3615 9.78801 2.41549 9.94558C3.49488 13.0957 6.48191 15.3619 10.0002 15.3619C11.255 15.3619 12.4422 15.0737 13.4994 14.5598L15.3625 16.4229C15.6554 16.7158 16.1302 16.7158 16.4231 16.4229C16.716 16.13 16.716 15.6551 16.4231 15.3622L4.63803 3.57709ZM12.3608 13.4212L10.4475 11.5079C10.3061 11.5423 10.1584 11.5606 10.0064 11.5606H9.99151C8.96527 11.5606 8.13333 10.7286 8.13333 9.70237C8.13333 9.5461 8.15262 9.39434 8.18895 9.24933L5.91885 6.97923C5.03505 7.69015 4.34057 8.62704 3.92328 9.70247C4.86803 12.1373 7.23361 13.8619 10.0002 13.8619C10.8326 13.8619 11.6287 13.7058 12.3608 13.4212ZM16.0771 9.70249C15.7843 10.4569 15.3552 11.1432 14.8199 11.7311L15.8813 12.7925C16.6329 11.9813 17.2187 11.0143 17.5849 9.94561C17.6389 9.78803 17.6389 9.61696 17.5849 9.45938C16.5055 6.30925 13.5184 4.04303 10.0002 4.04303C9.13525 4.04303 8.30244 4.17999 7.52218 4.43338L8.75139 5.66259C9.1556 5.58413 9.57311 5.54303 10.0002 5.54303C12.7667 5.54303 15.1323 7.26768 16.0771 9.70249Z"
-                            fill="#98A2B3"
-                          />
-                        </svg>
-                      </span>
-                    </div>
-                  </div>
+  <div class="relative min-h-screen min-h-dvh overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950">
+    <div class="fixed inset-0 pointer-events-none z-0">
+      <div
+        v-for="n in 20"
+        :key="n"
+        class="login-particle absolute rounded-full bg-brand-500 dark:bg-brand-500/60"
+        :style="{
+          '--delay': `${Math.random() * 8}s`,
+          '--duration': `${8 + Math.random() * 12}s`,
+          left: `${Math.random() * 100}%`,
+          top: `${Math.random() * 100}%`,
+          width: `${2 + Math.random() * 4}px`,
+          height: `${2 + Math.random() * 4}px`,
+          opacity: 0.15 + Math.random() * 0.3,
+        }"
+      ></div>
+    </div>
 
-                  <div>
-                    <button
-                      type="submit"
-                      :disabled="loading"
-                      class="flex items-center justify-center w-full px-4 py-3 text-sm font-medium text-white transition rounded-lg bg-brand-500 shadow-theme-xs hover:bg-brand-600 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      <svg
-                        v-if="loading"
-                        class="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                      >
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
-                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                      </svg>
-                      {{ loading ? "Iniciando..." : "Iniciar Sesión" }}
-                    </button>
-                  </div>
-                  <div
-                    v-if="errorMessage"
-                    class="text-error-500 text-sm mt-2 text-center"
-                  >
-                    {{ errorMessage }}
-                  </div>
-                </div>
-              </form>
+    <div
+      class="relative z-1 flex min-h-screen min-h-dvh transition-all duration-600 ease-out"
+      :class="mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3'"
+    >
+      <div class="hidden lg:flex relative w-[55%] overflow-hidden bg-gradient-to-br from-gray-900 via-brand-900 to-brand-500">
+        <div class="relative z-10 flex flex-col items-center justify-center h-full p-12 text-center">
+          <div class="absolute w-72 h-72 rounded-full bg-brand-400/40 blur-[80px] top-[10%] -left-[5%] login-orb"></div>
+          <div class="absolute w-60 h-60 rounded-full bg-theme-pink-500/30 blur-[80px] bottom-[15%] -right-[5%] login-orb-delayed"></div>
+          <div class="absolute w-48 h-48 rounded-full bg-success-500/25 blur-[80px] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 login-orb-slow"></div>
+
+          <div class="mb-8">
+            <div class="inline-flex items-center justify-center w-16 h-16 mb-6 rounded-2xl bg-white/15 backdrop-blur-lg border border-white/20 transition-transform duration-300 hover:scale-105">
+              <img src="/logo-icon.svg" alt="Logo" class="w-9 h-9" />
             </div>
+            <h2 class="text-3xl font-bold text-white tracking-tight mb-2">Tabler VES</h2>
+            <p class="text-base text-white/70 max-w-xs mx-auto leading-relaxed">
+              Gestión integral de personal y recursos humanos
+            </p>
+          </div>
+
+          <div class="relative w-4/5 max-w-md mx-auto rounded-2xl overflow-hidden shadow-2xl border border-white/10 transition-transform duration-400 hover:-translate-y-1 hover:scale-[1.01]">
+            <img src="/login-bg.png" alt="Dashboard illustration" class="w-full h-auto block" />
+          </div>
+
+          <div class="mt-auto pt-8 flex flex-wrap justify-center gap-3">
+            <span
+              v-for="label in ['Reportes', 'Organigrama', 'Personal']"
+              :key="label"
+              class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium text-white/85 bg-white/10 backdrop-blur-sm border border-white/15 transition-colors duration-200 hover:bg-white/[0.18]"
+            >
+              <CircleCheck :size="14" />
+              {{ label }}
+            </span>
           </div>
         </div>
       </div>
 
-      <div class="fixed z-50 hidden bottom-6 right-6 sm:block">
-        <button
-          class="inline-flex items-center justify-center text-white transition-colors rounded-full size-14 bg-brand-500 hover:bg-brand-600"
-          @click.prevent="configuracionStore.alternarModoOscuro()"
-        >
-          <svg
-            v-if="configuracionStore.modoOscuro"
-            class="fill-current"
-            width="20"
-            height="20"
-            viewBox="0 0 20 20"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              fill-rule="evenodd"
-              clip-rule="evenodd"
-              d="M9.99998 1.5415C10.4142 1.5415 10.75 1.87729 10.75 2.2915V3.5415C10.75 3.95572 10.4142 4.2915 9.99998 4.2915C9.58577 4.2915 9.24998 3.95572 9.24998 3.5415V2.2915C9.24998 1.87729 9.58577 1.5415 9.99998 1.5415ZM10.0009 6.79327C8.22978 6.79327 6.79402 8.22904 6.79402 10.0001C6.79402 11.7712 8.22978 13.207 10.0009 13.207C11.772 13.207 13.2078 11.7712 13.2078 10.0001C13.2078 8.22904 11.772 6.79327 10.0009 6.79327ZM5.29402 10.0001C5.29402 7.40061 7.40135 5.29327 10.0009 5.29327C12.6004 5.29327 14.7078 7.40061 14.7078 10.0001C14.7078 12.5997 12.6004 14.707 10.0009 14.707C7.40135 14.707 5.29402 12.5997 5.29402 10.0001ZM15.9813 5.08035C16.2742 4.78746 16.2742 4.31258 15.9813 4.01969C15.6884 3.7268 15.2135 3.7268 14.9207 4.01969L14.0368 4.90357C13.7439 5.19647 13.7439 5.67134 14.0368 5.96423C14.3297 6.25713 14.8045 6.25713 15.0974 5.96423L15.9813 5.08035ZM18.4577 10.0001C18.4577 10.4143 18.1219 10.7501 17.7077 10.7501H16.4577C16.0435 10.7501 15.7077 10.4143 15.7077 10.0001C15.7077 9.58592 16.0435 9.25013 16.4577 9.25013H17.7077C18.1219 9.25013 18.4577 9.58592 18.4577 10.0001ZM14.9207 15.9806C15.2135 16.2735 15.6884 16.2735 15.9813 15.9806C16.2742 15.6877 16.2742 15.2128 15.9813 14.9199L15.0974 14.036C14.8045 13.7431 14.3297 13.7431 14.0368 14.036C13.7439 14.3289 13.7439 14.8038 14.0368 15.0967L14.9207 15.9806ZM9.99998 15.7088C10.4142 15.7088 10.75 16.0445 10.75 16.4588V17.7088C10.75 18.123 10.4142 18.4588 9.99998 18.4588C9.58577 18.4588 9.24998 18.123 9.24998 17.7088V16.4588C9.24998 16.0445 9.58577 15.7088 9.99998 15.7088ZM5.96356 15.0972C6.25646 14.8043 6.25646 14.3295 5.96356 14.0366C5.67067 13.7437 5.1958 13.7437 4.9029 14.0366L4.01902 14.9204C3.72613 15.2133 3.72613 15.6882 4.01902 15.9811C4.31191 16.274 4.78679 16.274 5.07968 15.9811L5.96356 15.0972ZM4.29224 10.0001C4.29224 10.4143 3.95645 10.7501 3.54224 10.7501H2.29224C1.87802 10.7501 1.54224 10.4143 1.54224 10.0001C1.54224 9.58592 1.87802 9.25013 2.29224 9.25013H3.54224C3.95645 9.25013 4.29224 9.58592 4.29224 10.0001ZM4.9029 5.9637C5.1958 6.25659 5.67067 6.25659 5.96356 5.9637C6.25646 5.6708 6.25646 5.19593 5.96356 4.90303L5.07968 4.01915C4.78679 3.72626 4.31191 3.72626 4.01902 4.01915C3.72613 4.31204 3.72613 4.78692 4.01902 5.07981L4.9029 5.9637Z"
-              fill=""
-            />
-          </svg>
-          <svg
-            v-else
-            class="fill-current"
-            width="20"
-            height="20"
-            viewBox="0 0 20 20"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M17.4547 11.97L18.1799 12.1611C18.265 11.8383 18.1265 11.4982 17.8401 11.3266C17.5538 11.1551 17.1885 11.1934 16.944 11.4207L17.4547 11.97ZM8.0306 2.5459L8.57989 3.05657C8.80718 2.81209 8.84554 2.44682 8.67398 2.16046C8.50243 1.8741 8.16227 1.73559 7.83948 1.82066L8.0306 2.5459ZM12.9154 13.0035C9.64678 13.0035 6.99707 10.3538 6.99707 7.08524H5.49707C5.49707 11.1823 8.81835 14.5035 12.9154 14.5035V13.0035ZM16.944 11.4207C15.8869 12.4035 14.4721 13.0035 12.9154 13.0035V14.5035C14.8657 14.5035 16.6418 13.7499 17.9654 12.5193L16.944 11.4207ZM16.7295 11.7789C15.9437 14.7607 13.2277 16.9586 10.0003 16.9586V18.4586C13.9257 18.4586 17.2249 15.7853 18.1799 12.1611L16.7295 11.7789ZM10.0003 16.9586C6.15734 16.9586 3.04199 13.8433 3.04199 10.0003H1.54199C1.54199 14.6717 5.32892 18.4586 10.0003 18.4586V16.9586ZM3.04199 10.0003C3.04199 6.77289 5.23988 4.05695 8.22173 3.27114L7.83948 1.82066C4.21532 2.77574 1.54199 6.07486 1.54199 10.0003H3.04199ZM6.99707 7.08524C6.99707 5.52854 7.5971 4.11366 8.57989 3.05657L7.48132 2.03522C6.25073 3.35885 5.49707 5.13487 5.49707 7.08524H6.99707Z"
-              fill=""
-            />
-          </svg>
-        </button>
+      <div class="flex-1 flex items-center justify-center px-6 py-8 lg:px-12 xl:px-16">
+        <div class="w-full max-w-[420px] lg:max-w-[400px] xl:max-w-[420px]">
+          <div class="flex justify-end mb-8">
+            <button
+              class="inline-flex items-center justify-center w-11 h-11 rounded-xl bg-black/[0.04] border border-black/[0.06] text-gray-500 transition-all duration-200 hover:bg-black/[0.08] hover:text-gray-700 hover:scale-105 dark:bg-white/[0.06] dark:border-white/[0.08] dark:text-gray-400 dark:hover:bg-white/10 dark:hover:text-white"
+              @click.prevent="configuracionStore.alternarModoOscuro()"
+              aria-label="Alternar modo oscuro"
+            >
+              <Sun v-if="configuracionStore.modoOscuro" :size="20" />
+              <Moon v-else :size="20" />
+            </button>
+          </div>
+
+          <div class="flex justify-center mb-8 lg:hidden">
+            <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-brand-500 shadow-lg shadow-brand-500/35">
+              <img src="/logo-icon.svg" alt="Logo" class="w-8 h-8" />
+            </div>
+          </div>
+
+          <div class="mb-8">
+            <h1 class="text-2xl font-bold text-gray-900 tracking-tight mb-2 dark:text-white/95">
+              Bienvenido de vuelta
+            </h1>
+            <p class="text-sm text-gray-500 leading-relaxed dark:text-gray-400">
+              Ingresá tus credenciales para acceder al sistema
+            </p>
+          </div>
+
+          <form @submit.prevent="handleLogin" class="flex flex-col gap-5" novalidate>
+            <div>
+              <label
+                for="login-nick"
+                class="block text-sm font-semibold mb-1.5 transition-colors duration-200"
+                :class="nickFocused ? 'text-brand-500 dark:text-brand-400' : 'text-gray-700 dark:text-gray-300'"
+              >
+                Usuario
+              </label>
+              <div class="relative flex items-center">
+                <span
+                  class="absolute left-3.5 flex items-center pointer-events-none z-10 transition-colors duration-200"
+                  :class="nickFocused ? 'text-brand-500 dark:text-brand-400' : 'text-gray-400 dark:text-gray-600'"
+                >
+                  <User :size="18" />
+                </span>
+                <input
+                  type="text"
+                  id="login-nick"
+                  name="nick"
+                  v-model="nick"
+                  placeholder="Tu nickname"
+                  autocomplete="username"
+                  class="w-full h-12 pl-11 pr-4 text-sm text-gray-900 bg-white border-[1.5px] border-gray-200 rounded-xl shadow-theme-xs outline-none transition-all duration-200 placeholder:text-gray-400 focus:border-brand-400 focus:ring-4 focus:ring-brand-500/10 dark:bg-white/[0.04] dark:border-white/10 dark:text-white/90 dark:placeholder:text-white/25 dark:focus:border-brand-500 dark:focus:ring-brand-500/15 dark:focus:bg-white/[0.06]"
+                  @focus="nickFocused = true"
+                  @blur="nickFocused = false"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label
+                for="login-password"
+                class="block text-sm font-semibold mb-1.5 transition-colors duration-200"
+                :class="passwordFocused ? 'text-brand-500 dark:text-brand-400' : 'text-gray-700 dark:text-gray-300'"
+              >
+                Contraseña
+              </label>
+              <div class="relative flex items-center">
+                <span
+                  class="absolute left-3.5 flex items-center pointer-events-none z-10 transition-colors duration-200"
+                  :class="passwordFocused ? 'text-brand-500 dark:text-brand-400' : 'text-gray-400 dark:text-gray-600'"
+                >
+                  <Lock :size="18" />
+                </span>
+                <input
+                  :type="showPassword ? 'text' : 'password'"
+                  id="login-password"
+                  v-model="password"
+                  placeholder="Tu contraseña"
+                  autocomplete="current-password"
+                  class="w-full h-12 pl-11 pr-12 text-sm text-gray-900 bg-white border-[1.5px] border-gray-200 rounded-xl shadow-theme-xs outline-none transition-all duration-200 placeholder:text-gray-400 focus:border-brand-400 focus:ring-4 focus:ring-brand-500/10 dark:bg-white/[0.04] dark:border-white/10 dark:text-white/90 dark:placeholder:text-white/25 dark:focus:border-brand-500 dark:focus:ring-brand-500/15 dark:focus:bg-white/[0.06]"
+                  @focus="passwordFocused = true"
+                  @blur="passwordFocused = false"
+                />
+                <button
+                  type="button"
+                  @click="showPassword = !showPassword"
+                  class="absolute right-1 flex items-center justify-center w-10 h-10 rounded-lg text-gray-400 transition-all duration-200 hover:text-gray-600 hover:bg-black/[0.04] dark:text-gray-600 dark:hover:text-gray-400 dark:hover:bg-white/[0.06]"
+                  aria-label="Mostrar / ocultar contraseña"
+                  tabindex="-1"
+                >
+                  <Eye v-if="!showPassword" :size="18" />
+                  <EyeOff v-else :size="18" />
+                </button>
+              </div>
+            </div>
+
+            <Transition name="error-slide">
+              <div
+                v-if="errorMessage"
+                class="flex items-center gap-2 px-4 py-3 text-sm font-medium rounded-xl bg-error-50 border border-error-200 text-error-700 dark:bg-error-500/10 dark:border-error-500/20 dark:text-error-300"
+                :class="{ 'login-shake': shakeError }"
+                role="alert"
+              >
+                <XCircle :size="16" class="shrink-0" />
+                <span>{{ errorMessage }}</span>
+              </div>
+            </Transition>
+
+            <button
+              type="submit"
+              :disabled="loading"
+              class="relative w-full h-12 mt-1 rounded-xl bg-gradient-to-br from-brand-500 to-brand-600 text-white text-sm font-semibold overflow-hidden transition-all duration-300 shadow-lg shadow-brand-500/35 hover:shadow-xl hover:shadow-brand-500/45 hover:-translate-y-0.5 active:translate-y-0 active:shadow-md active:shadow-brand-500/30 disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-lg"
+            >
+              <div class="absolute inset-0 bg-gradient-to-br from-white/15 to-transparent opacity-0 transition-opacity duration-300 hover:opacity-100 pointer-events-none"></div>
+
+              <Transition name="fade" mode="out-in">
+                <span v-if="loading" class="relative z-10 inline-flex items-center justify-center gap-2" key="loading">
+                  <Loader2 :size="20" class="animate-spin" />
+                  Iniciando sesión...
+                </span>
+                <span v-else class="relative z-10 inline-flex items-center justify-center gap-2" key="idle">
+                  Iniciar Sesión
+                  <ArrowRight :size="20" />
+                </span>
+              </Transition>
+            </button>
+          </form>
+
+          <div class="mt-8 text-center">
+            <p class="text-xs text-gray-400 dark:text-gray-600">
+              Sistema de gestión de recursos humanos
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </template>
+
+<style scoped>
+
+.login-particle {
+  animation: login-float var(--duration) ease-in-out var(--delay) infinite;
+}
+
+@keyframes login-float {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  25% { transform: translate(30px, -40px) scale(1.2); }
+  50% { transform: translate(-20px, -80px) scale(0.8); }
+  75% { transform: translate(40px, -30px) scale(1.1); }
+}
+
+.login-orb { animation: login-orb-move 12s ease-in-out infinite; }
+.login-orb-delayed { animation: login-orb-move 12s ease-in-out -4s infinite; }
+.login-orb-slow { animation: login-orb-move 12s ease-in-out -8s infinite; }
+
+@keyframes login-orb-move {
+  0%, 100% { transform: translate(0, 0); }
+  33% { transform: translate(30px, -25px); }
+  66% { transform: translate(-20px, 15px); }
+}
+
+.login-shake {
+  animation: login-shake 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+@keyframes login-shake {
+  10%, 90% { transform: translateX(-1px); }
+  20%, 80% { transform: translateX(2px); }
+  30%, 50%, 70% { transform: translateX(-3px); }
+  40%, 60% { transform: translateX(3px); }
+}
+
+.error-slide-enter-active { transition: all 0.3s ease; }
+.error-slide-leave-active { transition: all 0.2s ease; }
+.error-slide-enter-from { opacity: 0; transform: translateY(-8px); }
+.error-slide-leave-to { opacity: 0; transform: translateY(-4px); }
+
+.fade-enter-active { transition: all 0.2s ease; }
+.fade-leave-active { transition: all 0.15s ease; }
+.fade-enter-from { opacity: 0; transform: translateY(4px); }
+.fade-leave-to { opacity: 0; transform: translateY(-4px); }
+</style>

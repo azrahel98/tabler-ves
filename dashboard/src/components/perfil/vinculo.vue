@@ -132,7 +132,7 @@
         <div>
           <p class="font-semibold uppercase text-gray-400">Estado</p>
           <div class="badge mt-0.5" :class="tieneRenuncia ? 'bg-accent' : vinculoActual.tipo_evento ? 'bg-gray-500' : 'bg-primary'">
-            {{ tieneRenuncia ? 'Renuncia' : vinculoActual.tipo_evento ? vinculoActual.tipo_evento : 'ACTIVO' }}
+            {{ tieneRenuncia ? 'Renuncia' : vinculoActual.tipo_evento ? vinculoActual.tipo_evento : 'activo' }}
           </div>
         </div>
       </div>

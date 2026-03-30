@@ -1,284 +1,184 @@
 <template>
   <template v-if="modo === 'tabla'">
-    <template v-for="fila in filas" :key="fila.key">
-      <tr :class="fila.clases">
-        <td class="px-2 py-3 text-center w-10">
-          <button
-            v-if="fila.tieneHijos"
-            @click="expandido = !expandido"
-            class="inline-flex items-center justify-center w-6 h-6 rounded text-gray-400 hover:bg-gray-200 hover:text-gray-600 dark:hover:bg-gray-700 dark:hover:text-gray-300 transition-colors">
-            <ChevronDown v-if="expandido" class="h-4 w-4" />
-            <ChevronRight v-else class="h-4 w-4" />
-          </button>
-        </td>
+    <tr
+      class="border-b border-gray-100 dark:border-gray-800/60 hover:bg-gray-50/80 dark:hover:bg-gray-800/30 transition-colors group"
+      :class="borderColorClass"
+    >
+      <td class="px-2 py-3 text-center w-10">
+        <button
+          v-if="tieneHijos"
+          @click="expandido = !expandido"
+          class="inline-flex items-center justify-center w-7 h-7 rounded-lg text-gray-400 hover:bg-gray-200/80 hover:text-gray-600 dark:hover:bg-gray-700 dark:hover:text-gray-300 transition-all duration-200">
+          <ChevronDown v-if="expandido" class="h-4 w-4 transition-transform duration-200" />
+          <ChevronRight v-else class="h-4 w-4 transition-transform duration-200" />
+        </button>
+      </td>
 
-        <td class="px-4 py-3 font-semibold text-gray-900 dark:text-white" :style="{ paddingLeft: fila.paddingLeft }">
-          <router-link
-            :to="{
-              name: 'area-personal',
-              params: { id: nodo.id },
-            }">
-            {{ nodo.area }}
-          </router-link>
-        </td>
-
-        <RouterLink
-          :to="{
-            name: 'personal-profile',
-            params: { dni: nodo.dni || '' },
-          }"
-          v-if="props.nodo.dni">
-          <button v-if="nodo.jefe" class="inline-flex items-center gap-1.5 text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
-            <User class="h-3.5 w-3.5 shrink-0 text-gray-400" />
-            <span>{{ nodo.jefe }}</span>
-          </button>
-          <span v-else class="text-gray-400 italic text-xs">Sin asignar</span>
-        </RouterLink>
-        <td v-else>
-          <button v-if="nodo.jefe" class="inline-flex items-center gap-1.5 text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
-            <User class="h-3.5 w-3.5 shrink-0 text-gray-400" />
-            <span>{{ nodo.jefe }}</span>
-          </button>
-          <span v-else class="text-gray-400 italic text-xs">Sin asignar</span>
-        </td>
-
-        <td class="px-4 py-3 text-gray-500 dark:text-gray-400 font-mono text-xs">
-          {{ nodo.dni || '—' }}
-        </td>
-
-        <td class="px-4 py-3 text-center">
+      <td class="px-4 py-3" :style="{ paddingLeft: `${nivel * 24 + 16}px` }">
+        <router-link
+          :to="{ name: 'area-personal', params: { id: nodo.id } }"
+          class="inline-flex items-center gap-2 font-semibold text-gray-900 dark:text-white hover:text-brand-600 dark:hover:text-brand-400 transition-colors">
           <span
-            v-if="fila.tieneHijos"
-            class="inline-flex items-center justify-center min-w-6 h-5 px-1.5 rounded-full bg-gray-100 text-gray-500 text-[11px] font-semibold dark:bg-gray-800 dark:text-gray-400">
-            {{ nodo.subgerencias.length }}
+            class="flex items-center justify-center w-6 h-6 rounded-md text-xs font-bold shrink-0"
+            :class="nivelBadgeClasses">
+            {{ nodo.area.charAt(0) }}
           </span>
-          <span v-else class="text-gray-300 dark:text-gray-600">—</span>
-        </td>
-      </tr>
+          <span class="truncate">{{ nodo.area }}</span>
+        </router-link>
+      </td>
 
-      <template v-if="fila.tieneHijos && expandido">
-        <FilaOrganigrama v-for="sub in nodo.subgerencias" :key="sub.id" :nodo="sub" :nivel="nivel + 1" modo="tabla" />
-      </template>
+      <td class="px-4 py-3">
+        <RouterLink
+          v-if="nodo.dni && nodo.jefe"
+          :to="{ name: 'personal-profile', params: { dni: nodo.dni } }"
+          class="inline-flex items-center gap-2 text-gray-700 dark:text-gray-300 hover:text-brand-600 dark:hover:text-brand-400 transition-colors">
+          <span class="flex items-center justify-center w-6 h-6 rounded-full bg-gray-100 dark:bg-gray-800 shrink-0">
+            <User class="h-3.5 w-3.5 text-gray-400 dark:text-gray-500" />
+          </span>
+          <span class="truncate">{{ nodo.jefe }}</span>
+        </RouterLink>
+        <span v-else class="inline-flex items-center gap-2 text-gray-400 dark:text-gray-600 italic text-xs">
+          <span class="flex items-center justify-center w-6 h-6 rounded-full bg-gray-50 dark:bg-gray-800/50 shrink-0">
+            <UserX class="h-3.5 w-3.5 text-gray-300 dark:text-gray-600" />
+          </span>
+          Sin asignar
+        </span>
+      </td>
+
+      <td class="px-4 py-3">
+        <span v-if="nodo.dni" class="font-mono text-xs text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800/50 px-2 py-0.5 rounded-md">
+          {{ nodo.dni }}
+        </span>
+        <span v-else class="text-gray-300 dark:text-gray-700">—</span>
+      </td>
+
+      <td class="px-4 py-3 text-center">
+        <span
+          v-if="tieneHijos"
+          class="inline-flex items-center justify-center min-w-6 h-5.5 px-2 rounded-full text-[11px] font-bold"
+          :class="nivelCountClasses">
+          {{ nodo.subgerencias.length }}
+        </span>
+        <span v-else class="text-gray-300 dark:text-gray-700">—</span>
+      </td>
+    </tr>
+
+    <template v-if="tieneHijos && expandido">
+      <FilaOrganigrama
+        v-for="sub in nodo.subgerencias"
+        :key="sub.id"
+        :nodo="sub"
+        :nivel="nivel + 1"
+        :expandir-todo="expandirTodo"
+        modo="tabla"
+      />
     </template>
   </template>
 
-  <!-- Modo Tarjeta (móvil) -->
   <template v-else>
-    <div :class="['tarjeta-nodo', colorBordeTarjeta]" :style="{ marginLeft: `${nivel * 16}px` }">
-      <div class="tarjeta-header" @click="tieneHijos && (expandido = !expandido)">
-        <div class="tarjeta-titulo">
-          <button v-if="tieneHijos" class="tarjeta-expand-btn">
-            <ChevronDown v-if="expandido" class="h-4 w-4" />
-            <ChevronRight v-else class="h-4 w-4" />
-          </button>
-          <span class="tarjeta-area">{{ nodo.area }}</span>
-          <span v-if="tieneHijos" class="tarjeta-badge">
-            {{ nodo.subgerencias.length }}
-          </span>
-        </div>
+    <div
+      class="border-l-3 rounded-xl bg-white dark:bg-gray-900 mb-2 overflow-hidden shadow-theme-xs transition-all duration-200 hover:shadow-theme-sm"
+      :class="borderColorClass"
+      :style="{ marginLeft: `${nivel * 16}px` }">
+      <div
+        class="flex items-center gap-2 px-3 py-2.5"
+        :class="tieneHijos ? 'cursor-pointer' : ''"
+        @click="tieneHijos && (expandido = !expandido)">
+        <button
+          v-if="tieneHijos"
+          class="inline-flex items-center justify-center w-6 h-6 rounded-lg text-gray-400 shrink-0 transition-transform duration-200"
+          :class="expandido ? 'rotate-0' : '-rotate-90'">
+          <ChevronDown class="h-4 w-4" />
+        </button>
+
+        <span
+          class="flex items-center justify-center w-6 h-6 rounded-md text-[10px] font-bold shrink-0"
+          :class="nivelBadgeClasses">
+          {{ nodo.area.charAt(0) }}
+        </span>
+
+        <span class="font-semibold text-[13px] text-gray-900 dark:text-gray-100 flex-1 min-w-0 truncate">
+          {{ nodo.area }}
+        </span>
+
+        <span
+          v-if="tieneHijos"
+          class="inline-flex items-center justify-center min-w-5 h-5 px-1.5 rounded-full text-[11px] font-bold shrink-0"
+          :class="nivelCountClasses">
+          {{ nodo.subgerencias.length }}
+        </span>
       </div>
 
-      <div class="tarjeta-body">
-        <RouterLink v-if="nodo.dni" :to="{ name: 'personal-profile', params: { dni: nodo.dni } }" class="tarjeta-jefe-link">
+      <div class="flex items-center justify-between gap-2 px-3 pb-2.5 pt-0">
+        <RouterLink
+          v-if="nodo.dni"
+          :to="{ name: 'personal-profile', params: { dni: nodo.dni } }"
+          class="inline-flex items-center gap-1.5 text-xs text-gray-600 dark:text-gray-400 hover:text-brand-600 dark:hover:text-brand-400 transition-colors min-w-0">
           <User class="h-3.5 w-3.5 shrink-0 text-gray-400" />
-          <span>{{ nodo.jefe || 'Sin asignar' }}</span>
+          <span class="truncate">{{ nodo.jefe || 'Sin asignar' }}</span>
         </RouterLink>
-        <div v-else class="tarjeta-jefe">
+        <div v-else class="inline-flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400 min-w-0">
           <User class="h-3.5 w-3.5 shrink-0 text-gray-400" />
-          <span>{{ nodo.jefe || 'Sin asignar' }}</span>
+          <span class="truncate">{{ nodo.jefe || 'Sin asignar' }}</span>
         </div>
 
-        <span v-if="nodo.dni" class="tarjeta-dni">{{ nodo.dni }}</span>
+        <span v-if="nodo.dni" class="font-mono text-[11px] text-gray-400 dark:text-gray-500 shrink-0">
+          {{ nodo.dni }}
+        </span>
       </div>
     </div>
 
     <template v-if="tieneHijos && expandido">
-      <FilaOrganigrama v-for="sub in nodo.subgerencias" :key="sub.id" :nodo="sub" :nivel="nivel + 1" modo="tarjeta" />
+      <FilaOrganigrama
+        v-for="sub in nodo.subgerencias"
+        :key="sub.id"
+        :nodo="sub"
+        :nivel="nivel + 1"
+        :expandir-todo="expandirTodo"
+        modo="tarjeta"
+      />
     </template>
   </template>
 </template>
 
 <script setup lang="ts">
-  import { ref, computed } from 'vue'
-  import { ChevronRight, ChevronDown, User } from 'lucide-vue-next'
-
-  interface NodoOrganigrama {
-    id: number
-    area: string
-    jefe: string | null
-    dni: string | null
-    subgerencias: NodoOrganigrama[]
-  }
+  import { ref, computed, watch } from 'vue'
+  import { ChevronRight, ChevronDown, User, UserX } from 'lucide-vue-next'
+  import type { NodoOrganigrama } from '../../types'
 
   const props = withDefaults(
     defineProps<{
       nodo: NodoOrganigrama
       nivel?: number
       modo?: 'tabla' | 'tarjeta'
+      expandirTodo?: boolean
     }>(),
-    { nivel: 0, modo: 'tabla' }
+    { nivel: 0, modo: 'tabla', expandirTodo: false }
   )
 
   const expandido = ref(props.nivel === 0)
-
   const tieneHijos = computed(() => props.nodo.subgerencias?.length > 0)
 
-  const coloresBorde = ['border-l-indigo-500', 'border-l-blue-500', 'border-l-emerald-500', 'border-l-amber-500']
-  const colorBordeTarjeta = computed(() => coloresBorde[Math.min(props.nivel, coloresBorde.length - 1)])
-
-  const filas = computed(() => {
-    const colorBorde = coloresBorde[Math.min(props.nivel, coloresBorde.length - 1)]
-
-    return [
-      {
-        key: props.nodo.id,
-        tieneHijos: tieneHijos.value,
-        paddingLeft: `${props.nivel * 24 + 12}px`,
-        clases: ['border-b border-gray-100 dark:border-gray-800/60', 'hover:bg-gray-50 dark:hover:bg-gray-800/30 transition-colors', 'border-l-3', colorBorde].join(' '),
-      },
-    ]
+  watch(() => props.expandirTodo, (val) => {
+    expandido.value = val
   })
+
+  const nivelColores = [
+    { border: 'border-l-brand-500', badge: 'bg-brand-50 text-brand-600 dark:bg-brand-500/15 dark:text-brand-400', count: 'bg-brand-50 text-brand-600 dark:bg-brand-500/15 dark:text-brand-400' },
+    { border: 'border-l-blue-light-500', badge: 'bg-blue-light-50 text-blue-light-600 dark:bg-blue-light-500/15 dark:text-blue-light-400', count: 'bg-blue-light-50 text-blue-light-600 dark:bg-blue-light-500/15 dark:text-blue-light-400' },
+    { border: 'border-l-success-500', badge: 'bg-success-50 text-success-600 dark:bg-success-500/15 dark:text-success-400', count: 'bg-success-50 text-success-600 dark:bg-success-500/15 dark:text-success-400' },
+    { border: 'border-l-warning-500', badge: 'bg-warning-50 text-warning-600 dark:bg-warning-500/15 dark:text-warning-400', count: 'bg-warning-50 text-warning-600 dark:bg-warning-500/15 dark:text-warning-400' },
+    { border: 'border-l-orange-500', badge: 'bg-orange-50 text-orange-600 dark:bg-orange-500/15 dark:text-orange-400', count: 'bg-orange-50 text-orange-600 dark:bg-orange-500/15 dark:text-orange-400' },
+  ]
+
+  const nivelIndex = computed(() => Math.min(props.nivel, nivelColores.length - 1))
+  const borderColorClass = computed(() => nivelColores[nivelIndex.value]!.border)
+  const nivelBadgeClasses = computed(() => nivelColores[nivelIndex.value]!.badge)
+  const nivelCountClasses = computed(() => nivelColores[nivelIndex.value]!.count)
 </script>
 
 <style scoped>
   .border-l-3 {
     border-left-width: 3px;
-  }
-  .border-l-indigo-500 {
-    border-left-color: #6366f1;
-  }
-  .border-l-blue-500 {
-    border-left-color: #3b82f6;
-  }
-  .border-l-emerald-500 {
-    border-left-color: #10b981;
-  }
-  .border-l-amber-500 {
-    border-left-color: #f59e0b;
-  }
-
-  /* Tarjeta (móvil) */
-  .tarjeta-nodo {
-    border-left-width: 3px;
-    border-radius: 0.75rem;
-    background: white;
-    margin-bottom: 0.5rem;
-    overflow: hidden;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
-  }
-
-  :root.dark .tarjeta-nodo,
-  .dark .tarjeta-nodo {
-    background: #111827;
-  }
-
-  .tarjeta-header {
-    padding: 0.75rem 0.75rem 0;
-    cursor: pointer;
-  }
-
-  .tarjeta-titulo {
-    display: flex;
-    align-items: center;
-    gap: 0.375rem;
-  }
-
-  .tarjeta-area {
-    font-weight: 600;
-    font-size: 0.8125rem;
-    color: #111827;
-    flex: 1;
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .dark .tarjeta-area {
-    color: #f3f4f6;
-  }
-
-  .tarjeta-expand-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 1.5rem;
-    height: 1.5rem;
-    border-radius: 0.375rem;
-    color: #9ca3af;
-    flex-shrink: 0;
-    background: none;
-    border: none;
-    cursor: pointer;
-  }
-
-  .tarjeta-badge {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 1.25rem;
-    height: 1.25rem;
-    padding: 0 0.375rem;
-    border-radius: 9999px;
-    background: #f3f4f6;
-    color: #6b7280;
-    font-size: 0.6875rem;
-    font-weight: 600;
-    flex-shrink: 0;
-  }
-
-  .dark .tarjeta-badge {
-    background: #1f2937;
-    color: #9ca3af;
-  }
-
-  .tarjeta-body {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.5rem;
-    padding: 0.5rem 0.75rem 0.75rem;
-  }
-
-  .tarjeta-jefe-link,
-  .tarjeta-jefe {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.375rem;
-    font-size: 0.75rem;
-    color: #4b5563;
-    text-decoration: none;
-    min-width: 0;
-    overflow: hidden;
-  }
-
-  .tarjeta-jefe-link:hover {
-    color: #6366f1;
-  }
-
-  .dark .tarjeta-jefe-link,
-  .dark .tarjeta-jefe {
-    color: #d1d5db;
-  }
-
-  .dark .tarjeta-jefe-link:hover {
-    color: #818cf8;
-  }
-
-  .tarjeta-jefe-link span,
-  .tarjeta-jefe span {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  .tarjeta-dni {
-    font-family: ui-monospace, SFMono-Regular, monospace;
-    font-size: 0.6875rem;
-    color: #9ca3af;
-    flex-shrink: 0;
-  }
-
-  .dark .tarjeta-dni {
-    color: #6b7280;
   }
 </style>
