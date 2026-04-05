@@ -2,24 +2,31 @@
   <div class="space-y-2.5 mx-auto w-full p-4 md:p-6 lg:p-8 lg:pt-0">
     <header-perfil v-if="perfilActual" />
 
-    <div v-if="perfilActual" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
-      <div class="col-span-1 md:col-span-2 lg:col-span-2 xl:col-span-3 space-y-6">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div v-if="perfilActual" class="space-y-6">
+
+      <!-- Fila 1: info + vinculos -->
+      <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        <div class="lg:col-span-1 space-y-4">
           <info />
-          <vinculo />
+           <banco />
+            <historial />
         </div>
-
-        <vinculos-tabla />
-
-        <legajo-folder />
+        <div class="lg:col-span-3 space-y-4">
+          <vinculos-tabla />
+          <div class="grid grid-cols-1 md:grid-cols-6 gap-6 items-stretch justify-between w-full">
+            <contacto class="col-span-2" />
+            <grado class="col-span-2" />
+          </div>
+              <legajo-folder />
+        </div>
       </div>
 
-      <div class="col-span-1 md:col-span-2 lg:col-span-1 xl:col-span-1 space-y-6">
-        <contacto />
-        <banco />
-        <grado />
-        <historial />
-      </div>
+      <!-- Fila 2: contacto + banco + grados -->
+  
+
+      <!-- Legajo a ancho completo -->
+  
+
     </div>
   </div>
 </template>
@@ -31,7 +38,6 @@
   import { storeToRefs } from 'pinia'
   import HeaderPerfil from '../../components/perfil/header.vue'
   import Info from '../../components/perfil/info.vue'
-  import Vinculo from '../../components/perfil/vinculo.vue'
   import Banco from '../../components/perfil/banco.vue'
   import Contacto from '../../components/perfil/contacto.vue'
   import Grado from '../../components/perfil/grado.vue'

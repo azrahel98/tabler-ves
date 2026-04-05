@@ -44,11 +44,10 @@
 
         <div>
           <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Distrito</label>
-          <input
-            type="text"
+          <SearchableSelect
             v-model="form.distrito"
-            class="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-3 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
-            placeholder="Miraflores" />
+            :options="DISTRITOS"
+            placeholder="Seleccione distrito" />
         </div>
 
         <div>
@@ -109,9 +108,23 @@
   import { ref, reactive, watch } from 'vue'
   import { z } from 'zod/v4'
   import Modal from '../../ui/Modal.vue'
+  import SearchableSelect from '../../ui/SearchableSelect.vue'
   import { usePersonalStore } from '../../../stores/personal'
   import { Loader2 } from 'lucide-vue-next'
   import type { Persona } from '../../../types'
+
+  const DISTRITOS = [
+    'ANCON', 'ATE', 'BARRANCO', 'BELLAVISTA', 'BREÑA', 'CALLAO', 'CARABAYLLO',
+    'CARMEN DE LA LEGUA REYNOSO', 'CHACLACAYO', 'CHORRILLOS', 'CIENEGUILLA', 'COMAS',
+    'EL AGUSTINO', 'INDEPENDENCIA', 'JESUS MARIA', 'LA MOLINA', 'LA PERLA', 'LA PUNTA',
+    'LA VICTORIA', 'LIMA', 'LINCE', 'LOS OLIVOS', 'LURIGANCHO', 'LURIN',
+    'MAGDALENA DEL MAR', 'MI PERÚ', 'MIRAFLORES', 'PACHACAMAC', 'PUCUSANA',
+    'PUEBLO LIBRE', 'PUENTE PIEDRA', 'PUNTA HERMOSA', 'PUNTA NEGRA', 'RIMAC',
+    'SAN BARTOLO', 'SAN BORJA', 'SAN ISIDRO', 'SAN JUAN DE LURIGANCHO',
+    'SAN JUAN DE MIRAFLORES', 'SAN LUIS', 'SAN MARTIN DE PORRES', 'SAN MIGUEL',
+    'SANTA ANITA', 'SANTA MARIA DEL MAR', 'SANTA ROSA', 'SANTIAGO DE SURCO',
+    'SURQUILLO', 'VENTANILLA', 'VILLA EL SALVADOR', 'VILLA MARIA DEL TRIUNFO',
+  ].map(d => ({ id: d, nombre: d }))
 
   const props = defineProps<{
     isOpen: boolean
@@ -139,7 +152,7 @@
     telf: '',
     email: '',
     direccion: '',
-    region: '',
+    region: 'LIMA',
     distrito: '',
     ruc: '',
     nacimiento: '',

@@ -80,7 +80,7 @@
     <div class="" style="system-ui;min-width:120px;padding:2px 0">
       <div class="text-md font-semibold text-primary">${nombre}</div>
       <div class="text-sm text-bold">${trabajadores}</div>
-      <div style="font-size:11px;color:#8a9bbf">activos &mdash; ${pct(trabajadores)}% del total</div>
+      <div style="font-size:var(--text-xs);color:#8a9bbf">activos &mdash; ${pct(trabajadores)}% del total</div>
     </div>`
   }
 
@@ -245,7 +245,7 @@
     align-items: center;
     justify-content: center;
     gap: 12px;
-    font-size: 13px;
+    font-size: var(--text-xs);
     color: #6b7a99;
     font-family: system-ui, sans-serif;
   }

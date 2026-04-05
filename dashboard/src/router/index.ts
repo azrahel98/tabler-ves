@@ -68,6 +68,11 @@ const router = createRouter({
           name: 'sindicato-personal',
           component: () => import('../views/reporte/SindicatoPersonalView.vue'),
         },
+        {
+          path: 'usuarios',
+          name: 'usuarios',
+          component: () => import('../views/UsuariosView.vue'),
+        },
       ],
     },
   ],

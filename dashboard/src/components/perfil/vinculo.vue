@@ -1,15 +1,15 @@
 <template>
-  <div class="rounded-2xl border border-stroke bg-white p-6 shadow-sm dark:border-strokedark dark:bg-boxdark h-min">
-    <div class="flex flex-wrap items-center justify-between gap-2 text-xs font-bold uppercase text-black dark:text-white mb-6">
+  <div class="rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03] h-min">
+    <div class="flex flex-wrap items-center justify-between gap-2 text-xs font-bold uppercase text-gray-800 dark:text-white/90 mb-6">
       <div class="flex items-center gap-2 text-sm">
-        <BriefcaseBusinessIcon class="h-5 w-5 text-primary" />
+        <BriefcaseBusinessIcon class="h-5 w-5 text-brand-500" />
         Vínculo Laboral
       </div>
       <div class="flex items-center gap-1">
         <Popover v-if="vinculoActual && vinculoActual.codigo" posicion="abajo" alineacion="fin" ancho="300px" :mostrarFlecha="true" :mostrarCerrar="true" titulo="Detalle del Vínculo">
           <template #disparador>
             <button class="rounded-full p-1.5 hover:bg-blue-50 hover:text-blue-500 dark:hover:bg-blue-900/20 dark:hover:text-blue-400 transition-colors" title="Ver detalles adicionales">
-              <Info class="h-4 w-4" :class="tieneRenuncia ? 'text-accent' : 'text-slate-500'" />
+              <Info class="h-4 w-4" :class="tieneRenuncia ? 'text-error-500' : 'text-gray-400'" />
             </button>
           </template>
 
@@ -54,10 +54,10 @@
         <div v-if="vinculoActual && esAdmin" class="relative" ref="menuAcciones">
           <button
             @click="accionesAbiertas = !accionesAbiertas"
-            class="rounded-full flex items-center gap-1 px-2 py-1 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-700 transition-colors"
-            :class="tieneRenuncia ? 'text-accent' : 'text-slate-500'"
+            class="rounded-full flex items-center gap-1 px-2 py-1 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+            :class="tieneRenuncia ? 'text-error-500' : 'text-gray-500 dark:text-gray-400'"
             title="Acciones">
-            <ChevronDown class="h-3.5 w-3.5" :class="tieneRenuncia ? 'text-red-500' : 'text-slate-500'" />
+            <ChevronDown class="h-3.5 w-3.5" :class="tieneRenuncia ? 'text-error-500' : 'text-gray-400'" />
             <span class="text-xs font-medium">Acciones</span>
           </button>
 
@@ -70,20 +70,20 @@
             leave-to-class="scale-95 opacity-0">
             <div
               v-if="accionesAbiertas"
-              class="absolute right-0 top-full mt-1.5 z-50 min-w-[160px] rounded-xl border border-stroke bg-white shadow-lg dark:border-strokedark dark:bg-boxdark py-1 origin-top-right">
-              <button v-if="!tieneRenuncia" @click="abrirModal('evento')" class="accion-item hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-900/20 dark:hover:text-blue-400">
+              class="absolute right-0 top-full mt-1.5 z-50 min-w-[160px] rounded-xl border border-gray-200 bg-white shadow-theme-md dark:border-gray-800 dark:bg-gray-900 py-1 origin-top-right">
+              <button v-if="!tieneRenuncia" @click="abrirModal('evento')" class="accion-item hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-500/10 dark:hover:text-blue-400">
                 <ArrowLeftRight class="h-3.5 w-3.5" />
                 <span>Registrar Evento</span>
               </button>
 
-              <button v-if="!tieneRenuncia" @click="abrirModal('renuncia')" class="accion-item hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400">
+              <button v-if="!tieneRenuncia" @click="abrirModal('renuncia')" class="accion-item hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-500/10 dark:hover:text-red-400">
                 <UserMinus class="h-3.5 w-3.5" />
                 <span>Registrar Renuncia</span>
               </button>
 
-              <div v-if="!tieneRenuncia" class="mx-3 my-1 border-t border-gray-100 dark:border-gray-700"></div>
+              <div v-if="!tieneRenuncia" class="mx-3 my-1 border-t border-gray-100 dark:border-gray-800"></div>
 
-              <button @click="abrirModal('eliminar')" class="accion-item hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-900/20 dark:hover:text-rose-400">
+              <button @click="abrirModal('eliminar')" class="accion-item hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-500/10 dark:hover:text-rose-400">
                 <Trash2 class="h-3.5 w-3.5" />
                 <span>Eliminar Vínculo</span>
               </button>
@@ -96,45 +96,46 @@
     <div v-if="vinculoActual" class="space-y-4">
       <div class="grid grid-cols-2 gap-x-2 gap-y-1">
         <div class="col-span-2">
-          <p class="text-2xs font-semibold uppercase text-gray-400">Área</p>
-          <p class="mt-0.5 font-medium text-sm text-black dark:text-white">{{ vinculoActual.area }}</p>
+          <p class="text-[10px] font-medium uppercase tracking-wider text-gray-400">Área</p>
+          <p class="mt-0.5 font-medium text-sm text-gray-800 dark:text-white/90">{{ vinculoActual.area }}</p>
         </div>
         <div>
-          <p class="text-2xs font-semibold uppercase text-gray-400">Cargo</p>
-          <p class="mt-0.5 font-medium text-sm text-black dark:text-white">{{ vinculoActual.cargo }}</p>
+          <p class="text-[10px] font-medium uppercase tracking-wider text-gray-400">Cargo</p>
+          <p class="mt-0.5 font-medium text-sm text-gray-800 dark:text-white/90">{{ vinculoActual.cargo }}</p>
         </div>
         <div>
-          <p class="text-2xs font-semibold uppercase text-gray-400">Régimen</p>
-          <p class="mt-0.5 font-medium text-sm text-black dark:text-white">{{ vinculoActual.regimen }}</p>
+          <p class="text-[10px] font-medium uppercase tracking-wider text-gray-400">Régimen</p>
+          <div class="mt-0.5 font-medium text-sm text-gray-800 dark:text-white/90">{{ vinculoActual.regimen }}</div>
         </div>
         <div>
-          <p class="text-2xs font-semibold uppercase text-gray-400">Sueldo</p>
-          <p class="mt-0.5 text-sm font-semibold text-emerald-600 dark:text-emerald-400">
+          <p class="text-[10px] font-medium uppercase tracking-wider text-gray-400">Sueldo</p>
+          <p class="mt-0.5 text-sm font-semibold text-success-600 dark:text-success-400">
             S/ {{ vinculoActual.sueldo }}
             <span v-if="vinculoActual.codigo" class="text-gray-400 font-normal text-xs">· {{ vinculoActual.codigo }}</span>
           </p>
         </div>
+        <div>
+          <p class="text-[10px] font-medium uppercase tracking-wider text-gray-400">Estado</p>
+          <span class="mt-0.5 inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium ring-1 ring-inset uppercase"
+            :class="tieneRenuncia ? 'bg-red-50 text-red-700 ring-red-600/20 dark:bg-red-500/10 dark:text-red-400 dark:ring-red-500/20' : 
+                   vinculoActual.tipo_evento ? 'bg-amber-50 text-amber-700 ring-amber-600/20 dark:bg-amber-500/10 dark:text-amber-400 dark:ring-amber-500/20' : 
+                   'bg-green-50 text-green-700 ring-green-600/20 dark:bg-green-500/10 dark:text-green-400 dark:ring-green-500/20'">
+            {{ tieneRenuncia ? 'Renuncia' : vinculoActual.tipo_evento ? vinculoActual.tipo_evento : 'Activo' }}
+          </span>
+        </div>
         <div v-if="vinculoActual.numero_doc_ingreso">
-          <p class="text-2xs font-semibold uppercase text-gray-400">Doc. Ingreso</p>
-          <p class="mt-0.5 font-medium text-sm text-black dark:text-white uppercase">{{ vinculoActual.doc_ingreso }} N° {{ vinculoActual.numero_doc_ingreso }}</p>
+          <p class="text-[10px] font-medium uppercase tracking-wider text-gray-400">Doc. Ingreso</p>
+          <p class="mt-0.5 font-medium text-sm text-gray-800 dark:text-white/90 uppercase">{{ vinculoActual.doc_ingreso }} N° {{ vinculoActual.numero_doc_ingreso }}</p>
         </div>
         <div>
-          <p class="text-2xs font-semibold uppercase text-gray-400">Fecha Ingreso</p>
-          <p class="mt-0.5 font-medium text-sm text-black dark:text-white">{{ formatInTimeZone(vinculoActual.fecha_ingreso, 'America/Lima', 'dd/MM/yyyy') }}</p>
+          <p class="text-[10px] font-medium uppercase tracking-wider text-gray-400">Fecha Ingreso</p>
+          <p class="mt-0.5 font-medium text-sm text-gray-800 dark:text-white/90">{{ formatInTimeZone(vinculoActual.fecha_ingreso, 'America/Lima', 'dd/MM/yyyy') }}</p>
         </div>
       </div>
 
-      <div v-if="vinculoActual.descrip_ingreso" class="grid grid-cols-2 text-2xs">
-        <div>
-          <p class="font-semibold uppercase text-gray-400">Descripción Ingreso</p>
-          <p class="mt-0.5 font-medium text-sm text-black dark:text-white leading-relaxed uppercase">{{ vinculoActual.descrip_ingreso }}</p>
-        </div>
-        <div>
-          <p class="font-semibold uppercase text-gray-400">Estado</p>
-          <div class="badge mt-0.5" :class="tieneRenuncia ? 'bg-accent' : vinculoActual.tipo_evento ? 'bg-gray-500' : 'bg-primary'">
-            {{ tieneRenuncia ? 'Renuncia' : vinculoActual.tipo_evento ? vinculoActual.tipo_evento : 'activo' }}
-          </div>
-        </div>
+      <div v-if="vinculoActual.descrip_ingreso">
+        <p class="text-[10px] font-medium uppercase tracking-wider text-gray-400">Descripción Ingreso</p>
+        <p class="mt-0.5 font-medium text-sm text-gray-800 dark:text-white/90 leading-relaxed uppercase">{{ vinculoActual.descrip_ingreso }}</p>
       </div>
     </div>
 
@@ -235,7 +236,7 @@
   }
 
   .detalle-etiqueta {
-    font-size: 10px;
+    font-size: var(--text-2xs);
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.05em;
@@ -259,16 +260,16 @@
     gap: 8px;
     width: 100%;
     padding: 7px 14px;
-    font-size: 12px;
+    font-size: var(--text-xs);
     font-weight: 500;
-    color: #64748b;
+    color: var(--color-gray-500);
     transition:
       background-color 0.15s,
       color 0.15s;
     text-align: left;
   }
 
-  :root.dark .accion-item {
-    color: #94a3b8;
+  .dark .accion-item {
+    color: var(--color-gray-400);
   }
 </style>

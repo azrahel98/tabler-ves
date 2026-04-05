@@ -1,6 +1,6 @@
 <script setup lang="ts">
   import { ref } from 'vue'
-  import { Search, SlidersHorizontal, Download } from 'lucide-vue-next'
+  import { Search, Download } from 'lucide-vue-next'
   import { watchDebounced } from '@vueuse/core'
   import CardSearch from '../../components/search/card.vue'
   import Loading from '../../components/ui/Loading.vue'
@@ -72,7 +72,7 @@
       <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">Personal</h3>
     </div>
 
-    <div class="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/3">
+    <div class="overflow-hidden rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
       <div class="flex flex-col justify-between gap-5 border-b border-gray-200 px-5 py-4 sm:flex-row sm:items-center dark:border-gray-800">
         <div>
           <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">Lista de Personal</h3>
@@ -91,8 +91,8 @@
       <div class="border-b border-gray-200 px-5 py-4 dark:border-gray-800">
         <div class="flex gap-3 sm:justify-between">
           <div class="relative flex-1 sm:flex-auto">
-            <span class="absolute top-1/2 left-4 -translate-y-1/2 text-gray-500 dark:text-gray-400">
-              <Search v-if="!loading" />
+            <span class="absolute top-1/2 left-4 -translate-y-1/2 text-gray-400 dark:text-gray-500">
+              <Search v-if="!loading" class="h-4 w-4" />
               <Loading v-else size="xs" />
             </span>
             <input
@@ -100,15 +100,7 @@
               v-model="searchQuery"
               placeholder="Buscar por nombre o DNI..."
               autocomplete="off"
-              class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full rounded-lg border border-gray-300 bg-transparent py-2.5 pr-4 pl-11 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden sm:w-[300px] sm:min-w-[300px] dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30" />
-          </div>
-          <div class="relative">
-            <button
-              class="shadow-theme-xs flex h-11 w-full items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 sm:w-auto sm:min-w-[100px] dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400"
-              type="button">
-              <SlidersHorizontal />
-              Filter
-            </button>
+              class="w-full h-11 pl-11 pr-4 text-sm text-gray-900 bg-white border-[1.5px] border-gray-200 rounded-xl shadow-theme-xs outline-none transition-all duration-200 placeholder:text-gray-400 focus:border-brand-400 focus:ring-4 focus:ring-brand-500/10 dark:bg-white/[0.04] dark:border-white/10 dark:text-white/90 dark:placeholder:text-white/25 dark:focus:border-brand-500 dark:focus:ring-brand-500/15 sm:w-[300px] sm:min-w-[300px]" />
           </div>
         </div>
       </div>
@@ -141,7 +133,7 @@
       <template v-else-if="resultadosBusqueda.length > 0">
         <div class="flex items-center justify-between">
           <h4 class="text-md font-medium text-gray-800 dark:text-white/90">Resultados de la búsqueda</h4>
-          <span class="rounded-full bg-primary/10 px-3 py-1 text-sm font-medium text-primary">
+          <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium bg-brand-50 text-brand-700 ring-1 ring-inset ring-brand-600/20 dark:bg-brand-500/10 dark:text-brand-400 dark:ring-brand-500/20">
             {{ resultadosBusqueda.length }} {{ resultadosBusqueda.length === 1 ? 'trabajador' : 'trabajadores' }}
           </span>
         </div>

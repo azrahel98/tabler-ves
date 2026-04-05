@@ -212,26 +212,42 @@
     </div>
 
     <template #footer>
-      <!-- Botón principal cambia según el modo -->
-      <button
-        type="button"
-        @click="guardar"
-        :disabled="!puedeGuardar || guardando"
-        :class="[
-          'inline-flex w-full justify-center items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium text-white shadow-sm transition sm:ml-3 sm:w-auto disabled:cursor-not-allowed disabled:opacity-60',
-          hayEventoActivo ? 'bg-slate-700 hover:bg-slate-800' : tipoEvento === 'abandono' ? 'bg-amber-500 hover:bg-amber-600' : 'bg-blue-600 hover:bg-blue-700',
-        ]">
-        <Loader2 v-if="guardando" class="h-4 w-4 animate-spin" />
-        <span v-if="hayEventoActivo">Desactivar Evento</span>
-        <span v-else>{{ tipoEvento === 'abandono' ? 'Registrar Abandono' : 'Registrar Rotación' }}</span>
-      </button>
-      <button
-        type="button"
-        @click="cerrar"
-        :disabled="guardando"
-        class="mt-3 inline-flex w-full justify-center rounded-lg bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 transition dark:bg-gray-800 dark:text-gray-300 dark:ring-gray-700 dark:hover:bg-gray-700 sm:mt-0 sm:w-auto">
-        Cancelar
-      </button>
+      <div class="flex w-full flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <!-- Eliminar evento (solo cuando hay evento activo) -->
+        <button
+          v-if="hayEventoActivo"
+          type="button"
+          @click="eliminar"
+          :disabled="guardando"
+          class="inline-flex w-full justify-center items-center gap-2 rounded-lg border border-red-200 bg-white px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 transition sm:w-auto disabled:opacity-60 dark:border-red-800 dark:bg-transparent dark:text-red-400 dark:hover:bg-red-900/20">
+          <Trash2 class="h-4 w-4" />
+          Eliminar Evento
+        </button>
+        <div v-else class="hidden sm:block"></div>
+
+        <div class="flex flex-col gap-2 sm:flex-row">
+          <!-- Botón principal -->
+          <button
+            type="button"
+            @click="guardar"
+            :disabled="!puedeGuardar || guardando"
+            :class="[
+              'inline-flex w-full justify-center items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium text-white shadow-sm transition sm:w-auto disabled:cursor-not-allowed disabled:opacity-60',
+              hayEventoActivo ? 'bg-slate-700 hover:bg-slate-800' : tipoEvento === 'abandono' ? 'bg-amber-500 hover:bg-amber-600' : 'bg-blue-600 hover:bg-blue-700',
+            ]">
+            <Loader2 v-if="guardando" class="h-4 w-4 animate-spin" />
+            <span v-if="hayEventoActivo">Desactivar Evento</span>
+            <span v-else>{{ tipoEvento === 'abandono' ? 'Registrar Abandono' : 'Registrar Rotación' }}</span>
+          </button>
+          <button
+            type="button"
+            @click="cerrar"
+            :disabled="guardando"
+            class="mt-0 inline-flex w-full justify-center rounded-lg bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 transition dark:bg-gray-800 dark:text-gray-300 dark:ring-gray-700 dark:hover:bg-gray-700 sm:w-auto">
+            Cancelar
+          </button>
+        </div>
+      </div>
     </template>
   </Modal>
 </template>
@@ -239,9 +255,10 @@
 <script setup lang="ts">
   import { ref, computed, watch } from 'vue'
   import { storeToRefs } from 'pinia'
-  import { LogOut, ArrowLeftRight, Loader2, Activity, AlertTriangle } from 'lucide-vue-next'
+  import { LogOut, ArrowLeftRight, Loader2, Activity, AlertTriangle, Trash2 } from 'lucide-vue-next'
   import Modal from '../../ui/Modal.vue'
   import { useTableroStore } from '../../../stores/dashboard'
+  import { usePersonalStore } from '../../../stores/personal'
   import api from '../../../services/api'
 
   const props = defineProps<{
@@ -256,6 +273,7 @@
   }>()
 
   const tableroStore = useTableroStore()
+  const personalStore = usePersonalStore()
   const { documentos } = storeToRefs(tableroStore)
 
   // Estado general
@@ -348,6 +366,21 @@
   function cerrar() {
     if (guardando.value) return
     emit('close')
+  }
+
+  async function eliminar() {
+    const idEvento = props.eventoActual?.id_evento
+    if (!idEvento) return
+    if (!confirm('¿Eliminar este evento de vínculo? Esta acción es irreversible.')) return
+    guardando.value = true
+    try {
+      await personalStore.deleteEventoVinculo(idEvento)
+      emit('guardado')
+    } catch (error) {
+      console.error('Error al eliminar evento', error)
+    } finally {
+      guardando.value = false
+    }
   }
 
   async function guardar() {

@@ -273,7 +273,7 @@
   }
 
   .popover-titulo {
-    font-size: 0.875rem;
+    font-size: var(--text-sm);
     font-weight: 600;
     color: var(--color-gray-800);
   }
@@ -323,16 +323,20 @@
   }
 
   /* ─── Transición ─── */
-  .popover-enter-active,
+  .popover-enter-active {
+    transition:
+      opacity 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+      transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  }
   .popover-leave-active {
     transition:
-      opacity 0.15s ease,
-      transform 0.15s ease;
+      opacity 0.14s cubic-bezier(0.4, 0, 1, 1),
+      transform 0.14s cubic-bezier(0.4, 0, 1, 1);
   }
 
   .popover-enter-from,
   .popover-leave-to {
     opacity: 0;
-    transform: translateY(4px);
+    transform: translateY(8px) scale(0.97);
   }
 </style>

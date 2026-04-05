@@ -137,6 +137,30 @@ export const usePersonalStore = defineStore('personal', () => {
     }
   }
 
+  async function eliminarContacto(persona_dni: string) {
+    await api.post('/personal/eliminar_contacto', { persona_dni })
+    contactoEmergencia.value = null
+  }
+
+  async function eliminarSindicato(vinculo_id: number, dni: string) {
+    await api.post('/personal/eliminar_sindicato', { vinculo_id, dni })
+    if (perfilActual.value?.dni) {
+      await obtenerVinculos(perfilActual.value.dni)
+    }
+  }
+
+  async function deleteEventoVinculo(id: number) {
+    cargando.value = true
+    try {
+      await api.post('/personal/delete_evento_vinculo', { id })
+      if (perfilActual.value?.dni) {
+        await obtenerVinculos(perfilActual.value.dni)
+      }
+    } finally {
+      cargando.value = false
+    }
+  }
+
   async function upsertEvento(data: Record<string, unknown>) {
     cargando.value = true
     try {
@@ -186,6 +210,9 @@ export const usePersonalStore = defineStore('personal', () => {
     agregarBanco,
     agregarGrado,
     agregarContacto,
+    eliminarContacto,
+    eliminarSindicato,
+    deleteEventoVinculo,
     upsertEvento,
     limpiarDatos,
   }

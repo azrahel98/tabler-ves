@@ -34,18 +34,18 @@
   --breakpoint-xl: 1280px;
   --breakpoint-2xl: 1536px;
 
-  --text-title-xl: clamp(1.8rem, 2.2vw, 2.6rem);
-  --text-title-lg: clamp(1.5rem, 1.8vw, 2rem);
-  --text-title-md: clamp(1.2rem, 1.4vw, 1.6rem);
-  --text-title-sm: clamp(1rem, 1.2vw, 1.3rem);
+  --text-title-xl: clamp(1.35rem, 1.5vw, 1.7rem);
+  --text-title-lg: clamp(1.15rem, 1.25vw, 1.4rem);
+  --text-title-md: clamp(1rem, 1.05vw, 1.2rem);
+  --text-title-sm: clamp(0.875rem, 0.95vw, 1rem);
 
-  --text-xl: clamp(0.9rem, 1vw, 1.1rem);
-  --text-sm: clamp(0.75rem, 0.7vw, 0.85rem);
-  --text-xs: clamp(0.65rem, 0.6vw, 0.75rem);
-  --text-theme-sm: clamp(0.75rem, 0.7vw, 0.85rem);
-  --text-theme-xs: clamp(0.65rem, 0.6vw, 0.75rem);
-  --text-2xs: clamp(0.6rem, 0.55vw, 0.7rem);
-  --text-3xs: clamp(0.5rem, 0.5vw, 0.6rem);
+  --text-xl: clamp(0.825rem, 0.85vw, 0.95rem);
+  --text-sm: clamp(0.75rem, 0.7vw, 0.825rem);
+  --text-xs: clamp(0.65rem, 0.6vw, 0.725rem);
+  --text-theme-sm: clamp(0.75rem, 0.7vw, 0.825rem);
+  --text-theme-xs: clamp(0.65rem, 0.6vw, 0.725rem);
+  --text-2xs: clamp(0.6rem, 0.55vw, 0.675rem);
+  --text-3xs: clamp(0.5rem, 0.5vw, 0.575rem);
 
   --color-current: currentColor;
   --color-transparent: transparent;
@@ -281,7 +281,10 @@
   }
 
   html {
-    font-size: clamp(9px, 0.45vw + 0.6rem, 15px);
+    font-size: clamp(11px, 0.5vw + 7px, 13px);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
   }
 
   .dark * {
@@ -761,5 +764,25 @@ span.flatpickr-weekday,
     0px 1px 3px 0px rgba(16, 24, 40, 0.1),
     0px 1px 2px 0px rgba(16, 24, 40, 0.06);
   opacity: 0.8;
-  cursor: grabbing; /* Changes the cursor to indicate dragging */
+  cursor: grabbing;
+}
+
+/* ── Page route transitions ── */
+.page-enter-active {
+  transition:
+    opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.page-leave-active {
+  transition:
+    opacity 0.18s cubic-bezier(0.4, 0, 1, 1),
+    transform 0.18s cubic-bezier(0.4, 0, 1, 1);
+}
+.page-enter-from {
+  opacity: 0;
+  transform: translateY(14px);
+}
+.page-leave-to {
+  opacity: 0;
+  transform: translateY(-8px);
 }

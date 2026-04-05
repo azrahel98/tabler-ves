@@ -5,24 +5,20 @@
         <h2 class="text-xl font-bold text-gray-800 dark:text-white/90">Dashboard</h2>
       </div>
 
-      <!-- KPIs -->
       <Metrica />
 
-      <!-- Gráficos de distribución: donuts -->
       <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3 md:gap-6">
         <Circulo />
         <GraficoSexo />
         <GraficoSindicato />
       </div>
 
-      <div class="grid grid-cols-1 gap-4 lg:grid-cols-2 md:gap-6">
+      <div class="grid grid-cols-1 gap-4 lg:grid-cols-3 md:gap-6">
         <Cumpleanos />
-        <Renuncias />
-        <NuevosTrabajadores />
+        <Movimientos />
         <EventosVinculo />
       </div>
 
-      <!-- Mapa -->
       <Mapa geojson-url="/map.geojson" />
     </div>
   </main>
@@ -35,8 +31,7 @@
   import GraficoSexo from '../components/dashboard/grafico-sexo.vue'
   import GraficoSindicato from '../components/dashboard/grafico-sindicato.vue'
   import Cumpleanos from '../components/dashboard/cumpleanos.vue'
-  import Renuncias from '../components/dashboard/renuncias.vue'
-  import NuevosTrabajadores from '../components/dashboard/nuevos-trabajadores.vue'
+  import Movimientos from '../components/dashboard/movimientos.vue'
   import EventosVinculo from '../components/dashboard/eventos-vinculo.vue'
   import Mapa from '../components/dashboard/mapa.vue'
   import { useTableroStore } from '../stores/dashboard'

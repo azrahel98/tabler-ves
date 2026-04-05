@@ -1,63 +1,84 @@
 <template>
-  <div v-if="vinculos.length > 0" class="rounded-2xl border border-stroke bg-white p-6 shadow-sm dark:border-strokedark dark:bg-boxdark">
-    <div class="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-black dark:text-white mb-6">
-      <svg class="h-5 w-5 text-primary" fill="currentColor" viewBox="0 0 24 24">
-        <path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm-1 9h-2v2H9v-2H7v-2h2V7h2v2h2v2zm-1-6V3.5L17.5 9H12z" />
-      </svg>
-      Historial de Vínculos
-      <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400 normal-case tracking-normal">
-        {{ vinculos.length }} registros
-      </span>
+  <div v-if="vinculos.length > 0" class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/3">
+
+    <!-- Header -->
+    <div class="flex items-center justify-between px-5 py-4 border-b border-gray-100 dark:border-gray-800">
+      <div class="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-gray-800 dark:text-white/90">
+        <Briefcase class="h-4 w-4 text-brand-500 shrink-0" />
+        Historial de Vínculos
+        <span class="inline-flex items-center rounded-full bg-gray-100 px-2 py-0.5 text-xs font-semibold text-gray-500 dark:bg-gray-800 dark:text-gray-400 normal-case tracking-normal">
+          {{ vinculos.length }}
+        </span>
+      </div>
     </div>
 
-    <div class="hidden md:block overflow-x-auto">
-      <table class="w-full text-xs">
-        <thead>
-          <tr class="border-b border-stroke dark:border-strokedark text-2xs font-bold uppercase text-gray-400">
-            <th class="pb-3 pr-4 text-left"></th>
-            <th class="pb-3 pr-4 text-left">Área</th>
-            <th class="pb-3 pr-4 text-left">Cargo</th>
-            <th class="pb-3 pr-4 text-left">Régimen</th>
-            <th class="pb-3 pr-4 text-left">Ingreso</th>
-            <th class="pb-3 pr-4 text-left">Salida</th>
-            <th class="pb-3 pr-4 text-right">Sueldo</th>
-            <th class="pb-3 text-center">Detalle</th>
-            <th v-if="esAdmin" class="pb-3 text-center">Acción</th>
+
+    <div class="hidden md:block overflow-x-auto max-h-[25vh] overflow-y-auto">
+      <table class="w-full">
+        <thead class="sticky top-0 bg-white dark:bg-gray-900 z-10">
+          <tr class="border-b border-gray-100 dark:border-gray-800">
+            <th class="py-2 text-center text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500 "></th>
+            <th class="px-5 py-2 text-left text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">Área / Cargo</th>
+            <th class="px-5 py-2 text-left text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">Régimen</th>
+            <th class="px-5 py-2 text-left text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">Período</th>
+            <th class="px-5 py-2 text-right text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">Sueldo</th>
+            <th class="px-5 py-2 text-center text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">Info</th>
+            <th v-if="esAdmin" class="px-5 py-2"></th>
           </tr>
         </thead>
-        <tbody>
+        <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
           <tr
             v-for="v in vinculos"
             v-memo="[v.id, v.estado]"
             :key="v.id"
-            class="border-b border-stroke/50 dark:border-strokedark/50 last:border-0 hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors text-sm">
-            <td>
-              <span class="flex items-center">
-                <span :class="v.estado === 'activo' ? 'bg-emerald-500' : 'bg-red-500'" class="inline-block w-2 h-2 rounded-full shrink-0"> </span>
-                <span
-                  :class="v.estado === 'activo' ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'"
-                  class="text-[10px] font-semibold uppercase whitespace-nowrap">
-                </span>
+            class="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+
+            <!-- Estado -->
+            <td class=" pl-4 middle text-start ">
+              <span
+                class="inline-block h-2.5 w-2.5 rounded-full"
+                :class="v.estado === 'activo' ? 'bg-emerald-500' : 'bg-red-400'"
+                :title="v.estado === 'activo' ? 'Activo' : 'Inactivo'">
               </span>
             </td>
-            <td class="pr-4 text-black dark:text-white font-medium max-w-[200px] truncate" :title="v.area ?? undefined">{{ v.area }}</td>
-            <td class="pr-4 text-black dark:text-white max-w-[160px] truncate" :title="v.cargo ?? undefined">{{ v.cargo }}</td>
-            <td class="pr-4 text-gray-500 dark:text-gray-400 whitespace-nowrap">{{ v.regimen }}</td>
-            <td class="pr-4 text-gray-500 dark:text-gray-400 whitespace-nowrap">{{ v.fecha_ingreso }}</td>
-            <td class="pr-4 text-gray-500 dark:text-gray-400 whitespace-nowrap">{{ v.fecha_salida || '—' }}</td>
-            <td class="pr-4 text-right text-black dark:text-white font-medium whitespace-nowrap">S/ {{ v.sueldo }}</td>
 
-            <td class="text-center">
+            <!-- Área / Cargo -->
+            <td class=" pl-2  py-3.5 max-w-[220px]">
+              <p class="text-sm font-medium text-gray-800 dark:text-white truncate" :title="v.cargo ?? undefined">{{ v.cargo }}</p>
+              <p class="text-xs text-gray-400 dark:text-gray-500 truncate mt-0.5" :title="v.area ?? undefined">{{ v.area }}</p>
+            </td>
+
+            <!-- Régimen -->
+            <td class="px-5 py-3.5">
+              <span class="text-sm text-gray-500 dark:text-gray-400 whitespace-nowrap">{{ v.regimen }}</span>
+            </td>
+
+            <!-- Período -->
+            <td class="px-5 py-3.5 whitespace-nowrap">
+              <span class="text-sm text-gray-600 dark:text-gray-300">{{ format(addDays(new Date(v.fecha_ingreso),1),'dd/MM/yyyy') }}</span>
+              <span class="mx-1.5 text-gray-300 dark:text-gray-600">→</span>
+              <span class="text-sm" :class="v.fecha_salida ? 'text-gray-500 dark:text-gray-400' : 'text-emerald-600 dark:text-emerald-400 font-medium'">
+              {{ v.fecha_salida ? format(addDays(new Date(v.fecha_salida),1),'dd/MM/yyyy') : v.estado == 'activo' ? 'Presente' : ''}}
+                
+              </span>
+            </td>
+
+            <!-- Sueldo -->
+            <td class="px-5 py-3.5 text-right whitespace-nowrap">
+              <span class="text-sm font-semibold text-gray-800 dark:text-white">S/ {{ v.sueldo }}</span>
+            </td>
+
+            <!-- Info -->
+            <td class="px-5 py-3.5 text-center">
               <Popover posicion="abajo" alineacion="fin" ancho="320px" :mostrarFlecha="true" :mostrarCerrar="true" titulo="Información Adicional">
                 <template #disparador>
                   <button
-                    class="rounded-full p-1.5 text-slate-400 hover:bg-blue-50 hover:text-blue-500 dark:hover:bg-blue-900/20 dark:hover:text-blue-400 transition-colors"
+                    class="inline-flex items-center justify-center rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-300 transition-colors"
                     title="Ver detalles">
-                    <Info class="h-4 w-4" />
+                    <Info class="h-3.5 w-3.5" />
                   </button>
                 </template>
-
-                <div class="space-y-2.5 text-sm">
+                <div class="space-y-2.5">
                   <div v-if="v.doc_ingreso" class="detalle-fila">
                     <span class="detalle-etiqueta">Doc. Ingreso</span>
                     <span class="detalle-valor">{{ v.doc_ingreso }} {{ v.numero_doc_ingreso }}</span>
@@ -82,9 +103,8 @@
                     <span class="detalle-etiqueta">Sindicato</span>
                     <span class="detalle-valor">{{ v.sindicato }}</span>
                   </div>
-
                   <template v-if="v.fecha_salida">
-                    <div class="border-t border-gray-200 dark:border-gray-700 my-2"></div>
+                    <div class="border-t border-gray-100 dark:border-gray-800 my-1"></div>
                     <div v-if="v.doc_salida" class="detalle-fila">
                       <span class="detalle-etiqueta">Doc. Salida</span>
                       <span class="detalle-valor">{{ v.doc_salida }} {{ v.numero_doc_salida }}</span>
@@ -94,14 +114,14 @@
                       <span class="detalle-valor">{{ v.descrip_salida }}</span>
                     </div>
                   </template>
-
                   <template v-if="v.tipo_evento">
-                    <div class="border-t border-gray-200 dark:border-gray-700 my-2"></div>
+                    <div class="border-t border-gray-100 dark:border-gray-800 my-1"></div>
                     <div class="detalle-fila">
                       <span class="detalle-etiqueta">Evento</span>
-                      <span class="detalle-valor"
-                        >{{ v.tipo_evento }} <span v-if="v.estado_evento" class="text-gray-400">· {{ v.estado_evento }}</span></span
-                      >
+                      <span class="detalle-valor">
+                        {{ v.tipo_evento }}
+                        <span v-if="v.estado_evento" class="text-gray-400"> · {{ v.estado_evento }}</span>
+                      </span>
                     </div>
                     <div v-if="v.doc_evento_tipo" class="detalle-fila">
                       <span class="detalle-etiqueta">Doc. Evento</span>
@@ -116,21 +136,25 @@
               </Popover>
             </td>
 
-            <td class="py-3 text-center" v-if="esAdmin">
+            <!-- Acciones admin -->
+            <td class="px-3 py-3.5 text-center" v-if="esAdmin">
               <Popover posicion="abajo" alineacion="fin" ancho="160px" :mostrarCerrar="false" :mostrarFlecha="false">
                 <template #disparador>
-                  <button class="rounded-full p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-700 dark:hover:text-slate-300 transition-colors">
-                    <MoreHorizontal class="h-4 w-4" />
+                  <button class="inline-flex items-center justify-center rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-300 transition-colors">
+                    <MoreHorizontal class="h-3.5 w-3.5" />
                   </button>
                 </template>
-
                 <div class="acciones-menu">
                   <button v-if="!v.fecha_salida" @click="abrirRenuncia(v)" class="accion-item accion-item--renuncia">
-                    <UserMinus class="h-3.5 w-3.5" />
+                    <UserMinus class="h-3.5 w-3.5 shrink-0" />
                     <span>Renuncia</span>
                   </button>
+                  <button v-if="v.sindicato && !v.fecha_salida" @click="desafiliarSindicato(v)" class="accion-item accion-item--neutral">
+                    <Shield class="h-3.5 w-3.5 shrink-0" />
+                    <span>Desafiliar</span>
+                  </button>
                   <button @click="abrirEliminar(v)" class="accion-item accion-item--eliminar">
-                    <Trash2 class="h-3.5 w-3.5" />
+                    <Trash2 class="h-3.5 w-3.5 shrink-0" />
                     <span>Eliminar</span>
                   </button>
                 </div>
@@ -141,27 +165,33 @@
       </table>
     </div>
 
-    <div class="md:hidden space-y-3">
-      <div v-for="v in vinculos" :key="v.id" class="rounded-xl border border-stroke/60 dark:border-strokedark/60 p-4 space-y-2">
-        <div class="flex items-center justify-between">
-          <span class="font-medium text-sm text-black dark:text-white truncate mr-2">{{ v.cargo }}</span>
+    <!-- Cards mobile -->
+    <div class="md:hidden divide-y divide-gray-100 dark:divide-gray-800">
+      <div v-for="v in vinculos" :key="v.id" class="px-5 py-4 space-y-3">
+
+        <!-- Fila superior: cargo + badges -->
+        <div class="flex items-start justify-between gap-3">
+          <div class="min-w-0">
+            <p class="text-sm font-semibold text-gray-800 dark:text-white truncate">{{ v.cargo }}</p>
+            <p class="text-xs text-gray-400 dark:text-gray-500 truncate mt-0.5">{{ v.area }}</p>
+          </div>
           <div class="flex items-center gap-1.5 shrink-0">
             <span
-              :class="v.fecha_salida ? 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400' : 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400'"
-              class="text-[10px] font-semibold px-2 py-0.5 rounded-full whitespace-nowrap">
+              class="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold"
+              :class="v.fecha_salida
+                ? 'bg-red-50 text-red-600 dark:bg-red-500/10 dark:text-red-400'
+                : 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400'">
+              <span class="h-1.5 w-1.5 rounded-full" :class="v.fecha_salida ? 'bg-red-500' : 'bg-emerald-500'"></span>
               {{ v.fecha_salida ? 'Inactivo' : 'Activo' }}
             </span>
 
             <Popover posicion="abajo" alineacion="fin" ancho="280px" :mostrarFlecha="true" :mostrarCerrar="true" titulo="Información Adicional">
               <template #disparador>
-                <button
-                  class="rounded-full p-1 text-slate-400 hover:bg-blue-50 hover:text-blue-500 dark:hover:bg-blue-900/20 dark:hover:text-blue-400 transition-colors"
-                  title="Ver detalles">
+                <button class="inline-flex items-center justify-center rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-300 transition-colors">
                   <Info class="h-3.5 w-3.5" />
                 </button>
               </template>
-
-              <div class="space-y-2.5 text-xs">
+              <div class="space-y-2.5">
                 <div v-if="v.doc_ingreso" class="detalle-fila">
                   <span class="detalle-etiqueta">Doc. Ingreso</span>
                   <span class="detalle-valor">{{ v.doc_ingreso }} {{ v.numero_doc_ingreso }}</span>
@@ -187,7 +217,7 @@
                   <span class="detalle-valor">{{ v.sindicato }}</span>
                 </div>
                 <template v-if="v.fecha_salida">
-                  <div class="border-t border-gray-200 dark:border-gray-700 my-2"></div>
+                  <div class="border-t border-gray-100 dark:border-gray-800 my-1"></div>
                   <div v-if="v.doc_salida" class="detalle-fila">
                     <span class="detalle-etiqueta">Doc. Salida</span>
                     <span class="detalle-valor">{{ v.doc_salida }} {{ v.numero_doc_salida }}</span>
@@ -198,7 +228,7 @@
                   </div>
                 </template>
                 <template v-if="v.tipo_evento">
-                  <div class="border-t border-gray-200 dark:border-gray-700 my-2"></div>
+                  <div class="border-t border-gray-100 dark:border-gray-800 my-1"></div>
                   <div class="detalle-fila">
                     <span class="detalle-etiqueta">Evento</span>
                     <span class="detalle-valor">{{ v.tipo_evento }}</span>
@@ -213,41 +243,44 @@
 
             <Popover v-if="esAdmin" posicion="abajo" alineacion="fin" ancho="160px" :mostrarCerrar="false" :mostrarFlecha="false">
               <template #disparador>
-                <button class="rounded-full p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-700 dark:hover:text-slate-300 transition-colors">
+                <button class="inline-flex items-center justify-center rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-300 transition-colors">
                   <MoreHorizontal class="h-3.5 w-3.5" />
                 </button>
               </template>
-
               <div class="acciones-menu">
                 <button v-if="!v.fecha_salida" @click="abrirRenuncia(v)" class="accion-item accion-item--renuncia">
-                  <UserMinus class="h-3.5 w-3.5" />
+                  <UserMinus class="h-3.5 w-3.5 shrink-0" />
                   <span>Renuncia</span>
                 </button>
                 <button @click="abrirEliminar(v)" class="accion-item accion-item--eliminar">
-                  <Trash2 class="h-3.5 w-3.5" />
+                  <Trash2 class="h-3.5 w-3.5 shrink-0" />
                   <span>Eliminar</span>
                 </button>
               </div>
             </Popover>
           </div>
         </div>
-        <p class="text-xs text-gray-500 dark:text-gray-400 truncate">{{ v.area }}</p>
-        <div class="grid grid-cols-2 gap-2 pt-1 border-t border-stroke/40 dark:border-strokedark/40">
+
+        <!-- Grid de datos -->
+        <div class="grid grid-cols-2 gap-x-4 gap-y-2.5 pt-3 border-t border-gray-100 dark:border-gray-800">
           <div>
-            <p class="text-[10px] font-medium uppercase tracking-wider text-gray-400">Régimen</p>
-            <p class="text-xs text-black dark:text-white mt-0.5">{{ v.regimen }}</p>
+            <p class="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">Régimen</p>
+            <p class="text-sm text-gray-700 dark:text-gray-300 mt-0.5">{{ v.regimen }}</p>
           </div>
           <div>
-            <p class="text-[10px] font-medium uppercase tracking-wider text-gray-400">Sueldo</p>
-            <p class="text-xs text-black dark:text-white mt-0.5">S/ {{ v.sueldo }}</p>
+            <p class="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">Sueldo</p>
+            <p class="text-sm font-semibold text-gray-800 dark:text-white mt-0.5">S/ {{ v.sueldo }}</p>
           </div>
           <div>
-            <p class="text-[10px] font-medium uppercase tracking-wider text-gray-400">Ingreso</p>
-            <p class="text-xs text-black dark:text-white mt-0.5">{{ v.fecha_ingreso }}</p>
+            <p class="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">Ingreso</p>
+            <p class="text-sm text-gray-700 dark:text-gray-300 mt-0.5">{{ v.fecha_ingreso }}</p>
           </div>
           <div>
-            <p class="text-[10px] font-medium uppercase tracking-wider text-gray-400">Salida</p>
-            <p class="text-xs text-black dark:text-white mt-0.5">{{ v.fecha_salida || '—' }}</p>
+            <p class="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">Salida</p>
+            <p class="text-sm mt-0.5" :class="v.fecha_salida ? 'text-gray-700 dark:text-gray-300' : 'text-emerald-600 dark:text-emerald-400 font-medium'">
+              {{ v.fecha_salida || 'Presente' }}
+              
+            </p>
           </div>
         </div>
       </div>
@@ -262,11 +295,12 @@
   import { ref } from 'vue'
   import { storeToRefs } from 'pinia'
   import { usePersonalStore } from '../../stores/personal'
-  import { UserMinus, Info, Trash2, MoreHorizontal } from 'lucide-vue-next'
+  import { UserMinus, Info, Trash2, MoreHorizontal, Briefcase, Shield } from 'lucide-vue-next'
   import RenunciaModal from './modals/RenunciaModal.vue'
   import ConfirmarEliminarModal from './modals/ConfirmarEliminarModal.vue'
   import Popover from '../ui/Popover.vue'
   import { useAutenticacionStore } from '../../stores/auth'
+import { addDays, format } from 'date-fns'
 
   const store = usePersonalStore()
   const { vinculos } = storeToRefs(store)
@@ -303,6 +337,15 @@
       console.error('Error al eliminar vínculo', error)
     }
   }
+
+  const desafiliarSindicato = async (vinculo: any) => {
+    if (!confirm(`¿Desafiliar a este trabajador del sindicato ${vinculo.sindicato}?`)) return
+    try {
+      await store.eliminarSindicato(vinculo.id, vinculo.dni)
+    } catch (error) {
+      console.error('Error al desafiliar sindicato', error)
+    }
+  }
 </script>
 
 <style scoped>
@@ -313,7 +356,7 @@
   }
 
   .detalle-etiqueta {
-    font-size: 10px;
+    font-size: var(--text-2xs);
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.05em;
@@ -321,6 +364,7 @@
   }
 
   .detalle-valor {
+    font-size: var(--text-xs);
     font-weight: 500;
     color: var(--color-gray-800);
     word-break: break-word;
@@ -331,7 +375,6 @@
     color: var(--color-gray-200);
   }
 
-  /* ─── Dropdown de acciones ─── */
   .acciones-menu {
     display: flex;
     flex-direction: column;
@@ -346,12 +389,10 @@
     width: 100%;
     padding: 7px 12px;
     border-radius: 6px;
-    font-size: 0.8125rem;
+    font-size: var(--text-sm);
     font-weight: 500;
     color: var(--color-gray-600);
-    transition:
-      background-color 0.12s ease,
-      color 0.12s ease;
+    transition: background-color 0.12s ease, color 0.12s ease;
     text-align: left;
   }
 
@@ -380,5 +421,16 @@
   .dark .accion-item--eliminar:hover {
     background-color: rgba(197, 48, 48, 0.1);
     color: #feb2b2;
+  }
+
+  .accion-item--neutral:hover {
+    background-color: #eff6ff;
+    color: #2563eb;
+  }
+
+  :root.dark .accion-item--neutral:hover,
+  .dark .accion-item--neutral:hover {
+    background-color: rgba(37, 99, 235, 0.1);
+    color: #93c5fd;
   }
 </style>
