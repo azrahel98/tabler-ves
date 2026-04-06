@@ -1,9 +1,9 @@
 use crate::{
-    AppState, key,
+    AppState,
     middleware::error::{ApiError, validar},
     models::personal::{
         AsistenciaVw, ContactoEmergencia, DatosBancarios, DatosBancariosResponse,
-        DeleteEventoVinculoPayload, Documento, DocumentoSindicato, EventoVinculoPayload,
+        Documento, DocumentoSindicato, EventoVinculoPayload,
         GradoAcademico, LegajoPersonal, NuevoVinculo, Perfil, PerfilInput, Persona, Vinculos,
     },
 };
@@ -62,7 +62,7 @@ pub async fn buscar_por_nombre(
 }
 
 async fn get_perfil_by_dni(data: web::Data<AppState>, dni: String) -> Result<Perfil, ApiError> {
-    let key = key::key::DB_KEY;
+    let key = std::env::var("DB_KEY").expect("DB_KEY must be set");
 
     let trabajador = sqlx::query_as!(
         Perfil,
@@ -446,7 +446,7 @@ pub async fn editar_perfil(
     req: HttpRequest,
 ) -> Result<impl Responder, ApiError> {
     validar(&perfil.0)?;
-    let key = key::key::DB_KEY;
+    let key = std::env::var("DB_KEY").expect("DB_KEY must be set");
     let perfil_antes = get_perfil_by_dni(data.clone(), perfil.dni.clone()).await?;
 
     let insert = sqlx::query(
@@ -548,28 +548,6 @@ pub async fn agregar_sindicato(
     tx.commit().await?;
 
     Ok(HttpResponse::Ok().json("Se registraron correctamente los datos"))
-}
-
-pub async fn personas_legajos(data: web::Data<AppState>) -> Result<impl Responder, ApiError> {
-    let data = sqlx::query(r#"select persona from legajo GROUP by persona"#)
-        .fetch_all(&data.db)
-        .await
-        .map_err(|e| {
-            eprintln!("Database error: {:?}", e);
-            ApiError::InternalError("Database consulta malformada".into())
-        })?;
-
-    let result: Vec<Value> = data
-        .iter()
-        .map(|row| {
-            json!({
-                "persona": row.get::<String, _>("persona"),
-
-            })
-        })
-        .collect();
-
-    Ok(HttpResponse::Ok().json(result))
 }
 
 pub async fn reporte_legajo(
@@ -738,7 +716,7 @@ pub async fn contacto_emergencia_add(
     req: HttpRequest,
 ) -> Result<impl Responder, ApiError> {
     validar(&contacto.0)?;
-    let key = key::key::DB_KEY;
+    let key = std::env::var("DB_KEY").expect("DB_KEY must be set");
     let query = sqlx::query(
         r#"
         INSERT INTO contactoemergencia (persona_dni, nombre, telefono, relacion)
@@ -778,7 +756,7 @@ pub async fn conctaco_por_dni(
     dni: web::Json<PerfilDni>,
 ) -> Result<impl Responder, ApiError> {
     validar(&dni.0)?;
-    let key = key::key::DB_KEY;
+    let key = std::env::var("DB_KEY").expect("DB_KEY must be set");
     let datos = sqlx::query_as!(
         ContactoEmergencia,
         r#"select persona_dni,nombre,relacion,cast(aes_decrypt(telefono,?) as char) telefono from contactoemergencia  where persona_dni = ?
@@ -906,7 +884,7 @@ pub async fn registrar_trabajador(
     req: HttpRequest,
 ) -> Result<impl Responder, ApiError> {
     validar(&body.0)?;
-    let key = key::key::DB_KEY;
+    let key = std::env::var("DB_KEY").expect("DB_KEY must be set");
     let mut tx = data.db.begin().await?;
 
     sqlx::query(
@@ -1010,7 +988,7 @@ pub async fn consultar_dni_reniec(
     body: web::Json<PerfilDni>,
 ) -> Result<impl Responder, ApiError> {
     validar(&body.0)?;
-    let key = key::key::DB_KEY;
+    let key = std::env::var("DB_KEY").expect("DB_KEY must be set");
 
     let local = sqlx::query_as!(
         PerfilInput,
@@ -1404,123 +1382,69 @@ pub async fn upsert_evento_vinculo(
     Ok(HttpResponse::Ok().json("Operación exitosa"))
 }
 
-#[derive(Deserialize, Validate)]
-pub struct BuscarPorArea {
-    #[validate(range(min = 1, message = "ID de área inválido"))]
-    pub area_id: i32,
-}
-
-pub async fn personal_por_area(
-    data: web::Data<AppState>,
-    body: web::Json<BuscarPorArea>,
-) -> Result<impl Responder, ApiError> {
-    validar(&body.0)?;
-    let trabajadores = sqlx::query(
-        r#"
-        SELECT
-            p.dni,
-            CONCAT_WS(' ', p.apaterno, p.amaterno, p.nombre) AS nombre,
-            cr.nombre AS cargo,
-            ar.nombre AS area
-        FROM vinculo v
-        INNER JOIN persona p ON v.dni = p.dni
-        INNER JOIN cargo cr ON v.cargo_id = cr.id
-        INNER JOIN area ar ON v.area_id = ar.id
-        WHERE v.area_id = ? AND v.estado = 'activo'
-        ORDER BY nombre
-        "#,
-    )
-    .bind(body.area_id)
-    .fetch_all(&data.db)
-    .await
-    .map_err(|e| {
-        eprintln!("Database error: {:?}", e);
-        ApiError::InternalError("Error al obtener personal por área".into())
-    })?;
-
-    let resultado: Vec<serde_json::Value> = trabajadores
-        .iter()
-        .map(|row| {
-            json!({
-                "dni":    row.get::<String, _>("dni"),
-                "nombre": row.get::<String, _>("nombre"),
-                "cargo":  row.get::<String, _>("cargo"),
-                "area":   row.get::<String, _>("area"),
-            })
-        })
-        .collect();
-
-    Ok(HttpResponse::Ok().json(resultado))
-}
-
-// ── Buscar personal por sindicato ────────────────────────────────────────────
+// ── Eliminar contacto de emergencia ──────────────────────────────────────────
 
 #[derive(Deserialize, Validate)]
-pub struct BuscarPorSindicato {
-    #[validate(range(min = 1, message = "ID de sindicato inválido"))]
-    pub sindicato_id: i32,
+pub struct EliminarContactoBody {
+    #[validate(custom(function = "crate::models::personal::es_dni_valido"))]
+    pub persona_dni: String,
 }
 
-pub async fn personal_por_sindicato(
+pub async fn eliminar_contacto(
     data: web::Data<AppState>,
-    body: web::Json<BuscarPorSindicato>,
+    body: web::Json<EliminarContactoBody>,
+    req: HttpRequest,
 ) -> Result<impl Responder, ApiError> {
     validar(&body.0)?;
-    let trabajadores = sqlx::query(
-        r#"
-        SELECT
-            p.dni,
-            CONCAT_WS(' ', p.apaterno, p.amaterno, p.nombre) AS nombre,
-            cr.nombre AS cargo,
-            ar.nombre AS area,
-            s.nombre  AS sindicato
-        FROM vinculo v
-        INNER JOIN vinculo_sindicato vs ON vs.vinculo_id = v.id
-        INNER JOIN sindicato s ON vs.sindicato_id = s.id
-        INNER JOIN persona p ON v.dni = p.dni
-        INNER JOIN cargo cr ON v.cargo_id = cr.id
-        INNER JOIN area ar ON v.area_id = ar.id
-        WHERE vs.sindicato_id = ? AND v.estado = 'activo'
-        ORDER BY nombre
-        "#,
-    )
-    .bind(body.sindicato_id)
-    .fetch_all(&data.db)
-    .await
-    .map_err(|e| {
-        eprintln!("Database error: {:?}", e);
-        ApiError::InternalError("Error al obtener personal por sindicato".into())
-    })?;
-
-    let resultado: Vec<serde_json::Value> = trabajadores
-        .iter()
-        .map(|row| {
-            json!({
-                "dni":       row.get::<String, _>("dni"),
-                "nombre":    row.get::<String, _>("nombre"),
-                "cargo":     row.get::<String, _>("cargo"),
-                "area":      row.get::<String, _>("area"),
-                "sindicato": row.get::<String, _>("sindicato"),
-            })
-        })
-        .collect();
-
-    Ok(HttpResponse::Ok().json(resultado))
+    sqlx::query("DELETE FROM contactoemergencia WHERE persona_dni = ?")
+        .bind(&body.persona_dni)
+        .execute(&data.db)
+        .await
+        .map_err(|e| ApiError::InternalError(format!("Error al eliminar contacto: {}", e)))?;
+    let _ = registrar_historial(&req, &data.db, "eliminar contacto de emergencia", &body.persona_dni, None).await;
+    Ok(HttpResponse::Ok().json("Contacto de emergencia eliminado"))
 }
 
-// ── Delete evento vinculo ─────────────────────────────────────────────────────
+// ── Eliminar afiliación sindical ──────────────────────────────────────────────
+
+#[derive(Deserialize, Validate)]
+pub struct EliminarSindicatoBody {
+    #[validate(range(min = 1, message = "ID de vínculo inválido"))]
+    pub vinculo_id: i32,
+    pub dni: String,
+}
+
+pub async fn eliminar_sindicato(
+    data: web::Data<AppState>,
+    body: web::Json<EliminarSindicatoBody>,
+    req: HttpRequest,
+) -> Result<impl Responder, ApiError> {
+    validar(&body.0)?;
+    sqlx::query("DELETE FROM vinculo_sindicato WHERE vinculo_id = ?")
+        .bind(body.vinculo_id)
+        .execute(&data.db)
+        .await
+        .map_err(|e| ApiError::InternalError(format!("Error al desafiliar: {}", e)))?;
+    let _ = registrar_historial(&req, &data.db, "desafiliar sindicato", &body.dni, None).await;
+    Ok(HttpResponse::Ok().json("Afiliación sindical eliminada"))
+}
+
+// ── Eliminar evento de vínculo ────────────────────────────────────────────────
+
+#[derive(Deserialize, Validate)]
+pub struct DeleteEventoVinculoBody {
+    #[validate(range(min = 1, message = "ID de evento inválido"))]
+    pub id: i32,
+}
 
 pub async fn delete_evento_vinculo(
     data: web::Data<AppState>,
-    payload: web::Json<DeleteEventoVinculoPayload>,
+    payload: web::Json<DeleteEventoVinculoBody>,
     _req: HttpRequest,
 ) -> Result<impl Responder, ApiError> {
     validar(&payload.0)?;
-    let mut tx = data
-        .db
-        .begin()
-        .await
-        .map_err(|e| ApiError::InternalError(format!("DB transaction begin error: {}", e)))?;
+    let mut tx = data.db.begin().await
+        .map_err(|e| ApiError::InternalError(format!("DB error: {}", e)))?;
 
     #[derive(sqlx::FromRow)]
     struct EventoDocs {
@@ -1533,33 +1457,31 @@ pub async fn delete_evento_vinculo(
             .bind(payload.id)
             .fetch_one(&mut *tx)
             .await
-            .map_err(|e| ApiError::InternalError(format!("Error fetching eventovinculo: {}", e)))?;
+            .map_err(|e| ApiError::InternalError(format!("Error buscando evento: {}", e)))?;
 
     sqlx::query("DELETE FROM eventovinculo WHERE id = ?")
         .bind(payload.id)
         .execute(&mut *tx)
         .await
-        .map_err(|e| ApiError::InternalError(format!("Error deleting eventovinculo: {}", e)))?;
+        .map_err(|e| ApiError::InternalError(format!("Error eliminando evento: {}", e)))?;
 
     sqlx::query("DELETE FROM documento WHERE id = ?")
         .bind(docs.documento_inicio)
         .execute(&mut *tx)
         .await
-        .map_err(|e| ApiError::InternalError(format!("Error deleting documento inicio: {}", e)))?;
+        .map_err(|e| ApiError::InternalError(format!("Error eliminando documento: {}", e)))?;
 
     if let Some(ds) = docs.documento_salida {
         sqlx::query("DELETE FROM documento WHERE id = ?")
             .bind(ds)
             .execute(&mut *tx)
             .await
-            .map_err(|e| {
-                ApiError::InternalError(format!("Error deleting documento salida: {}", e))
-            })?;
+            .map_err(|e| ApiError::InternalError(format!("Error eliminando doc salida: {}", e)))?;
     }
 
-    tx.commit()
-        .await
+    tx.commit().await
         .map_err(|e| ApiError::InternalError(format!("Commit error: {}", e)))?;
 
-    Ok(HttpResponse::Ok().json("Evento vinculo eliminado correctamente"))
+    Ok(HttpResponse::Ok().json("Evento de vínculo eliminado"))
 }
+

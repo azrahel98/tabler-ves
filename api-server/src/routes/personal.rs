@@ -24,7 +24,6 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
                 "/renuncia_por_vinculo",
                 web::post().to(renuncia_por_vinculo),
             )
-            .route("/personas_legajo", web::post().to(personas_legajos))
             .route("/legajo_por_dni", web::post().to(reporte_legajo))
             .route(
                 "/nuevo_evento_legajo",
@@ -52,7 +51,7 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
                 "/delete_evento_vinculo",
                 web::post().to(delete_evento_vinculo),
             )
-            .route("/por_area", web::post().to(personal_por_area))
-            .route("/por_sindicato", web::post().to(personal_por_sindicato)),
+            .route("/eliminar_contacto", web::post().to(eliminar_contacto))
+            .route("/eliminar_sindicato", web::post().to(eliminar_sindicato)),
     );
 }

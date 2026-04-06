@@ -1,6 +1,7 @@
 pub mod dash;
 pub mod login;
 pub mod personal;
+pub mod usuarios;
 
 use crate::middleware::{error::ApiError, jwt::Claims};
 use actix_web::{HttpMessage, HttpRequest};

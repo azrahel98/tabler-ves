@@ -243,8 +243,3 @@ pub struct EventoVinculoPayload {
     pub estado: Option<String>,
 }
 
-#[derive(Deserialize, Validate)]
-pub struct DeleteEventoVinculoPayload {
-    #[validate(range(min = 1, message = "ID de evento inválido"))]
-    pub id: i32,
-}

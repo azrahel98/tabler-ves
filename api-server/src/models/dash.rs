@@ -51,18 +51,6 @@ pub struct DbOrgani {
 }
 
 #[derive(Serialize, Deserialize, Clone)]
-pub struct ReporteLegajo {
-    pub id: i32,
-    pub nombre: Option<String>,
-    pub dni: String,
-    pub estado: Option<String>,
-    pub persona: String,
-    pub userid: i32,
-    pub usuario: String,
-    pub fecha: chrono::NaiveDateTime,
-}
-
-#[derive(Serialize, Deserialize, Clone)]
 pub struct ReporteRenuncias {
     pub id: i32,
     pub dni: String,
@@ -73,14 +61,3 @@ pub struct ReporteRenuncias {
     pub codigo: String,
 }
 
-#[derive(Serialize)]
-pub struct RegimenPorcentaje {
-    pub nombre: String,
-    pub pct: f64,
-}
-
-#[derive(Serialize)]
-pub struct DistritoRegimen {
-    pub nombre: String,
-    pub regimenes: Vec<RegimenPorcentaje>,
-}

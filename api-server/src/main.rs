@@ -5,7 +5,6 @@ use sqlx::mysql::{MySqlPool, MySqlPoolOptions};
 use std::time::Duration;
 
 mod handlers;
-mod key;
 mod middleware;
 mod models;
 mod routes;
@@ -74,6 +73,7 @@ async fn main() -> std::io::Result<()> {
             .configure(routes::personal::init_routes)
             .configure(routes::dash::init_routes)
             .configure(routes::fileserver::init_routes)
+            .configure(routes::usuarios::init_routes)
             .wrap(Logger::default())
             .wrap(cors)
     })

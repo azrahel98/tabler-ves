@@ -1,8 +1,6 @@
 use jsonwebtoken::{EncodingKey, Header, encode};
 use serde::{Deserialize, Serialize};
 
-use crate::key::key::JWT_KEY;
-
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Claims {
     pub id: i32,
@@ -12,7 +10,7 @@ pub struct Claims {
 }
 
 pub fn generate_token(user_id: i32, level: i32, nombre: String) -> String {
-    let secret_key = JWT_KEY;
+    let secret_key = std::env::var("JWT_KEY").expect("JWT_KEY must be set");
     let encoding_key = EncodingKey::from_secret(secret_key.as_bytes());
 
     let claims = Claims {

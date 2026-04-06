@@ -1,10 +1,9 @@
 use crate::{
     AppState,
     handlers::personal::PerfilDni,
-    key::key::DB_KEY,
     middleware::error::ApiError,
     models::dash::{
-        BancosReport, Cumpleaños, DataResumen, DbOrgani, Organigrama, ReporteLegajo,
+        BancosReport, Cumpleaños, DataResumen, DbOrgani, Organigrama,
         ReporteRenuncias, ResumenResponse,
     },
 };
@@ -287,7 +286,7 @@ pub async fn reporte_historial(
     data: web::Data<AppState>,
     dni: web::Json<PerfilDni>,
 ) -> Result<impl Responder, ApiError> {
-    let key = DB_KEY;
+    let key = std::env::var("DB_KEY").expect("DB_KEY must be set");
 
     let data = sqlx::query(
         r#"
@@ -401,47 +400,6 @@ pub async fn organigrama(data: web::Data<AppState>) -> Result<impl Responder, Ap
         }
     }
     Ok(HttpResponse::Ok().json(organigrama))
-}
-
-pub async fn report_legajos(data: web::Data<AppState>) -> Result<impl Responder, ApiError> {
-    let data = sqlx::query_as!(
-        ReporteLegajo,
-        r#"
-        SELECT
-        l.id,
-        concat_ws(' ', p.apaterno, p.amaterno, p.nombre) AS nombre,
-        p.dni,
-        l.estado,
-        l.persona,
-        u.id userid,
-        u.nombre usuario,
-        l.fecha
-        FROM
-        legajo l
-        INNER JOIN (
-            SELECT
-            dni,
-            MAX(fecha) AS ultima_fecha
-            FROM
-            legajo
-            GROUP BY
-            dni
-        ) AS ultimo_registro ON l.dni = ultimo_registro.dni
-        AND l.fecha = ultimo_registro.ultima_fecha
-        INNER JOIN persona p ON l.dni = p.dni
-        INNER JOIN usuario u ON l.user = u.id
-        WHERE
-        l.estado = 'prestamo'
-        "#,
-    )
-    .fetch_all(&data.db)
-    .await
-    .map_err(|e| {
-        eprintln!("Database error: {:?}", e);
-        ApiError::InternalError("Database consulta malformada".into())
-    })?;
-
-    Ok(HttpResponse::Ok().json(data))
 }
 
 pub async fn report_renuncias(data: web::Data<AppState>) -> Result<impl Responder, ApiError> {

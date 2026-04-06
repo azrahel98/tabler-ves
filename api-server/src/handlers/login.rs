@@ -1,6 +1,5 @@
 use crate::{
     AppState,
-    key::{self, key::DB_KEY},
     middleware::{
         error::{ApiError, validar},
         jwt::generate_token,
@@ -29,7 +28,7 @@ pub async fn login(
 ) -> Result<impl Responder, ApiError> {
     validar(&login.0)?;
 
-    let key = key::key::DB_KEY;
+    let key = std::env::var("DB_KEY").expect("DB_KEY must be set");
 
     let user = sqlx::query_as!(
         Usuario,
@@ -89,7 +88,7 @@ pub async fn change_pass(
     pass: web::Json<ChangePass>,
 ) -> Result<impl Responder, ApiError> {
     validar(&pass.0)?;
-    let key = DB_KEY;
+    let key = std::env::var("DB_KEY").expect("DB_KEY must be set");
 
     let db_pass = sqlx::query_scalar!(
         r#"

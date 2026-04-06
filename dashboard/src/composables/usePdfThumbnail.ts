@@ -32,7 +32,7 @@ export function usePdfThumbnail(url: string | null, containerRef: () => HTMLElem
       canvas.height = scaled.height
 
       const ctx = canvas.getContext('2d')!
-      await page.render({ canvasContext: ctx, viewport: scaled }).promise
+      await page.render({ canvasContext: ctx, viewport: scaled, canvas }).promise
 
       thumbnailUrl.value = canvas.toDataURL('image/jpeg', 0.8)
     } catch {
@@ -51,7 +51,7 @@ export function usePdfThumbnail(url: string | null, containerRef: () => HTMLElem
 
     observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting) {
+        if (entries[0]?.isIntersecting) {
           generar()
           observer?.disconnect()
         }

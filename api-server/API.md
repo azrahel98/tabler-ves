@@ -1,6 +1,6 @@
 # API Endpoints
 
-Base URL: `http://127.0.0.1:8080`
+Base URL: `http://127.0.0.1:4010`
 
 Todas las rutas protegidas requieren el header `token` con un JWT válido.
 
@@ -37,7 +37,7 @@ Autenticación de usuario.
 
 ### `POST /login/changepass` 🔒
 
-Cambiar contraseña.
+Cambiar contraseña propia.
 
 **Body:**
 
@@ -81,21 +81,14 @@ Resumen general del personal.
 
 ### `POST /dash/cumpleaños`
 
-Cumpleaños próximos.
+Cumpleaños próximos (±5 días pasados / +30 días futuros).
 
 **Body:** vacío
 
 **Respuesta:**
 
 ```json
-[
-  {
-    "dni": "12345678",
-    "nombre": "Apellido Nombre",
-    "nacimiento": "1990-01-15",
-    "edad": 36
-  }
-]
+[{ "dni": "12345678", "nombre": "Apellido Nombre", "nacimiento": "1990-01-15", "edad": 36 }]
 ```
 
 ---
@@ -180,14 +173,7 @@ Historial de operaciones filtrado por DNI.
 **Respuesta:**
 
 ```json
-[
-  {
-    "operacion": "editar",
-    "detalle": "...",
-    "fecha": "2024-01-15 10:30:00",
-    "nombre": "Admin"
-  }
-]
+[{ "operacion": "editar", "detalle": "...", "fecha": "2024-01-15 10:30:00", "nombre": "Admin" }]
 ```
 
 ---
@@ -201,40 +187,7 @@ Organigrama jerárquico.
 **Respuesta:**
 
 ```json
-[
-  {
-    "id": 1,
-    "area": "Gerencia Municipal",
-    "jefe": "Apellido Nombre",
-    "dni": "12345678",
-    "subgerencias": []
-  }
-]
-```
-
----
-
-### `POST /dash/reporte_legajos`
-
-Legajos en estado préstamo.
-
-**Body:** vacío
-
-**Respuesta:**
-
-```json
-[
-  {
-    "id": 1,
-    "nombre": "Apellido Nombre",
-    "dni": "12345678",
-    "estado": "prestamo",
-    "persona": "Juan",
-    "userid": 1,
-    "usuario": "Admin",
-    "fecha": "2024-01-15T10:30:00"
-  }
-]
+[{ "id": 1, "area": "Gerencia Municipal", "jefe": "Apellido Nombre", "dni": "12345678", "subgerencias": [] }]
 ```
 
 ---
@@ -248,17 +201,7 @@ Renuncias recientes (últimos 120 días).
 **Respuesta:**
 
 ```json
-[
-  {
-    "id": 1,
-    "dni": "12345678",
-    "nombre": "Apellido Nombre",
-    "fecha": "2024-01-15",
-    "cargo": "Analista",
-    "area": "Gerencia",
-    "codigo": "P001"
-  }
-]
+[{ "id": 1, "dni": "12345678", "nombre": "Apellido Nombre", "fecha": "2024-01-15", "cargo": "Analista", "area": "Gerencia", "codigo": "P001" }]
 ```
 
 ---
@@ -273,6 +216,73 @@ Lista de tipos de documento.
 
 ```json
 [{ "id": 1, "nombre": "Resolución", "sigla": "RA" }]
+```
+
+---
+
+### `POST /dash/activos_por_distrito`
+
+Cantidad de personal activo agrupado por distrito de residencia.
+
+**Body:** vacío
+
+**Respuesta:**
+
+```json
+[{ "distrito": "PIURA", "cantidad": 45 }, { "distrito": "SIN ASIGNAR", "cantidad": 5 }]
+```
+
+---
+
+### `POST /dash/exportar_excel`
+
+Genera y descarga un archivo Excel con el padrón de personal activo y pendiente.
+
+**Body:** vacío
+
+**Respuesta:** `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet` (binario)
+
+---
+
+### `POST /dash/nuevos_trabajadores`
+
+Trabajadores ingresados en los últimos 120 días.
+
+**Body:** vacío
+
+**Respuesta:**
+
+```json
+[{ "id": 1, "dni": "12345678", "nombre": "Apellido Nombre", "ingreso": "2024-01-15", "documento": "RA-001-2024", "area": "Gerencia", "cargo": "Analista", "regimen": "D.L. 276", "sueldo": 2500.0, "plaza": "P001" }]
+```
+
+---
+
+### `POST /dash/reporte_eventos`
+
+Todos los eventos de vínculo registrados (rotaciones, abandonos).
+
+**Body:** vacío
+
+**Respuesta:**
+
+```json
+[
+  {
+    "id": 1,
+    "tipo_evento": "rotacion",
+    "estado": "activo",
+    "nombre": "Apellido Nombre",
+    "dni": "12345678",
+    "area_original": "Gerencia",
+    "area_nueva": "Subgerencia",
+    "cargo": "Analista",
+    "fecha_inicio": "2024-01-15",
+    "descripcion_inicio": "...",
+    "fecha_salida": null,
+    "descripcion_salida": null
+  }
+]
 ```
 
 ---
@@ -294,14 +304,7 @@ Buscar trabajadores por nombre.
 **Respuesta:**
 
 ```json
-[
-  {
-    "nombre": "Nombre Apellido",
-    "dni": "12345678",
-    "estado": "activo",
-    "sexo": "M"
-  }
-]
+[{ "nombre": "Nombre Apellido", "dni": "12345678", "estado": "activo", "sexo": "M" }]
 ```
 
 ---
@@ -327,7 +330,9 @@ Perfil de un trabajador.
   "email": "correo@mail.com",
   "ruc": "10123456789",
   "nacimiento": "1990-01-15",
-  "sexo": "M"
+  "sexo": "M",
+  "region": "PIURA",
+  "distrito": "PIURA"
 }
 ```
 
@@ -349,6 +354,8 @@ Editar datos personales.
 | `ruc`        | string? | no        |
 | `nacimiento` | string  | sí        |
 | `sexo`       | string? | no        |
+| `region`     | string? | no        |
+| `distrito`   | string? | no        |
 
 **Respuesta:**
 
@@ -375,28 +382,18 @@ Vínculos laborales de un trabajador.
   {
     "id": 1,
     "dni": "12345678",
-    "doc_ingreso": "RA",
-    "numero_doc_ingreso": "001",
-    "descrip_ingreso": "...",
-    "fecha_ingreso": "2020-01-15",
     "area": "Gerencia",
     "cargo": "Analista",
     "regimen": "D.L. 276",
     "sueldo": 2500.0,
     "codigo": "P001",
-    "cargo_estructural": "...",
-    "grupo_ocupacional": "...",
     "estado": "activo",
-    "doc_salida": null,
-    "descrip_salida": null,
+    "fecha_ingreso": "2020-01-15",
     "fecha_salida": null,
-    "numero_doc_salida": null,
     "sindicato": null,
     "tipo_evento": null,
     "estado_evento": null,
-    "doc_evento_tipo": null,
-    "numero_doc_evento": null,
-    "fecha_evento": null
+    "id_evento": null
   }
 ]
 ```
@@ -411,28 +408,35 @@ Registrar renuncia de un vínculo.
 
 | Campo             | Tipo    | Requerido       |
 | ----------------- | ------- | --------------- |
-| `id`              | number? | sí (vinculo id) |
+| `id`              | number  | sí (vinculo id) |
 | `tipoDocumento`   | string? | no              |
 | `numeroDocumento` | number? | no              |
 | `añoDocumento`    | number? | no              |
 | `fecha`           | string  | sí              |
-| `fechaValida`     | string? | no              |
-| `conv`            | number? | no              |
 | `descripcion`     | string  | sí              |
-| `funcion`         | number? | no              |
-| `sueldo`          | number? | no              |
 
 **Respuesta:**
 
 ```json
-{
-  "dni": "12345678",
-  "nombre": "Analista",
-  "estado": "inactivo",
-  "fecha": "2024-06-15",
-  "descripcion": "Renuncia voluntaria",
-  "documento": "RA-001-2024"
-}
+{ "dni": "12345678", "estado": "inactivo" }
+```
+
+---
+
+### `POST /personal/eliminar_vinculo`
+
+Eliminar un vínculo laboral y sus documentos asociados.
+
+**Body:**
+
+| Campo | Tipo   | Requerido |
+| ----- | ------ | --------- |
+| `id`  | number | sí        |
+
+**Respuesta:**
+
+```json
+"Vínculo eliminado correctamente"
 ```
 
 ---
@@ -450,15 +454,7 @@ Datos bancarios de un trabajador.
 **Respuesta:**
 
 ```json
-{
-  "id": 1,
-  "numero_cuenta": "123456789",
-  "tipo_cuenta": "AHORRO",
-  "cci": "00212345678901234567",
-  "banco": "BCP",
-  "estado": 1,
-  "dni": "12345678"
-}
+{ "id": 1, "numero_cuenta": "123456789", "tipo_cuenta": "AHORRO", "cci": "00212345678901234567", "banco": "BCP", "estado": 1 }
 ```
 
 ---
@@ -478,11 +474,7 @@ Agregar cuenta bancaria.
 | `estado`        | number  | sí        |
 | `dni`           | string  | sí        |
 
-**Respuesta:**
-
-```json
-"Rows affected: 1"
-```
+**Respuesta:** `"Rows affected: 1"`
 
 ---
 
@@ -502,11 +494,7 @@ Editar cuenta bancaria.
 | `estado`        | number  | sí        |
 | `dni`           | string  | sí        |
 
-**Respuesta:**
-
-```json
-"Rows affected: 1"
-```
+**Respuesta:** `"Rows affected: 1"`
 
 ---
 
@@ -523,98 +511,116 @@ Grados académicos de un trabajador.
 **Respuesta:**
 
 ```json
-[
-  {
-    "id": 15,
-    "profesion": "ABOGADO",
-    "universidad": "UNIVERSIDAD DE PIURA",
-    "colegiatura": null,
-    "nivel_academico": "TITULADO",
-    "abrv": "ABOG",
-    "dni": "41662616"
-  },
-  {
-    "id": 16,
-    "profesion": "CONTADORA",
-    "universidad": "UNIVERSIDAD PRIVADA DEL NORTE",
-    "colegiatura": null,
-    "nivel_academico": "BACHILLER",
-    "abrv": "BACH",
-    "dni": "41662616"
-  }
-]
+[{ "id": 1, "profesion": "ABOGADO", "universidad": "UNIV.", "colegiatura": null, "nivel_academico": "TITULADO", "abrv": "ABOG", "dni": "12345678" }]
 ```
 
 ---
 
 ### `POST /personal/agregar_gradoa`
 
-Agregar o actualizar grado académico (upsert). Si `id` es `0` se inserta, si `id > 0` se actualiza.
+Agregar o actualizar grado académico (upsert).
 
 **Body:**
 
-| Campo             | Tipo    | Requerido |
-| ----------------- | ------- | --------- |
-| `id`              | number  | sí        |
-| `profesion`       | string  | sí        |
-| `universidad`     | string  | sí        |
-| `colegiatura`     | string? | no        |
-| `nivel_academico` | string  | sí        |
-| `abrv`            | string  | sí        |
-| `dni`             | string  | sí        |
+| Campo             | Tipo    | Requerido                    |
+| ----------------- | ------- | ---------------------------- |
+| `id`              | number  | sí (0 = insertar, >0 = editar) |
+| `profesion`       | string  | sí                           |
+| `universidad`     | string  | sí                           |
+| `colegiatura`     | string? | no                           |
+| `nivel_academico` | string  | sí                           |
+| `abrv`            | string  | sí                           |
+| `dni`             | string  | sí                           |
+
+**Respuesta:** `"Operación exitosa. Filas afectadas: 1"`
+
+---
+
+### `POST /personal/agregar_contacto`
+
+Agregar o actualizar contacto de emergencia (upsert por DNI).
+
+**Body:**
+
+| Campo         | Tipo    | Requerido |
+| ------------- | ------- | --------- |
+| `persona_dni` | string  | sí        |
+| `nombre`      | string  | sí        |
+| `relacion`    | string  | sí        |
+| `telefono`    | string? | no        |
+
+**Respuesta:** `"Rows affected: 1"`
+
+---
+
+### `POST /personal/contacto_dni`
+
+Contacto de emergencia de un trabajador.
+
+**Body:**
+
+| Campo | Tipo   | Requerido |
+| ----- | ------ | --------- |
+| `dni` | string | sí        |
 
 **Respuesta:**
 
 ```json
-"Operación exitosa. Filas afectadas: 1"
+{ "persona_dni": "12345678", "nombre": "María", "relacion": "Madre", "telefono": "999999999" }
 ```
+
+---
+
+### `POST /personal/eliminar_contacto`
+
+Eliminar el contacto de emergencia de un trabajador.
+
+**Body:**
+
+| Campo         | Tipo   | Requerido |
+| ------------- | ------ | --------- |
+| `persona_dni` | string | sí        |
+
+**Respuesta:** `"Contacto de emergencia eliminado"`
 
 ---
 
 ### `POST /personal/agregar_sindicato`
 
-Afiliar vínculos a sindicato.
+Afiliar vínculos a un sindicato.
 
 **Body:**
 
 | Campo             | Tipo    | Requerido |
 | ----------------- | ------- | --------- |
-| `id`              | number? | no        |
-| `tipoDocumento`   | string? | no        |
-| `numeroDocumento` | number? | no        |
-| `añoDocumento`    | number? | no        |
 | `fecha`           | string  | sí        |
-| `fechaValida`     | string? | no        |
 | `descripcion`     | string  | sí        |
 | `sindicato`       | number  | sí (id)   |
 | `vinculos`        | array   | sí        |
 
 **Estructura de `vinculos`:**
 
-| Campo        | Tipo   | Requerido |
-| ------------ | ------ | --------- |
-| `id_vinculo` | number | sí        |
-| `dni`        | string | sí        |
+| Campo        | Tipo   |
+| ------------ | ------ |
+| `id_vinculo` | number |
+| `dni`        | string |
 
-**Respuesta:**
-
-```json
-"Se registraron correctamente los datos"
-```
+**Respuesta:** `"Se registraron correctamente los datos"`
 
 ---
 
-### `POST /personal/personas_legajo`
+### `POST /personal/eliminar_sindicato`
 
-Lista de personas con registros en legajo.
+Desafiliar un vínculo de su sindicato.
 
-**Body:** vacío
+**Body:**
 
-**Respuesta:**
+| Campo        | Tipo   | Requerido |
+| ------------ | ------ | --------- |
+| `vinculo_id` | number | sí        |
+| `dni`        | string | sí        |
 
-```json
-[{ "persona": "Juan Pérez" }]
-```
+**Respuesta:** `"Afiliación sindical eliminada"`
 
 ---
 
@@ -631,18 +637,7 @@ Registros de legajo de un trabajador.
 **Respuesta:**
 
 ```json
-[
-  {
-    "id": 1,
-    "persona": "Juan Pérez",
-    "dni": "12345678",
-    "fecha": "2024-01-15",
-    "estado": "prestamo",
-    "descrip": "Legajo completo",
-    "nuevo": 0,
-    "user": 1
-  }
-]
+[{ "id": 1, "persona": "Juan Pérez", "dni": "12345678", "fecha": "2024-01-15", "estado": "prestamo", "descrip": "Legajo completo", "nuevo": 0, "user": 1 }]
 ```
 
 ---
@@ -653,22 +648,18 @@ Agregar evento de legajo.
 
 **Body:**
 
-| Campo     | Tipo    | Requerido             |
-| --------- | ------- | --------------------- |
-| `id`      | number  | sí                    |
-| `persona` | string  | sí                    |
-| `dni`     | string  | sí                    |
-| `fecha`   | string? | no                    |
-| `estado`  | string? | no                    |
-| `descrip` | string? | no                    |
-| `nuevo`   | number  | sí (1 = nuevo estado) |
-| `user`    | number? | no                    |
+| Campo     | Tipo    | Requerido |
+| --------- | ------- | --------- |
+| `id`      | number  | sí        |
+| `persona` | string  | sí        |
+| `dni`     | string  | sí        |
+| `fecha`   | string? | no        |
+| `estado`  | string? | no        |
+| `descrip` | string? | no        |
+| `nuevo`   | number  | sí        |
+| `user`    | number? | no        |
 
-**Respuesta:**
-
-```json
-"Se registraron correctamente los datos"
-```
+**Respuesta:** `"Se registraron correctamente los datos"`
 
 ---
 
@@ -692,50 +683,6 @@ Reporte de asistencia mensual.
 
 ---
 
-### `POST /personal/agregar_contacto`
-
-Agregar o actualizar contacto de emergencia.
-
-**Body:**
-
-| Campo         | Tipo    | Requerido |
-| ------------- | ------- | --------- |
-| `persona_dni` | string  | sí        |
-| `nombre`      | string  | sí        |
-| `relacion`    | string  | sí        |
-| `telefono`    | string? | no        |
-
-**Respuesta:**
-
-```json
-"Rows affected: 1"
-```
-
----
-
-### `POST /personal/contacto_dni`
-
-Contacto de emergencia de un trabajador.
-
-**Body:**
-
-| Campo | Tipo   | Requerido |
-| ----- | ------ | --------- |
-| `dni` | string | sí        |
-
-**Respuesta:**
-
-```json
-{
-  "persona_dni": "12345678",
-  "nombre": "María",
-  "relacion": "Madre",
-  "telefono": "999999999"
-}
-```
-
----
-
 ### `POST /personal/buscar_vacantes`
 
 Vacantes recientes (últimos 3 meses).
@@ -745,19 +692,7 @@ Vacantes recientes (últimos 3 meses).
 **Respuesta:**
 
 ```json
-[
-  {
-    "id": 1,
-    "dni": "12345678",
-    "nombre": "Apellido Nombre",
-    "fecha": "2024-06-15",
-    "fechavalida": "2024-06-20",
-    "area": "Gerencia",
-    "cargo": "Analista",
-    "codigo": "P001",
-    "sueldo": 2500.0
-  }
-]
+[{ "id": 1, "dni": null, "nombre": null, "fecha": "2024-06-15", "area": "Gerencia", "cargo": "Analista", "codigo": "P001", "sueldo": 2500.0 }]
 ```
 
 ---
@@ -775,16 +710,7 @@ Detalle de una plaza por código.
 **Respuesta:**
 
 ```json
-{
-  "codigo": "P001",
-  "cargo_estructural": "CE001",
-  "cargo_descripcion": "Analista",
-  "grupo_ocupacional": "GO001",
-  "grupo_descripcion": "Profesional",
-  "condicion": "Nombrado",
-  "regimen_id": 1,
-  "regimen": "D.L. 276"
-}
+{ "codigo": "P001", "cargo_estructural": "CE001", "cargo_descripcion": "Analista", "condicion": "Nombrado", "regimen_id": 1 }
 ```
 
 ---
@@ -805,32 +731,13 @@ Registrar un nuevo trabajador con persona, documento y vínculo.
 | `area`      | number | sí (id)           |
 | `sueldo`    | number | sí                |
 
-**Estructura de `personal`:**
-
-| Campo        | Tipo    | Requerido |
-| ------------ | ------- | --------- |
-| `dni`        | string  | sí        |
-| `amaterno`   | string  | sí        |
-| `apaterno`   | string  | sí        |
-| `nombre`     | string  | sí        |
-| `telf`       | string? | no        |
-| `direccion`  | string? | no        |
-| `email`      | string? | no        |
-| `ruc`        | string? | no        |
-| `nacimiento` | string  | sí        |
-| `sexo`       | string? | no        |
-
-**Respuesta:**
-
-```json
-"Trabajador registrado correctamente"
-```
+**Respuesta:** `"Trabajador registrado correctamente"`
 
 ---
 
 ### `POST /personal/consultar_dni`
 
-Consultar datos de una persona por DNI. Primero busca en la base de datos local; si no existe, consulta la API de RENIEC.
+Consultar datos por DNI. Busca localmente; si no existe, consulta la API de RENIEC.
 
 **Body:**
 
@@ -841,43 +748,14 @@ Consultar datos de una persona por DNI. Primero busca en la base de datos local;
 **Respuesta:**
 
 ```json
-{
-  "dni": "12345678",
-  "apaterno": "GARCIA",
-  "amaterno": "LOPEZ",
-  "nombre": "JUAN",
-  "telf": "999999999",
-  "direccion": "Av. Ejemplo 123",
-  "email": "correo@mail.com",
-  "ruc": "10123456789",
-  "nacimiento": "1990-01-15",
-  "sexo": "M"
-}
-```
-
----
-
-### `POST /personal/eliminar_vinculo`
-
-Eliminar un vínculo laboral. También elimina los documentos asociados (ingreso y salida) y libera la plaza poniéndola en estado `'vacante'`.
-
-**Body:**
-
-| Campo | Tipo   | Requerido       |
-| ----- | ------ | --------------- |
-| `id`  | number | sí (vinculo id) |
-
-**Respuesta:**
-
-```json
-"Vínculo eliminado correctamente"
+{ "dni": "12345678", "apaterno": "GARCIA", "amaterno": "LOPEZ", "nombre": "JUAN", "nacimiento": "1990-01-15", "sexo": "M" }
 ```
 
 ---
 
 ### `POST /personal/buscar_areas`
 
-Lista de áreas disponibles.
+Lista de áreas activas.
 
 **Body:** vacío
 
@@ -891,7 +769,7 @@ Lista de áreas disponibles.
 
 ### `POST /personal/buscar_cargos`
 
-Lista de cargos disponibles.
+Lista de cargos.
 
 **Body:** vacío
 
@@ -905,7 +783,7 @@ Lista de cargos disponibles.
 
 ### `POST /personal/upsert_evento_vinculo`
 
-Agregar o actualizar un evento de vínculo laboral (desplazamiento, encargo, etc). Si `id` es `null`, se inserta un nuevo evento.
+Agregar o actualizar un evento de vínculo (rotación, abandono). Si `id` es `null` se crea nuevo.
 
 **Body:**
 
@@ -914,37 +792,18 @@ Agregar o actualizar un evento de vínculo laboral (desplazamiento, encargo, etc
 | `id`               | number? | no        |
 | `vinculo_id`       | number  | sí        |
 | `tipo_evento`      | string  | sí        |
-| `nueva_area_id`    | number? | no        |
-| `documento_inicio` | object  | sí        |
+| `nueva_area_id`    | number? | solo en rotación |
+| `documento_inicio` | object? | no        |
 | `documento_salida` | object? | no        |
 | `estado`           | string? | no        |
 
-**Estructura de `documento_inicio` / `documento_salida`:**
-
-| Campo             | Tipo    | Requerido |
-| ----------------- | ------- | --------- |
-| `id`              | number? | no        |
-| `tipoDocumento`   | string? | no        |
-| `numeroDocumento` | number? | no        |
-| `añoDocumento`    | number? | no        |
-| `fecha`           | string  | sí        |
-| `fechaValida`     | string? | no        |
-| `conv`            | number? | no        |
-| `descripcion`     | string  | sí        |
-| `funcion`         | number? | no        |
-| `sueldo`          | number? | no        |
-
-**Respuesta:**
-
-```json
-"Operación exitosa"
-```
+**Respuesta:** `"Operación exitosa"`
 
 ---
 
 ### `POST /personal/delete_evento_vinculo`
 
-Eliminar un evento de vínculo laboral y sus documentos asociados.
+Eliminar un evento de vínculo y sus documentos asociados.
 
 **Body:**
 
@@ -952,37 +811,25 @@ Eliminar un evento de vínculo laboral y sus documentos asociados.
 | ----- | ------ | --------- |
 | `id`  | number | sí        |
 
-**Respuesta:**
-
-```json
-"Evento vinculo eliminado correctamente"
-```
+**Respuesta:** `"Evento de vínculo eliminado"`
 
 ---
 
-## Fileserver `/fileserver` 🔒
+## Fileserver `/fileserver`
 
-Todas las rutas de `/fileserver` requieren JWT, **excepto `GET /fileserver/{hash}`**.
+Las rutas requieren JWT **excepto `GET /fileserver/{hash}`**.
 
 ### `GET /fileserver/{hash}`
 
-Acceder o visualizar un archivo subido utilizando su hash. Esta ruta **no requiere JWT**, puede ser accedida directamente desde el navegador (ej. para un visor de PDFs o una etiqueta de imagen).
+Acceder a un archivo por su hash. No requiere JWT (se puede usar en `<img>` o visor de PDF).
 
-**Parámetros de URI:**
-
-| Campo  | Tipo   | Requerido |
-| ------ | ------ | --------- |
-| `hash` | string | sí        |
-
-**Respuesta:**
-
-Retorna el contenido binario del archivo correspondiente. Retorna error si no se encuentra.
+**Respuesta:** contenido binario del archivo.
 
 ---
 
-### `POST /fileserver/upload`
+### `POST /fileserver/upload` 🔒
 
-Subir un archivo PDF al servidor. El archivo debe pesar máximo 10 MB.
+Subir un archivo (máx. 10 MB).
 
 **Body (multipart/form-data):**
 
@@ -995,21 +842,14 @@ Subir un archivo PDF al servidor. El archivo debe pesar máximo 10 MB.
 **Respuesta:**
 
 ```json
-[
-  {
-    "id": 1,
-    "original_name": "mi_documento.pdf",
-    "file_hash": "550e8400-e29b-41d4-a716-446655440000",
-    "extension": "pdf"
-  }
-]
+[{ "id": 1, "original_name": "mi_doc.pdf", "file_hash": "uuid...", "extension": "pdf" }]
 ```
 
 ---
 
-### `POST /fileserver/listar_archivos_dni`
+### `POST /fileserver/listar_archivos_dni` 🔒
 
-Lista los archivos asociados a un DNI.
+Lista de archivos de un DNI.
 
 **Body:**
 
@@ -1020,25 +860,14 @@ Lista los archivos asociados a un DNI.
 **Respuesta:**
 
 ```json
-[
-  {
-    "id": 1,
-    "documento_id": 10,
-    "dni_asociado": "12345678",
-    "original_name": "mi_documento.pdf",
-    "file_hash": "550e8400-e29b-41d4-a716-446655440000",
-    "extension": "pdf",
-    "usuario_subida": "Admin",
-    "fecha_subida": "2024-01-15 10:30:00"
-  }
-]
+[{ "id": 1, "original_name": "mi_doc.pdf", "file_hash": "uuid...", "extension": "pdf", "usuario_subida": "Admin", "fecha_subida": "2024-01-15 10:30:00" }]
 ```
 
 ---
 
-### `POST /fileserver/eliminar_archivo`
+### `POST /fileserver/eliminar_archivo` 🔒
 
-Elimina un archivo por su ID del registro y del disco.
+Eliminar un archivo por ID.
 
 **Body:**
 
@@ -1046,8 +875,118 @@ Elimina un archivo por su ID del registro y del disco.
 | ----- | ------ | --------- |
 | `id`  | number | sí        |
 
+**Respuesta:** `"Archivo eliminado correctamente"`
+
+---
+
+### `POST /fileserver/asignar_documento` 🔒
+
+Asignar un archivo a un documento de legajo.
+
+**Body:**
+
+| Campo          | Tipo   | Requerido |
+| -------------- | ------ | --------- |
+| `archivo_id`   | number | sí        |
+| `documento_id` | number | sí        |
+
+**Respuesta:** `"Documento asignado correctamente"`
+
+---
+
+### `POST /fileserver/documentos_por_dni` 🔒
+
+Lista de documentos de legajo asignados a un DNI.
+
+**Body:**
+
+| Campo | Tipo   | Requerido |
+| ----- | ------ | --------- |
+| `dni` | string | sí        |
+
 **Respuesta:**
 
 ```json
-"Archivo eliminado correctamente"
+[{ "id": 1, "file_hash": "uuid...", "original_name": "doc.pdf", "tipo_documento": "Resolución", "fecha": "2024-01-15" }]
 ```
+
+---
+
+## Usuarios `/usuarios` 🔒 (solo administradores)
+
+Todas las rutas requieren JWT con `nivel = 1`. Las demás devuelven `401`.
+
+### `POST /usuarios/listar`
+
+Lista todos los usuarios del sistema.
+
+**Body:** vacío
+
+**Respuesta:**
+
+```json
+[{ "id": 1, "nombre": "Administrador", "nickname": "admin", "nivel": 1 }]
+```
+
+---
+
+### `POST /usuarios/crear`
+
+Crear un nuevo usuario.
+
+**Body:**
+
+| Campo      | Tipo   | Requerido                        |
+| ---------- | ------ | -------------------------------- |
+| `nombre`   | string | sí                               |
+| `nickname` | string | sí (mín. 3 caracteres)           |
+| `pass`     | string | sí (mín. 4 caracteres)           |
+| `nivel`    | number | sí (`1` = admin, `2` = usuario)  |
+
+**Respuesta:** `"Usuario creado correctamente"`
+
+---
+
+### `POST /usuarios/editar`
+
+Editar nombre, nickname y nivel de un usuario (no cambia contraseña).
+
+**Body:**
+
+| Campo      | Tipo   | Requerido |
+| ---------- | ------ | --------- |
+| `id`       | number | sí        |
+| `nombre`   | string | sí        |
+| `nickname` | string | sí        |
+| `nivel`    | number | sí        |
+
+**Respuesta:** `"Usuario actualizado correctamente"`
+
+---
+
+### `POST /usuarios/eliminar`
+
+Eliminar un usuario. No se puede eliminar la propia cuenta.
+
+**Body:**
+
+| Campo | Tipo   | Requerido |
+| ----- | ------ | --------- |
+| `id`  | number | sí        |
+
+**Respuesta:** `"Usuario eliminado"`
+
+---
+
+### `POST /usuarios/reset_pass`
+
+Restablecer la contraseña de un usuario (sin verificar la actual).
+
+**Body:**
+
+| Campo        | Tipo   | Requerido              |
+| ------------ | ------ | ---------------------- |
+| `id`         | number | sí                     |
+| `nueva_pass` | string | sí (mín. 4 caracteres) |
+
+**Respuesta:** `"Contraseña restablecida correctamente"`

@@ -12,7 +12,7 @@ use std::{
     rc::Rc,
 };
 
-use crate::{key::key::JWT_KEY, middleware::jwt::Claims};
+use crate::middleware::jwt::Claims;
 
 use super::error::ApiError;
 
@@ -76,7 +76,7 @@ where
             }
         };
 
-        let secret_key = JWT_KEY;
+        let secret_key = std::env::var("JWT_KEY").expect("JWT_KEY must be set");
         let decoding_key = DecodingKey::from_secret(secret_key.as_ref());
 
         match decode::<Claims>(token, &decoding_key, &Validation::default()) {
