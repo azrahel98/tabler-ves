@@ -3,8 +3,8 @@ use crate::{
     handlers::personal::PerfilDni,
     middleware::error::ApiError,
     models::dash::{
-        BancosReport, Cumpleaños, DataResumen, DbOrgani, Organigrama,
-        ReporteRenuncias, ResumenResponse,
+        BancosReport, Cumpleaños, DataResumen, DbOrgani, Organigrama, ReporteRenuncias,
+        ResumenResponse,
     },
 };
 use actix_web::{
@@ -544,7 +544,11 @@ pub async fn exportar_excel(data: web::Data<AppState>) -> Result<impl Responder,
   go.codigo AS grupo_ocupacional_codigo,
   go.descripcion AS grupo_ocupacional,
   b.nombre AS banco,
-  cb.tipo_cuenta,
+  CASE 
+    WHEN cb.tipo_cuenta = 'AHORRO' THEN 'CUENTA DE AHORRO'
+    WHEN cb.tipo_cuenta = 'CORRIENTE' THEN 'CUENTA CORRIENTE'
+    ELSE cb.tipo_cuenta 
+  END AS tipo_cuenta,
   cb.numero_cuenta,
   cb.cci,
   sin.nombre sindicato
@@ -809,4 +813,450 @@ pub async fn reporte_eventos(data: web::Data<AppState>) -> Result<impl Responder
         .collect();
 
     Ok(HttpResponse::Ok().json(resultado))
+}
+
+// ===========================================================================
+// COMPARADOR PLANILLA PROPIA vs MEF
+// ===========================================================================
+
+struct DatosMef {
+    codigo_registro: String,
+    #[allow(dead_code)]
+    codigo_puesto: String,
+    apepat: String,
+    apemat: String,
+    nom: String,
+    sexo: String,
+    fnac: String,
+    fing: String,
+    banco: String,
+    tipo_cuenta: String,
+    num_cuenta: String,
+    cci: String,
+    regimen: String, // "CAS" | "276" | "728" | "276/728"
+}
+
+fn mef_celda_texto(cell: &calamine::Data) -> String {
+    use calamine::Data;
+    match cell {
+        Data::String(s) => s.trim().to_uppercase(),
+        Data::Float(f) => {
+            if f.fract() == 0.0 {
+                format!("{}", *f as i64)
+            } else {
+                format!("{}", f)
+            }
+        }
+        Data::Int(i) => i.to_string(),
+        Data::Bool(b) => b.to_string().to_uppercase(),
+        _ => String::new(),
+    }
+}
+
+fn mef_celda_fecha(cell: &calamine::Data) -> String {
+    use calamine::{Data, DataType};
+    match cell {
+        Data::String(s) => {
+            let s = s.trim();
+            if s.is_empty() {
+                return String::new();
+            }
+            // ISO YYYY-MM-DD o YYYY-MM-DDThh:mm:ss
+            if s.len() >= 10 && s.as_bytes().get(4) == Some(&b'-') {
+                return format!("{}/{}/{}", &s[8..10], &s[5..7], &s[0..4]);
+            }
+            s.to_uppercase()
+        }
+        Data::DateTime(_) | Data::Float(_) => {
+            if let Some(date) = cell.as_date() {
+                let date: chrono::NaiveDate = date;
+                date.format("%d/%m/%Y").to_string()
+            } else {
+                mef_celda_texto(cell)
+            }
+        }
+        Data::DateTimeIso(s) => {
+            if s.len() >= 10 {
+                format!("{}/{}/{}", &s[8..10], &s[5..7], &s[0..4])
+            } else {
+                s.clone()
+            }
+        }
+        _ => String::new(),
+    }
+}
+
+fn mef_get_cell(row: &[calamine::Data], col: Option<usize>, es_fecha: bool) -> String {
+    match col {
+        None => String::new(),
+        Some(i) => {
+            if i >= row.len() {
+                return String::new();
+            }
+            if es_fecha {
+                mef_celda_fecha(&row[i])
+            } else {
+                mef_celda_texto(&row[i])
+            }
+        }
+    }
+}
+
+/// Parsea una hoja MEF y construye el diccionario DNI -> DatosMef.
+/// `regimen_default` se aplica cuando el archivo no tiene columna de régimen
+/// (p.ej. el archivo CAS es siempre "CAS").
+fn mef_parsear_hoja(
+    range: &calamine::Range<calamine::Data>,
+    regimen_default: &str,
+) -> Result<std::collections::HashMap<String, DatosMef>, ApiError> {
+    use calamine::Data;
+    use std::collections::HashMap;
+
+    const MEF_HEADER_IDX: usize = 3;
+    const MEF_DATA_START: usize = 4;
+
+    let mut col_map: HashMap<String, usize> = HashMap::new();
+    {
+        let mut iter = range.rows();
+        for _ in 0..MEF_HEADER_IDX {
+            iter.next();
+        }
+        if let Some(header_row) = iter.next() {
+            for (i, cell) in header_row.iter().enumerate() {
+                if let Data::String(s) = cell {
+                    col_map.insert(s.trim().to_uppercase(), i);
+                }
+            }
+        } else {
+            return Err(ApiError::BadRequest(
+                "El archivo MEF no tiene fila de encabezados en la fila 4".to_string(),
+            ));
+        }
+    }
+
+    let col_dni = col_map
+        .get("NUMERO_DOCUMENTO_IDENTIDAD")
+        .copied()
+        .ok_or_else(|| {
+            ApiError::BadRequest("NUMERO_DOCUMENTO_IDENTIDAD no encontrado en el MEF".to_string())
+        })?;
+
+    let col_registro = col_map.get("CODIGO_REGISTRO").copied();
+    let col_puesto   = col_map.get("CODIGO_PUESTO_CPE").copied();
+    let col_apepat   = col_map.get("APELLIDO_PATERNO").copied();
+    let col_apemat   = col_map.get("APELLIDO_MATERNO").copied();
+    let col_nom      = col_map.get("NOMBRES").copied();
+    let col_sexo     = col_map.get("CODIGO_SEXO").copied();
+    let col_fnac     = col_map.get("FECHA_NACIMIENTO").copied();
+    let col_fing     = col_map.get("FECHA_INGRESO_PERSONAL").copied();
+    let col_banco    = col_map.get("ENTIDAD_FINANCIERA").copied();
+    let col_tipocta  = col_map.get("TIPO_CUENTA_FINANCIERA").copied();
+    let col_numcta   = col_map.get("NUMERO_CUENTA_FINANCIERA").copied();
+    let col_cci      = col_map.get("CODIGO_CUENTA_INTERBANCARIA").copied();
+    // Columna opcional de régimen (presente en el archivo 276/728)
+    let col_regimen  = col_map.get("REGIMEN_LABORAL")
+        .or_else(|| col_map.get("CODIGO_REGIMEN_LABORAL"))
+        .or_else(|| col_map.get("REGIMEN"))
+        .copied();
+
+    let mut dict: HashMap<String, DatosMef> = HashMap::new();
+
+    for row in range.rows().skip(MEF_DATA_START) {
+        if col_dni >= row.len() {
+            continue;
+        }
+        let dni = mef_celda_texto(&row[col_dni]);
+        if dni.is_empty() {
+            continue;
+        }
+        if dict.contains_key(&dni) {
+            continue; // primer duplicado gana
+        }
+
+        let regimen = if let Some(ci) = col_regimen {
+            let v = mef_celda_texto(&row[ci]);
+            if v.is_empty() { regimen_default.to_string() } else { v }
+        } else {
+            regimen_default.to_string()
+        };
+
+        dict.insert(
+            dni,
+            DatosMef {
+                codigo_registro: mef_get_cell(row, col_registro, false),
+                codigo_puesto:   mef_get_cell(row, col_puesto,   false),
+                apepat:          mef_get_cell(row, col_apepat,   false),
+                apemat:          mef_get_cell(row, col_apemat,   false),
+                nom:             mef_get_cell(row, col_nom,      false),
+                sexo:            mef_get_cell(row, col_sexo,     false),
+                fnac:            mef_get_cell(row, col_fnac,     true),
+                fing:            mef_get_cell(row, col_fing,     true),
+                banco:           mef_get_cell(row, col_banco,    false),
+                tipo_cuenta:     mef_get_cell(row, col_tipocta,  false),
+                num_cuenta:      mef_get_cell(row, col_numcta,   false),
+                cci:             mef_get_cell(row, col_cci,      false),
+                regimen,
+            },
+        );
+    }
+
+    Ok(dict)
+}
+
+pub async fn comparar_mef(
+    data: web::Data<AppState>,
+    mut payload: actix_multipart::Multipart,
+) -> Result<impl Responder, ApiError> {
+    use calamine::{Reader, Xlsx, open_workbook_from_rs};
+    use futures_util::TryStreamExt;
+    use std::collections::HashMap;
+    use std::io::Cursor;
+
+    // 1. Leer los 2 archivos MEF desde el multipart
+    //    "archivo_cas"   -> régimen CAS
+    //    "archivo_otros" -> régimen 276/728 (columna interna distingue 276 vs 728)
+    let mut bytes_cas:   Vec<u8> = Vec::new();
+    let mut bytes_otros: Vec<u8> = Vec::new();
+
+    while let Some(mut field) = payload
+        .try_next()
+        .await
+        .map_err(|e| ApiError::InternalError(format!("Error leyendo multipart: {}", e)))?
+    {
+        let field_name = field
+            .content_disposition()
+            .and_then(|cd| cd.get_name())
+            .unwrap_or("")
+            .to_string();
+
+        let buf: &mut Vec<u8> = match field_name.as_str() {
+            "archivo_cas"            => &mut bytes_cas,
+            "archivo_otros"          => &mut bytes_otros,
+            // compatibilidad con llamadas de un solo archivo
+            "archivo" | "file"       => &mut bytes_cas,
+            _ => {
+                while field.try_next().await
+                    .map_err(|e| ApiError::InternalError(e.to_string()))?.is_some() {}
+                continue;
+            }
+        };
+
+        while let Some(chunk) = field
+            .try_next()
+            .await
+            .map_err(|e| ApiError::InternalError(format!("Error leyendo chunk: {}", e)))?
+        {
+            buf.extend_from_slice(&chunk);
+        }
+    }
+
+    if bytes_cas.is_empty() && bytes_otros.is_empty() {
+        return Err(ApiError::BadRequest(
+            "No se recibió ningún archivo ('archivo_cas' y/o 'archivo_otros')".to_string(),
+        ));
+    }
+
+    // 2. Parsear cada archivo y unificar en un solo diccionario
+    let mut dict_mef: HashMap<String, DatosMef> = HashMap::new();
+
+    if !bytes_cas.is_empty() {
+        let cursor = Cursor::new(bytes_cas);
+        let mut wb: Xlsx<_> = open_workbook_from_rs(cursor)
+            .map_err(|e| ApiError::InternalError(format!("Error abriendo Excel CAS: {}", e)))?;
+        let sheet = wb.sheet_names().first()
+            .ok_or_else(|| ApiError::InternalError("El archivo CAS no tiene hojas".to_string()))?
+            .clone();
+        let range = wb.worksheet_range(&sheet)
+            .map_err(|e| ApiError::InternalError(format!("Error leyendo hoja CAS: {}", e)))?;
+        dict_mef.extend(mef_parsear_hoja(&range, "CAS")?);
+    }
+
+    if !bytes_otros.is_empty() {
+        let cursor = Cursor::new(bytes_otros);
+        let mut wb: Xlsx<_> = open_workbook_from_rs(cursor)
+            .map_err(|e| ApiError::InternalError(format!("Error abriendo Excel 276/728: {}", e)))?;
+        let sheet = wb.sheet_names().first()
+            .ok_or_else(|| ApiError::InternalError("El archivo 276/728 no tiene hojas".to_string()))?
+            .clone();
+        let range = wb.worksheet_range(&sheet)
+            .map_err(|e| ApiError::InternalError(format!("Error leyendo hoja 276/728: {}", e)))?;
+        // CAS tiene prioridad si un DNI aparece en ambos archivos
+        for (dni, datos) in mef_parsear_hoja(&range, "276/728")? {
+            dict_mef.entry(dni).or_insert(datos);
+        }
+    }
+
+    // 3. Consultar datos propios de la BD (incluyendo régimen)
+    let filas_bd = sqlx::query(
+        r#"
+        SELECT
+          p.dni, v.plaza_id, p.nombre, p.apaterno, p.amaterno,
+          p.sexo, p.fecha_nacimiento,
+          d.fecha AS ingreso,
+          b.nombre AS banco,
+          CASE
+            WHEN cb.tipo_cuenta = 'AHORRO' THEN 'CUENTA DE AHORRO'
+            WHEN cb.tipo_cuenta = 'CORRIENTE' THEN 'CUENTA CORRIENTE'
+            ELSE cb.tipo_cuenta
+          END AS tipo_cuenta,
+          cb.numero_cuenta, cb.cci,
+          COALESCE(r.decreto, '') AS regimen_sistema
+        FROM vinculo v
+          INNER JOIN persona p ON v.dni = p.dni
+          INNER JOIN documento d ON v.doc_ingreso_id = d.id
+          LEFT JOIN cuentabancaria cb ON cb.dni_persona = p.dni
+          LEFT JOIN banco b ON cb.banco_id = b.id
+          LEFT JOIN regimen r ON r.id = v.regimen
+        WHERE v.estado = 'activo' OR v.estado = 'pendiente'
+        ORDER BY p.apaterno
+        "#,
+    )
+    .fetch_all(&data.db)
+    .await
+    .map_err(|e| {
+        eprintln!("Database error comparar_mef: {:?}", e);
+        ApiError::InternalError("Error al consultar datos propios".into())
+    })?;
+
+    // 5. Comparar registro por registro
+    let etiquetas = [
+        "FECHA NACIMIENTO",
+        "FECHA INGRESO",
+        "SEXO",
+        "APELLIDO PATERNO",
+        "APELLIDO MATERNO",
+        "NOMBRES",
+        "ENTIDAD FINANCIERA",
+        "TIPO CUENTA",
+        "NUMERO CUENTA",
+        "CCI",
+    ];
+
+    let mut comparaciones: Vec<Value> = Vec::new();
+    let mut total_ok: u64 = 0;
+    let mut total_diff: u64 = 0;
+    let mut total_no_encontrado: u64 = 0;
+    let mut counter: u64 = 0;
+
+    for fila in &filas_bd {
+        let dni: String = fila.get("dni");
+        let apaterno: String = fila.get("apaterno");
+        let amaterno: String = fila.get("amaterno");
+        let nombre: String = fila.get("nombre");
+        let sexo: Option<String> = fila.try_get("sexo").ok();
+        let nacimiento: Option<NaiveDate> = fila.try_get("fecha_nacimiento").ok();
+        let ingreso: Option<NaiveDate> = fila.try_get("ingreso").ok();
+        let banco: Option<String> = fila.try_get("banco").ok();
+        let tipo_cuenta: Option<String> = fila.try_get("tipo_cuenta").ok();
+        let numero_cuenta: Option<String> = fila.try_get("numero_cuenta").ok();
+        let cci: Option<String> = fila.try_get("cci").ok();
+        let plaza_id: Option<String> = fila.try_get("plaza_id").ok();
+        let regimen_sistema: String = fila.try_get("regimen_sistema").unwrap_or_default();
+
+        let nombre_completo = format!("{} {}, {}", apaterno.trim(), amaterno.trim(), nombre.trim());
+        let sexo_codigo = sexo
+            .as_deref()
+            .map(|s| {
+                if s.eq_ignore_ascii_case("M") {
+                    "1"
+                } else {
+                    "2"
+                }
+            })
+            .unwrap_or("")
+            .to_string();
+        let fnac_str = nacimiento
+            .map(|d| d.format("%d/%m/%Y").to_string())
+            .unwrap_or_default();
+        let fing_str = ingreso
+            .map(|d| d.format("%d/%m/%Y").to_string())
+            .unwrap_or_default();
+        let banco_str = banco.unwrap_or_default().trim().to_uppercase();
+        let tipo_cta_str = tipo_cuenta.unwrap_or_default().trim().to_uppercase();
+        let num_cta_str = numero_cuenta.unwrap_or_default().trim().to_uppercase();
+        let cci_str = cci.unwrap_or_default().trim().to_uppercase();
+        let cpp_str = plaza_id.unwrap_or_default().trim().to_uppercase();
+
+        counter += 1;
+
+        if let Some(mef) = dict_mef.get(&dni) {
+            let valores_propios = [
+                fnac_str.clone(),
+                fing_str.clone(),
+                sexo_codigo.clone(),
+                apaterno.trim().to_uppercase(),
+                amaterno.trim().to_uppercase(),
+                nombre.trim().to_uppercase(),
+                banco_str.clone(),
+                tipo_cta_str.clone(),
+                num_cta_str.clone(),
+                cci_str.clone(),
+            ];
+
+            let valores_mef = [
+                mef.fnac.clone(),
+                mef.fing.clone(),
+                mef.sexo.clone(),
+                mef.apepat.clone(),
+                mef.apemat.clone(),
+                mef.nom.clone(),
+                mef.banco.clone(),
+                mef.tipo_cuenta.clone(),
+                mef.num_cuenta.clone(),
+                mef.cci.clone(),
+            ];
+
+            for i in 0..etiquetas.len() {
+                let vp = &valores_propios[i];
+                let vm = &valores_mef[i];
+                let igual = vp == vm;
+                if igual {
+                    total_ok += 1;
+                } else {
+                    total_diff += 1;
+                }
+
+                comparaciones.push(json!({
+                    "num": counter,
+                    "dni": dni,
+                    "nombre": nombre_completo,
+                    "regimen": regimen_sistema,
+                    "regimen_mef": mef.regimen,
+                    "codigo_registro": mef.codigo_registro,
+                    "codigo_puesto_cpe": cpp_str,
+                    "campo": etiquetas[i],
+                    "valor_propio": vp,
+                    "valor_mef": vm,
+                    "resultado": if igual { "OK" } else { "DIFERENCIA" }
+                }));
+            }
+        } else {
+            total_no_encontrado += 1;
+            comparaciones.push(json!({
+                "num": counter,
+                "dni": dni,
+                "nombre": nombre_completo,
+                "regimen": regimen_sistema,
+                "regimen_mef": null,
+                "codigo_registro": null,
+                "codigo_puesto_cpe": cpp_str,
+                "campo": "---",
+                "valor_propio": "---",
+                "valor_mef": "---",
+                "resultado": "NO_EXISTE_EN_MEF"
+            }));
+        }
+    }
+
+    Ok(HttpResponse::Ok().json(json!({
+        "resumen": {
+            "procesados": counter,
+            "encontrados_mef": dict_mef.len(),
+            "ok": total_ok,
+            "diferencias": total_diff,
+            "no_encontrados": total_no_encontrado,
+            "fecha_comparacion": chrono::Local::now().format("%d/%m/%Y %H:%M:%S").to_string()
+        },
+        "comparaciones": comparaciones
+    })))
 }

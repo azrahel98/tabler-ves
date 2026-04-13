@@ -1,10 +1,10 @@
 <template>
-  <div class="rounded-2xl border border-gray-200 bg-white h-min p-6 dark:border-gray-800 dark:bg-white/[0.03]">
+  <div class="rounded-2xl border border-gray-100 bg-card h-min p-6 dark:border-white/6 dark:bg-white/3">
 
     <!-- Header -->
     <div class="flex items-center justify-between gap-2 text-xs font-bold uppercase tracking-wider text-gray-800 dark:text-white/90 mb-5">
       <div class="flex items-center gap-2">
-        <svg class="h-5 w-5 text-brand-500" fill="currentColor" viewBox="0 0 24 24">
+        <svg class="h-5 w-5 text-primary" fill="currentColor" viewBox="0 0 24 24">
           <path d="M4 10h3v7H4zm6.5 0h3v7h-3zM2 19h20v3H2zm15-9h3v7h-3zM12 1L2 6v2h20V6z" />
         </svg>
         Información Bancaria
@@ -12,7 +12,7 @@
       <button
         v-if="esAdmin"
         @click="openModal(infoBancaria ? true : false)"
-        class="rounded-full flex items-center gap-1 px-2 py-1 text-gray-500 hover:bg-gray-100 hover:text-brand-500 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-brand-400 transition-colors"
+        class="rounded-full flex items-center gap-1 px-2 py-1 text-gray-500 hover:bg-primary/10 hover:text-primary dark:text-gray-400 dark:hover:bg-primary/20 dark:hover:text-brand-300 transition-colors"
         :title="infoBancaria ? 'Editar Información' : 'Agregar Información'">
         <Pencil v-if="infoBancaria" class="h-4 w-4" />
         <Plus v-else class="h-4 w-4" />
@@ -76,7 +76,7 @@
         </div>
         <button
           @click="copiarCCI"
-          class="rounded-lg p-1.5 text-gray-400 hover:bg-brand-50 hover:text-brand-500 dark:hover:bg-brand-500/10 dark:hover:text-brand-400 transition-colors"
+          class="rounded-lg p-1.5 text-gray-400 hover:bg-primary/10 hover:text-primary dark:hover:bg-primary/20 dark:hover:text-brand-300 transition-colors"
           :title="copiado ? 'Copiado!' : 'Copiar CCI'">
           <Check v-if="copiado" class="h-4 w-4 text-emerald-500" />
           <Copy v-else class="h-4 w-4" />

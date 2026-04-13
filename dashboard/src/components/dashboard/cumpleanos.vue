@@ -1,16 +1,16 @@
 <template>
-  <div class="rounded-2xl border border-gray-100 bg-white dark:border-white/[0.06] dark:bg-white/[0.03] flex flex-col h-full">
+  <div class="rounded-2xl border border-gray-100 bg-card dark:border-white/[0.06] dark:bg-white/[0.03] flex flex-col h-full">
 
     <div class="flex items-center justify-between px-5 pt-5 pb-4 border-b border-gray-100 dark:border-white/[0.06]">
       <div class="flex items-center gap-3">
-        <div class="w-8 h-8 rounded-xl bg-brand-500 flex items-center justify-center shrink-0">
+        <div class="w-8 h-8 rounded-xl bg-primary flex items-center justify-center shrink-0">
           <Cake class="w-4 h-4 text-white" />
         </div>
         <div>
           <h3 class="text-sm font-semibold text-gray-800 dark:text-white/90 leading-none">Cumpleaños</h3>
           <p class="text-[11px] text-gray-400 dark:text-gray-500 mt-1 leading-none">
             <template v-if="totalThisMonth > 0">
-              <span class="text-brand-500 font-medium">{{ totalThisMonth }}</span> este mes
+              <span class="text-primary font-medium">{{ totalThisMonth }}</span> este mes
             </template>
             <template v-else>Ninguno este mes</template>
           </p>
@@ -23,7 +23,7 @@
           class="w-7 h-7 rounded-lg flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-white/5 dark:hover:text-gray-200 transition-colors">
           <ChevronLeft class="w-3.5 h-3.5" />
         </button>
-        <span class="text-xs font-medium text-gray-600 dark:text-gray-300 capitalize px-1" style="min-width: 6rem; text-align: center;">
+        <span class="text-md font-medium text-gray-600 dark:text-gray-300 capitalize px-1" style="min-width: 6rem; text-align: center;">
           {{ format(viewDate, "MMM yyyy", { locale: es }) }}
         </span>
         <button
@@ -57,12 +57,12 @@
               v-if="!cell.birthdays.length"
               :class="[
                 'w-8 h-8 flex items-center justify-center rounded-full',
-                cell.isToday ? 'bg-gray-900 dark:bg-white' : '',
+                cell.isToday ? 'bg-primary dark:bg-primary' : '',
               ]">
               <span :class="[
-                'text-sm font-medium',
+                'text-md font-medium',
                 cell.isToday
-                  ? 'text-white dark:text-gray-900 font-semibold'
+                  ? 'text-white font-semibold'
                   : 'text-gray-400 dark:text-gray-500',
               ]">{{ cell.day }}</span>
             </div>
@@ -78,16 +78,16 @@
                 <div :class="[
                   'w-8 h-8 flex flex-col items-center justify-center rounded-full cursor-pointer transition-all duration-150 relative',
                   cell.isToday
-                    ? 'bg-brand-500'
-                    : 'hover:bg-brand-50 dark:hover:bg-brand-500/10',
+                    ? 'bg-primary'
+                    : 'hover:bg-primary/10 dark:hover:bg-primary/10',
                 ]">
                   <span :class="[
-                    'text-sm font-semibold leading-none',
-                    cell.isToday ? 'text-white' : 'text-brand-600 dark:text-brand-400',
+                    'text-md font-semibold leading-none',
+                    cell.isToday ? 'text-white' : 'text-primary dark:text-brand-300',
                   ]">{{ cell.day }}</span>
                   <span :class="[
                     'w-1 h-1 rounded-full mt-0.5',
-                    cell.isToday ? 'bg-white/60' : 'bg-brand-400 dark:bg-brand-500',
+                    cell.isToday ? 'bg-white' : 'bg-primary dark:bg-brand-300',
                   ]" />
                 </div>
               </template>
@@ -102,16 +102,16 @@
                     :key="p.dni"
                     :to="{ name: 'personal-profile', params: { dni: p.dni } }"
                     class="flex items-center gap-2.5 px-2 py-1.5 rounded-xl hover:bg-gray-50 dark:hover:bg-white/5 transition-colors group -mx-1">
-                    <div class="w-8 h-8 rounded-full bg-brand-50 dark:bg-brand-500/15 flex items-center justify-center shrink-0">
-                      <span class="text-brand-600 dark:text-brand-400 text-xs font-bold">{{ initials(p.nombre) }}</span>
+                    <div class="w-8 h-8 rounded-full bg-primary/10 dark:bg-primary/15 flex items-center justify-center shrink-0">
+                      <span class="text-primary dark:text-brand-300 text-xs font-bold">{{ initials(p.nombre) }}</span>
                     </div>
                     <div class="min-w-0 flex-1">
-                      <p class="text-sm font-medium text-gray-800 dark:text-white/90 truncate group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors">
+                      <p class="text-sm font-medium text-gray-800 dark:text-white/90 truncate group-hover:text-primary dark:group-hover:text-brand-300 transition-colors">
                         {{ p.nombre }}
                       </p>
                       <p class="text-xs text-gray-400">{{ age(p.nacimiento) }} años</p>
                     </div>
-                    <Cake class="w-3.5 h-3.5 text-brand-400 dark:text-brand-500 shrink-0" />
+                    <Cake class="w-3.5 h-3.5 text-primary/60 dark:text-brand-300 shrink-0" />
                   </RouterLink>
                 </div>
               </div>

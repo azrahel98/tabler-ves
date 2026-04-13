@@ -6,10 +6,10 @@
 
         <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
           <div class="flex min-h-full items-center justify-center p-4 sm:p-0">
-            <div class="modal-card relative transform overflow-hidden rounded-2xl bg-white dark:bg-gray-900 text-left shadow-theme-xl w-11/12 border border-gray-200 dark:border-gray-800" :class="maxWidth">
+            <div class="modal-card relative transform overflow-hidden rounded-2xl bg-card dark:bg-gray-950 text-left shadow-theme-xl w-11/12 border border-gray-100 dark:border-white/6" :class="maxWidth">
               <div
                 class="flex items-center justify-between px-4 py-3"
-                :class="title || $slots.header ? 'border-b border-gray-200 dark:border-gray-800 px-6 py-4' : 'absolute top-0 right-0 z-30'">
+                :class="title || $slots.header ? 'border-b border-gray-100 dark:border-white/6 px-6 py-4' : 'absolute top-0 right-0 z-30'">
 
                 <h3 v-if="title" class="text-lg font-semibold text-gray-800 dark:text-white/90" id="modal-title">
                   {{ title }}
@@ -19,7 +19,7 @@
                 <button
                   @click="close"
                   type="button"
-                  class="ml-auto inline-flex h-8 w-8 items-center justify-center rounded-lg bg-transparent text-sm text-gray-400 hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-gray-800 dark:hover:text-gray-200 transition-colors">
+                  class="ml-auto inline-flex h-8 w-8 items-center justify-center rounded-lg bg-transparent text-sm text-gray-400 hover:bg-primary/10 hover:text-primary dark:hover:bg-white/10 dark:hover:text-white transition-colors">
                   <X class="h-5 w-5" />
                   <span class="sr-only">Cerrar modal</span>
                 </button>
@@ -29,7 +29,7 @@
                 <slot></slot>
               </div>
 
-              <div v-if="$slots.footer" class="border-t border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/50 px-6 py-4 sm:flex sm:flex-row-reverse sm:px-6">
+              <div v-if="$slots.footer" class="border-t border-gray-100 dark:border-white/6 bg-surface dark:bg-white/3 px-6 py-4 sm:flex sm:flex-row-reverse sm:px-6">
                 <slot name="footer"></slot>
               </div>
             </div>

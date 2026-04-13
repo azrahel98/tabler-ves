@@ -17,7 +17,7 @@
       <td class="px-4 py-3" :style="{ paddingLeft: `${nivel * 24 + 16}px` }">
         <router-link
           :to="{ name: 'area-personal', params: { id: nodo.id } }"
-          class="inline-flex items-center gap-2 font-semibold text-gray-900 dark:text-white hover:text-brand-600 dark:hover:text-brand-400 transition-colors">
+          class="inline-flex items-center gap-2 font-semibold text-gray-900 dark:text-white hover:text-primary dark:hover:text-brand-300 transition-colors">
           <span
             class="flex items-center justify-center w-6 h-6 rounded-md text-xs font-bold shrink-0"
             :class="nivelBadgeClasses">
@@ -31,7 +31,7 @@
         <RouterLink
           v-if="nodo.dni && nodo.jefe"
           :to="{ name: 'personal-profile', params: { dni: nodo.dni } }"
-          class="inline-flex items-center gap-2 text-gray-700 dark:text-gray-300 hover:text-brand-600 dark:hover:text-brand-400 transition-colors">
+          class="inline-flex items-center gap-2 text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-brand-300 transition-colors">
           <span class="flex items-center justify-center w-6 h-6 rounded-full bg-gray-100 dark:bg-gray-800 shrink-0">
             <User class="h-3.5 w-3.5 text-gray-400 dark:text-gray-500" />
           </span>
@@ -113,7 +113,7 @@
         <RouterLink
           v-if="nodo.dni"
           :to="{ name: 'personal-profile', params: { dni: nodo.dni } }"
-          class="inline-flex items-center gap-1.5 text-xs text-gray-600 dark:text-gray-400 hover:text-brand-600 dark:hover:text-brand-400 transition-colors min-w-0">
+          class="inline-flex items-center gap-1.5 text-xs text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-brand-300 transition-colors min-w-0">
           <User class="h-3.5 w-3.5 shrink-0 text-gray-400" />
           <span class="truncate">{{ nodo.jefe || 'Sin asignar' }}</span>
         </RouterLink>
@@ -164,7 +164,7 @@
   })
 
   const nivelColores = [
-    { border: 'border-l-brand-500', badge: 'bg-brand-50 text-brand-600 dark:bg-brand-500/15 dark:text-brand-400', count: 'bg-brand-50 text-brand-600 dark:bg-brand-500/15 dark:text-brand-400' },
+    { border: 'border-l-primary', badge: 'bg-primary/10 text-primary dark:bg-primary/15 dark:text-brand-300', count: 'bg-primary/10 text-primary dark:bg-primary/15 dark:text-brand-300' },
     { border: 'border-l-blue-light-500', badge: 'bg-blue-light-50 text-blue-light-600 dark:bg-blue-light-500/15 dark:text-blue-light-400', count: 'bg-blue-light-50 text-blue-light-600 dark:bg-blue-light-500/15 dark:text-blue-light-400' },
     { border: 'border-l-success-500', badge: 'bg-success-50 text-success-600 dark:bg-success-500/15 dark:text-success-400', count: 'bg-success-50 text-success-600 dark:bg-success-500/15 dark:text-success-400' },
     { border: 'border-l-warning-500', badge: 'bg-warning-50 text-warning-600 dark:bg-warning-500/15 dark:text-warning-400', count: 'bg-warning-50 text-warning-600 dark:bg-warning-500/15 dark:text-warning-400' },

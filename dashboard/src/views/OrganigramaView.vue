@@ -10,14 +10,14 @@
           <button
             v-if="!cargando"
             @click="expandirTodo = !expandirTodo"
-            class="inline-flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-3.5 py-2 text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 transition-colors">
+            class="inline-flex items-center gap-2 rounded-xl border border-gray-100 bg-card px-3.5 py-2 text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-primary/5 dark:border-white/6 dark:bg-white/5 dark:text-gray-300 dark:hover:bg-white/10 transition-colors">
             <ChevronsUpDown class="h-4 w-4" />
             {{ expandirTodo ? 'Colapsar' : 'Expandir' }}
           </button>
           <button
             v-if="!cargando"
             @click="recargar"
-            class="inline-flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-3.5 py-2 text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 transition-colors">
+            class="inline-flex items-center gap-2 rounded-xl border border-gray-100 bg-card px-3.5 py-2 text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-primary/5 dark:border-white/6 dark:bg-white/5 dark:text-gray-300 dark:hover:bg-white/10 transition-colors">
             <RefreshCw class="h-4 w-4" />
             Actualizar
           </button>
@@ -30,7 +30,7 @@
       </div>
 
       <div v-else-if="organigrama.length === 0" class="flex flex-col items-center justify-center py-20 text-center">
-        <div class="flex items-center justify-center w-16 h-16 rounded-2xl bg-gray-100 dark:bg-gray-800 mb-4">
+        <div class="flex items-center justify-center w-16 h-16 rounded-2xl bg-surface dark:bg-white/5 mb-4">
           <Network class="h-8 w-8 text-gray-400 dark:text-gray-500" />
         </div>
         <p class="text-lg font-semibold text-gray-700 dark:text-gray-300">Sin datos de organigrama</p>
@@ -49,10 +49,10 @@
           />
         </div>
 
-        <div class="hidden md:block rounded-2xl border border-gray-200 bg-white shadow-theme-xs dark:border-gray-800 dark:bg-gray-900 overflow-hidden">
+        <div class="hidden md:block rounded-2xl border border-gray-100 bg-card shadow-theme-xs dark:border-white/6 dark:bg-white/3 overflow-hidden">
           <table class="w-full text-sm">
             <thead>
-              <tr class="border-b border-gray-200 dark:border-gray-800 bg-gray-50/80 dark:bg-gray-800/40">
+              <tr class="border-b border-gray-100 dark:border-white/6 bg-surface dark:bg-white/3">
                 <th class="px-3 py-3.5 text-left text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500 w-10"></th>
                 <th class="px-4 py-3.5 text-left text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500">Área / Gerencia</th>
                 <th class="px-4 py-3.5 text-left text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500">Jefe Responsable</th>

@@ -14,9 +14,9 @@
       </div>
 
       <div class="grid grid-cols-1 gap-4 lg:grid-cols-3 md:gap-6">
-        <Cumpleanos />
         <Movimientos />
         <EventosVinculo />
+        <Cumpleanos />
       </div>
 
       <Mapa geojson-url="/map.geojson" />

@@ -1,8 +1,8 @@
 <template>
-  <div class="rounded-2xl border border-gray-200 bg-white h-min p-6 dark:border-gray-800 dark:bg-white/[0.03]">
+  <div class="rounded-2xl border border-gray-100 bg-card h-min p-6 dark:border-white/6 dark:bg-white/3">
     <div class="flex items-center justify-between gap-1 text-xs font-bold uppercase tracking-wider text-gray-800 dark:text-white/90 mb-6">
       <div class="flex items-center gap-1">
-        <svg class="h-5 w-5 text-brand-500" fill="currentColor" viewBox="0 0 24 24">
+        <svg class="h-5 w-5 text-primary" fill="currentColor" viewBox="0 0 24 24">
           <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
         </svg>
         Informacion Personal
@@ -10,7 +10,7 @@
       <button
         v-if="esAdmin"
         @click="isEditModalOpen = true"
-        class="rounded-full p-1.5 text-gray-400 hover:bg-gray-100 hover:text-brand-500 dark:hover:bg-gray-800 dark:hover:text-brand-400 transition-colors"
+        class="rounded-full p-1.5 text-gray-400 hover:bg-primary/10 hover:text-primary dark:hover:bg-primary/20 dark:hover:text-brand-300 transition-colors"
         title="Editar Información">
         <Pencil class="h-4 w-4" />
       </button>

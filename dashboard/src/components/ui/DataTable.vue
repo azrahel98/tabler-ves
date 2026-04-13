@@ -1,7 +1,7 @@
 <template>
-  <div class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900 overflow-hidden">
+  <div class="rounded-2xl border border-gray-100 bg-card dark:border-white/6 dark:bg-white/3 overflow-hidden">
     <!-- Cabecera con título y buscador -->
-    <div class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 dark:border-gray-800 px-5 py-4">
+    <div class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-100 dark:border-white/6 px-5 py-4">
       <div>
         <h3 v-if="titulo" class="text-base font-semibold text-gray-800 dark:text-white/90">{{ titulo }}</h3>
         <p v-if="subtitulo" class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{{ subtitulo }}</p>
@@ -14,12 +14,12 @@
             v-model="busqueda"
             type="text"
             :placeholder="placeholderBusqueda"
-            class="w-56 rounded-lg border border-gray-200 bg-gray-50 py-2 pl-8 pr-3 text-sm text-gray-800 placeholder:text-gray-400 focus:border-brand-300 focus:outline-none focus:ring-2 focus:ring-brand-500/20 dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:placeholder:text-gray-500" />
+            class="w-56 rounded-lg border border-gray-100 bg-surface py-2 pl-8 pr-3 text-sm text-gray-800 placeholder:text-gray-400 focus:border-primary/40 focus:outline-none focus:ring-2 focus:ring-primary/10 dark:border-white/6 dark:bg-white/5 dark:text-white dark:placeholder:text-gray-500" />
         </div>
         <!-- Selector de filas por página -->
         <select
           v-model="filasPorPagina"
-          class="rounded-lg border border-gray-200 bg-gray-50 py-2 px-2 text-sm text-gray-700 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300">
+          class="rounded-lg border border-gray-100 bg-surface py-2 px-2 text-sm text-gray-700 focus:outline-none dark:border-white/6 dark:bg-white/5 dark:text-gray-300">
           <option v-for="n in [10, 25, 50]" :key="n" :value="n">{{ n }}</option>
         </select>
       </div>
@@ -30,7 +30,7 @@
       <table class="w-full text-sm">
         <!-- Encabezados -->
         <thead>
-          <tr class="border-b border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/50">
+          <tr class="border-b border-gray-100 dark:border-white/6 bg-surface dark:bg-white/3">
             <th
               v-for="col in columnas"
               :key="col.clave"
@@ -41,8 +41,8 @@
                 {{ col.titulo }}
                 <template v-if="col.ordenable !== false">
                   <ArrowUpDown v-if="columnaOrden !== col.clave" class="h-3 w-3 opacity-30" />
-                  <ArrowUp v-else-if="direccionOrden === 'asc'" class="h-3 w-3 text-brand-500" />
-                  <ArrowDown v-else class="h-3 w-3 text-brand-500" />
+                  <ArrowUp v-else-if="direccionOrden === 'asc'" class="h-3 w-3 text-primary" />
+                  <ArrowDown v-else class="h-3 w-3 text-primary" />
                 </template>
               </div>
             </th>
@@ -55,8 +55,8 @@
             v-for="(fila, idx) in filasPagina"
             :key="idx"
             @click="$emit('click-fila', fila)"
-            class="border-b border-gray-100 text-xs dark:border-gray-800 last:border-none transition-colors"
-            :class="clickable ? 'cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800/50' : ''">
+            class="border-b border-gray-100 text-xs dark:border-white/5 last:border-none transition-colors"
+            :class="clickable ? 'cursor-pointer hover:bg-primary/5 dark:hover:bg-white/5' : ''">
             <td v-for="col in columnas" :key="col.clave" class="px-4 py-3 text-gray-700 dark:text-gray-300">
               <!-- Slot personalizado para la celda -->
               <slot :name="`celda-${col.clave}`" :fila="fila" :valor="fila[col.clave]">
@@ -83,7 +83,7 @@
     </div>
 
     <!-- Pie: info de paginación y navegación -->
-    <div v-if="totalFilasFiltradas > 0" class="flex flex-wrap items-center justify-between gap-3 border-t border-gray-200 dark:border-gray-800 px-5 py-3">
+    <div v-if="totalFilasFiltradas > 0" class="flex flex-wrap items-center justify-between gap-3 border-t border-gray-100 dark:border-white/6 px-5 py-3">
       <p class="text-xs text-gray-400 dark:text-gray-500">
         Mostrando
         <span class="font-semibold text-gray-600 dark:text-gray-400">{{ inicioPagina }}–{{ finPagina }}</span>
@@ -96,14 +96,14 @@
         <button
           @click="paginaActual = 1"
           :disabled="paginaActual === 1"
-          class="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-700 disabled:opacity-30 disabled:cursor-not-allowed dark:hover:bg-gray-800 dark:hover:text-gray-300 transition-colors"
+          class="rounded-lg p-1.5 text-gray-400 hover:bg-primary/10 hover:text-primary disabled:opacity-30 disabled:cursor-not-allowed dark:hover:bg-white/5 dark:hover:text-gray-300 transition-colors"
           title="Primera página">
           <ChevronsLeft class="h-4 w-4" />
         </button>
         <button
           @click="paginaActual--"
           :disabled="paginaActual === 1"
-          class="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-700 disabled:opacity-30 disabled:cursor-not-allowed dark:hover:bg-gray-800 dark:hover:text-gray-300 transition-colors"
+          class="rounded-lg p-1.5 text-gray-400 hover:bg-primary/10 hover:text-primary disabled:opacity-30 disabled:cursor-not-allowed dark:hover:bg-white/5 dark:hover:text-gray-300 transition-colors"
           title="Página anterior">
           <ChevronLeft class="h-4 w-4" />
         </button>
@@ -116,9 +116,9 @@
             class="min-w-[30px] rounded-lg px-2 py-1 text-xs font-medium transition-colors"
             :class="
               n === paginaActual
-                ? 'bg-brand-500 text-white'
+                ? 'bg-primary text-white'
                 : typeof n === 'number'
-                  ? 'text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 dark:text-gray-400'
+                  ? 'text-gray-500 hover:bg-primary/10 dark:hover:bg-white/5 dark:text-gray-400'
                   : 'text-gray-300 cursor-default dark:text-gray-600'
             ">
             {{ n }}
@@ -128,14 +128,14 @@
         <button
           @click="paginaActual++"
           :disabled="paginaActual === totalPaginas"
-          class="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-700 disabled:opacity-30 disabled:cursor-not-allowed dark:hover:bg-gray-800 dark:hover:text-gray-300 transition-colors"
+          class="rounded-lg p-1.5 text-gray-400 hover:bg-primary/10 hover:text-primary disabled:opacity-30 disabled:cursor-not-allowed dark:hover:bg-white/5 dark:hover:text-gray-300 transition-colors"
           title="Página siguiente">
           <ChevronRight class="h-4 w-4" />
         </button>
         <button
           @click="paginaActual = totalPaginas"
           :disabled="paginaActual === totalPaginas"
-          class="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-700 disabled:opacity-30 disabled:cursor-not-allowed dark:hover:bg-gray-800 dark:hover:text-gray-300 transition-colors"
+          class="rounded-lg p-1.5 text-gray-400 hover:bg-primary/10 hover:text-primary disabled:opacity-30 disabled:cursor-not-allowed dark:hover:bg-white/5 dark:hover:text-gray-300 transition-colors"
           title="Última página">
           <ChevronsRight class="h-4 w-4" />
         </button>

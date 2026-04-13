@@ -1,98 +1,124 @@
 <template>
-  <div class="rounded-2xl border border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-white/[0.03] md:p-6">
-    <div class="flex items-start justify-between">
-      <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">Eventos de Vínculo</h3>
-      <span class="inline-flex items-center rounded-full bg-purple-50 px-2.5 py-0.5 text-xs font-medium text-purple-700 ring-1 ring-inset ring-purple-600/20 dark:bg-purple-500/10 dark:text-purple-400 dark:ring-purple-500/20">
-        {{ eventosVinculo.length }}
+  <div class="rounded-2xl border border-gray-100 bg-card p-4 dark:border-white/6 dark:bg-white/3 md:p-6 flex flex-col gap-5">
+
+    <!-- ── Header ── -->
+    <div class="flex items-center justify-between gap-3">
+      <h3 class="text-base font-semibold text-gray-800 dark:text-white/90 leading-tight">
+        Eventos de<br />Vínculo
+      </h3>
+      <span class="inline-flex items-center rounded-full bg-theme-purple-500/10 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-theme-purple-500 ring-1 ring-inset ring-theme-purple-500/20">
+        {{ eventosVinculo.length }} EN CURSO
       </span>
     </div>
 
-    <div class="mt-4 min-h-72 max-h-96 overflow-y-auto">
-      <div class="flex items-center justify-between border-b border-gray-100 pb-2 dark:border-gray-800">
-        <span class="text-theme-xs text-gray-400">Servidor</span>
-        <span class="text-theme-xs text-gray-400">Evento</span>
-      </div>
-
+    <!-- ── Feed ── -->
+    <div class="flex flex-col divide-y divide-gray-100 dark:divide-gray-800 overflow-y-auto max-h-128 custom-scrollbar -mx-1 px-1">
       <RouterLink
-        class="flex items-center justify-between border-b border-gray-100 py-3 dark:border-gray-800 last:border-none"
         v-for="item in eventosVinculo"
         :key="item.id"
-        :to="{ name: 'personal-profile', params: { dni: item.dni } }">
-        <div class="flex flex-col">
-          <span class="text-sm font-medium text-gray-800 dark:text-white/90">
-            {{ item.nombre }}
-          </span>
-          <div class="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
-            <span>{{ item.cargo }}</span>
-            <span class="text-gray-300 dark:text-gray-600">&middot;</span>
-            <span>{{ item.area_original }}</span>
-          </div>
-          <div v-if="item.area_nueva" class="flex items-center gap-1 text-[10px] text-gray-400">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
-              <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd" />
-            </svg>
-            <span>{{ item.area_nueva }}</span>
-          </div>
-        </div>
+        :to="{ name: 'personal-profile', params: { dni: item.dni } }"
+        class="flex items-start gap-3 py-3.5 first:pt-0 last:pb-0 hover:opacity-80 transition-opacity group">
 
-        <div class="flex flex-col items-end gap-1">
-          <span
-            :class="[
-              'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ring-1 ring-inset',
-              badgeClass(item.tipo_evento),
-            ]">
-            {{ item.tipo_evento }}
-          </span>
-          <span
-            v-if="item.estado"
-            :class="[
-              'inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium ring-1 ring-inset',
-              estadoClass(item.estado),
-            ]">
-            {{ item.estado }}
-          </span>
-          <span v-if="item.fecha_inicio" class="text-[10px] text-gray-400">
-            {{ formatFecha(item.fecha_inicio) }}
-          </span>
+        <!-- Dot de color -->
+        <span
+          class="mt-1.5 h-2 w-2 shrink-0 rounded-full"
+          :class="dotColor(item.tipo_evento)" />
+
+        <!-- Datos -->
+        <div class="min-w-0 flex-1">
+          <div class="flex items-center gap-2 justify-between">
+            <p class="text-xs font-semibold uppercase tracking-wide text-gray-800 dark:text-white/90 leading-snug">
+              {{ item.nombre }}
+            </p>
+            <span
+              class="shrink-0 inline-flex items-center rounded-md px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide"
+              :class="tipoBadge(item.tipo_evento)">
+              {{ tipoLabel(item.tipo_evento) }}
+            </span>
+          </div>
+          <p class="mt-0.5 text-[11px] text-gray-400 uppercase tracking-wide truncate">
+            {{ item.cargo }}<template v-if="item.area_original"> - {{ item.area_original }}</template>
+          </p>
+          <div class="flex items-center gap-2 mt-1.5">
+            <div class="flex items-center gap-1">
+              <Calendar class="w-3 h-3 text-gray-400 shrink-0" />
+              <span class="text-[11px] text-gray-400">{{ formatFechaCorta(item.fecha_inicio) }}</span>
+            </div>
+            <span
+              v-if="item.estado"
+              class="inline-flex items-center gap-0.5 rounded-full px-1.5 py-0.5 text-[10px] font-medium"
+              :class="estadoBadge(item.estado)">
+              <span class="w-1 h-1 rounded-full" :class="estadoPunto(item.estado)" />
+              {{ item.estado }}
+            </span>
+          </div>
         </div>
       </RouterLink>
+
+      <div v-if="eventosVinculo.length === 0" class="flex items-center justify-center py-10">
+        <p class="text-sm text-gray-400">Sin eventos</p>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+  import { RouterLink } from 'vue-router'
   import { useTableroStore } from '../../stores/dashboard'
   import { storeToRefs } from 'pinia'
   import { format, parseISO, isValid } from 'date-fns'
   import { es } from 'date-fns/locale'
+  import { Calendar } from 'lucide-vue-next'
 
   const { eventosVinculo } = storeToRefs(useTableroStore())
 
-  function formatFecha(fecha: string | null): string {
+  function dotColor(tipo: string): string {
+    return ({
+      rotacion:    'bg-primary',
+      destaque:    'bg-warning-400',
+      encargatura: 'bg-theme-purple-500',
+      designacion: 'bg-success-500',
+    } as Record<string, string>)[tipo?.toLowerCase()] ?? 'bg-gray-400'
+  }
+
+  function tipoBadge(tipo: string): string {
+    return ({
+      rotacion:    'bg-primary/10 text-primary dark:bg-primary/15 dark:text-brand-300',
+      destaque:    'bg-warning-50 text-warning-700 dark:bg-warning-500/10 dark:text-warning-400',
+      encargatura: 'bg-theme-purple-500/10 text-theme-purple-500',
+      designacion: 'bg-success-50 text-success-700 dark:bg-success-500/10 dark:text-success-400',
+    } as Record<string, string>)[tipo?.toLowerCase()] ?? 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400'
+  }
+
+  function tipoLabel(tipo: string): string {
+    return ({
+      rotacion:    'Rotación',
+      destaque:    'Destaque',
+      encargatura: 'Encargatura',
+      designacion: 'Designación',
+    } as Record<string, string>)[tipo?.toLowerCase()] ?? tipo
+  }
+
+  function estadoBadge(estado: string): string {
+    const lower = estado.toLowerCase()
+    if (lower === 'activo' || lower === 'vigente')
+      return 'bg-success-50 text-success-700 dark:bg-success-500/10 dark:text-success-400'
+    if (lower === 'finalizado' || lower === 'inactivo')
+      return 'bg-error-50 text-error-600 dark:bg-error-500/10 dark:text-error-400'
+    return 'bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400'
+  }
+
+  function estadoPunto(estado: string): string {
+    const lower = estado.toLowerCase()
+    if (lower === 'activo' || lower === 'vigente')      return 'bg-success-500'
+    if (lower === 'finalizado' || lower === 'inactivo') return 'bg-error-500'
+    return 'bg-gray-400'
+  }
+
+  function formatFechaCorta(fecha: string | null): string {
     if (!fecha) return ''
     const parsed = parseISO(fecha)
     if (!isValid(parsed)) return fecha
-    return format(parsed, "d 'de' MMMM, yyyy", { locale: es })
-  }
-
-  function badgeClass(tipo: string): string {
-    const map: Record<string, string> = {
-      rotacion: 'bg-blue-50 text-blue-700 ring-blue-600/20 dark:bg-blue-500/10 dark:text-blue-400 dark:ring-blue-500/20',
-      destaque: 'bg-amber-50 text-amber-700 ring-amber-600/20 dark:bg-amber-500/10 dark:text-amber-400 dark:ring-amber-500/20',
-      encargatura: 'bg-purple-50 text-purple-700 ring-purple-600/20 dark:bg-purple-500/10 dark:text-purple-400 dark:ring-purple-500/20',
-      designacion: 'bg-green-50 text-green-700 ring-green-600/20 dark:bg-green-500/10 dark:text-green-400 dark:ring-green-500/20',
-    }
-    return map[tipo.toLowerCase()] || 'bg-gray-50 text-gray-700 ring-gray-600/20 dark:bg-gray-500/10 dark:text-gray-400 dark:ring-gray-500/20'
-  }
-
-  function estadoClass(estado: string): string {
-    const lower = estado.toLowerCase()
-    if (lower === 'activo' || lower === 'vigente') {
-      return 'bg-green-50 text-green-700 ring-green-600/20 dark:bg-green-500/10 dark:text-green-400 dark:ring-green-500/20'
-    }
-    if (lower === 'finalizado' || lower === 'inactivo') {
-      return 'bg-red-50 text-red-700 ring-red-600/20 dark:bg-red-500/10 dark:text-red-400 dark:ring-red-500/20'
-    }
-    return 'bg-gray-50 text-gray-700 ring-gray-600/20 dark:bg-gray-500/10 dark:text-gray-400 dark:ring-gray-500/20'
+    return format(parsed, 'MMM dd, yyyy', { locale: es })
   }
 </script>

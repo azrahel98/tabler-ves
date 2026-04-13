@@ -242,8 +242,8 @@
     display: flex;
     flex-direction: column;
     border-radius: 0.75rem;
-    border: 1px solid var(--color-gray-200);
-    background-color: white;
+    border: 1px solid var(--color-gray-100);
+    background-color: var(--color-card);
     box-shadow:
       0 10px 25px -5px rgb(0 0 0 / 0.1),
       0 8px 10px -6px rgb(0 0 0 / 0.06);
@@ -251,8 +251,8 @@
 
   :root.dark .popover-panel,
   .dark .popover-panel {
-    border-color: var(--color-gray-800);
-    background-color: var(--color-gray-900);
+    border-color: rgba(255, 255, 255, 0.06);
+    background-color: #030712;
     box-shadow:
       0 10px 25px -5px rgb(0 0 0 / 0.35),
       0 8px 10px -6px rgb(0 0 0 / 0.25);

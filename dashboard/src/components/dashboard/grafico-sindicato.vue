@@ -1,5 +1,5 @@
 <template>
-  <div class="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/3 md:p-6 h-full flex flex-col">
+  <div class="rounded-2xl border border-gray-200 bg-card p-5 dark:border-gray-800 dark:bg-white/[0.03] md:p-6 h-full flex flex-col">
     <div class="mb-4 justify-between gap-4 sm:flex shrink-0">
       <div>
         <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">Distribución por Sindicato</h3>
@@ -44,12 +44,14 @@
 
   const store = useTableroStore()
 
+  const css = (v: string) => getComputedStyle(document.documentElement).getPropertyValue(v).trim()
+
   const coloresPorSindicato: Record<string, string> = {
-    'SITRAMUN': '#f59e0b', // Naranja/Ambar
-    'SOMUN': '#10b981',    // Verde Esmeralda
-    'Sin Afiliar': '#9ca3af', // Gris
+    'SITRAMUN':    css('--color-warning-400'),  // ámbar dorado
+    'SOMUN':       css('--color-secondary'),     // turquesa
+    'Sin Afiliar': css('--color-primary'),       // morado principal
   }
-  const colorPorDefecto = '#d1d5db'
+  const colorPorDefecto = css('--color-accent') // azul para entradas adicionales
 
   const datosProcesados = computed(() => {
     if (!store.resumen) return []

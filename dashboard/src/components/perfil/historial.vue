@@ -1,8 +1,8 @@
 <template>
-  <div class="rounded-2xl border border-gray-200 bg-white h-full p-6 dark:border-gray-800 max-h-60 overflow-y-auto dark:bg-white/[0.03]">
+  <div class="rounded-2xl border border-gray-100 bg-card h-full p-6 dark:border-white/6 max-h-60 overflow-y-auto dark:bg-white/3">
     <div class="flex items-center justify-between gap-2 text-xs font-bold uppercase tracking-wider text-gray-800 dark:text-white/90 mb-6">
       <div class="flex items-center gap-2">
-        <svg class="h-5 w-5 text-brand-500" fill="currentColor" viewBox="0 0 24 24">
+        <svg class="h-5 w-5 text-primary" fill="currentColor" viewBox="0 0 24 24">
           <path
             d="M13 3a9 9 0 0 0-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42A8.954 8.954 0 0 0 13 21a9 9 0 0 0 0-18zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z" />
         </svg>
@@ -11,7 +11,7 @@
       <button
         v-if="!cargado"
         @click="cargar"
-        class="rounded-full flex items-center gap-1 px-2 py-1 text-gray-500 hover:bg-gray-100 hover:text-brand-500 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-brand-400 transition-colors"
+        class="rounded-full flex items-center gap-1 px-2 py-1 text-gray-500 hover:bg-primary/10 hover:text-primary dark:text-gray-400 dark:hover:bg-primary/20 dark:hover:text-brand-300 transition-colors"
         title="Cargar historial">
         <RefreshCw class="h-3.5 w-3.5" :class="{ 'animate-spin': cargando }" />
         <span class="text-[10px] font-medium">Cargar</span>
@@ -42,7 +42,7 @@
             </span>
             <span class="text-[10px] text-gray-400">{{ item.fecha }}</span>
           </div>
-          <p class="text-sm text-gray-800 dark:text-white/90 mt-1 break-words">{{ item.detalle }}</p>
+          <p class="text-sm text-gray-800 dark:text-white/90 mt-1 wrap-break-word">{{ item.detalle }}</p>
           <p class="text-[10px] text-gray-400 mt-0.5">por {{ item.nombre }}</p>
         </div>
       </div>

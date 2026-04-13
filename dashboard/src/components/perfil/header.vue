@@ -1,8 +1,8 @@
 <template>
-  <div class="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/3 lg:p-6">
-    <div v-if="store.perfilActual" class="flex justify-center items-center bg-white">
+  <div class="rounded-2xl border border-gray-100 bg-card p-5 dark:border-white/6 dark:bg-white/3 lg:p-6">
+    <div v-if="store.perfilActual" class="flex justify-center items-center bg-card">
       <div class="flex flex-row items-center gap-6">
-        <div class="w-20 h-20 shrink-0 overflow-hidden border border-gray-200 rounded-full dark:border-gray-800">
+        <div class="w-20 h-20 shrink-0 overflow-hidden border border-gray-100 rounded-full dark:border-white/6">
           <img v-if="store.perfilActual.sexo == 'M'" src="/M.svg" alt="user" />
           <img v-else src="/F.svg" alt="user" />
         </div>

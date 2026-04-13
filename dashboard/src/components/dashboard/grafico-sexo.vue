@@ -1,5 +1,5 @@
 <template>
-  <div class="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/3 md:p-6 h-full flex flex-col">
+  <div class="rounded-2xl border border-gray-200 bg-card p-5 dark:border-gray-800 dark:bg-white/[0.03] md:p-6 h-full flex flex-col">
     <div class="mb-4 justify-between gap-4 sm:flex shrink-0">
       <div>
         <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">Distribución por Sexo</h3>
@@ -44,12 +44,14 @@
 
   const store = useTableroStore()
 
+  const css = (v: string) => getComputedStyle(document.documentElement).getPropertyValue(v).trim()
+
   // M = Masculino, F = Femenino
   const coloresPorSexo: Record<string, string> = {
-    'M': '#1e3a8a', // Azul oscuro
-    'F': '#db2777', // Rosa oscuro
+    'M': css('--color-primary'),
+    'F': css('--color-theme-pink-500'),
   }
-  const colorPorDefecto = '#9ca3af'
+  const colorPorDefecto = css('--color-gray-400')
 
   const formatSexo = (sigla: string) => {
     if (sigla === 'M') return 'Masculino'

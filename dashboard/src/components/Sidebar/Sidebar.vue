@@ -1,7 +1,7 @@
 <template>
   <aside
     :class="sidebarToggle ? 'translate-x-0 lg:w-[90px] px-0' : '-translate-x-full px-5'"
-    class="sidebar fixed left-0 top-0 z-9999 flex h-screen w-[260px] flex-col overflow-y-hidden border-r border-gray-200 bg-white dark:border-gray-800 dark:bg-black lg:static lg:translate-x-0">
+    class="sidebar fixed left-0 top-0 z-9999 flex h-screen w-[260px] flex-col overflow-y-hidden border-r border-gray-100 bg-card dark:border-white/6 dark:bg-gray-950 lg:static lg:translate-x-0">
     <div :class="sidebarToggle ? 'justify-center' : 'justify-start px-4'" class="flex items-center gap-2 pt-8 sidebar-header pb-7">
       <router-link to="/">
         <span class="logo flex items-center gap-2">
@@ -31,7 +31,7 @@
                 to="/personal"
                 class="relative flex items-center gap-2.5 rounded-sm py-2 menu-item-inactive"
                 :class="sidebarToggle ? 'justify-center px-0' : 'px-4'"
-                active-class="bg-gray-100 dark:bg-gray-700 text-primary dark:text-white">
+                active-class="bg-primary/10 text-primary dark:bg-primary/20 dark:text-brand-300">
                 <Users class="size-5" />
                 <span class="text-sm" :class="sidebarToggle ? 'lg:hidden' : ''">Personal</span>
               </router-link>
@@ -42,7 +42,7 @@
                 to="/organigrama"
                 class="relative flex items-center gap-2.5 rounded-sm py-2 menu-item-inactive"
                 :class="sidebarToggle ? 'justify-center px-0' : 'px-4'"
-                active-class="bg-gray-100 dark:bg-gray-700 text-primary dark:text-white">
+                active-class="bg-primary/10 text-primary dark:bg-primary/20 dark:text-brand-300">
                 <Network class="size-5" />
                 <span class="text-sm" :class="sidebarToggle ? 'lg:hidden' : ''">Organigrama</span>
               </router-link>
@@ -53,7 +53,7 @@
                 to="/sindicato"
                 class="relative flex items-center gap-2.5 rounded-sm py-2 menu-item-inactive"
                 :class="sidebarToggle ? 'justify-center px-0' : 'px-4'"
-                active-class="bg-gray-100 dark:bg-gray-700 text-primary dark:text-white">
+                active-class="bg-primary/10 text-primary dark:bg-primary/20 dark:text-brand-300">
                 <Shield class="size-5" />
                 <span class="text-sm" :class="sidebarToggle ? 'lg:hidden' : ''">Sindicatos</span>
               </router-link>
@@ -64,7 +64,7 @@
                 to="/nuevo-vinculo"
                 class="relative flex items-center gap-2.5 rounded-sm py-2 menu-item-inactive"
                 :class="sidebarToggle ? 'justify-center px-0' : 'px-4'"
-                active-class="bg-gray-100 dark:bg-gray-700 text-primary dark:text-white">
+                active-class="bg-primary/10 text-primary dark:bg-primary/20 dark:text-brand-300">
                 <UserPlus class="size-5" />
                 <span class="text-sm" :class="sidebarToggle ? 'lg:hidden' : ''">Nuevo Vínculo</span>
               </router-link>
@@ -75,9 +75,20 @@
                 to="/usuarios"
                 class="relative flex items-center gap-2.5 rounded-sm py-2 menu-item-inactive"
                 :class="sidebarToggle ? 'justify-center px-0' : 'px-4'"
-                active-class="bg-gray-100 dark:bg-gray-700 text-primary dark:text-white">
+                active-class="bg-primary/10 text-primary dark:bg-primary/20 dark:text-brand-300">
                 <Settings class="size-5" />
                 <span class="text-sm" :class="sidebarToggle ? 'lg:hidden' : ''">Usuarios</span>
+              </router-link>
+            </li>
+
+            <li v-if="esAdmin">
+              <router-link
+                to="/comparacion-mef"
+                class="relative flex items-center gap-2.5 rounded-sm py-2 menu-item-inactive"
+                :class="sidebarToggle ? 'justify-center px-0' : 'px-4'"
+                active-class="bg-primary/10 text-primary dark:bg-primary/20 dark:text-brand-300">
+                <FileSpreadsheet class="size-5" />
+                <span class="text-sm" :class="sidebarToggle ? 'lg:hidden' : ''">Comparar MEF</span>
               </router-link>
             </li>
 
@@ -92,7 +103,7 @@
                 }"
                 class="relative flex items-center gap-2.5 rounded-sm py-2 menu-item-inactive"
                 :class="sidebarToggle ? 'justify-center px-0' : 'px-4'"
-                active-class="bg-gray-100 dark:bg-gray-700 text-primary dark:text-white">
+                active-class="bg-primary/10 text-primary dark:bg-primary/20 dark:text-brand-300">
                 <Users class="size-5" />
                 <span class="text-sm" :class="sidebarToggle ? 'lg:hidden' : ''">Perfil</span>
               </router-link>
@@ -109,7 +120,7 @@
                 to="/change-password"
                 class="relative flex items-center gap-2.5 rounded-sm py-2 menu-item-inactive"
                 :class="sidebarToggle ? 'justify-center px-0' : 'px-4'"
-                active-class="bg-gray-100 dark:bg-gray-700 text-primary dark:text-white">
+                active-class="bg-primary/10 text-primary dark:bg-primary/20 dark:text-brand-300">
                 <KeyRound class="size-5" />
                 <span class="text-sm" :class="sidebarToggle ? 'lg:hidden' : ''">Contraseña</span>
               </router-link>
@@ -123,7 +134,7 @@
 
 <script setup lang="ts">
   import { useConfiguracionStore } from '../../stores/layout'
-  import { LayoutDashboard, Users, KeyRound, Network, Shield, UserPlus, Settings } from 'lucide-vue-next'
+  import { LayoutDashboard, Users, KeyRound, Network, Shield, UserPlus, Settings, FileSpreadsheet } from 'lucide-vue-next'
   import { storeToRefs } from 'pinia'
   import router from '../../router'
   import { useAutenticacionStore } from '../../stores/auth'

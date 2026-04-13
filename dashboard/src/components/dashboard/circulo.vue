@@ -1,5 +1,5 @@
 <template>
-  <div class="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/3 md:p-6">
+  <div class="rounded-2xl border border-gray-200 bg-card p-5 dark:border-gray-800 dark:bg-white/[0.03] md:p-6">
     <div class="mb-4 justify-between gap-4 sm:flex">
       <div>
         <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">Distribución por Régimen</h3>
@@ -40,14 +40,16 @@
 
   const store = useTableroStore()
 
+  const css = (v: string) => getComputedStyle(document.documentElement).getPropertyValue(v).trim()
+
   const coloresPorRegimen: Record<string, string> = {
-    'D.L 276': '#16a085',
-    'D.L 728': '#0f3460',
-    'D.L 1057': '#1a56db',
-    'D.L 1057-F': '#4b7fe8',
-    'D.L 1057 - T': '#85aaef',
+    'D.L 276':      css('--color-secondary'),        // turquesa
+    'D.L 728':      css('--color-primary'),           // morado
+    'D.L 1057':     css('--color-success-400'),        // verde
+    'D.L 1057-F':   css('--color-theme-pink-500'),    // rosa/magenta
+    'D.L 1057 - T': css('--color-accent'),            // azul
   }
-  const colorPorDefecto = '#6b7280'
+  const colorPorDefecto = css('--color-gray-500')
 
   const chartData = computed(() => {
     const regimenes = store.resumen?.por_regimen || []

@@ -1,12 +1,12 @@
 <template>
-  <div v-if="vinculos.length > 0" class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/3">
+  <div v-if="vinculos.length > 0" class="rounded-2xl border border-gray-100 bg-card dark:border-white/6 dark:bg-white/3">
 
     <!-- Header -->
-    <div class="flex items-center justify-between px-5 py-4 border-b border-gray-100 dark:border-gray-800">
+    <div class="flex items-center justify-between px-5 py-4 border-b border-gray-100 dark:border-white/6">
       <div class="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-gray-800 dark:text-white/90">
-        <Briefcase class="h-4 w-4 text-brand-500 shrink-0" />
+        <Briefcase class="h-4 w-4 text-primary shrink-0" />
         Historial de Vínculos
-        <span class="inline-flex items-center rounded-full bg-gray-100 px-2 py-0.5 text-xs font-semibold text-gray-500 dark:bg-gray-800 dark:text-gray-400 normal-case tracking-normal">
+        <span class="inline-flex items-center rounded-full bg-primary/10 px-2 py-0.5 text-xs font-semibold text-primary dark:bg-primary/20 dark:text-brand-300 normal-case tracking-normal">
           {{ vinculos.length }}
         </span>
       </div>
@@ -31,7 +31,7 @@
             v-for="v in vinculos"
             v-memo="[v.id, v.estado]"
             :key="v.id"
-            class="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+            class="hover:bg-primary/5 dark:hover:bg-white/5 transition-colors">
 
             <!-- Estado -->
             <td class=" pl-4 middle text-start ">
@@ -73,7 +73,7 @@
               <Popover posicion="abajo" alineacion="fin" ancho="320px" :mostrarFlecha="true" :mostrarCerrar="true" titulo="Información Adicional">
                 <template #disparador>
                   <button
-                    class="inline-flex items-center justify-center rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-300 transition-colors"
+                    class="inline-flex items-center justify-center rounded-lg p-1.5 text-gray-400 hover:bg-primary/5 hover:text-gray-600 dark:hover:bg-white/5 dark:hover:text-gray-300 transition-colors"
                     title="Ver detalles">
                     <Info class="h-3.5 w-3.5" />
                   </button>
@@ -140,11 +140,15 @@
             <td class="px-3 py-3.5 text-center" v-if="esAdmin">
               <Popover posicion="abajo" alineacion="fin" ancho="160px" :mostrarCerrar="false" :mostrarFlecha="false">
                 <template #disparador>
-                  <button class="inline-flex items-center justify-center rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-300 transition-colors">
+                  <button class="inline-flex items-center justify-center rounded-lg p-1.5 text-gray-400 hover:bg-primary/5 hover:text-gray-600 dark:hover:bg-white/5 dark:hover:text-gray-300 transition-colors">
                     <MoreHorizontal class="h-3.5 w-3.5" />
                   </button>
                 </template>
                 <div class="acciones-menu">
+                  <button v-if="!v.fecha_salida" @click="abrirEvento(v)" class="accion-item accion-item--evento">
+                    <Activity class="h-3.5 w-3.5 shrink-0" />
+                    <span>{{ v.tipo_evento ? 'Ver Evento' : 'Movimiento' }}</span>
+                  </button>
                   <button v-if="!v.fecha_salida" @click="abrirRenuncia(v)" class="accion-item accion-item--renuncia">
                     <UserMinus class="h-3.5 w-3.5 shrink-0" />
                     <span>Renuncia</span>
@@ -187,7 +191,7 @@
 
             <Popover posicion="abajo" alineacion="fin" ancho="280px" :mostrarFlecha="true" :mostrarCerrar="true" titulo="Información Adicional">
               <template #disparador>
-                <button class="inline-flex items-center justify-center rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-300 transition-colors">
+                <button class="inline-flex items-center justify-center rounded-lg p-1.5 text-gray-400 hover:bg-primary/5 hover:text-gray-600 dark:hover:bg-white/5 dark:hover:text-gray-300 transition-colors">
                   <Info class="h-3.5 w-3.5" />
                 </button>
               </template>
@@ -243,11 +247,15 @@
 
             <Popover v-if="esAdmin" posicion="abajo" alineacion="fin" ancho="160px" :mostrarCerrar="false" :mostrarFlecha="false">
               <template #disparador>
-                <button class="inline-flex items-center justify-center rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-300 transition-colors">
+                <button class="inline-flex items-center justify-center rounded-lg p-1.5 text-gray-400 hover:bg-primary/5 hover:text-gray-600 dark:hover:bg-white/5 dark:hover:text-gray-300 transition-colors">
                   <MoreHorizontal class="h-3.5 w-3.5" />
                 </button>
               </template>
               <div class="acciones-menu">
+                <button v-if="!v.fecha_salida" @click="abrirEvento(v)" class="accion-item accion-item--evento">
+                  <Activity class="h-3.5 w-3.5 shrink-0" />
+                  <span>{{ v.tipo_evento ? 'Ver Evento' : 'Movimiento' }}</span>
+                </button>
                 <button v-if="!v.fecha_salida" @click="abrirRenuncia(v)" class="accion-item accion-item--renuncia">
                   <UserMinus class="h-3.5 w-3.5 shrink-0" />
                   <span>Renuncia</span>
@@ -288,6 +296,18 @@
 
     <RenunciaModal v-if="esAdmin" :isOpen="isRenunciaOpen" @close="isRenunciaOpen = false" @save="handleRenuncia" />
     <ConfirmarEliminarModal v-if="esAdmin" :isOpen="isEliminarOpen" :vinculo="vinculoSeleccionado" @close="isEliminarOpen = false" @confirm="handleEliminar" />
+    <EventoVinculoModal
+      v-if="esAdmin"
+      :isOpen="isEventoOpen"
+      :vinculoId="vinculoSeleccionado?.id ?? null"
+      :eventoActual="vinculoSeleccionado?.tipo_evento ? {
+        id_evento: vinculoSeleccionado.id_evento,
+        tipo_evento: vinculoSeleccionado.tipo_evento,
+        estado_evento: vinculoSeleccionado.estado_evento,
+        fecha_evento: vinculoSeleccionado.fecha_evento,
+      } : undefined"
+      @close="isEventoOpen = false"
+      @guardado="handleEventoGuardado" />
   </div>
 </template>
 
@@ -295,19 +315,21 @@
   import { ref } from 'vue'
   import { storeToRefs } from 'pinia'
   import { usePersonalStore } from '../../stores/personal'
-  import { UserMinus, Info, Trash2, MoreHorizontal, Briefcase, Shield } from 'lucide-vue-next'
+  import { UserMinus, Info, Trash2, MoreHorizontal, Briefcase, Shield, Activity } from 'lucide-vue-next'
   import RenunciaModal from './modals/RenunciaModal.vue'
   import ConfirmarEliminarModal from './modals/ConfirmarEliminarModal.vue'
+  import EventoVinculoModal from './modals/EventoVinculoModal.vue'
   import Popover from '../ui/Popover.vue'
   import { useAutenticacionStore } from '../../stores/auth'
-import { addDays, format } from 'date-fns'
+  import { addDays, format } from 'date-fns'
 
   const store = usePersonalStore()
-  const { vinculos } = storeToRefs(store)
+  const { vinculos, perfilActual } = storeToRefs(store)
   const { esAdmin } = storeToRefs(useAutenticacionStore())
 
   const isRenunciaOpen = ref(false)
   const isEliminarOpen = ref(false)
+  const isEventoOpen = ref(false)
   const vinculoSeleccionado = ref<any>(null)
 
   const abrirRenuncia = (vinculo: any) => {
@@ -335,6 +357,18 @@ import { addDays, format } from 'date-fns'
       isEliminarOpen.value = false
     } catch (error) {
       console.error('Error al eliminar vínculo', error)
+    }
+  }
+
+  const abrirEvento = (vinculo: any) => {
+    vinculoSeleccionado.value = vinculo
+    isEventoOpen.value = true
+  }
+
+  const handleEventoGuardado = async () => {
+    isEventoOpen.value = false
+    if (perfilActual.value?.dni) {
+      await store.obtenerVinculos(perfilActual.value.dni)
     }
   }
 
@@ -432,5 +466,16 @@ import { addDays, format } from 'date-fns'
   .dark .accion-item--neutral:hover {
     background-color: rgba(37, 99, 235, 0.1);
     color: #93c5fd;
+  }
+
+  .accion-item--evento:hover {
+    background-color: #f0fdf4;
+    color: #16a34a;
+  }
+
+  :root.dark .accion-item--evento:hover,
+  .dark .accion-item--evento:hover {
+    background-color: rgba(22, 163, 74, 0.1);
+    color: #86efac;
   }
 </style>

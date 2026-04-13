@@ -1,5 +1,5 @@
 <template>
-  <div class="flex h-screen overflow-hidden bg-gray-100 dark:bg-gray-900">
+  <div class="flex h-screen overflow-hidden bg-surface dark:bg-gray-950">
     <Sidebar />
     <div class="relative flex flex-1 flex-col overflow-hidden">
       <div @click="sidebarToggle = false" :class="sidebarToggle ? 'block lg:hidden' : 'hidden'" class="fixed w-full h-screen z-9 bg-gray-900/50"></div>

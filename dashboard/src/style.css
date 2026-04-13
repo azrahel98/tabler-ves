@@ -1,30 +1,157 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap') layer(base);
+@font-face {
+  font-family: 'Outfit';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100;
+  src: url(https://cdn.jsdelivr.net/fontsource/fonts/outfit@latest/latin-100-normal.woff2) format('woff2'),
+       url(https://cdn.jsdelivr.net/fontsource/fonts/outfit@latest/latin-100-normal.woff) format('woff'),
+       url(https://cdn.jsdelivr.net/fontsource/fonts/outfit@latest/latin-100-normal.ttf) format('truetype');
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
 
+/* outfit-latin-200-normal */
+@font-face {
+  font-family: 'Outfit';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 200;
+  src: url(https://cdn.jsdelivr.net/fontsource/fonts/outfit@latest/latin-200-normal.woff2) format('woff2'),
+       url(https://cdn.jsdelivr.net/fontsource/fonts/outfit@latest/latin-200-normal.woff) format('woff'),
+       url(https://cdn.jsdelivr.net/fontsource/fonts/outfit@latest/latin-200-normal.ttf) format('truetype');
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+
+/* outfit-latin-300-normal */
+@font-face {
+  font-family: 'Outfit';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 300;
+  src: url(https://cdn.jsdelivr.net/fontsource/fonts/outfit@latest/latin-300-normal.woff2) format('woff2'),
+       url(https://cdn.jsdelivr.net/fontsource/fonts/outfit@latest/latin-300-normal.woff) format('woff'),
+       url(https://cdn.jsdelivr.net/fontsource/fonts/outfit@latest/latin-300-normal.ttf) format('truetype');
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+
+/* outfit-latin-400-normal */
+@font-face {
+  font-family: 'Outfit';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400;
+  src: url(https://cdn.jsdelivr.net/fontsource/fonts/outfit@latest/latin-400-normal.woff2) format('woff2'),
+       url(https://cdn.jsdelivr.net/fontsource/fonts/outfit@latest/latin-400-normal.woff) format('woff'),
+       url(https://cdn.jsdelivr.net/fontsource/fonts/outfit@latest/latin-400-normal.ttf) format('truetype');
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+
+/* outfit-latin-500-normal */
+@font-face {
+  font-family: 'Outfit';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 500;
+  src: url(https://cdn.jsdelivr.net/fontsource/fonts/outfit@latest/latin-500-normal.woff2) format('woff2'),
+       url(https://cdn.jsdelivr.net/fontsource/fonts/outfit@latest/latin-500-normal.woff) format('woff'),
+       url(https://cdn.jsdelivr.net/fontsource/fonts/outfit@latest/latin-500-normal.ttf) format('truetype');
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+
+/* outfit-latin-600-normal */
+@font-face {
+  font-family: 'Outfit';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 600;
+  src: url(https://cdn.jsdelivr.net/fontsource/fonts/outfit@latest/latin-600-normal.woff2) format('woff2'),
+       url(https://cdn.jsdelivr.net/fontsource/fonts/outfit@latest/latin-600-normal.woff) format('woff'),
+       url(https://cdn.jsdelivr.net/fontsource/fonts/outfit@latest/latin-600-normal.ttf) format('truetype');
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+
+/* outfit-latin-700-normal */
+@font-face {
+  font-family: 'Outfit';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 700;
+  src: url(https://cdn.jsdelivr.net/fontsource/fonts/outfit@latest/latin-700-normal.woff2) format('woff2'),
+       url(https://cdn.jsdelivr.net/fontsource/fonts/outfit@latest/latin-700-normal.woff) format('woff'),
+       url(https://cdn.jsdelivr.net/fontsource/fonts/outfit@latest/latin-700-normal.ttf) format('truetype');
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+
+/* outfit-latin-800-normal */
+@font-face {
+  font-family: 'Outfit';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 800;
+  src: url(https://cdn.jsdelivr.net/fontsource/fonts/outfit@latest/latin-800-normal.woff2) format('woff2'),
+       url(https://cdn.jsdelivr.net/fontsource/fonts/outfit@latest/latin-800-normal.woff) format('woff'),
+       url(https://cdn.jsdelivr.net/fontsource/fonts/outfit@latest/latin-800-normal.ttf) format('truetype');
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+
+/* outfit-latin-900-normal */
+@font-face {
+  font-family: 'Outfit';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 900;
+  src: url(https://cdn.jsdelivr.net/fontsource/fonts/outfit@latest/latin-900-normal.woff2) format('woff2'),
+       url(https://cdn.jsdelivr.net/fontsource/fonts/outfit@latest/latin-900-normal.woff) format('woff'),
+       url(https://cdn.jsdelivr.net/fontsource/fonts/outfit@latest/latin-900-normal.ttf) format('truetype');
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
 @import 'tailwindcss';
 
 @custom-variant dark (&:is(.dark *));
 
 @theme {
-  --color-background: #f8f6fa;
-  --color-foreground: #1a1a1a;
-  --color-card: #ffffff;
-  --color-card-foreground: #1a1a1a;
-  --color-popover: #ffffff;
-  --color-popover-foreground: #1a1a1a;
-  --color-primary: #047ff2;
+  /* ── Superficie & Jerarquía (regla "sin bordes") ── */
+  --color-surface:                  #f9f9ff; /* Capa base del layout */
+  --color-surface-container-low:    #f0f3ff; /* Fondo de secciones */
+  --color-surface-container-lowest: #ffffff; /* Tarjetas interactivas */
+  --color-surface-container:        rgba(240, 243, 255, 0.60); /* Glass base */
+  --color-surface-bright:           #f9f9ff; /* Overlays utilitarios */
+
+  /* ── Paleta Principal — Indigo intelectual ── */
+  --color-primary:           #3525cd;
+  --color-primary-container: #4f46e5; /* extremo del gradiente CTA */
   --color-primary-foreground: #ffffff;
-  --color-secondary: #00b884;
+
+  /* ── Semántica del sistema ── */
+  --color-background: #f9f9ff;
+  --color-foreground: #1a1a3e;
+
+  --color-card:            var(--color-surface-container-lowest);
+  --color-card-foreground: #1a1a3e;
+
+  --color-secondary:            #22D3EE;
   --color-secondary-foreground: #ffffff;
-  --color-muted: #f0f0f0;
-  --color-muted-foreground: #888888;
-  --color-accent: #e91e63;
+
+  --color-muted:            var(--color-surface-container-low);
+  --color-muted-foreground: #6b7280;
+
+  --color-accent:            #49A3F2;
   --color-accent-foreground: #ffffff;
-  --color-destructive: #ef4444;
+
+  --color-destructive:            #EF4444;
   --color-destructive-foreground: #ffffff;
+
+  --color-success-500: #10B981;
+  --color-error-500:   #F04438;
+
+  /* Sin bordes como regla — estas vars quedan como último recurso */
+  --color-border: transparent;
+  --color-input:  var(--color-surface-container-low);
+  --color-ring:   #3525cd;
+
   --font-*: initial;
   --font-outfit: Outfit, sans-serif;
 
-  --breakpoint-*: initial;
+--breakpoint-*: initial;
   --breakpoint-2xsm: 375px;
   --breakpoint-xsm: 425px;
   --breakpoint-3xl: 2000px;
@@ -34,18 +161,22 @@
   --breakpoint-xl: 1280px;
   --breakpoint-2xl: 1536px;
 
-  --text-title-xl: clamp(1.35rem, 1.5vw, 1.7rem);
-  --text-title-lg: clamp(1.15rem, 1.25vw, 1.4rem);
-  --text-title-md: clamp(1rem, 1.05vw, 1.2rem);
-  --text-title-sm: clamp(0.875rem, 0.95vw, 1rem);
+  /* Títulos y Números Grandes */
+  --text-title-xl: clamp(1.5rem, 1.8vw, 2rem);    /* Antes: 1.35rem - 1.7rem */
+  --text-title-lg: clamp(1.25rem, 1.4vw, 1.6rem);  /* Antes: 1.15rem - 1.4rem */
+  --text-title-md: clamp(1.1rem, 1.2vw, 1.35rem);  /* Antes: 1rem - 1.2rem */
+  --text-title-sm: clamp(1rem, 1.05vw, 1.15rem);   /* Antes: 0.875rem - 1rem */
 
-  --text-xl: clamp(0.825rem, 0.85vw, 0.95rem);
-  --text-sm: clamp(0.75rem, 0.7vw, 0.825rem);
-  --text-xs: clamp(0.65rem, 0.6vw, 0.725rem);
-  --text-theme-sm: clamp(0.75rem, 0.7vw, 0.825rem);
-  --text-theme-xs: clamp(0.65rem, 0.6vw, 0.725rem);
-  --text-2xs: clamp(0.6rem, 0.55vw, 0.675rem);
-  --text-3xs: clamp(0.5rem, 0.5vw, 0.575rem);
+  /* Textos de Cuerpo y UI */
+  --text-xl: clamp(0.95rem, 1vw, 1.1rem);          /* Antes: 0.825rem - 0.95rem */
+  --text-sm: clamp(0.825rem, 0.8vw, 0.9rem);       /* Antes: 0.75rem - 0.825rem */
+  --text-xs: clamp(0.75rem, 0.7vw, 0.8rem);        /* Antes: 0.65rem - 0.725rem */
+  
+  /* Textos de Soporte y Badges */
+  --text-theme-sm: clamp(0.825rem, 0.8vw, 0.9rem);
+  --text-theme-xs: clamp(0.75rem, 0.7vw, 0.8rem);
+  --text-2xs: clamp(0.675rem, 0.6vw, 0.75rem);     /* Antes: 0.6rem - 0.675rem */
+  --text-3xs: clamp(0.575rem, 0.55vw, 0.65rem);    /* Antes: 0.5rem - 0.575rem */
 
   --color-current: currentColor;
   --color-transparent: transparent;
@@ -188,19 +319,19 @@
 }
 
 @utility menu-item-active {
-  @apply bg-brand-50 text-brand-500 dark:bg-brand-500/[0.12] dark:text-brand-400;
+  @apply bg-primary/10 text-primary dark:bg-primary/20 dark:text-brand-300;
 }
 
 @utility menu-item-inactive {
-  @apply text-gray-700 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-300 dark:hover:bg-white/5 dark:hover:text-gray-300;
+  @apply text-gray-700 hover:bg-primary/5 hover:text-primary dark:text-gray-300 dark:hover:bg-white/5 dark:hover:text-gray-300;
 }
 
 @utility menu-item-icon-active {
-  @apply fill-brand-500 dark:fill-brand-400;
+  @apply fill-primary dark:fill-brand-300;
 }
 
 @utility menu-item-icon-inactive {
-  @apply fill-gray-500 group-hover:fill-gray-700 dark:fill-gray-400 dark:group-hover:fill-gray-300;
+  @apply fill-gray-500 group-hover:fill-primary dark:fill-gray-400 dark:group-hover:fill-gray-300;
 }
 
 @utility menu-item-arrow {
@@ -208,11 +339,11 @@
 }
 
 @utility menu-item-arrow-active {
-  @apply stroke-brand-500 dark:stroke-brand-400 rotate-180;
+  @apply stroke-primary dark:stroke-brand-300 rotate-180;
 }
 
 @utility menu-item-arrow-inactive {
-  @apply stroke-gray-500 group-hover:stroke-gray-700 dark:stroke-gray-400 dark:group-hover:stroke-gray-300;
+  @apply stroke-gray-500 group-hover:stroke-primary dark:stroke-gray-400 dark:group-hover:stroke-gray-300;
 }
 
 @utility menu-dropdown-item {
@@ -220,32 +351,31 @@
 }
 
 @utility menu-dropdown-item-active {
-  @apply bg-brand-50 text-brand-500 dark:bg-brand-500/[0.12] dark:text-brand-400;
+  @apply bg-primary/10 text-primary dark:bg-primary/20 dark:text-brand-300;
 }
 
 @utility menu-dropdown-item-inactive {
-  @apply text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-white/5;
+  @apply text-gray-700 hover:bg-primary/5 hover:text-primary dark:text-gray-300 dark:hover:bg-white/5;
 }
 
 @utility menu-dropdown-badge {
-  @apply text-brand-500 dark:text-brand-400 block rounded-full px-2.5 py-0.5 text-xs font-medium uppercase;
+  @apply text-primary dark:text-brand-300 block rounded-full px-2.5 py-0.5 text-xs font-medium uppercase;
 }
 
 @utility menu-dropdown-badge-active {
-  @apply bg-brand-100 dark:bg-brand-500/20;
+  @apply bg-primary/15 dark:bg-primary/25;
 }
 
 @utility menu-dropdown-badge-inactive {
-  @apply bg-brand-50 group-hover:bg-brand-100 dark:bg-brand-500/15 dark:group-hover:bg-brand-500/20;
+  @apply bg-primary/10 group-hover:bg-primary/15 dark:bg-primary/15 dark:group-hover:bg-primary/20;
 }
 
 @utility no-scrollbar {
-  /* Chrome, Safari and Opera */
   &::-webkit-scrollbar {
     display: none;
   }
-  -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 @utility custom-scrollbar {
@@ -323,7 +453,6 @@
 }
 
 @layer utilities {
-  /* For Remove Date Icon */
   input[type='date']::-webkit-inner-spin-button,
   input[type='time']::-webkit-inner-spin-button,
   input[type='date']::-webkit-calendar-picker-indicator,
@@ -344,7 +473,6 @@
   @apply border-brand-500 bg-brand-500;
 }
 
-/* third-party libraries CSS */
 .apexcharts-legend-text {
   @apply text-gray-700! dark:text-gray-400!;
 }
@@ -755,7 +883,7 @@ span.flatpickr-weekday,
 }
 
 .task {
-  transition: all 0.2s ease; /* Smooth transition for visual effects */
+  transition: all 0.2s ease;
 }
 
 .task.is-dragging {
@@ -767,7 +895,6 @@ span.flatpickr-weekday,
   cursor: grabbing;
 }
 
-/* ── Page route transitions ── */
 .page-enter-active {
   transition:
     opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1),
@@ -785,4 +912,37 @@ span.flatpickr-weekday,
 .page-leave-to {
   opacity: 0;
   transform: translateY(-8px);
+}
+
+/* ══════════════════════════════════════════════
+   DESIGN SYSTEM — Indigo Theme Utilities
+   ══════════════════════════════════════════════ */
+
+/* Glassmorphism — sidebar y barras flotantes */
+@utility glass {
+  background-color: var(--color-surface-container);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* Gradiente CTA principal (135°) */
+@utility gradient-primary {
+  background-image: linear-gradient(
+    135deg,
+    var(--color-primary) 0%,
+    var(--color-primary-container) 100%
+  );
+}
+
+/* Superficies de jerarquía como clases directas */
+@utility surface-base {
+  background-color: var(--color-surface);
+}
+
+@utility surface-section {
+  background-color: var(--color-surface-container-low);
+}
+
+@utility surface-card {
+  background-color: var(--color-surface-container-lowest);
 }

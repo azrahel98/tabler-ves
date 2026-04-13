@@ -8,9 +8,9 @@
         </div>
 
         <div class="flex items-center gap-2">
-          <div v-if="!cargando" class="flex items-center gap-2 rounded-full bg-brand-50 px-3 py-1.5 dark:bg-brand-500/10">
-            <Users class="h-4 w-4 text-brand-600 dark:text-brand-400" />
-            <span class="text-sm font-semibold text-brand-700 dark:text-brand-400">
+          <div v-if="!cargando" class="flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1.5 dark:bg-primary/15">
+            <Users class="h-4 w-4 text-primary dark:text-brand-300" />
+            <span class="text-sm font-semibold text-primary dark:text-brand-300">
               {{ listaCompleta.length }}
               {{ listaCompleta.length === 1 ? 'trabajador' : 'trabajadores' }}
             </span>
@@ -18,7 +18,7 @@
           <button
             @click="recargar"
             :disabled="cargando"
-            class="inline-flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-3.5 py-2 text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 transition-colors">
+            class="inline-flex items-center gap-2 rounded-xl border border-gray-100 bg-card px-3.5 py-2 text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-primary/5 disabled:opacity-50 dark:border-white/6 dark:bg-white/5 dark:text-gray-300 dark:hover:bg-white/10 transition-colors">
             <RefreshCw class="h-4 w-4" :class="cargando ? 'animate-spin' : ''" />
             Actualizar
           </button>
@@ -63,7 +63,7 @@
               </template>
 
               <template #celda-sindicato="{ valor }">
-                <span v-if="valor" class="inline-flex items-center rounded-full bg-brand-50 px-2 py-0.5 text-xs font-medium text-brand-700 dark:bg-brand-500/10 dark:text-brand-400">
+                <span v-if="valor" class="inline-flex items-center rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary dark:bg-primary/15 dark:text-brand-300">
                   {{ valor }}
                 </span>
                 <span v-else class="text-gray-300 dark:text-gray-600">—</span>

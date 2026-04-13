@@ -63,10 +63,13 @@
     const n = normalizar(nombre)
     return datos.value.find((d) => normalizar(d.nombre) === n)
   }
+  const cssVar = (v: string) => getComputedStyle(document.documentElement).getPropertyValue(v).trim()
+
   function getColor(v: number): string {
-    if (!v) return '#e8eff9'
+    if (!v) return cssVar('--color-surface')
     const t = Math.pow(v / maxVal.value, 0.55)
-    return `rgb(${Math.round(214 + (15 - 214) * t)},${Math.round(228 + (56 - 228) * t)},${Math.round(250 + (150 - 250) * t)})`
+    // Interpolación desde primary/10 (221,233,255) hasta primary (42,49,216)
+    return `rgb(${Math.round(221 + (42 - 221) * t)},${Math.round(233 + (49 - 233) * t)},${Math.round(255 + (216 - 255) * t)})`
   }
   function pct(v: number) {
     return total.value > 0 ? ((v / total.value) * 100).toFixed(1) : '0'
@@ -80,7 +83,7 @@
     <div class="" style="system-ui;min-width:120px;padding:2px 0">
       <div class="text-md font-semibold text-primary">${nombre}</div>
       <div class="text-sm text-bold">${trabajadores}</div>
-      <div style="font-size:var(--text-xs);color:#8a9bbf">activos &mdash; ${pct(trabajadores)}% del total</div>
+      <div style="font-size:var(--text-xs);color:var(--color-gray-400)">activos &mdash; ${pct(trabajadores)}% del total</div>
     </div>`
   }
 
@@ -100,7 +103,7 @@
 
         layer.on({
           mouseover(e: any) {
-            e.target.setStyle({ weight: 2.5, color: '#1a3570', fillOpacity: 0.95 })
+            e.target.setStyle({ weight: 2.5, color: cssVar('--color-primary'), fillOpacity: 0.95 })
             e.target.bringToFront()
           },
           mouseout(e: any) {
@@ -239,22 +242,22 @@
     position: absolute;
     inset: 0;
     z-index: 1000;
-    background: #f4f7fd;
+    background: var(--color-surface);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     gap: 12px;
     font-size: var(--text-xs);
-    color: #6b7a99;
+    color: var(--color-gray-500);
     font-family: system-ui, sans-serif;
   }
 
   .spinner {
     width: 32px;
     height: 32px;
-    border: 3px solid #dde6f5;
-    border-top-color: #1a56db;
+    border: 3px solid rgba(53, 37, 205, 0.15);
+    border-top-color: var(--color-primary);
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
   }
@@ -269,13 +272,13 @@
   /* Tooltip Leaflet — global para que tome efecto dentro del shadow del mapa */
   .tt-lima {
     background: white !important;
-    border: 1px solid #dde6f5 !important;
+    border: 1px solid rgba(53, 37, 205, 0.15) !important;
     border-radius: 12px !important;
     padding: 12px 14px !important;
-    box-shadow: 0 6px 24px rgba(13, 30, 66, 0.14) !important;
+    box-shadow: 0 6px 24px rgba(16, 24, 40, 0.14) !important;
     max-width: 220px !important;
   }
   .tt-lima.leaflet-tooltip-top::before {
-    border-top-color: #dde6f5 !important;
+    border-top-color: rgba(53, 37, 205, 0.15) !important;
   }
 </style>

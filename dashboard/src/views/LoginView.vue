@@ -56,11 +56,11 @@ const handleLogin = async () => {
 </script>
 
 <template>
-  <div class="min-h-screen min-h-dvh flex items-center justify-center bg-gray-50 dark:bg-gray-900 px-4 py-12">
+  <div class="min-h-screen min-h-dvh flex items-center justify-center bg-surface dark:bg-gray-950 px-4 py-12">
 
     <!-- Dark mode toggle -->
     <button
-      class="fixed top-5 right-5 inline-flex items-center justify-center w-9 h-9 rounded-lg border border-gray-200 bg-white text-gray-500 transition-colors duration-200 hover:bg-gray-50 hover:text-gray-700 dark:border-gray-800 dark:bg-white/[0.03] dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
+      class="fixed top-5 right-5 inline-flex items-center justify-center w-9 h-9 rounded-lg border border-gray-100 bg-card text-gray-500 transition-colors duration-200 hover:bg-primary/5 hover:text-primary dark:border-white/6 dark:bg-white/3 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
       @click.prevent="configuracionStore.alternarModoOscuro()"
       aria-label="Alternar modo oscuro"
     >
@@ -75,7 +75,7 @@ const handleLogin = async () => {
     >
       <!-- Logo + branding -->
       <div class="flex flex-col items-center mb-8">
-        <div class="flex items-center justify-center w-12 h-12 rounded-2xl bg-brand-500 mb-4">
+        <div class="flex items-center justify-center w-12 h-12 rounded-2xl bg-primary mb-4">
           <img src="/logo-icon.svg" alt="Logo" class="w-7 h-7" />
         </div>
         <h1 class="text-xl font-bold text-gray-800 tracking-tight dark:text-white/90">
@@ -87,7 +87,7 @@ const handleLogin = async () => {
       </div>
 
       <!-- Form card -->
-      <div class="rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03]">
+      <div class="rounded-2xl border border-gray-100 bg-card p-6 dark:border-white/6 dark:bg-white/3">
         <div class="mb-6">
           <h2 class="text-lg font-semibold text-gray-800 dark:text-white/90">
             Iniciá sesión
@@ -103,14 +103,14 @@ const handleLogin = async () => {
             <label
               for="login-nick"
               class="block text-sm font-medium mb-1.5 transition-colors duration-200"
-              :class="nickFocused ? 'text-brand-500 dark:text-brand-400' : 'text-gray-800 dark:text-white/90'"
+              :class="nickFocused ? 'text-primary dark:text-brand-300' : 'text-gray-800 dark:text-white/90'"
             >
               Usuario
             </label>
             <div class="relative flex items-center">
               <span
                 class="absolute left-3.5 flex items-center pointer-events-none z-10 transition-colors duration-200"
-                :class="nickFocused ? 'text-brand-500 dark:text-brand-400' : 'text-gray-400 dark:text-gray-600'"
+                :class="nickFocused ? 'text-primary dark:text-brand-300' : 'text-gray-400 dark:text-gray-600'"
               >
                 <User :size="17" />
               </span>
@@ -121,7 +121,7 @@ const handleLogin = async () => {
                 v-model="nick"
                 placeholder="Tu nombre de usuario"
                 autocomplete="username"
-                class="w-full h-11 pl-10 pr-4 text-sm text-gray-900 bg-white border-[1.5px] border-gray-200 rounded-xl shadow-theme-xs outline-none transition-all duration-200 placeholder:text-gray-400 focus:border-brand-400 focus:ring-4 focus:ring-brand-500/10 dark:bg-white/[0.04] dark:border-white/10 dark:text-white/90 dark:placeholder:text-white/25 dark:focus:border-brand-500 dark:focus:ring-brand-500/15 dark:focus:bg-white/[0.06]"
+                class="w-full h-11 pl-10 pr-4 text-sm text-gray-900 bg-card border-[1.5px] border-gray-100 rounded-xl shadow-theme-xs outline-none transition-all duration-200 placeholder:text-gray-400 focus:border-primary/40 focus:ring-4 focus:ring-primary/10 dark:bg-white/3 dark:border-white/6 dark:text-white/90 dark:placeholder:text-white/25 dark:focus:border-primary/60 dark:focus:ring-primary/15 dark:focus:bg-white/5"
                 @focus="nickFocused = true"
                 @blur="nickFocused = false"
               />
@@ -133,14 +133,14 @@ const handleLogin = async () => {
             <label
               for="login-password"
               class="block text-sm font-medium mb-1.5 transition-colors duration-200"
-              :class="passwordFocused ? 'text-brand-500 dark:text-brand-400' : 'text-gray-800 dark:text-white/90'"
+              :class="passwordFocused ? 'text-primary dark:text-brand-300' : 'text-gray-800 dark:text-white/90'"
             >
               Contraseña
             </label>
             <div class="relative flex items-center">
               <span
                 class="absolute left-3.5 flex items-center pointer-events-none z-10 transition-colors duration-200"
-                :class="passwordFocused ? 'text-brand-500 dark:text-brand-400' : 'text-gray-400 dark:text-gray-600'"
+                :class="passwordFocused ? 'text-primary dark:text-brand-300' : 'text-gray-400 dark:text-gray-600'"
               >
                 <Lock :size="17" />
               </span>
@@ -150,7 +150,7 @@ const handleLogin = async () => {
                 v-model="password"
                 placeholder="Tu contraseña"
                 autocomplete="current-password"
-                class="w-full h-11 pl-10 pr-11 text-sm text-gray-900 bg-white border-[1.5px] border-gray-200 rounded-xl shadow-theme-xs outline-none transition-all duration-200 placeholder:text-gray-400 focus:border-brand-400 focus:ring-4 focus:ring-brand-500/10 dark:bg-white/[0.04] dark:border-white/10 dark:text-white/90 dark:placeholder:text-white/25 dark:focus:border-brand-500 dark:focus:ring-brand-500/15 dark:focus:bg-white/[0.06]"
+                class="w-full h-11 pl-10 pr-11 text-sm text-gray-900 bg-card border-[1.5px] border-gray-100 rounded-xl shadow-theme-xs outline-none transition-all duration-200 placeholder:text-gray-400 focus:border-primary/40 focus:ring-4 focus:ring-primary/10 dark:bg-white/3 dark:border-white/6 dark:text-white/90 dark:placeholder:text-white/25 dark:focus:border-primary/60 dark:focus:ring-primary/15 dark:focus:bg-white/5"
                 @focus="passwordFocused = true"
                 @blur="passwordFocused = false"
               />
@@ -184,7 +184,7 @@ const handleLogin = async () => {
           <button
             type="submit"
             :disabled="loading"
-            class="relative w-full h-11 mt-1 rounded-xl bg-gradient-to-br from-brand-500 to-brand-600 text-white text-sm font-semibold overflow-hidden transition-all duration-300 shadow-lg shadow-brand-500/35 hover:shadow-xl hover:shadow-brand-500/45 hover:-translate-y-0.5 active:translate-y-0 active:shadow-md disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-lg"
+            class="relative w-full h-11 mt-1 rounded-xl bg-gradient-to-br from-primary to-primary-container text-white text-sm font-semibold overflow-hidden transition-all duration-300 shadow-lg shadow-primary/35 hover:shadow-xl hover:shadow-primary/45 hover:-translate-y-0.5 active:translate-y-0 active:shadow-md disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-lg"
           >
             <Transition name="fade" mode="out-in">
               <span v-if="loading" class="inline-flex items-center justify-center gap-2" key="loading">

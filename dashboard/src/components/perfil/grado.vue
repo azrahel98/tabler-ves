@@ -1,10 +1,10 @@
 <template>
-  <div class="rounded-2xl border border-gray-200 bg-white h-full flex flex-col p-5 dark:border-gray-800 dark:bg-white/[0.03]">
+  <div class="rounded-2xl border border-gray-100 bg-card h-full flex flex-col p-5 dark:border-white/6 dark:bg-white/3">
 
     <!-- Header fijo -->
     <div class="flex items-center justify-between gap-2 text-xs font-bold uppercase tracking-wider text-gray-800 dark:text-white/90 mb-4 shrink-0">
       <div class="flex items-center gap-2">
-        <svg class="h-4 w-4 text-brand-500" fill="currentColor" viewBox="0 0 24 24">
+        <svg class="h-4 w-4 text-primary" fill="currentColor" viewBox="0 0 24 24">
           <path d="M12 3L1 9l4 2.18v6L12 21l7-3.82v-6l2.12-1.15V17h2V9L12 3zm6.82 6L12 12.72 5.18 9 12 5.28 18.82 9zM17 15.99l-5 2.73-5-2.73v-3.72l5 2.73 5-2.73v3.72z" />
         </svg>
         Grados Académicos
@@ -24,7 +24,7 @@
       <div
         v-for="(grado, index) in grados"
         :key="grado.id ?? index"
-        class="group flex items-center gap-2.5 py-2.5 hover:bg-gray-50 dark:hover:bg-white/[0.02] rounded-lg px-2 transition-colors">
+        class="group flex items-center gap-2.5 py-2.5 hover:bg-gray-50 dark:hover:bg-white/2 rounded-lg px-2 transition-colors">
 
         <!-- Ícono nivel -->
         <div class="shrink-0 h-7 w-7 rounded-lg flex items-center justify-center" :class="colorNivel(grado.nivel_academico)">
@@ -51,7 +51,7 @@
         <button
           v-if="esAdmin"
           @click="openModal(grado)"
-          class="opacity-0 group-hover:opacity-100 shrink-0 rounded-lg p-1 text-gray-400 hover:bg-gray-100 hover:text-brand-500 dark:hover:bg-gray-800 dark:hover:text-brand-400 transition-all"
+          class="opacity-0 group-hover:opacity-100 shrink-0 rounded-lg p-1 text-gray-400 hover:bg-primary/10 hover:text-primary dark:hover:bg-primary/20 dark:hover:text-brand-300 transition-all"
           title="Editar">
           <Pencil class="h-3 w-3" />
         </button>

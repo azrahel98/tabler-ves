@@ -17,6 +17,7 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
             .route("/organigrama", web::post().to(organigrama))
             .route("/activos_por_distrito", web::post().to(activos_por_distrito))
             .route("/exportar_excel", web::post().to(exportar_excel))
+            .route("/comparar_mef", web::post().to(comparar_mef))
             .route("/nuevos_trabajadores", web::post().to(nuevos_trabajadores))
             .route("/reporte_eventos", web::post().to(reporte_eventos)),
     );

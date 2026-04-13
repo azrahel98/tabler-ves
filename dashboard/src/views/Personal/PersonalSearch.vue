@@ -72,8 +72,8 @@
       <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">Personal</h3>
     </div>
 
-    <div class="overflow-hidden rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
-      <div class="flex flex-col justify-between gap-5 border-b border-gray-200 px-5 py-4 sm:flex-row sm:items-center dark:border-gray-800">
+    <div class="overflow-hidden rounded-2xl border border-gray-100 bg-card dark:border-white/6 dark:bg-white/3">
+      <div class="flex flex-col justify-between gap-5 border-b border-gray-100 px-5 py-4 sm:flex-row sm:items-center dark:border-white/6">
         <div>
           <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">Lista de Personal</h3>
           <p class="text-sm text-gray-500 dark:text-gray-400">Busque al personal por su nombre</p>
@@ -82,13 +82,13 @@
           <button
             @click="exportarExcel"
             :disabled="exportando"
-            class="shadow-theme-xs inline-flex items-center justify-center gap-2 rounded-lg bg-white px-4 py-2.5 text-sm font-medium text-gray-700 ring-1 ring-gray-300 transition hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-800 dark:text-gray-400 dark:ring-gray-700 dark:hover:bg-white/[0.03]">
+            class="shadow-theme-xs inline-flex items-center justify-center gap-2 rounded-lg bg-card px-4 py-2.5 text-sm font-medium text-gray-700 ring-1 ring-gray-200 transition hover:bg-primary/5 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-white/5 dark:text-gray-400 dark:ring-white/10 dark:hover:bg-white/10">
             <Download class="h-4 w-4" :class="{ 'animate-bounce': exportando }" />
             {{ exportando ? 'Exportando...' : 'Exportar Excel' }}
           </button>
         </div>
       </div>
-      <div class="border-b border-gray-200 px-5 py-4 dark:border-gray-800">
+      <div class="border-b border-gray-100 px-5 py-4 dark:border-white/6">
         <div class="flex gap-3 sm:justify-between">
           <div class="relative flex-1 sm:flex-auto">
             <span class="absolute top-1/2 left-4 -translate-y-1/2 text-gray-400 dark:text-gray-500">
@@ -100,7 +100,7 @@
               v-model="searchQuery"
               placeholder="Buscar por nombre o DNI..."
               autocomplete="off"
-              class="w-full h-11 pl-11 pr-4 text-sm text-gray-900 bg-white border-[1.5px] border-gray-200 rounded-xl shadow-theme-xs outline-none transition-all duration-200 placeholder:text-gray-400 focus:border-brand-400 focus:ring-4 focus:ring-brand-500/10 dark:bg-white/[0.04] dark:border-white/10 dark:text-white/90 dark:placeholder:text-white/25 dark:focus:border-brand-500 dark:focus:ring-brand-500/15 sm:w-[300px] sm:min-w-[300px]" />
+              class="w-full h-11 pl-11 pr-4 text-sm text-gray-900 bg-card border-[1.5px] border-gray-100 rounded-xl shadow-theme-xs outline-none transition-all duration-200 placeholder:text-gray-400 focus:border-primary/40 focus:ring-4 focus:ring-primary/10 dark:bg-white/3 dark:border-white/6 dark:text-white/90 dark:placeholder:text-white/25 dark:focus:border-primary/60 dark:focus:ring-primary/15 sm:w-[300px] sm:min-w-[300px]" />
           </div>
         </div>
       </div>
@@ -109,16 +109,16 @@
     <div class="flex flex-col gap-8 pt-2">
       <template v-if="loading">
         <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
-          <div v-for="i in 12" :key="i" class="rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-4 animate-pulse">
-            <div class="mx-auto mb-3 h-14 w-14 rounded-full bg-gray-200 dark:bg-gray-700"></div>
-            <div class="h-3 w-3/4 mx-auto rounded bg-gray-200 dark:bg-gray-700 mb-2"></div>
-            <div class="h-2.5 w-1/2 mx-auto rounded bg-gray-100 dark:bg-gray-800"></div>
+          <div v-for="i in 12" :key="i" class="rounded-xl border border-gray-100 dark:border-white/6 bg-card dark:bg-white/3 p-4 animate-pulse">
+            <div class="mx-auto mb-3 h-14 w-14 rounded-full bg-gray-100 dark:bg-white/10"></div>
+            <div class="h-3 w-3/4 mx-auto rounded bg-gray-100 dark:bg-white/10 mb-2"></div>
+            <div class="h-2.5 w-1/2 mx-auto rounded bg-surface dark:bg-white/5"></div>
           </div>
         </div>
       </template>
 
-      <div v-else-if="hasSearched && resultadosBusqueda.length === 0" class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/3 p-12 text-center">
-        <div class="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800">
+      <div v-else-if="hasSearched && resultadosBusqueda.length === 0" class="rounded-2xl border border-gray-100 bg-card dark:border-white/6 dark:bg-white/3 p-12 text-center">
+        <div class="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-surface dark:bg-white/5">
           <svg class="h-10 w-10 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
@@ -133,7 +133,7 @@
       <template v-else-if="resultadosBusqueda.length > 0">
         <div class="flex items-center justify-between">
           <h4 class="text-md font-medium text-gray-800 dark:text-white/90">Resultados de la búsqueda</h4>
-          <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium bg-brand-50 text-brand-700 ring-1 ring-inset ring-brand-600/20 dark:bg-brand-500/10 dark:text-brand-400 dark:ring-brand-500/20">
+          <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium bg-primary/10 text-primary ring-1 ring-inset ring-primary/20 dark:bg-primary/15 dark:text-brand-300 dark:ring-primary/20">
             {{ resultadosBusqueda.length }} {{ resultadosBusqueda.length === 1 ? 'trabajador' : 'trabajadores' }}
           </span>
         </div>

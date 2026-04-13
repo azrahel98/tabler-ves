@@ -8,7 +8,7 @@
         </div>
         <button
           @click="abrirCrear"
-          class="inline-flex items-center gap-2 rounded-xl bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700 transition-colors shadow-sm">
+          class="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary-container transition-colors shadow-sm">
           <UserPlus class="h-4 w-4" />
           Nuevo Usuario
         </button>
@@ -22,26 +22,26 @@
       </div>
 
       <!-- Tabla de usuarios -->
-      <div v-else class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03] overflow-hidden">
+      <div v-else class="rounded-2xl border border-gray-100 bg-card dark:border-white/6 dark:bg-white/3 overflow-hidden">
         <div v-if="cargando" class="flex flex-col items-center gap-3 py-16">
-          <Loader2 class="h-8 w-8 animate-spin text-brand-500" />
+          <Loader2 class="h-8 w-8 animate-spin text-primary" />
           <span class="text-sm text-gray-500 dark:text-gray-400">Cargando usuarios…</span>
         </div>
 
         <table v-else class="w-full">
           <thead>
-            <tr class="border-b border-gray-100 dark:border-gray-800">
+            <tr class="border-b border-gray-100 dark:border-white/6">
               <th class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-400">Nombre</th>
               <th class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-400">Usuario</th>
               <th class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-400">Nivel</th>
               <th class="px-5 py-3"></th>
             </tr>
           </thead>
-          <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
+          <tbody class="divide-y divide-gray-100 dark:divide-white/5">
             <tr
               v-for="u in usuarios"
               :key="u.id"
-              class="hover:bg-gray-50 dark:hover:bg-gray-800/40 transition-colors">
+              class="hover:bg-primary/5 dark:hover:bg-white/5 transition-colors">
               <td class="px-5 py-3.5">
                 <span class="text-sm font-medium text-gray-800 dark:text-white">{{ u.nombre }}</span>
               </td>
@@ -52,8 +52,8 @@
                 <span
                   class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium"
                   :class="u.nivel === 1
-                    ? 'bg-brand-50 text-brand-700 dark:bg-brand-500/10 dark:text-brand-400'
-                    : 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400'">
+                    ? 'bg-primary/10 text-primary dark:bg-primary/15 dark:text-brand-300'
+                    : 'bg-gray-100 text-gray-600 dark:bg-white/5 dark:text-gray-400'">
                   {{ u.nivel === 1 ? 'Administrador' : 'Usuario' }}
                 </span>
               </td>
@@ -61,7 +61,7 @@
                 <div class="flex items-center justify-end gap-1">
                   <button
                     @click="abrirEditar(u)"
-                    class="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-brand-500 dark:hover:bg-gray-800 dark:hover:text-brand-400 transition-colors"
+                    class="rounded-lg p-1.5 text-gray-400 hover:bg-primary/10 hover:text-primary dark:hover:bg-primary/20 dark:hover:text-brand-300 transition-colors"
                     title="Editar">
                     <Pencil class="h-4 w-4" />
                   </button>
@@ -94,7 +94,7 @@
           <input
             v-model="form.nombre"
             type="text"
-            class="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-3 py-2.5 text-sm dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
+            class="h-11 w-full rounded-lg border border-gray-100 bg-transparent px-3 py-2.5 text-sm dark:border-white/6 dark:bg-white/5 dark:text-white/90"
             placeholder="Juan Pérez" />
         </div>
         <div>
@@ -102,7 +102,7 @@
           <input
             v-model="form.nickname"
             type="text"
-            class="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-3 py-2.5 text-sm dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
+            class="h-11 w-full rounded-lg border border-gray-100 bg-transparent px-3 py-2.5 text-sm dark:border-white/6 dark:bg-white/5 dark:text-white/90"
             placeholder="jpérez" />
         </div>
         <div v-if="!editando">
@@ -110,14 +110,14 @@
           <input
             v-model="form.pass"
             type="password"
-            class="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-3 py-2.5 text-sm dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
+            class="h-11 w-full rounded-lg border border-gray-100 bg-transparent px-3 py-2.5 text-sm dark:border-white/6 dark:bg-white/5 dark:text-white/90"
             placeholder="••••••••" />
         </div>
         <div>
           <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nivel</label>
           <select
             v-model="form.nivel"
-            class="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-3 py-2.5 text-sm dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">
+            class="h-11 w-full rounded-lg border border-gray-100 bg-transparent px-3 py-2.5 text-sm dark:border-white/6 dark:bg-white/5 dark:text-white/90">
             <option :value="2">Usuario</option>
             <option :value="1">Administrador</option>
           </select>
@@ -129,14 +129,14 @@
           type="button"
           @click="guardar"
           :disabled="guardando"
-          class="inline-flex w-full justify-center items-center gap-2 rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700 transition sm:ml-3 sm:w-auto disabled:opacity-60">
+          class="inline-flex w-full justify-center items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary-container transition sm:ml-3 sm:w-auto disabled:opacity-60">
           <Loader2 v-if="guardando" class="h-4 w-4 animate-spin" />
           {{ editando ? 'Guardar cambios' : 'Crear usuario' }}
         </button>
         <button
           type="button"
           @click="cerrarModal"
-          class="mt-3 inline-flex w-full justify-center rounded-lg bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 transition dark:bg-gray-800 dark:text-gray-300 dark:ring-gray-700 dark:hover:bg-gray-700 sm:mt-0 sm:w-auto">
+          class="mt-3 inline-flex w-full justify-center rounded-lg bg-card px-4 py-2 text-sm font-medium text-gray-700 shadow-sm ring-1 ring-inset ring-gray-200 hover:bg-primary/5 transition dark:bg-white/5 dark:text-gray-300 dark:ring-white/10 dark:hover:bg-white/10 sm:mt-0 sm:w-auto">
           Cancelar
         </button>
       </template>
@@ -153,7 +153,7 @@
           <input
             v-model="nuevaPass"
             type="password"
-            class="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-3 py-2.5 text-sm dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
+            class="h-11 w-full rounded-lg border border-gray-100 bg-transparent px-3 py-2.5 text-sm dark:border-white/6 dark:bg-white/5 dark:text-white/90"
             placeholder="••••••••" />
         </div>
         <p v-if="errorReset" class="text-sm text-red-500">{{ errorReset }}</p>
@@ -170,7 +170,7 @@
         <button
           type="button"
           @click="cerrarReset"
-          class="mt-3 inline-flex w-full justify-center rounded-lg bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 transition dark:bg-gray-800 dark:text-gray-300 dark:ring-gray-700 dark:hover:bg-gray-700 sm:mt-0 sm:w-auto">
+          class="mt-3 inline-flex w-full justify-center rounded-lg bg-card px-4 py-2 text-sm font-medium text-gray-700 shadow-sm ring-1 ring-inset ring-gray-200 hover:bg-primary/5 transition dark:bg-white/5 dark:text-gray-300 dark:ring-white/10 dark:hover:bg-white/10 sm:mt-0 sm:w-auto">
           Cancelar
         </button>
       </template>

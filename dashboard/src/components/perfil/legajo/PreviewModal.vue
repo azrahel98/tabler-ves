@@ -3,8 +3,8 @@
     <div class="w-full h-[80vh] flex flex-col items-center justify-center bg-gray-100/50 dark:bg-gray-900/50 rounded-xl border border-gray-200 dark:border-gray-800 overflow-hidden relative">
       <iframe v-if="urlPrevia" :src="urlPrevia" class="w-full h-full border-0 absolute inset-0 z-20" title="Vista previa del documento PDF"> </iframe>
 
-      <div v-else class="flex flex-col items-center justify-center text-gray-500 z-10 w-full h-full absolute inset-0 bg-white dark:bg-gray-900">
-        <Loader2 class="h-8 w-8 animate-spin mb-4 text-brand-500" />
+      <div v-else class="flex flex-col items-center justify-center text-gray-500 z-10 w-full h-full absolute inset-0 bg-card dark:bg-gray-950">
+        <Loader2 class="h-8 w-8 animate-spin mb-4 text-primary" />
         <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Cargando vista previa...</p>
       </div>
     </div>

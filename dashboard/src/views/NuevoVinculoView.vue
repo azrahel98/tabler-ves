@@ -35,7 +35,7 @@
           <div
             v-if="indice < pasosNombres.length - 1"
             class="mx-3 h-0.5 flex-1 rounded-full transition-colors duration-300"
-            :class="pasoActual > indice + 1 ? 'bg-brand-500' : 'bg-gray-200 dark:bg-gray-700'"></div>
+            :class="pasoActual > indice + 1 ? 'bg-primary' : 'bg-gray-200 dark:bg-gray-700'"></div>
         </div>
       </div>
     </div>
@@ -71,10 +71,10 @@
 
   const claseIndicador = (paso: number) => {
     if (pasoActual.value > paso) {
-      return 'bg-brand-500 text-white'
+      return 'bg-primary text-white'
     }
     if (pasoActual.value === paso) {
-      return 'bg-brand-500 text-white ring-4 ring-brand-500/20'
+      return 'bg-primary text-white ring-4 ring-primary/20'
     }
     return 'bg-gray-200 text-gray-500 dark:bg-gray-700 dark:text-gray-400'
   }

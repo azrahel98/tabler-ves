@@ -1,5 +1,5 @@
 <template>
-  <div class="rounded-2xl border border-gray-200 bg-white h-full p-5 dark:border-gray-800 dark:bg-white/[0.03] md:p-6">
+  <div class="rounded-2xl border border-gray-100 bg-card h-full p-5 dark:border-white/6 dark:bg-white/3 md:p-6">
 
     <!-- Header -->
     <div class="flex items-center justify-between mb-4">
@@ -7,7 +7,7 @@
       <div v-if="esAdmin" class="flex items-center gap-0.5">
         <button
           @click="isEditModalOpen = true"
-          class="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-gray-800 dark:hover:text-gray-300 transition-colors"
+          class="rounded-lg p-1.5 text-gray-400 hover:bg-primary/5 hover:text-gray-700 dark:hover:bg-white/5 dark:hover:text-gray-300 transition-colors"
           title="Editar Contacto">
           <Pencil class="h-3.5 w-3.5" />
         </button>
@@ -45,7 +45,7 @@
         <p class="text-sm text-gray-800 font-medium dark:text-gray-300 tracking-wide flex-1">{{ contactoEmergencia.telefono }}</p>
         <button
           @click="copiarTelefono"
-          class="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-gray-800 dark:hover:text-gray-300 transition-colors shrink-0"
+          class="rounded-lg p-1.5 text-gray-400 hover:bg-primary/5 hover:text-gray-700 dark:hover:bg-white/5 dark:hover:text-gray-300 transition-colors shrink-0"
           :title="copiado ? 'Copiado!' : 'Copiar teléfono'">
           <Check v-if="copiado" class="h-3.5 w-3.5 text-green-500 dark:text-green-400" />
           <Copy v-else class="h-3.5 w-3.5" />

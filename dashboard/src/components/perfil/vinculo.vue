@@ -1,8 +1,8 @@
 <template>
-  <div class="rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03] h-min">
+  <div class="rounded-2xl border border-gray-100 bg-card p-6 dark:border-white/6 dark:bg-white/3 h-min">
     <div class="flex flex-wrap items-center justify-between gap-2 text-xs font-bold uppercase text-gray-800 dark:text-white/90 mb-6">
       <div class="flex items-center gap-2 text-sm">
-        <BriefcaseBusinessIcon class="h-5 w-5 text-brand-500" />
+        <BriefcaseBusinessIcon class="h-5 w-5 text-primary" />
         Vínculo Laboral
       </div>
       <div class="flex items-center gap-1">
@@ -54,7 +54,7 @@
         <div v-if="vinculoActual && esAdmin" class="relative" ref="menuAcciones">
           <button
             @click="accionesAbiertas = !accionesAbiertas"
-            class="rounded-full flex items-center gap-1 px-2 py-1 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+            class="rounded-full flex items-center gap-1 px-2 py-1 hover:bg-primary/10 dark:hover:bg-primary/20 transition-colors"
             :class="tieneRenuncia ? 'text-error-500' : 'text-gray-500 dark:text-gray-400'"
             title="Acciones">
             <ChevronDown class="h-3.5 w-3.5" :class="tieneRenuncia ? 'text-error-500' : 'text-gray-400'" />

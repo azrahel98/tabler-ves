@@ -73,6 +73,11 @@ const router = createRouter({
           name: 'usuarios',
           component: () => import('../views/UsuariosView.vue'),
         },
+        {
+          path: 'comparacion-mef',
+          name: 'comparacion-mef',
+          component: () => import('../views/ComparacionMefView.vue'),
+        },
       ],
     },
   ],
