@@ -116,7 +116,7 @@
               class="inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-medium transition-colors">
               <component :is="f.icono" class="h-3.5 w-3.5" />
               {{ f.etiqueta }}
-              <span class="ml-0.5 rounded-full bg-black/10 dark:bg-white/10 px-1.5 py-0.5 text-xs font-semibold">{{ conteosPorEstado[f.valor] }}</span>
+              <span class="ml-0.5 rounded-full bg-black/10 dark:bg-white/10 px-1.5 py-0.5 text-xs font-semibold">{{ conteosPorEstado[f.valor as keyof typeof conteosPorEstado] }}</span>
             </button>
           </div>
 
