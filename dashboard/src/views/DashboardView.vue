@@ -25,7 +25,7 @@
 </template>
 
 <script setup lang="ts">
-  import { onMounted, onUnmounted } from 'vue'
+  import { onMounted, onUnmounted, defineAsyncComponent } from 'vue'
   import Metrica from '../components/dashboard/metrica.vue'
   import Circulo from '../components/dashboard/circulo.vue'
   import GraficoSexo from '../components/dashboard/grafico-sexo.vue'
@@ -33,8 +33,9 @@
   import Cumpleanos from '../components/dashboard/cumpleanos.vue'
   import Movimientos from '../components/dashboard/movimientos.vue'
   import EventosVinculo from '../components/dashboard/eventos-vinculo.vue'
-  import Mapa from '../components/dashboard/mapa.vue'
   import { useTableroStore } from '../stores/dashboard'
+
+  const Mapa = defineAsyncComponent(() => import('../components/dashboard/mapa.vue'))
 
   const tableroStore = useTableroStore()
 

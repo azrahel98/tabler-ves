@@ -1,14 +1,10 @@
 <template>
-  <div class="rounded-2xl border border-gray-100 bg-card p-4 dark:border-white/6 dark:bg-white/3 md:p-6 flex flex-col gap-5">
+  <div class="rounded-2xl border h-min border-gray-200 bg-card p-4 dark:border-gray-800 dark:bg-white/[0.03] md:p-6 flex flex-col gap-5">
 
     <!-- ── Header ── -->
     <div class="flex items-center justify-between gap-3">
-      <h3 class="text-base font-semibold text-gray-800 dark:text-white/90 leading-tight">
-        Eventos de<br />Vínculo
-      </h3>
-      <span class="inline-flex items-center rounded-full bg-theme-purple-500/10 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-theme-purple-500 ring-1 ring-inset ring-theme-purple-500/20">
-        {{ eventosVinculo.length }} EN CURSO
-      </span>
+      <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">Movimientos de Personal</h3>
+
     </div>
 
     <!-- ── Feed ── -->
@@ -17,7 +13,7 @@
         v-for="item in eventosVinculo"
         :key="item.id"
         :to="{ name: 'personal-profile', params: { dni: item.dni } }"
-        class="flex items-start gap-3 py-3.5 first:pt-0 last:pb-0 hover:opacity-80 transition-opacity group">
+        class="flex gap-2 items-start py-1 first:pt-0 last:pb-0 hover:opacity-80 transition-opacity group">
 
         <!-- Dot de color -->
         <span
@@ -27,22 +23,22 @@
         <!-- Datos -->
         <div class="min-w-0 flex-1">
           <div class="flex items-center gap-2 justify-between">
-            <p class="text-xs font-semibold uppercase tracking-wide text-gray-800 dark:text-white/90 leading-snug">
+            <p class="text-xs font-semibold uppercase  text-gray-800 dark:text-white/90 leading-snug">
               {{ item.nombre }}
             </p>
             <span
-              class="shrink-0 inline-flex items-center rounded-md px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide"
+              class="shrink-0 inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium capitalize tracking-wide"
               :class="tipoBadge(item.tipo_evento)">
               {{ tipoLabel(item.tipo_evento) }}
             </span>
           </div>
-          <p class="mt-0.5 text-[11px] text-gray-400 uppercase tracking-wide truncate">
+          <p class="text-xs text-gray-400 uppercase tracking-wide truncate">
             {{ item.cargo }}<template v-if="item.area_original"> - {{ item.area_original }}</template>
           </p>
-          <div class="flex items-center gap-2 mt-1.5">
+          <div class="flex items-center gap-1 mt-1.5">
             <div class="flex items-center gap-1">
               <Calendar class="w-3 h-3 text-gray-400 shrink-0" />
-              <span class="text-[11px] text-gray-400">{{ formatFechaCorta(item.fecha_inicio) }}</span>
+              <span class="text-xs text-gray-400">{{ formatFechaCorta(item.fecha_inicio) }}</span>
             </div>
             <span
               v-if="item.estado"

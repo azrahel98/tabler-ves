@@ -4,7 +4,10 @@ import { ref } from 'vue'
 import { useConfiguracionStore } from '../stores/layout'
 import type { Resumen, Cumpleano, ReporteArea, PersonalActivo, Renuncia, NodoOrganigrama, Documento, Banco, NuevoTrabajador, EventoVinculo } from '../types'
 
+const TTL_MS = 2 * 60 * 1000 // 5 minutos
+
 export const useTableroStore = defineStore('tablero', () => {
+  const ultimaActualizacion = ref<number | null>(null)
   const resumen = ref<Resumen | null>(null)
   const cumpleanos = ref<Cumpleano[]>([])
   const reporteAreas = ref<ReporteArea[]>([])
@@ -84,12 +87,15 @@ export const useTableroStore = defineStore('tablero', () => {
     eventosVinculo.value = res.data
   }
 
-  async function obtenerTodo() {
+  async function obtenerTodo(forzar = false) {
+    if (!forzar && ultimaActualizacion.value && Date.now() - ultimaActualizacion.value < TTL_MS) return
+
     const store = useConfiguracionStore()
 
     try {
       store.setLoading(true)
       await Promise.all([obtenerResumen(), obtenerCumpleanos(), obtenerReporteAreas(), obtenerListaRenuncias(), obtenerActivosPorDistrito(), obtenerNuevosTrabajadores(), obtenerEventosVinculo(), obtenerRenunciasAnio()])
+      ultimaActualizacion.value = Date.now()
     } catch (e) {
       console.error('Error fetching dashboard data', e)
     } finally {
@@ -98,6 +104,7 @@ export const useTableroStore = defineStore('tablero', () => {
   }
 
   function limpiarDatos() {
+    ultimaActualizacion.value = null
     resumen.value = null
     cumpleanos.value = []
     reporteAreas.value = []
@@ -114,6 +121,7 @@ export const useTableroStore = defineStore('tablero', () => {
   }
 
   return {
+    ultimaActualizacion,
     resumen,
     cumpleanos,
     reporteAreas,

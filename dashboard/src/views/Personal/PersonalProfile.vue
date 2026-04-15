@@ -3,13 +3,11 @@
     <header-perfil v-if="perfilActual" />
 
     <div v-if="perfilActual" class="space-y-6">
-
-      <!-- Fila 1: info + vinculos -->
       <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
         <div class="lg:col-span-1 space-y-4">
           <info />
-           <banco />
-            <historial />
+          <banco />
+          <historial />
         </div>
         <div class="lg:col-span-3 space-y-4">
           <vinculos-tabla />
@@ -17,16 +15,9 @@
             <contacto class="col-span-2" />
             <grado class="col-span-2" />
           </div>
-              <legajo-folder />
+          <legajo-folder />
         </div>
       </div>
-
-      <!-- Fila 2: contacto + banco + grados -->
-  
-
-      <!-- Legajo a ancho completo -->
-  
-
     </div>
   </div>
 </template>

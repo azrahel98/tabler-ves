@@ -17,9 +17,9 @@
 
       <!-- Leyenda extra con cantidades -->
       <ul class="mt-4 space-y-1.5">
-        <li v-for="(item, index) in listaRegimenes" :key="item.nombre" class="flex items-center justify-between text-sm">
+        <li v-for="item in listaRegimenes" :key="item.nombre" class="flex items-center justify-between text-sm">
           <div class="flex items-center gap-2">
-            <span class="inline-block h-2.5 w-2.5 rounded-full" :style="{ backgroundColor: colores[index % colores.length] }" />
+            <span class="inline-block h-2.5 w-2.5 rounded-full" :style="{ backgroundColor: resolverColor(item.nombre) }" />
             <span class="text-gray-600 dark:text-gray-400 truncate max-w-[180px]" :title="item.nombre">
               {{ item.nombre }}
             </span>
@@ -46,7 +46,17 @@
     trabajadores: any[]
   }>()
 
-  const colores = ['#3641f5', '#7592ff', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4', '#f97316']
+  // Mapeo semántico de colores basado en el Design System (Hexadecimal para Canvas)
+  const mappingColores: Record<string, string> = {
+    '276':  '#3641f5', // Indigo 600
+    '728':  '#252dae', // Indigo 800
+    'CAS':  '#7592ff', // Indigo 400
+  }
+
+  function resolverColor(nombre: string) {
+    const key = Object.keys(mappingColores).find(k => nombre.includes(k))
+    return key ? mappingColores[key] : '#98a2b3' // Gray 400
+  }
 
   const totalTrabajadores = computed(() => props.trabajadores.length)
 
@@ -70,7 +80,7 @@
     datasets: [
       {
         data: listaRegimenes.value.map((r) => r.cantidad),
-        backgroundColor: colores,
+        backgroundColor: listaRegimenes.value.map((r) => resolverColor(r.nombre)),
         hoverOffset: 6,
         borderWidth: 0,
       },

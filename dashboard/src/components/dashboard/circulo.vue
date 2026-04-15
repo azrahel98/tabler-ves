@@ -40,22 +40,23 @@
 
   const store = useTableroStore()
 
-  const css = (v: string) => getComputedStyle(document.documentElement).getPropertyValue(v).trim()
-
-  const coloresPorRegimen: Record<string, string> = {
-    'D.L 276':      css('--color-secondary'),        // turquesa
-    'D.L 728':      css('--color-primary'),           // morado
-    'D.L 1057':     css('--color-success-400'),        // verde
-    'D.L 1057-F':   css('--color-theme-pink-500'),    // rosa/magenta
-    'D.L 1057 - T': css('--color-accent'),            // azul
+  // Mapeo semántico de colores basado en el Design System (Índigo)
+  // Nota: Chart.js requiere valores Hex/RGB ya que no resuelve variables CSS en Canvas
+  const mappingColores: Record<string, string> = {
+    'D. Leg. Nº 276':      '#3641f5', // Indigo 600 (Principal)
+    'D. Leg. Nº 728':      '#252dae', // Indigo 800 (Profundo)
+    'D.L 1057':     '#7592ff', // Indigo 400 (CAS - Tono claro)
+    'D.L 1057-F':   '#9cb9ff', // Indigo 300 (Variante CAS)
+    'D.L 1057 - T': '#465fff', // Indigo 500 (Variante CAS)
   }
-  const colorPorDefecto = css('--color-gray-500')
+  const colorPorDefecto = '#98a2b3' // Gray 400
+
 
   const chartData = computed(() => {
     const regimenes = store.resumen?.por_regimen || []
     const etiquetas = regimenes.map((r: any) => r.nombre)
     const datosCifra = regimenes.map((r: any) => r.cantidad)
-    const coloresDeFondo = regimenes.map((r: any) => coloresPorRegimen[r.nombre] || colorPorDefecto)
+    const coloresDeFondo = regimenes.map((r: any) => mappingColores[r.nombre] || colorPorDefecto)
 
     return {
       labels: etiquetas,
@@ -63,7 +64,7 @@
         {
           backgroundColor: coloresDeFondo,
           data: datosCifra,
-          hoverOffset: 4,
+          hoverOffset: 6,
           borderWidth: 0,
         },
       ],
@@ -72,12 +73,15 @@
 
   // Funciones auxiliares para la leyenda personalizada
   const colorPara = (nombre: string) => {
-    return coloresPorRegimen[nombre] || colorPorDefecto
+    return mappingColores[nombre] || colorPorDefecto
   }
 
+  const totalRegimen = computed(() =>
+    store.resumen?.por_regimen?.reduce((acc: number, item: any) => acc + item.cantidad, 0) || 1
+  )
+
   const calcularPorcentaje = (cantidad: number) => {
-    const total = store.resumen?.por_regimen?.reduce((acc: number, item: any) => acc + item.cantidad, 0) || 1
-    return ((cantidad / total) * 100).toFixed(1)
+    return ((cantidad / totalRegimen.value) * 100).toFixed(1)
   }
 
   const chartOptions = {

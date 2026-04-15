@@ -1,110 +1,13 @@
-@font-face {
-  font-family: 'Outfit';
-  font-style: normal;
-  font-display: swap;
-  font-weight: 100;
-  src: url(https://cdn.jsdelivr.net/fontsource/fonts/outfit@latest/latin-100-normal.woff2) format('woff2'),
-       url(https://cdn.jsdelivr.net/fontsource/fonts/outfit@latest/latin-100-normal.woff) format('woff'),
-       url(https://cdn.jsdelivr.net/fontsource/fonts/outfit@latest/latin-100-normal.ttf) format('truetype');
-  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
-}
-
-/* outfit-latin-200-normal */
-@font-face {
-  font-family: 'Outfit';
-  font-style: normal;
-  font-display: swap;
-  font-weight: 200;
-  src: url(https://cdn.jsdelivr.net/fontsource/fonts/outfit@latest/latin-200-normal.woff2) format('woff2'),
-       url(https://cdn.jsdelivr.net/fontsource/fonts/outfit@latest/latin-200-normal.woff) format('woff'),
-       url(https://cdn.jsdelivr.net/fontsource/fonts/outfit@latest/latin-200-normal.ttf) format('truetype');
-  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
-}
-
-/* outfit-latin-300-normal */
-@font-face {
-  font-family: 'Outfit';
-  font-style: normal;
-  font-display: swap;
-  font-weight: 300;
-  src: url(https://cdn.jsdelivr.net/fontsource/fonts/outfit@latest/latin-300-normal.woff2) format('woff2'),
-       url(https://cdn.jsdelivr.net/fontsource/fonts/outfit@latest/latin-300-normal.woff) format('woff'),
-       url(https://cdn.jsdelivr.net/fontsource/fonts/outfit@latest/latin-300-normal.ttf) format('truetype');
-  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
-}
-
-/* outfit-latin-400-normal */
-@font-face {
-  font-family: 'Outfit';
-  font-style: normal;
-  font-display: swap;
-  font-weight: 400;
-  src: url(https://cdn.jsdelivr.net/fontsource/fonts/outfit@latest/latin-400-normal.woff2) format('woff2'),
-       url(https://cdn.jsdelivr.net/fontsource/fonts/outfit@latest/latin-400-normal.woff) format('woff'),
-       url(https://cdn.jsdelivr.net/fontsource/fonts/outfit@latest/latin-400-normal.ttf) format('truetype');
-  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
-}
-
-/* outfit-latin-500-normal */
-@font-face {
-  font-family: 'Outfit';
-  font-style: normal;
-  font-display: swap;
-  font-weight: 500;
-  src: url(https://cdn.jsdelivr.net/fontsource/fonts/outfit@latest/latin-500-normal.woff2) format('woff2'),
-       url(https://cdn.jsdelivr.net/fontsource/fonts/outfit@latest/latin-500-normal.woff) format('woff'),
-       url(https://cdn.jsdelivr.net/fontsource/fonts/outfit@latest/latin-500-normal.ttf) format('truetype');
-  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
-}
-
-/* outfit-latin-600-normal */
-@font-face {
-  font-family: 'Outfit';
-  font-style: normal;
-  font-display: swap;
-  font-weight: 600;
-  src: url(https://cdn.jsdelivr.net/fontsource/fonts/outfit@latest/latin-600-normal.woff2) format('woff2'),
-       url(https://cdn.jsdelivr.net/fontsource/fonts/outfit@latest/latin-600-normal.woff) format('woff'),
-       url(https://cdn.jsdelivr.net/fontsource/fonts/outfit@latest/latin-600-normal.ttf) format('truetype');
-  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
-}
-
-/* outfit-latin-700-normal */
-@font-face {
-  font-family: 'Outfit';
-  font-style: normal;
-  font-display: swap;
-  font-weight: 700;
-  src: url(https://cdn.jsdelivr.net/fontsource/fonts/outfit@latest/latin-700-normal.woff2) format('woff2'),
-       url(https://cdn.jsdelivr.net/fontsource/fonts/outfit@latest/latin-700-normal.woff) format('woff'),
-       url(https://cdn.jsdelivr.net/fontsource/fonts/outfit@latest/latin-700-normal.ttf) format('truetype');
-  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
-}
-
-/* outfit-latin-800-normal */
-@font-face {
-  font-family: 'Outfit';
-  font-style: normal;
-  font-display: swap;
-  font-weight: 800;
-  src: url(https://cdn.jsdelivr.net/fontsource/fonts/outfit@latest/latin-800-normal.woff2) format('woff2'),
-       url(https://cdn.jsdelivr.net/fontsource/fonts/outfit@latest/latin-800-normal.woff) format('woff'),
-       url(https://cdn.jsdelivr.net/fontsource/fonts/outfit@latest/latin-800-normal.ttf) format('truetype');
-  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
-}
-
-/* outfit-latin-900-normal */
-@font-face {
-  font-family: 'Outfit';
-  font-style: normal;
-  font-display: swap;
-  font-weight: 900;
-  src: url(https://cdn.jsdelivr.net/fontsource/fonts/outfit@latest/latin-900-normal.woff2) format('woff2'),
-       url(https://cdn.jsdelivr.net/fontsource/fonts/outfit@latest/latin-900-normal.woff) format('woff'),
-       url(https://cdn.jsdelivr.net/fontsource/fonts/outfit@latest/latin-900-normal.ttf) format('truetype');
-  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
-}
 @import 'tailwindcss';
+/* inter-latin-wght-normal */
+@font-face {
+  font-family: 'Inter Variable';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url(https://cdn.jsdelivr.net/fontsource/fonts/inter:vf@latest/latin-wght-normal.woff2) format('woff2-variations');
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
 
 @custom-variant dark (&:is(.dark *));
 
@@ -149,7 +52,7 @@
   --color-ring:   #3525cd;
 
   --font-*: initial;
-  --font-outfit: Outfit, sans-serif;
+  --font-inter: 'Inter Variable', sans-serif;
 
 --breakpoint-*: initial;
   --breakpoint-2xsm: 375px;
@@ -177,6 +80,17 @@
   --text-theme-xs: clamp(0.75rem, 0.7vw, 0.8rem);
   --text-2xs: clamp(0.675rem, 0.6vw, 0.75rem);     /* Antes: 0.6rem - 0.675rem */
   --text-3xs: clamp(0.575rem, 0.55vw, 0.65rem);    /* Antes: 0.5rem - 0.575rem */
+
+  /* ── Semántica de Regímenes — Basado en Índigo ── */
+  --color-regimen-276:       var(--color-brand-600); /* Color principal */
+  --color-regimen-728:       var(--color-brand-800); /* Tono oscuro */
+  --color-regimen-cas:       var(--color-brand-400); /* Tono claro */
+  --color-regimen-otros:     var(--color-gray-400);  /* Neutro */
+
+  /* Gradientes de Regímenes */
+  --gradient-regimen-276: linear-gradient(135deg, var(--color-brand-500) 0%, var(--color-brand-700) 100%);
+  --gradient-regimen-728: linear-gradient(135deg, var(--color-brand-700) 0%, var(--color-brand-900) 100%);
+  --gradient-regimen-cas: linear-gradient(135deg, var(--color-brand-300) 0%, var(--color-brand-500) 100%);
 
   --color-current: currentColor;
   --color-transparent: transparent;
@@ -448,7 +362,7 @@
   }
 
   body {
-    @apply font-outfit relative z-1 bg-gray-50 text-base font-normal;
+    @apply font-inter relative z-1 bg-gray-50 text-base font-normal;
   }
 }
 

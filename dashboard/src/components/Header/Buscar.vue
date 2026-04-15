@@ -94,9 +94,9 @@
                   searchQuery = ''
                 }
               "
-              class="block px-4 py-3 hover:bg-primary/5 dark:hover:bg-white/5 transition-colors border-b last:border-0 border-gray-100 dark:border-white/5">
+              class="block px-4 py-2 hover:bg-primary/5 dark:hover:bg-white/5 transition-colors border-b last:border-0 border-gray-100 dark:border-white/5">
               <p class="text-sm font-semibold text-gray-800 dark:text-white uppercase">{{ person.nombre }}</p>
-              <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">DNI: {{ person.dni }}</p>
+              <p class="text-xs text-gray-500 dark:text-gray-400 ">DNI: {{ person.dni }}</p>
             </RouterLink>
           </template>
 

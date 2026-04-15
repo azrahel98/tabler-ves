@@ -35,7 +35,7 @@
 </template>
 
 <script setup lang="ts">
-  import { computed } from 'vue'
+  import { computed, ref, onMounted } from 'vue'
   import { useTableroStore } from '../../stores/dashboard'
   import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js'
   import { Doughnut } from 'vue-chartjs'
@@ -46,12 +46,17 @@
 
   const css = (v: string) => getComputedStyle(document.documentElement).getPropertyValue(v).trim()
 
-  // M = Masculino, F = Femenino
-  const coloresPorSexo: Record<string, string> = {
-    'M': css('--color-primary'),
-    'F': css('--color-theme-pink-500'),
-  }
-  const colorPorDefecto = css('--color-gray-400')
+  // M = Masculino, F = Femenino — leído en onMounted para garantizar que las variables CSS ya están disponibles
+  const coloresPorSexo = ref<Record<string, string>>({})
+  const colorPorDefecto = ref('#98a2b3')
+
+  onMounted(() => {
+    coloresPorSexo.value = {
+      'M': css('--color-primary'),
+      'F': css('--color-theme-pink-500'),
+    }
+    colorPorDefecto.value = css('--color-gray-400') || '#98a2b3'
+  })
 
   const formatSexo = (sigla: string) => {
     if (sigla === 'M') return 'Masculino'
@@ -63,7 +68,7 @@
     const dataSexo = store.resumen?.por_sexo || []
     const etiquetas = dataSexo.map((s: any) => formatSexo(s.nombre))
     const datosCifra = dataSexo.map((s: any) => s.cantidad)
-    const coloresDeFondo = dataSexo.map((s: any) => coloresPorSexo[s.nombre] || colorPorDefecto)
+    const coloresDeFondo = dataSexo.map((s: any) => coloresPorSexo.value[s.nombre] || colorPorDefecto.value)
 
     return {
       labels: etiquetas,
@@ -80,12 +85,15 @@
 
   // Funciones auxiliares para la leyenda personalizada
   const colorPara = (nombre: string) => {
-    return coloresPorSexo[nombre] || colorPorDefecto
+    return coloresPorSexo.value[nombre] || colorPorDefecto.value
   }
 
+  const totalSexo = computed(() =>
+    store.resumen?.por_sexo?.reduce((acc: number, item: any) => acc + item.cantidad, 0) || 1
+  )
+
   const calcularPorcentaje = (cantidad: number) => {
-    const total = store.resumen?.por_sexo?.reduce((acc: number, item: any) => acc + item.cantidad, 0) || 1
-    return ((cantidad / total) * 100).toFixed(1)
+    return ((cantidad / totalSexo.value) * 100).toFixed(1)
   }
 
   const chartOptions = {
