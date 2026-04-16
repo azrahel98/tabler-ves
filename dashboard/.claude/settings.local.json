@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//c/Users/Olaf/Documents/tabler-ves/api-server/**)",
+      "Bash(cargo check *)"
+    ]
+  }
+}

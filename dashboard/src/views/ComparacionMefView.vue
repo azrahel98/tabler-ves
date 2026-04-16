@@ -81,9 +81,9 @@
       <!-- Resultados -->
       <template v-if="resultado">
         <!-- Resumen -->
-        <div class="mb-6 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+        <div class="mb-6 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
           <div class="rounded-xl border border-gray-100 bg-card px-4 py-3 shadow-theme-xs dark:border-white/6">
-            <p class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Procesados</p>
+            <p class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">En sistema</p>
             <p class="mt-1 text-2xl font-bold text-gray-900 dark:text-white">{{ resultado.resumen.procesados }}</p>
           </div>
           <div class="rounded-xl border border-gray-100 bg-card px-4 py-3 shadow-theme-xs dark:border-white/6">
@@ -99,8 +99,12 @@
             <p class="mt-1 text-2xl font-bold text-orange-700 dark:text-orange-400">{{ resultado.resumen.diferencias }}</p>
           </div>
           <div class="rounded-xl border border-red-100 bg-red-50 px-4 py-3 shadow-theme-xs dark:border-red-800/30 dark:bg-red-900/10">
-            <p class="text-xs font-medium text-red-600 dark:text-red-400 uppercase tracking-wider">No en MEF</p>
+            <p class="text-xs font-medium text-red-600 dark:text-red-400 uppercase tracking-wider">Solo en sistema</p>
             <p class="mt-1 text-2xl font-bold text-red-700 dark:text-red-400">{{ resultado.resumen.no_encontrados }}</p>
+          </div>
+          <div class="rounded-xl border border-purple-100 bg-purple-50 px-4 py-3 shadow-theme-xs dark:border-purple-800/30 dark:bg-purple-900/10">
+            <p class="text-xs font-medium text-purple-600 dark:text-purple-400 uppercase tracking-wider">Solo en MEF</p>
+            <p class="mt-1 text-2xl font-bold text-purple-700 dark:text-purple-400">{{ resultado.resumen.no_en_sistema }}</p>
           </div>
         </div>
 
@@ -141,6 +145,15 @@
             type="text"
             placeholder="Buscar por DNI, nombre o campo…"
             class="ml-auto w-60 rounded-lg border border-gray-200 bg-card px-3 py-1.5 text-sm text-gray-700 placeholder-gray-400 focus:border-primary focus:outline-none dark:border-white/10 dark:bg-white/5 dark:text-gray-300 dark:placeholder-gray-500" />
+
+          <button
+            @click="exportarExcel"
+            :disabled="exportando"
+            class="inline-flex items-center gap-2 rounded-lg border border-green-200 bg-green-50 px-3 py-1.5 text-sm font-medium text-green-700 hover:bg-green-100 dark:border-green-800/40 dark:bg-green-900/20 dark:text-green-400 dark:hover:bg-green-900/30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+            <Download v-if="!exportando" class="h-4 w-4" />
+            <div v-else class="h-4 w-4 animate-spin rounded-full border-2 border-green-600 border-t-transparent"></div>
+            Excel
+          </button>
 
           <button
             @click="reiniciar"
@@ -197,6 +210,7 @@
                       'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400': fila.resultado === 'OK',
                       'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400': fila.resultado === 'DIFERENCIA',
                       'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400': fila.resultado === 'NO_EXISTE_EN_MEF',
+                      'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400': fila.resultado === 'NO_EXISTE_EN_SISTEMA',
                     }"
                     class="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium">
                     <CheckCircle2 v-if="fila.resultado === 'OK'" class="h-3 w-3" />
@@ -243,7 +257,7 @@
   import { ref, computed, watch } from 'vue'
   import {
     FileSpreadsheet, AlertCircle, X, RefreshCw, Search,
-    CheckCircle2, AlertTriangle, XCircle,
+    CheckCircle2, AlertTriangle, XCircle, Download,
   } from 'lucide-vue-next'
   import api from '../services/api'
 
@@ -258,7 +272,7 @@
     campo: string
     valor_propio: string
     valor_mef: string
-    resultado: 'OK' | 'DIFERENCIA' | 'NO_EXISTE_EN_MEF'
+    resultado: 'OK' | 'DIFERENCIA' | 'NO_EXISTE_EN_MEF' | 'NO_EXISTE_EN_SISTEMA'
   }
 
   interface Resumen {
@@ -267,6 +281,7 @@
     ok: number
     diferencias: number
     no_encontrados: number
+    no_en_sistema: number
     fecha_comparacion: string
   }
 
@@ -280,6 +295,7 @@
   const archivoCas   = ref<File | null>(null)
   const archivoOtros = ref<File | null>(null)
   const cargando = ref(false)
+  const exportando = ref(false)
   const error = ref<string | null>(null)
   const resultado = ref<Resultado | null>(null)
   const filtroEstado = ref<string>('DIFERENCIA')
@@ -303,9 +319,15 @@
     },
     {
       valor: 'NO_EXISTE_EN_MEF',
-      etiqueta: 'No en MEF',
+      etiqueta: 'Solo en sistema',
       icono: XCircle,
       claseActiva: 'border-red-300 bg-red-50 text-red-700 dark:border-red-700 dark:bg-red-900/20 dark:text-red-400',
+    },
+    {
+      valor: 'NO_EXISTE_EN_SISTEMA',
+      etiqueta: 'Solo en MEF',
+      icono: XCircle,
+      claseActiva: 'border-purple-300 bg-purple-50 text-purple-700 dark:border-purple-700 dark:bg-purple-900/20 dark:text-purple-400',
     },
     {
       valor: 'OK',
@@ -343,6 +365,7 @@
       OK: lista.filter(c => c.resultado === 'OK').length,
       DIFERENCIA: lista.filter(c => c.resultado === 'DIFERENCIA').length,
       NO_EXISTE_EN_MEF: lista.filter(c => c.resultado === 'NO_EXISTE_EN_MEF').length,
+      NO_EXISTE_EN_SISTEMA: lista.filter(c => c.resultado === 'NO_EXISTE_EN_SISTEMA').length,
     }
   })
 
@@ -417,6 +440,29 @@
     }
   }
 
+  async function exportarExcel() {
+    if (!resultado.value) return
+    exportando.value = true
+    try {
+      const response = await api.post(
+        '/dash/exportar_comparacion_mef',
+        { comparaciones: resultado.value.comparaciones },
+        { responseType: 'blob' },
+      )
+      const url = URL.createObjectURL(new Blob([response.data]))
+      const a = document.createElement('a')
+      a.href = url
+      const fecha = resultado.value.resumen.fecha_comparacion.replace(/[/:]/g, '-').replace(/ /g, '_')
+      a.download = `comparacion_mef_${fecha}.xlsx`
+      a.click()
+      URL.revokeObjectURL(url)
+    } catch (e: any) {
+      error.value = e?.response?.data?.message ?? e?.message ?? 'Error al exportar'
+    } finally {
+      exportando.value = false
+    }
+  }
+
   function reiniciar() {
     resultado.value = null
     error.value = null
@@ -431,7 +477,9 @@
   function etiquetaResultado(r: string) {
     if (r === 'OK') return 'OK'
     if (r === 'DIFERENCIA') return 'Diferencia'
-    return 'No en MEF'
+    if (r === 'NO_EXISTE_EN_MEF') return 'Solo en sistema'
+    if (r === 'NO_EXISTE_EN_SISTEMA') return 'Solo en MEF'
+    return r
   }
 
   function badgeRegimen(r: string): string {
