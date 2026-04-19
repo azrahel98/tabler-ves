@@ -1216,7 +1216,7 @@ pub async fn comparar_mef(
 
         if let Some(mef) = dict_mef.get(&dni) {
             let valores_propios = [
-                String::new(), // CODIGO_REGISTRO: el sistema no lo almacena
+                cpp_str.clone(),
                 apaterno.trim().to_uppercase(),
                 amaterno.trim().to_uppercase(),
                 nombre.trim().to_uppercase(),

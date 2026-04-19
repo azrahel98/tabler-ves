@@ -11,6 +11,7 @@ use actix_web::{
     web::{self},
 };
 
+use super::registrar_historial;
 use serde::{Deserialize, Serialize};
 use validator::Validate;
 
@@ -25,6 +26,7 @@ pub struct LoginRequest {
 pub async fn login(
     data: web::Data<AppState>,
     login: web::Json<LoginRequest>,
+    req: actix_web::HttpRequest,
 ) -> Result<impl Responder, ApiError> {
     validar(&login.0)?;
 
@@ -42,7 +44,7 @@ pub async fn login(
         FROM usuario
         WHERE nickname = ?
         "#,
-        key,
+        &key,
         login.username
     )
     .fetch_optional(&data.db)
@@ -55,14 +57,32 @@ pub async fn login(
     let user = match user {
         Some(u) => {
             if u.pass.as_deref() != Some(login.password.as_str()) {
+                let _ = registrar_historial(
+                    &req,
+                    &data.db,
+                    "login fallido",
+                    "",
+                    Some(serde_json::json!({ "username": login.username })),
+                )
+                .await;
                 return Err(ApiError::Unauthorized("Contraseña incorrecta".into()));
             }
             u
         }
-        None => return Err(ApiError::Unauthorized("El usuario no existe".into())),
+        None => {
+            let _ = registrar_historial(
+                &req,
+                &data.db,
+                "login fallido - no existe usuario",
+                "",
+                Some(serde_json::json!({ "username": login.username })),
+            )
+            .await;
+            return Err(ApiError::Unauthorized("El usuario no existe".into()));
+        }
     };
 
-    let token = generate_token(user.id, user.nivel, user.nombre);
+    let token = generate_token(user.id, user.nivel, user.nombre.clone());
 
     let json_response = serde_json::json!({
         "token": token
@@ -86,6 +106,7 @@ pub struct ChangePass {
 pub async fn change_pass(
     data: web::Data<AppState>,
     pass: web::Json<ChangePass>,
+    req: actix_web::HttpRequest,
 ) -> Result<impl Responder, ApiError> {
     validar(&pass.0)?;
     let key = std::env::var("DB_KEY").expect("DB_KEY must be set");
@@ -104,11 +125,10 @@ pub async fn change_pass(
     .map_err(|e| {
         eprintln!("Database error: {:?}", e);
         ApiError::InternalError("Database consulta malformada".into())
-    })?
-    .unwrap();
+    })?;
 
     let db_pass = match db_pass {
-        Some(p) => p,
+        Some(p) => p.unwrap_or_default(),
         None => {
             return Err(ApiError::Unauthorized(
                 "Usuario no encontrado o sin contraseña".into(),
@@ -136,6 +156,8 @@ pub async fn change_pass(
         eprintln!("Database error: {:?}", e);
         ApiError::InternalError("No se pudo actualizar la contraseña".into())
     })?;
+
+    let _ = registrar_historial(&req, &data.db, "cambio de password propio", "", None).await;
 
     Ok(HttpResponse::Ok().json("Contraseña cambiada con éxito"))
 }

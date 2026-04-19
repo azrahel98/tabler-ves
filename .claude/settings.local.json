@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls /c/Users/Olaf/Documents/tabler-ves/api-server/**/)"
+    ]
+  }
+}

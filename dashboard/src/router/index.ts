@@ -69,7 +69,14 @@ const router = createRouter({
           component: () => import('../views/reporte/SindicatoPersonalView.vue'),
         },
         {
-          path: 'usuarios',
+          path: '/carga-masiva',
+          name: 'carga-masiva',
+          component: () => import('../views/CargaMasivaView.vue'),
+          meta: { requiresAuth: true }
+        },
+        {
+          path: '/usuarios',
+
           name: 'usuarios',
           component: () => import('../views/UsuariosView.vue'),
         },

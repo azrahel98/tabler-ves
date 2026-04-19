@@ -9,6 +9,7 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
                 web::scope("")
                     .wrap(JWT)
                     .route("/upload", web::post().to(upload_file))
+                    .route("/upload_batch", web::post().to(upload_batch))
                     .route("/listar_archivos_dni", web::post().to(listar_archivos_dni))
                     .route("/eliminar_archivo", web::post().to(eliminar_archivo))
                     .route("/asignar_documento", web::post().to(asignar_documento))

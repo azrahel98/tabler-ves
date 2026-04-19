@@ -59,10 +59,6 @@ impl From<sqlx::Error> for ApiError {
     }
 }
 
-/// Valida un struct que implemente `Validate` y convierte los errores
-/// en un `ApiError::BadRequest` con un mensaje legible en español.
-///
-/// Uso: `validar(&payload)?;`
 pub fn validar<T: validator::Validate>(dato: &T) -> Result<(), ApiError> {
     dato.validate().map_err(|errores| {
         let mensaje = errores
