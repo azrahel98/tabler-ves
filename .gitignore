@@ -16,6 +16,11 @@ dist
 dist-ssr
 *.local
 
+.claude/
+.antigravity/
+.claude
+.agents
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
