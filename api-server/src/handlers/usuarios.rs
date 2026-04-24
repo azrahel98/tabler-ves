@@ -116,7 +116,7 @@ pub async fn editar_usuario(
     verificar_admin(&req)?;
     validar(&body.0)?;
 
-    // 1. Obtener estado actual
+    
     let actual = sqlx::query!(
         "SELECT nombre, nickname, nivel FROM usuario WHERE id = ?",
         body.id
@@ -134,7 +134,7 @@ pub async fn editar_usuario(
         .await
         .map_err(|e| ApiError::InternalError(format!("Error al editar usuario: {}", e)))?;
 
-    // 2. Calcular diferencias
+    
     let mut diff = serde_json::Map::new();
     if actual.nombre != body.nombre {
         diff.insert("nombre".to_string(), json!({"antes": actual.nombre, "despues": body.nombre}));
@@ -174,7 +174,7 @@ pub async fn eliminar_usuario(
     verificar_admin(&req)?;
     validar(&body.0)?;
 
-    // Capturar foto antes de borrar
+    
     let usuario_full = sqlx::query!(
         "SELECT id, nombre, nickname, nivel FROM usuario WHERE id = ?",
         body.id

@@ -89,11 +89,11 @@
     let top = 0
     let left = 0
     
-    // Usamos el ancho definido o el tamaño real del panel
+    
     const anchoNum = parseInt(props.ancho) || panelRect.width || 280
     const altoNum = panelRect.height || 0
 
-    // Posición dinámica con prevención de desbordamiento (flip)
+    
     let posicionEfectiva = props.posicion
 
     if (props.posicion === 'abajo') {
@@ -151,7 +151,7 @@
       }
     }
 
-    // Prevención final de desbordes en los bordes de la pantalla
+    
     if (left < margin) left = margin
     if (left + anchoNum > window.innerWidth - margin) {
       left = window.innerWidth - anchoNum - margin
@@ -235,7 +235,7 @@
     cursor: pointer;
   }
 
-  /* ─── Panel (fixed, teleported to body) ─── */
+  
   .popover-panel {
     position: fixed;
     z-index: 99999;
@@ -258,7 +258,7 @@
       0 8px 10px -6px rgb(0 0 0 / 0.25);
   }
 
-  /* ─── Encabezado ─── */
+  
   .popover-encabezado {
     display: flex;
     align-items: center;
@@ -283,7 +283,7 @@
     color: var(--color-gray-100);
   }
 
-  /* ─── Botón cerrar ─── */
+  
   .popover-boton-cerrar {
     display: inline-flex;
     align-items: center;
@@ -306,12 +306,12 @@
     color: var(--color-gray-200);
   }
 
-  /* ─── Cuerpo ─── */
+  
   .popover-cuerpo {
     padding: 0.75rem 1rem;
   }
 
-  /* ─── Pie ─── */
+  
   .popover-pie {
     padding: 0.75rem 1rem;
     border-top: 1px solid var(--color-gray-200);
@@ -322,7 +322,7 @@
     border-top-color: var(--color-gray-800);
   }
 
-  /* ─── Transición ─── */
+  
   .popover-enter-active {
     transition:
       opacity 0.22s cubic-bezier(0.16, 1, 0.3, 1),

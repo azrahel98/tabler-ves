@@ -3,19 +3,19 @@
     <h3 class="mb-1 text-base font-semibold text-gray-800 dark:text-white/90">Distribución por Régimen</h3>
     <p class="mb-4 text-xs text-gray-400 dark:text-gray-500">{{ totalTrabajadores }} {{ totalTrabajadores === 1 ? 'trabajador' : 'trabajadores' }} en total</p>
 
-    <!-- Sin datos -->
+    
     <div v-if="totalTrabajadores === 0" class="flex flex-col items-center justify-center py-10 text-center">
       <PieChart class="h-10 w-10 text-gray-300 dark:text-gray-600 mb-2" />
       <p class="text-sm text-gray-400 dark:text-gray-500">Sin datos disponibles</p>
     </div>
 
     <template v-else>
-      <!-- Gráfico -->
+      
       <div class="relative mx-auto h-52 w-full">
         <Doughnut :data="datosPorRegimen" :options="opcionesGrafico" />
       </div>
 
-      <!-- Leyenda extra con cantidades -->
+      
       <ul class="mt-4 space-y-1.5">
         <li v-for="item in listaRegimenes" :key="item.nombre" class="flex items-center justify-between text-sm">
           <div class="flex items-center gap-2">
@@ -46,16 +46,16 @@
     trabajadores: any[]
   }>()
 
-  // Mapeo semántico de colores basado en el Design System (Hexadecimal para Canvas)
+  
   const mappingColores: Record<string, string> = {
-    '276':  '#3641f5', // Indigo 600
-    '728':  '#252dae', // Indigo 800
-    'CAS':  '#7592ff', // Indigo 400
+    '276':  '#3641f5', 
+    '728':  '#252dae', 
+    'CAS':  '#7592ff', 
   }
 
   function resolverColor(nombre: string) {
     const key = Object.keys(mappingColores).find(k => nombre.includes(k))
-    return key ? mappingColores[key] : '#98a2b3' // Gray 400
+    return key ? mappingColores[key] : '#98a2b3' 
   }
 
   const totalTrabajadores = computed(() => props.trabajadores.length)

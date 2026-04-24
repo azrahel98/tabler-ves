@@ -14,14 +14,14 @@
         </button>
       </div>
 
-      <!-- Error de acceso -->
+      
       <div v-if="errorAcceso" class="flex flex-col items-center justify-center py-20 text-center">
         <ShieldOff class="h-16 w-16 text-red-300 dark:text-red-700 mb-4" />
         <p class="text-lg font-semibold text-gray-600 dark:text-gray-400">Acceso denegado</p>
         <p class="text-sm text-gray-400 dark:text-gray-500 mt-1">Solo los administradores pueden gestionar usuarios.</p>
       </div>
 
-      <!-- Tabla de usuarios -->
+      
       <div v-else class="rounded-2xl border border-gray-100 bg-card dark:border-white/6 dark:bg-white/3 overflow-hidden">
         <div v-if="cargando" class="flex flex-col items-center gap-3 py-16">
           <Loader2 class="h-8 w-8 animate-spin text-primary" />
@@ -86,7 +86,7 @@
       </div>
     </div>
 
-    <!-- Modal crear / editar -->
+    
     <Modal :isOpen="modalAbierto" :title="editando ? 'Editar Usuario' : 'Nuevo Usuario'" @close="cerrarModal">
       <form @submit.prevent="guardar" class="space-y-4">
         <div>
@@ -142,7 +142,7 @@
       </template>
     </Modal>
 
-    <!-- Modal reset contraseña -->
+    
     <Modal :isOpen="modalResetAbierto" title="Restablecer Contraseña" @close="cerrarReset">
       <div class="space-y-4">
         <p class="text-sm text-gray-600 dark:text-gray-400">

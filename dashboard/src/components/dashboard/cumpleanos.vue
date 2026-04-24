@@ -1,7 +1,7 @@
 <template>
   <div class="rounded-2xl border border-gray-200 bg-card p-4 dark:border-gray-800 dark:bg-white/[0.03] md:p-6 flex flex-col gap-5">
 
-    <!-- ── Header ── -->
+    
     <div class="flex items-center justify-between gap-3">
       <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">Cumpleaños</h3>
 
@@ -24,7 +24,7 @@
       </div>
     </div>
 
-    <!-- ── Feed ── -->
+    
     <div class="flex flex-col divide-y divide-gray-100 dark:divide-gray-800 overflow-y-auto max-h-128 custom-scrollbar -mx-1 px-1">
       <RouterLink
         v-for="item in listaDelMes"
@@ -32,12 +32,12 @@
         :to="{ name: 'personal-profile', params: { dni: item.dni } }"
         class="flex gap-2 items-start py-1 first:pt-0 last:pb-0 hover:opacity-80 transition-opacity group">
 
-        <!-- Dot de color -->
+        
         <span
           class="mt-1.5 h-2 w-2 shrink-0 rounded-full"
           :class="dotColor(item.daysUntil)" />
 
-        <!-- Datos -->
+        
         <div class="min-w-0 flex-1">
           <div class="flex items-center gap-2 justify-between">
             <p class="text-xs font-semibold uppercase text-gray-800 dark:text-white/90 leading-snug">

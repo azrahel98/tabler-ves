@@ -80,7 +80,7 @@
 </script>
 
 <style scoped>
-  /* ── Backdrop ── */
+  
   .modal-enter-active {
     transition: opacity 0.28s cubic-bezier(0.4, 0, 0.2, 1);
   }
@@ -92,7 +92,7 @@
     opacity: 0;
   }
 
-  /* ── Card (enter: spring up) ── */
+  
   .modal-enter-active .modal-card {
     transition:
       opacity 0.32s cubic-bezier(0.16, 1, 0.3, 1),
@@ -103,7 +103,7 @@
     transform: translateY(24px) scale(0.96);
   }
 
-  /* ── Card (leave: fade up quickly) ── */
+  
   .modal-leave-active .modal-card {
     transition:
       opacity 0.18s cubic-bezier(0.4, 0, 1, 1),

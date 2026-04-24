@@ -138,7 +138,7 @@
   watch(toRef(props, 'isOpen'), async (abierto) => {
     if (abierto) {
       isSubmitting.value = false
-      // Form reset logic needed when opening
+      
       form.value = {
         tipoDocumento: '',
         numeroDocumento: null,
@@ -176,6 +176,6 @@
       añoDocumento: esSunat.value ? null : form.value.añoDocumento,
     }
     emit('save', payload)
-    // The parent component is responsible for setting isOpen to false, resetting isSubmitting
+    
   }
 </script>

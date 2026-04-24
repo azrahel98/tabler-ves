@@ -343,7 +343,7 @@ pub async fn editar_datos_bancarios(
     validar(&doc.0)?;
     let _key = std::env::var("DB_KEY").expect("DB_KEY must be set");
 
-    // 1. Obtener estado actual
+    
     let actual = sqlx::query_as!(
         DatosBancarios,
         r#"SELECT
@@ -388,7 +388,7 @@ pub async fn editar_datos_bancarios(
                 .map_err(|e| ApiError::InternalError(format!("Error al obtener banco: {}", e)))?
                 .nombre;
 
-            // 2. Calcular diferencias
+            
             let mut diff = serde_json::Map::new();
             let tipo_nuevo = doc.tipo_cuenta.clone().unwrap_or_default().to_uppercase();
 
@@ -804,7 +804,7 @@ pub async fn contacto_emergencia_add(
     validar(&contacto.0)?;
     let key = std::env::var("DB_KEY").expect("DB_KEY must be set");
 
-    // 1. Obtener el estado actual antes de la actualización
+    
     let actual = sqlx::query_as!(
         ContactoEmergencia,
         r#"select persona_dni, nombre, relacion, cast(aes_decrypt(telefono,?) as char) telefono 
@@ -1241,7 +1241,7 @@ pub async fn eliminar_vinculo(
         .await
         .map_err(|e| ApiError::InternalError(format!("Error al eliminar vínculo: {}", e)))?;
 
-    // ... rest of deletions (documents, etc) ...
+    
 
     tx.commit().await?;
 
@@ -1408,7 +1408,7 @@ pub async fn upsert_evento_vinculo(
         .await
         .map_err(|e| ApiError::InternalError(format!("Error al cerrar evento: {}", e)))?;
 
-        // Al cerrar el evento, volver el vínculo a activo
+        
         sqlx::query("UPDATE vinculo SET estado = 'activo' WHERE id = ?")
             .bind(payload.vinculo_id)
             .execute(&mut *tx)
@@ -1485,7 +1485,7 @@ pub async fn upsert_evento_vinculo(
     Ok(HttpResponse::Ok().json("Operación exitosa"))
 }
 
-// ── Eliminar contacto de emergencia ──────────────────────────────────────────
+
 
 #[derive(Deserialize, Validate)]
 pub struct EliminarContactoBody {
@@ -1535,7 +1535,7 @@ pub async fn eliminar_contacto(
     Ok(HttpResponse::Ok().json("Contacto de emergencia eliminado"))
 }
 
-// ── Eliminar afiliación sindical ──────────────────────────────────────────────
+
 
 #[derive(Deserialize, Validate)]
 pub struct EliminarSindicatoBody {
@@ -1551,7 +1551,7 @@ pub async fn eliminar_sindicato(
 ) -> Result<impl Responder, ApiError> {
     validar(&body.0)?;
     
-    // Capturar foto antes de borrar
+    
     let info = sqlx::query!(
         "SELECT vs.*, s.nombre as sindicato_nombre 
          FROM vinculo_sindicato vs 

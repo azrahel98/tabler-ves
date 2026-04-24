@@ -5,7 +5,7 @@ use sqlx::FromRow;
 use validator::Validate;
 use validator::ValidationError;
 
-/// Valida que el DNI tenga exactamente 8 dígitos numéricos.
+
 pub fn es_dni_valido(dni: &str) -> Result<(), ValidationError> {
     if dni.len() == 8 && dni.chars().all(|c| c.is_ascii_digit()) {
         Ok(())

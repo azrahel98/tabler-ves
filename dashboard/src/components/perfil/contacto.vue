@@ -1,7 +1,7 @@
 <template>
   <div class="rounded-2xl border border-gray-100 bg-card h-full p-5 dark:border-white/6 dark:bg-white/3 md:p-6">
 
-    <!-- Header -->
+    
     <div class="flex items-center justify-between mb-4">
       <h3 class="text-sm font-semibold text-gray-800 dark:text-white/90">Contacto de Emergencia</h3>
       <div v-if="esAdmin" class="flex items-center gap-0.5">
@@ -24,7 +24,7 @@
 
     <div v-if="contactoEmergencia" class="space-y-4">
 
-      <!-- Persona -->
+      
       <div class="flex items-center gap-3">
         <div class="flex  items-center justify-center rounded-xl  shrink-0">
           <Users class="h-4 w-4 text-blue-600 dark:text-blue-400" />
@@ -37,7 +37,7 @@
         </div>
       </div>
 
-      <!-- Teléfono -->
+      
       <div v-if="contactoEmergencia.telefono" class="flex items-center gap-3">
         <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/5 dark:bg-primary-500/10 shrink-0">
           <Phone class="h-3.5 w-3.5 text-primary dark:text-primary-400" />
@@ -59,7 +59,7 @@
       </div>
     </div>
 
-    <!-- Empty state -->
+    
     <div v-else class="flex flex-col items-center gap-2 py-6 text-center">
       <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-gray-100 dark:bg-gray-800">
         <Users class="h-5 w-5 text-gray-400 dark:text-gray-500" />

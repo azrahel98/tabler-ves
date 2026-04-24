@@ -95,8 +95,8 @@
             class="shadow-theme-lg absolute right-0 mt-[17px] flex w-[260px] flex-col rounded-2xl border border-gray-100 bg-card p-3 dark:border-white/6 dark:bg-gray-950">
             <div>
               <span class="text-theme-sm block font-medium text-gray-700 dark:text-gray-400"> {{ autenticacionStore.usuario?.nombre || 'Usuario' }} </span>
-              <!-- <span class="text-theme-xs mt-0.5 block text-gray-500 dark:text-gray-400"> randomuser@pimjo.com </span> -->
-              <!-- <span class="text-theme-xs mt-0.5 block text-gray-500 dark:text-gray-400"> randomuser@pimjo.com </span> -->
+              
+              
             </div>
 
 

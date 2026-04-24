@@ -13,7 +13,7 @@ pub async fn registrar_historial(
     dni: &str,
     detalle: Option<serde_json::Value>,
 ) -> Result<(), ApiError> {
-    // Capturar metadata
+    
     let ip = req
         .connection_info()
         .realip_remote_addr()
@@ -27,7 +27,7 @@ pub async fn registrar_historial(
         .unwrap_or("unknown")
         .to_string();
 
-    // Combinar detalle con metadata
+    
     let detalle_final = serde_json::json!({
         "data": detalle.unwrap_or(serde_json::json!({})),
         "metadata": {
@@ -44,7 +44,7 @@ pub async fn registrar_historial(
         .map(|claims| claims.id)
         .unwrap_or(0);
 
-    // Llamamos al procedimiento almacenado
+    
     sqlx::query("CALL registrar_historial(?,?,?,?,?)")
         .bind(user_id)
         .bind(operacion)

@@ -1,7 +1,7 @@
 <template>
   <div class="rounded-2xl border border-gray-100 bg-card h-full flex flex-col p-5 dark:border-white/6 dark:bg-white/3">
 
-    <!-- Header fijo -->
+    
     <div class="flex items-center justify-between gap-2 text-xs font-bold uppercase tracking-wider text-gray-800 dark:text-white/90 mb-4 shrink-0">
       <div class="flex items-center gap-2">
         <svg class="h-4 w-4 text-primary" fill="currentColor" viewBox="0 0 24 24">
@@ -19,19 +19,19 @@
       </button>
     </div>
 
-    <!-- Lista con scroll -->
+    
     <div v-if="grados && grados.length" class="flex-1 overflow-y-auto divide-y divide-gray-100 dark:divide-gray-800 -mx-1 px-1">
       <div
         v-for="(grado, index) in grados"
         :key="grado.id ?? index"
         class="group flex items-center gap-2.5 py-2.5 hover:bg-gray-50 dark:hover:bg-white/2 rounded-lg px-2 transition-colors">
 
-        <!-- Ícono nivel -->
+        
         <div class="shrink-0 h-7 w-7 rounded-lg flex items-center justify-center" :class="colorNivel(grado.nivel_academico)">
           <GraduationCap class="h-3.5 w-3.5" />
         </div>
 
-        <!-- Info -->
+        
         <div class="min-w-0 flex-1">
           <div class="flex items-center gap-1.5 flex-wrap">
             <p class="text-xs font-semibold text-gray-800 dark:text-white/90 truncate">{{ grado.profesion }}</p>
@@ -47,7 +47,7 @@
           </div>
         </div>
 
-        <!-- Editar -->
+        
         <button
           v-if="esAdmin"
           @click="openModal(grado)"

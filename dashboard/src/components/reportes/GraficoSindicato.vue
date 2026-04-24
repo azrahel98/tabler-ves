@@ -3,19 +3,19 @@
     <h3 class="mb-1 text-base font-semibold text-gray-800 dark:text-white/90">Afiliación Sindical</h3>
     <p class="mb-4 text-xs text-gray-400 dark:text-gray-500">Distribución de afiliados y no afiliados</p>
 
-    <!-- Sin datos -->
+    
     <div v-if="totalTrabajadores === 0" class="flex flex-col items-center justify-center py-10 text-center">
       <Users class="h-10 w-10 text-gray-300 dark:text-gray-600 mb-2" />
       <p class="text-sm text-gray-400 dark:text-gray-500">Sin datos disponibles</p>
     </div>
 
     <template v-else>
-      <!-- Gráfico de dona -->
+      
       <div class="relative mx-auto h-52 w-full">
         <Doughnut :data="datosAfiliacion" :options="opcionesGrafico" />
       </div>
 
-      <!-- Leyenda con cantidades -->
+      
       <ul class="mt-4 space-y-1.5">
         <li v-for="(item, index) in leyenda" :key="item.nombre" class="flex items-center justify-between text-sm">
           <div class="flex items-center gap-2">
@@ -54,7 +54,7 @@
 
   const cantidadNoAfiliados = computed(() => totalTrabajadores.value - cantidadAfiliados.value)
 
-  // Desglose por nombre de sindicato
+  
   const listaSindicatos = computed(() => {
     const conteo: Record<string, number> = {}
     for (const t of props.trabajadores) {
@@ -67,7 +67,7 @@
       .sort((a, b) => b.cantidad - a.cantidad)
   })
 
-  // Leyenda unificada: Afiliados + Sin sindicato (+ desglose por sindicato)
+  
   const leyenda = computed(() => {
     const total = totalTrabajadores.value
     const items = [

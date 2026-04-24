@@ -4,7 +4,7 @@ import { ref } from 'vue'
 import { useConfiguracionStore } from '../stores/layout'
 import type { Resumen, Cumpleano, ReporteArea, PersonalActivo, Renuncia, NodoOrganigrama, Documento, Banco, NuevoTrabajador, EventoVinculo } from '../types'
 
-const TTL_MS = 2 * 60 * 1000 // 5 minutos
+const TTL_MS = 2 * 60 * 1000 
 
 export const useTableroStore = defineStore('tablero', () => {
   const ultimaActualizacion = ref<number | null>(null)

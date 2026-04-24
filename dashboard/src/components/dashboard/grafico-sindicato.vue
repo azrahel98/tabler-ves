@@ -14,7 +14,7 @@
       </div>
     </div>
 
-    <!-- Leyenda Personalizada -->
+    
     <div class="mt-auto flex flex-col gap-3 pt-4">
       <div v-for="(sindicato, index) in datosProcesados" :key="index" class="flex items-center justify-between">
         <div class="flex items-center gap-2">
@@ -47,11 +47,11 @@
   const css = (v: string) => getComputedStyle(document.documentElement).getPropertyValue(v).trim()
 
   const coloresPorSindicato: Record<string, string> = {
-    'SITRAMUN':    css('--color-warning-400'),  // ámbar dorado
-    'SOMUN':       css('--color-secondary'),     // turquesa
-    'Sin Afiliar': css('--color-primary'),       // morado principal
+    'SITRAMUN':    css('--color-warning-400'),  
+    'SOMUN':       css('--color-secondary'),     
+    'Sin Afiliar': css('--color-primary'),       
   }
-  const colorPorDefecto = css('--color-accent') // azul para entradas adicionales
+  const colorPorDefecto = css('--color-accent') 
 
   const datosProcesados = computed(() => {
     if (!store.resumen) return []
@@ -60,7 +60,7 @@
     const totalAfiliados = sindicatos.reduce((acc: number, s: any) => acc + s.cantidad, 0)
     const personalActivo = store.resumen.activos || 0
     
-    // Calcular cuántos no están afiliados
+    
     const sinAfiliar = Math.max(0, personalActivo - totalAfiliados)
 
     const resultado = [...sindicatos]

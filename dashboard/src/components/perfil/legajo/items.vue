@@ -4,7 +4,7 @@
     class="group relative flex flex-col items-center gap-2 p-3 rounded-xl cursor-pointer select-none transition-all duration-150 hover:bg-gray-100 dark:hover:bg-white/5"
     @click="$emit('preview')"
   >
-    <!-- Botón eliminar -->
+    
     <button
       v-if="store.esAdmin"
       @click.stop="$emit('delete')"
@@ -14,19 +14,19 @@
       <Trash2 class="h-3 w-3" />
     </button>
 
-    <!-- Ícono / Thumbnail -->
+    
     <div class="relative w-14 h-16 flex-shrink-0">
-      <!-- Thumbnail renderizado -->
+      
       <div v-if="thumbnailUrl" class="w-full h-full rounded overflow-hidden border border-gray-200 dark:border-strokedark shadow-sm">
         <img :src="thumbnailUrl" class="w-full h-full object-cover object-top" alt="preview" />
       </div>
 
-      <!-- Cargando thumbnail -->
+      
       <div v-else-if="cargando" class="w-full h-full rounded border border-gray-200 dark:border-strokedark bg-gray-50 dark:bg-white/5 flex items-center justify-center">
         <Loader2 class="h-4 w-4 animate-spin text-gray-300" />
       </div>
 
-      <!-- Fallback: ícono PDF -->
+      
       <svg v-else viewBox="0 0 56 64" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-full drop-shadow-sm">
         <path d="M4 0h36l12 12v52H4V0z" fill="#fff" stroke="#e2e8f0" stroke-width="1.5" class="dark:fill-boxdark dark:stroke-strokedark"/>
         <path d="M40 0l12 12H40V0z" fill="#e2e8f0" class="dark:fill-strokedark"/>
@@ -35,7 +35,7 @@
         <text x="28" y="57" text-anchor="middle" fill="white" font-size="11" font-weight="700" font-family="Arial, sans-serif" letter-spacing="1">PDF</text>
       </svg>
 
-      <!-- Badge vinculado -->
+      
       <span
         v-if="item.documento_id"
         class="absolute -bottom-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-green-500 text-white shadow-sm"
@@ -45,7 +45,7 @@
       </span>
     </div>
 
-    <!-- Nombre y fecha -->
+    
     <div class="w-full text-center">
       <p class="text-xs font-medium text-gray-800 dark:text-gray-200 line-clamp-2 break-all leading-snug uppercase" :title="item.original_name">
         {{ nombreSinExtension }}

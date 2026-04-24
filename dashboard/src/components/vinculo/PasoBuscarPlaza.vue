@@ -8,12 +8,12 @@
     </div>
 
     <div class="p-5">
-      <!-- Cargando lista de vacantes -->
+      
       <div v-if="cargando" class="py-12 text-center">
         <Loading size="lg" fullPage />
       </div>
 
-      <!-- Sin vacantes -->
+      
       <div v-else-if="vacantes.length === 0" class="text-center py-12">
         <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800">
           <MapPin class="h-8 w-8 text-gray-400" />
@@ -27,7 +27,7 @@
         </button>
       </div>
 
-      <!-- Lista de vacantes -->
+      
       <div v-else class="space-y-3">
         <div class="mb-4 flex items-center justify-between">
           <span class="rounded-full bg-brand-50 px-3 py-1 text-xs font-medium text-brand-600 dark:bg-brand-500/10 dark:text-brand-400">
@@ -80,7 +80,7 @@
           </table>
         </div>
 
-        <!-- Detalle de plaza seleccionada -->
+        
         <Transition name="slide-abajo">
           <div v-if="plazaSeleccionada" class="mt-4 rounded-lg border border-brand-200 bg-brand-50 p-4 dark:border-brand-800 dark:bg-brand-500/10">
             <div class="flex items-center gap-2 mb-3">

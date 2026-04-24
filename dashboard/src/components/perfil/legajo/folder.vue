@@ -14,13 +14,13 @@
     </div>
 
     <div class="p-6">
-      <!-- Cargando -->
+      
       <div v-if="cargandoLista" class="flex flex-col items-center justify-center py-16 gap-3">
         <Loader2 class="h-8 w-8 animate-spin text-primary" />
         <p class="text-xs text-gray-400">Cargando documentos...</p>
       </div>
 
-      <!-- Sin archivos -->
+      
       <div v-else-if="archivosSubidos.length === 0" class="flex flex-col items-center justify-center py-16 gap-3 text-center">
         <div class="flex h-14 w-14 items-center justify-center rounded-full bg-gray-100 dark:bg-white/5">
           <FolderOpen class="h-7 w-7 text-gray-400" stroke-width="1.5" />
@@ -31,7 +31,7 @@
         </div>
       </div>
 
-      <!-- Grid de archivos -->
+      
       <div v-else>
         <p class="text-xs text-gray-400 mb-4">{{ archivosSubidos.length }} {{ archivosSubidos.length === 1 ? 'documento' : 'documentos' }}</p>
         <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">

@@ -1,6 +1,6 @@
 <template>
   <div ref="wrapperRef" class="mapa-wrapper">
-    <!-- Spinner de carga -->
+    
     <div v-if="cargando" class="mapa-estado">
       <div class="spinner" />
       <span>Cargando mapa...</span>
@@ -16,23 +16,23 @@
   import { useTableroStore } from '../../stores/dashboard'
   import 'leaflet/dist/leaflet.css'
 
-  // ─── Props ────────────────────────────────────────────────────────────────────
+  
   interface Props {
     geojsonUrl?: string
   }
   const props = withDefaults(defineProps<Props>(), {})
 
-  // ─── Tipos ───────────────────────────────────────────────────────────────────
+  
   interface DistritoData {
     nombre: string
     trabajadores: number
   }
 
-  // ─── Store ──────────────────────────────────────────────────────────────────
+  
   const tableroStore = useTableroStore()
   const { activosPorDistrito } = storeToRefs(tableroStore)
 
-  // ─── Refs ─────────────────────────────────────────────────────────────────────
+  
   const mapEl = ref<HTMLElement | null>(null)
   const wrapperRef = ref<HTMLElement | null>(null)
   const cargando = ref(true)
@@ -42,12 +42,12 @@
   let geojsonLayer: any = null
   let resizeObserver: ResizeObserver | null = null
 
-  // ─── Datos ───────────────────────────────────────────────────────────────────
+  
   const datos = computed<DistritoData[]>(() => activosPorDistrito.value.map((d) => ({ nombre: d.distrito, trabajadores: d.cantidad })))
   const total = computed(() => datos.value.reduce((s, d) => s + d.trabajadores, 0))
   const maxVal = computed(() => Math.max(...datos.value.map((d) => d.trabajadores), 1))
 
-  // ─── Helpers ─────────────────────────────────────────────────────────────────
+  
   function normalizar(s: string) {
     return s
       .toLowerCase()
@@ -68,7 +68,7 @@
   function getColor(v: number): string {
     if (!v) return cssVar('--color-surface')
     const t = Math.pow(v / maxVal.value, 0.55)
-    // Interpolación desde primary/10 (221,233,255) hasta primary (42,49,216)
+    
     return `rgb(${Math.round(221 + (42 - 221) * t)},${Math.round(233 + (49 - 233) * t)},${Math.round(255 + (216 - 255) * t)})`
   }
   function pct(v: number) {
@@ -129,7 +129,7 @@
   watch(activosPorDistrito, () => {
     if (!geojsonLayer) return
 
-    // Actualizar estilos Y tooltips de cada capa
+    
     geojsonLayer.eachLayer((layer: any) => {
       const f = layer.feature
       if (!f) return
@@ -137,7 +137,7 @@
       const nombre = f.properties?.DISTRITO || f.properties?.distrito || f.properties?.nombre || f.properties?.NAME_3 || ''
       const d = buscar(nombre)
 
-      // Actualizar color
+      
       layer.setStyle({
         fillColor: getColor(d?.trabajadores ?? 0),
         weight: 1,
@@ -145,7 +145,7 @@
         fillOpacity: 0.82,
       })
 
-      // Actualizar tooltip con datos frescos
+      
       if (layer.getTooltip()) {
         layer.unbindTooltip()
       }
@@ -158,9 +158,9 @@
     })
   }, { deep: true })
 
-  // ─── Lifecycle ────────────────────────────────────────────────────────────────
+  
   onMounted(async () => {
-    // 1. Iniciamos la carga de Leaflet y GeoJSON en paralelo para optimizar la velocidad
+    
     const pLeaflet = import('leaflet').then((m) => {
       L = m.default || m
     })
@@ -194,17 +194,17 @@
       maxZoom: 19,
     }).addTo(mapInstance)
 
-    // 3. Aplicamos el GeoJSON si se cargó exitosamente
+    
     if (geojson) {
       aplicarGeojson(geojson)
     }
 
     cargando.value = false
 
-    // Escuchamos redimensiones del contenedor para ajustar Leaflet
+    
     if (wrapperRef.value && mapInstance) {
       resizeObserver = new ResizeObserver(() => {
-        // Limitamos los updates para no bloquear el hilo de resize
+        
         requestAnimationFrame(() => {
           mapInstance?.invalidateSize()
         })
@@ -269,7 +269,7 @@
 </style>
 
 <style>
-  /* Tooltip Leaflet — global para que tome efecto dentro del shadow del mapa */
+  
   .tt-lima {
     background: white !important;
     border: 1px solid rgba(53, 37, 205, 0.15) !important;

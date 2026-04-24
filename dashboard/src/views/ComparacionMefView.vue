@@ -11,7 +11,7 @@
         </div>
       </div>
 
-      <!-- Error -->
+      
       <div v-if="error" class="mb-4 flex items-center gap-3 rounded-xl border border-red-200 bg-red-50 px-4 py-3 dark:border-red-800/40 dark:bg-red-900/20">
         <AlertCircle class="h-5 w-5 shrink-0 text-red-500" />
         <p class="text-sm text-red-700 dark:text-red-400">{{ error }}</p>
@@ -20,10 +20,10 @@
         </button>
       </div>
 
-      <!-- Upload zone (solo si no hay resultados) -->
+      
       <template v-if="!resultado && !cargando">
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 mb-4">
-          <!-- CAS -->
+          
           <div
             class="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-gray-200 dark:border-white/10 bg-card py-10 text-center cursor-pointer transition-colors hover:border-blue-400/60 hover:bg-blue-50/30 dark:hover:bg-white/5"
             :class="archivoCas ? 'border-blue-400 bg-blue-50/40 dark:bg-blue-900/10' : ''"
@@ -41,7 +41,7 @@
             <input ref="inputCas" type="file" accept=".xlsx,.xls" class="hidden" @change="(e) => onArchivoSeleccionado(e, 'cas')" />
           </div>
 
-          <!-- 276 y 728 -->
+          
           <div
             class="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-gray-200 dark:border-white/10 bg-card py-10 text-center cursor-pointer transition-colors hover:border-violet-400/60 hover:bg-violet-50/30 dark:hover:bg-white/5"
             :class="archivoOtros ? 'border-violet-400 bg-violet-50/40 dark:bg-violet-900/10' : ''"
@@ -60,7 +60,7 @@
           </div>
         </div>
 
-        <!-- Botón comparar -->
+        
         <div class="flex justify-center">
           <button
             @click="procesarArchivos"
@@ -72,15 +72,15 @@
         </div>
       </template>
 
-      <!-- Cargando -->
+      
       <div v-if="cargando" class="flex flex-col items-center gap-3 py-20">
         <div class="h-10 w-10 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
         <span class="text-sm text-gray-500 dark:text-gray-400">Procesando archivos, por favor espere…</span>
       </div>
 
-      <!-- Resultados -->
+      
       <template v-if="resultado">
-        <!-- Resumen -->
+        
         <div class="mb-6 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
           <div class="rounded-xl border border-gray-100 bg-card px-4 py-3 shadow-theme-xs dark:border-white/6">
             <p class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">En sistema</p>
@@ -108,9 +108,9 @@
           </div>
         </div>
 
-        <!-- Controles -->
+        
         <div class="mb-4 flex flex-wrap items-center gap-2">
-          <!-- Filtro estado -->
+          
           <div class="flex gap-1.5">
             <button
               v-for="f in filtrosEstado"
@@ -124,10 +124,10 @@
             </button>
           </div>
 
-          <!-- Separador -->
+          
           <div class="h-5 w-px bg-gray-200 dark:bg-white/10 mx-1"></div>
 
-          <!-- Filtro régimen -->
+          
           <div class="flex gap-1.5">
             <button
               v-for="r in filtrosRegimen"
@@ -163,7 +163,7 @@
           </button>
         </div>
 
-        <!-- Tabla -->
+        
         <div class="overflow-x-auto rounded-xl border border-gray-100 bg-card shadow-theme-xs dark:border-white/6">
           <table class="w-full text-sm">
             <thead>
@@ -229,7 +229,7 @@
           </table>
         </div>
 
-        <!-- Paginación -->
+        
         <div v-if="totalPaginas > 1" class="mt-4 flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
           <span>Mostrando {{ inicioRango }}–{{ finRango }} de {{ filasFiltradas.length }}</span>
           <div class="flex items-center gap-1">

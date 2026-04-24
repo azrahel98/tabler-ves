@@ -1,6 +1,6 @@
 <template>
   <div class="relative w-full" ref="containerRef">
-    <!-- Select Button / Input -->
+    
     <div
       class="h-11 w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-800 focus-within:border-brand-300 focus-within:ring-3 focus-within:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 flex items-center justify-between cursor-pointer transition-colors"
       :class="{ 'ring-3 ring-brand-500/10 border-brand-300 dark:border-brand-700 dark:ring-brand-500/20': isOpen }"
@@ -15,7 +15,7 @@
       />
     </div>
 
-    <!-- Dropdown Menu -->
+    
     <Transition
       enter-active-class="transition duration-100 ease-out"
       enter-from-class="transform scale-95 opacity-0"
@@ -101,7 +101,7 @@ const selectedOption = computed(() => {
 const filteredOptions = computed(() => {
   if (!searchQuery.value) return props.options
   const query = searchQuery.value.toLowerCase()
-  // Normalizar para ignorar acentos
+  
   const normalize = (str: string) => str.normalize("NFD").replace(/[\u0300-\u036f]/g, "")
   const normalizedQuery = normalize(query)
   

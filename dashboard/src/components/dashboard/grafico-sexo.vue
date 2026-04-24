@@ -14,7 +14,7 @@
       </div>
     </div>
 
-    <!-- Leyenda Personalizada -->
+    
     <div class="mt-auto flex flex-col gap-3 pt-4">
       <div v-for="(sexo, index) in store.resumen?.por_sexo" :key="index" class="flex items-center justify-between">
         <div class="flex items-center gap-2">
@@ -46,7 +46,7 @@
 
   const css = (v: string) => getComputedStyle(document.documentElement).getPropertyValue(v).trim()
 
-  // M = Masculino, F = Femenino — leído en onMounted para garantizar que las variables CSS ya están disponibles
+  
   const coloresPorSexo = ref<Record<string, string>>({})
   const colorPorDefecto = ref('#98a2b3')
 
@@ -83,7 +83,7 @@
     }
   })
 
-  // Funciones auxiliares para la leyenda personalizada
+  
   const colorPara = (nombre: string) => {
     return coloresPorSexo.value[nombre] || colorPorDefecto.value
   }
@@ -101,7 +101,7 @@
     maintainAspectRatio: false,
     plugins: {
       legend: {
-        display: false, // Ocultar la leyenda por defecto de Chart.js
+        display: false, 
       },
     },
     layout: {

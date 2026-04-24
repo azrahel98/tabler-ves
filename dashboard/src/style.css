@@ -1,5 +1,5 @@
 @import 'tailwindcss';
-/* inter-latin-wght-normal */
+
 @font-face {
   font-family: 'Inter Variable';
   font-style: normal;
@@ -12,19 +12,19 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme {
-  /* ── Superficie & Jerarquía (regla "sin bordes") ── */
-  --color-surface:                  #f9f9ff; /* Capa base del layout */
-  --color-surface-container-low:    #f0f3ff; /* Fondo de secciones */
-  --color-surface-container-lowest: #ffffff; /* Tarjetas interactivas */
-  --color-surface-container:        rgba(240, 243, 255, 0.60); /* Glass base */
-  --color-surface-bright:           #f9f9ff; /* Overlays utilitarios */
+  
+  --color-surface:                  #f9f9ff; 
+  --color-surface-container-low:    #f0f3ff; 
+  --color-surface-container-lowest: #ffffff; 
+  --color-surface-container:        rgba(240, 243, 255, 0.60); 
+  --color-surface-bright:           #f9f9ff; 
 
-  /* ── Paleta Principal — Indigo intelectual ── */
+  
   --color-primary:           #3525cd;
-  --color-primary-container: #4f46e5; /* extremo del gradiente CTA */
+  --color-primary-container: #4f46e5; 
   --color-primary-foreground: #ffffff;
 
-  /* ── Semántica del sistema ── */
+  
   --color-background: #f9f9ff;
   --color-foreground: #1a1a3e;
 
@@ -46,7 +46,7 @@
   --color-success-500: #10B981;
   --color-error-500:   #F04438;
 
-  /* Sin bordes como regla — estas vars quedan como último recurso */
+  
   --color-border: transparent;
   --color-input:  var(--color-surface-container-low);
   --color-ring:   #3525cd;
@@ -64,30 +64,30 @@
   --breakpoint-xl: 1280px;
   --breakpoint-2xl: 1536px;
 
-  /* Títulos y Números Grandes */
-  --text-title-xl: clamp(1.5rem, 1.8vw, 2rem);    /* Antes: 1.35rem - 1.7rem */
-  --text-title-lg: clamp(1.25rem, 1.4vw, 1.6rem);  /* Antes: 1.15rem - 1.4rem */
-  --text-title-md: clamp(1.1rem, 1.2vw, 1.35rem);  /* Antes: 1rem - 1.2rem */
-  --text-title-sm: clamp(1rem, 1.05vw, 1.15rem);   /* Antes: 0.875rem - 1rem */
-
-  /* Textos de Cuerpo y UI */
-  --text-xl: clamp(0.95rem, 1vw, 1.1rem);          /* Antes: 0.825rem - 0.95rem */
-  --text-sm: clamp(0.825rem, 0.8vw, 0.9rem);       /* Antes: 0.75rem - 0.825rem */
-  --text-xs: clamp(0.75rem, 0.7vw, 0.8rem);        /* Antes: 0.65rem - 0.725rem */
   
-  /* Textos de Soporte y Badges */
+  --text-title-xl: clamp(1.5rem, 1.8vw, 2rem);    
+  --text-title-lg: clamp(1.25rem, 1.4vw, 1.6rem);  
+  --text-title-md: clamp(1.1rem, 1.2vw, 1.35rem);  
+  --text-title-sm: clamp(1rem, 1.05vw, 1.15rem);   
+
+  
+  --text-xl: clamp(0.95rem, 1vw, 1.1rem);          
+  --text-sm: clamp(0.825rem, 0.8vw, 0.9rem);       
+  --text-xs: clamp(0.75rem, 0.7vw, 0.8rem);        
+  
+  
   --text-theme-sm: clamp(0.825rem, 0.8vw, 0.9rem);
   --text-theme-xs: clamp(0.75rem, 0.7vw, 0.8rem);
-  --text-2xs: clamp(0.675rem, 0.6vw, 0.75rem);     /* Antes: 0.6rem - 0.675rem */
-  --text-3xs: clamp(0.575rem, 0.55vw, 0.65rem);    /* Antes: 0.5rem - 0.575rem */
+  --text-2xs: clamp(0.675rem, 0.6vw, 0.75rem);     
+  --text-3xs: clamp(0.575rem, 0.55vw, 0.65rem);    
 
-  /* ── Semántica de Regímenes — Basado en Índigo ── */
-  --color-regimen-276:       var(--color-brand-600); /* Color principal */
-  --color-regimen-728:       var(--color-brand-800); /* Tono oscuro */
-  --color-regimen-cas:       var(--color-brand-400); /* Tono claro */
-  --color-regimen-otros:     var(--color-gray-400);  /* Neutro */
+  
+  --color-regimen-276:       var(--color-brand-600); 
+  --color-regimen-728:       var(--color-brand-800); 
+  --color-regimen-cas:       var(--color-brand-400); 
+  --color-regimen-otros:     var(--color-gray-400);  
 
-  /* Gradientes de Regímenes */
+  
   --gradient-regimen-276: linear-gradient(135deg, var(--color-brand-500) 0%, var(--color-brand-700) 100%);
   --gradient-regimen-728: linear-gradient(135deg, var(--color-brand-700) 0%, var(--color-brand-900) 100%);
   --gradient-regimen-cas: linear-gradient(135deg, var(--color-brand-300) 0%, var(--color-brand-500) 100%);
@@ -828,18 +828,16 @@ span.flatpickr-weekday,
   transform: translateY(-8px);
 }
 
-/* ══════════════════════════════════════════════
-   DESIGN SYSTEM — Indigo Theme Utilities
-   ══════════════════════════════════════════════ */
 
-/* Glassmorphism — sidebar y barras flotantes */
+
+
 @utility glass {
   background-color: var(--color-surface-container);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
 }
 
-/* Gradiente CTA principal (135°) */
+
 @utility gradient-primary {
   background-image: linear-gradient(
     135deg,
@@ -848,7 +846,7 @@ span.flatpickr-weekday,
   );
 }
 
-/* Superficies de jerarquía como clases directas */
+
 @utility surface-base {
   background-color: var(--color-surface);
 }

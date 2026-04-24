@@ -28,7 +28,7 @@
     </Transition>
 
     <div class="grid grid-cols-1 gap-6 xl:grid-cols-2">
-      <!-- Lado Izquierdo: Formulario del Documento -->
+      
       <div class="space-y-6">
         <div class="rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/3">
           <div class="border-b border-gray-200 px-5 py-4 dark:border-gray-800">
@@ -138,7 +138,7 @@
           </form>
         </div>
 
-        <!-- Buscador (Versión simplificada aquí para evitar dependencias cruzadas) -->
+        
         <div class="rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/3 p-5">
           <h4 class="text-sm font-semibold text-gray-800 dark:text-white/90 mb-4">Agregar Trabajadores</h4>
           <form @submit.prevent="buscar" class="flex gap-3">
@@ -181,7 +181,7 @@
         </div>
       </div>
 
-      <!-- Lado Derecho: Lista de Seleccionados -->
+      
       <div class="rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/3 flex flex-col h-[calc(100vh-200px)] lg:h-auto lg:min-h-[600px]">
         <div class="border-b border-gray-200 px-5 py-4 dark:border-gray-800 flex items-center justify-between">
           <div>

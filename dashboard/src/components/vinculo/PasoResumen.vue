@@ -6,7 +6,7 @@
     </div>
 
     <div class="p-5 space-y-5">
-      <!-- Plaza -->
+      
       <div class="rounded-lg border border-gray-200 p-4 dark:border-gray-700">
         <div class="flex items-center gap-2 mb-3">
           <MapPin class="h-4 w-4 text-brand-500" />
@@ -32,7 +32,7 @@
         </div>
       </div>
 
-      <!-- Área y Cargo (asignados manualmente) -->
+      
       <div v-if="necesitaAreaCargo && (areaSeleccionada || cargoSeleccionado)" class="rounded-lg border border-gray-200 p-4 dark:border-gray-700">
         <div class="flex items-center gap-2 mb-3">
           <Building class="h-4 w-4 text-brand-500" />
@@ -50,7 +50,7 @@
         </div>
       </div>
 
-      <!-- Persona -->
+      
       <div class="rounded-lg border border-gray-200 p-4 dark:border-gray-700">
         <div class="flex items-center gap-2 mb-3">
           <User class="h-4 w-4 text-brand-500" />
@@ -100,7 +100,7 @@
         </div>
       </div>
 
-      <!-- Documento -->
+      
       <div class="rounded-lg border border-gray-200 p-4 dark:border-gray-700">
         <div class="flex items-center gap-2 mb-3">
           <FileText class="h-4 w-4 text-brand-500" />

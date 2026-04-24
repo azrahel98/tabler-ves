@@ -14,7 +14,7 @@
       </div>
     </div>
 
-    <!-- Leyenda Personalizada -->
+    
     <div class="mt-4 flex flex-wrap gap-x-6 gap-y-3 justify-center">
       <div v-for="(regimen, index) in store.resumen?.por_regimen" :key="index" class="flex items-center gap-2">
         <span class="block h-3 w-3 rounded-full shrink-0" :style="{ backgroundColor: colorPara(regimen.nombre) }"></span>
@@ -40,16 +40,16 @@
 
   const store = useTableroStore()
 
-  // Mapeo semántico de colores basado en el Design System (Índigo)
-  // Nota: Chart.js requiere valores Hex/RGB ya que no resuelve variables CSS en Canvas
+  
+  
   const mappingColores: Record<string, string> = {
-    'D. Leg. Nº 276':      '#3641f5', // Indigo 600 (Principal)
-    'D. Leg. Nº 728':      '#252dae', // Indigo 800 (Profundo)
-    'D.L 1057':     '#7592ff', // Indigo 400 (CAS - Tono claro)
-    'D.L 1057-F':   '#9cb9ff', // Indigo 300 (Variante CAS)
-    'D.L 1057 - T': '#465fff', // Indigo 500 (Variante CAS)
+    'D. Leg. Nº 276':      '#3641f5', 
+    'D. Leg. Nº 728':      '#252dae', 
+    'D.L 1057':     '#7592ff', 
+    'D.L 1057-F':   '#9cb9ff', 
+    'D.L 1057 - T': '#465fff', 
   }
-  const colorPorDefecto = '#98a2b3' // Gray 400
+  const colorPorDefecto = '#98a2b3' 
 
 
   const chartData = computed(() => {
@@ -71,7 +71,7 @@
     }
   })
 
-  // Funciones auxiliares para la leyenda personalizada
+  
   const colorPara = (nombre: string) => {
     return mappingColores[nombre] || colorPorDefecto
   }
@@ -89,7 +89,7 @@
     maintainAspectRatio: false,
     plugins: {
       legend: {
-        display: false, // Ocultar la leyenda por defecto de Chart.js
+        display: false, 
       },
     },
     layout: {

@@ -1,7 +1,7 @@
 <template>
   <div class="rounded-2xl border border-gray-100 bg-card h-min p-6 dark:border-white/6 dark:bg-white/3">
 
-    <!-- Header -->
+    
     <div class="flex items-center justify-between gap-2 text-xs font-bold uppercase tracking-wider text-gray-800 dark:text-white/90 mb-5">
       <div class="flex items-center gap-2">
         <svg class="h-5 w-5 text-primary" fill="currentColor" viewBox="0 0 24 24">
@@ -20,17 +20,17 @@
       </button>
     </div>
 
-    <!-- Tarjeta visual -->
+    
     <div v-if="infoBancaria">
       <div class="relative rounded-2xl p-5 overflow-hidden text-white" style="background: linear-gradient(135deg, #3641f5 0%, #465fff 50%, #7592ff 100%);">
 
-        <!-- Círculos decorativos -->
+        
         <div class="absolute -top-6 -right-6 h-28 w-28 rounded-full bg-white/10"></div>
         <div class="absolute -bottom-8 -right-2 h-36 w-36 rounded-full bg-white/[0.07]"></div>
 
-        <!-- Chip + tipo cuenta -->
+        
         <div class="relative flex items-center justify-between mb-5">
-          <!-- Chip EMV -->
+          
           <div class="h-8 w-11 rounded-md bg-gradient-to-br from-yellow-300 to-yellow-500 grid grid-cols-3 grid-rows-3 gap-px p-1 shadow-inner">
             <div class="col-span-3 rounded-sm bg-yellow-200/60"></div>
             <div class="rounded-sm bg-yellow-200/60"></div>
@@ -43,7 +43,7 @@
           </span>
         </div>
 
-        <!-- Número de cuenta -->
+        
         <div class="relative mb-4">
           <p class="text-[9px] font-semibold uppercase tracking-widest text-white/50 mb-1">Número de Cuenta</p>
           <p class="font-mono text-base font-bold tracking-widest text-white">
@@ -51,7 +51,7 @@
           </p>
         </div>
 
-        <!-- Banco + estado -->
+        
         <div class="relative flex items-end justify-between">
           <div>
             <p class="text-[9px] font-semibold uppercase tracking-widest text-white/50 mb-0.5">Banco</p>
@@ -68,7 +68,7 @@
         </div>
       </div>
 
-      <!-- CCI debajo de la tarjeta -->
+      
       <div v-if="infoBancaria.cci" class="mt-4 flex items-center justify-between rounded-xl bg-gray-50 dark:bg-white/[0.03] border border-gray-100 dark:border-gray-800 px-4 py-3">
         <div>
           <p class="text-[9px] font-semibold uppercase tracking-widest text-gray-400 mb-0.5">CCI</p>

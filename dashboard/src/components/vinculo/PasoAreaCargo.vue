@@ -11,7 +11,7 @@
       </div>
 
       <template v-else>
-        <!-- Régimen (solo lectura, viene de la plaza) -->
+        
         <div v-if="plaza?.regimen" class="rounded-lg border border-gray-200 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-800/50">
           <div class="flex items-center gap-2 mb-2">
             <Shield class="h-4 w-4 text-brand-500" />
@@ -21,7 +21,7 @@
           <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">ID: {{ plaza.regimen_id }}</p>
         </div>
 
-        <!-- Área -->
+        
         <div>
           <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Área *</label>
           <SearchableSelect
@@ -32,7 +32,7 @@
           />
         </div>
 
-        <!-- Cargo -->
+        
         <div>
           <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Cargo *</label>
           <SearchableSelect
@@ -43,7 +43,7 @@
           />
         </div>
 
-        <!-- Resumen de selección -->
+        
         <div v-if="areaSeleccionada && cargoSeleccionado" class="rounded-lg border border-brand-200 bg-brand-50 p-4 dark:border-brand-800 dark:bg-brand-500/10">
           <div class="flex items-center gap-2 mb-3">
             <Check class="h-5 w-5 text-brand-600 dark:text-brand-400" />

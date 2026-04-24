@@ -96,7 +96,7 @@ pub async fn upload_file(
             })?;
 
             let mut current_size: usize = 0;
-            let max_file_size: usize = 10 * 1024 * 1024; // 10 MB
+            let max_file_size: usize = 10 * 1024 * 1024; 
 
             while let Some(chunk) = field
                 .try_next()
@@ -105,7 +105,7 @@ pub async fn upload_file(
             {
                 current_size += chunk.len();
                 if current_size > max_file_size {
-                    // Intenta eliminar el archivo parcial si se excede el tamaño
+                    
                     let _ = std::fs::remove_file(&file_path);
                     return Err(ApiError::InternalError(
                         "El archivo no debe pesar más de 10 MB".to_string(),
@@ -228,8 +228,8 @@ pub async fn eliminar_archivo(
             std::env::var("UPLOAD_DIR").unwrap_or_else(|_| "./uploads".to_string());
         let mut file_path = std::path::PathBuf::from(upload_dir_str);
 
-        // record.file_hash can be an Option<String> because CAST can return NULL if value is NULL,
-        // but since file_hash is NOT NULL, we can safely unwrap or map.
+        
+        
         let file_hash_str = record.file_hash.unwrap_or_else(|| "unknown".to_string());
         let extension = record.extension.unwrap_or_else(|| "pdf".to_string());
 
@@ -379,7 +379,7 @@ pub async fn upload_batch(
             .to_string();
 
         let mut val = Vec::new();
-        // Solo leemos el buffer si NO es el archivo, para no cargar archivos grandes en memoria
+        
         if field_name != "file" && field_name != "archivo" {
             while let Some(chunk) = field.try_next().await.map_err(|e| ApiError::InternalError(format!("Error reading chunk: {}", e)))? {
                 val.extend_from_slice(&chunk);
@@ -448,7 +448,7 @@ pub async fn upload_batch(
                 })?;
 
                 let mut current_size: usize = 0;
-                let max_file_size: usize = 20 * 1024 * 1024; // 20 MB
+                let max_file_size: usize = 20 * 1024 * 1024; 
 
                 while let Some(chunk) = field.try_next().await.map_err(|e| ApiError::InternalError(format!("Error reading file chunk: {}", e)))? {
                     current_size += chunk.len();
@@ -466,7 +466,7 @@ pub async fn upload_batch(
 
     let (orig_name, hash, ext) = saved_file.ok_or_else(|| ApiError::InternalError("No se recibió ningún archivo".to_string()))?;
     
-    // Si se proporcionó un nombre personalizado, lo usamos. Si no, usamos el original.
+    
     let mut nombre_final = nombre_archivo.unwrap_or(orig_name);
     if !nombre_final.to_lowercase().ends_with(".pdf") {
         nombre_final = format!("{}.pdf", nombre_final);
@@ -479,7 +479,7 @@ pub async fn upload_batch(
 
     let mut tx = data.db.begin().await.map_err(|e| ApiError::InternalError(format!("Transaction error: {}", e)))?;
 
-    // 1. Insertar el documento formal
+    
     let doc_result = sqlx::query!(
         r#"
         INSERT INTO documento (tipo_documento_id, numero, year, fecha, fecha_valida, descripcion)
@@ -498,7 +498,7 @@ pub async fn upload_batch(
 
     let new_documento_id = doc_result.last_insert_id() as i32;
 
-    // 2. Vincular el archivo a cada DNI en fileserver
+    
     for dni in &dnis {
         sqlx::query!(
             r#"

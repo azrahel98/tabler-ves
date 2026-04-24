@@ -1,7 +1,7 @@
 <template>
   <div class="grid grid-cols-2 gap-4 lg:grid-cols-4 md:gap-6">
 
-    <!-- Total Personal -->
+    
     <div class="rounded-2xl border border-gray-200 bg-card p-5 dark:border-gray-800 dark:bg-white/3">
       <div class="flex items-center justify-between">
         <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-brand-50 dark:bg-brand-500/10">
@@ -27,7 +27,7 @@
       </div>
     </div>
 
-    <!-- Personal Activo -->
+    
     <div class="rounded-2xl border border-gray-200 bg-card p-5 dark:border-gray-800 dark:bg-white/3">
       <div class="flex items-center justify-between">
         <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-success-50 dark:bg-success-500/10">
@@ -50,7 +50,7 @@
       </div>
     </div>
 
-    <!-- Nuevos Ingresos -->
+    
     <div class="rounded-2xl border border-gray-200 bg-card p-5 dark:border-gray-800 dark:bg-white/3">
       <div class="flex items-center justify-between">
         <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-warning-50 dark:bg-warning-500/10">
@@ -72,7 +72,7 @@
       </div>
     </div>
 
-    <!-- Renuncias del Año -->
+    
     <div class="rounded-2xl border border-gray-200 bg-card p-5 dark:border-gray-800 dark:bg-white/3">
       <div class="flex items-center justify-between">
         <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-error-50 dark:bg-error-500/10">

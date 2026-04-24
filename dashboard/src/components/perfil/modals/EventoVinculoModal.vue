@@ -1,9 +1,9 @@
 <template>
   <Modal :isOpen="isOpen" title="Evento de Vínculo" @close="cerrar" maxWidth="sm:max-w-xl">
     <div class="space-y-5">
-      <!-- ======================== MODO: EVENTO ACTIVO → DESACTIVAR ======================== -->
+      
       <template v-if="hayEventoActivo">
-        <!-- Resumen del evento activo -->
+        
         <div class="rounded-xl border border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-900/20 p-4">
           <div class="flex items-center gap-2 mb-3">
             <Activity class="h-4 w-4 text-blue-500" />
@@ -25,7 +25,7 @@
           </div>
         </div>
 
-        <!-- Aviso -->
+        
         <div class="flex items-start gap-2 rounded-lg bg-amber-50 border border-amber-200 dark:bg-amber-900/20 dark:border-amber-800 p-3">
           <AlertTriangle class="h-4 w-4 text-amber-500 mt-0.5 shrink-0" />
           <p class="text-xs text-amber-700 dark:text-amber-400">
@@ -33,7 +33,7 @@
           </p>
         </div>
 
-        <!-- Documento de salida -->
+        
         <div>
           <p class="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-3">Documento de Cierre</p>
 
@@ -91,9 +91,9 @@
         </div>
       </template>
 
-      <!-- ======================== MODO: REGISTRAR NUEVO EVENTO ======================== -->
+      
       <template v-else>
-        <!-- Selector de tipo -->
+        
         <div>
           <p class="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-3">¿Qué deseas registrar?</p>
           <div class="grid grid-cols-2 gap-3">
@@ -125,10 +125,10 @@
           </div>
         </div>
 
-        <!-- Formulario de nuevo evento -->
+        
         <Transition name="deslizar">
           <div v-if="tipoEvento" class="space-y-4 border-t border-gray-100 dark:border-gray-800 pt-4">
-            <!-- Nueva Área: solo en rotación -->
+            
             <div v-if="tipoEvento === 'rotacion'">
               <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"> Nueva Área <span class="text-red-500">*</span> </label>
               <select
@@ -142,7 +142,7 @@
               </select>
             </div>
 
-            <!-- Documento de soporte -->
+            
             <div>
               <p class="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-3">Documento de Soporte</p>
 
@@ -213,7 +213,7 @@
 
     <template #footer>
       <div class="flex w-full flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-        <!-- Eliminar evento (solo cuando hay evento activo) -->
+        
         <button
           v-if="hayEventoActivo"
           type="button"
@@ -226,7 +226,7 @@
         <div v-else class="hidden sm:block"></div>
 
         <div class="flex flex-col gap-2 sm:flex-row">
-          <!-- Botón principal -->
+          
           <button
             type="button"
             @click="guardar"
@@ -276,7 +276,7 @@
   const personalStore = usePersonalStore()
   const { documentos } = storeToRefs(tableroStore)
 
-  // Estado general
+  
   const tipoEvento = ref<'abandono' | 'rotacion' | null>(null)
   const guardando = ref(false)
   const cargandoDocumentos = ref(false)
@@ -284,10 +284,10 @@
   const areas = ref<any[]>([])
   let datosCargados = false
 
-  // Hay evento activo si el vinculo ya tiene tipo_evento asignado
+  
   const hayEventoActivo = computed(() => !!props.eventoActual?.tipo_evento)
 
-  // Formulario para registrar nuevo evento
+  
   const formulario = ref({
     tipoDocumento: '' as string | number,
     numeroDocumento: null as number | null,
@@ -298,7 +298,7 @@
     nuevaAreaId: null as number | null,
   })
 
-  // Formulario para documento de salida (desactivar evento)
+  
   const formularioSalida = ref({
     tipoDocumento: '' as string | number,
     numeroDocumento: null as number | null,
@@ -307,7 +307,7 @@
     descripcion: '',
   })
 
-  // Validación del botón guardar según el modo
+  
   const puedeGuardar = computed(() => {
     if (hayEventoActivo.value) {
       return !!formularioSalida.value.fecha && !!formularioSalida.value.descripcion.trim()
@@ -318,7 +318,7 @@
     return true
   })
 
-  // Carga de datos al abrir el modal
+  
   watch(
     () => props.isOpen,
     async (abierto) => {

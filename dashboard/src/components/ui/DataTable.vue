@@ -1,13 +1,13 @@
 <template>
   <div class="rounded-2xl border border-gray-100 bg-card dark:border-white/6 dark:bg-white/3 overflow-hidden">
-    <!-- Cabecera con título y buscador -->
+    
     <div class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-100 dark:border-white/6 px-5 py-4">
       <div>
         <h3 v-if="titulo" class="text-base font-semibold text-gray-800 dark:text-white/90">{{ titulo }}</h3>
         <p v-if="subtitulo" class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{{ subtitulo }}</p>
       </div>
       <div class="flex items-center gap-2">
-        <!-- Buscador -->
+        
         <div class="relative">
           <Search class="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400" />
           <input
@@ -16,7 +16,7 @@
             :placeholder="placeholderBusqueda"
             class="w-56 rounded-lg border border-gray-100 bg-surface py-2 pl-8 pr-3 text-sm text-gray-800 placeholder:text-gray-400 focus:border-primary/40 focus:outline-none focus:ring-2 focus:ring-primary/10 dark:border-white/6 dark:bg-white/5 dark:text-white dark:placeholder:text-gray-500" />
         </div>
-        <!-- Selector de filas por página -->
+        
         <select
           v-model="filasPorPagina"
           class="rounded-lg border border-gray-100 bg-surface py-2 px-2 text-sm text-gray-700 focus:outline-none dark:border-white/6 dark:bg-white/5 dark:text-gray-300">
@@ -25,10 +25,10 @@
       </div>
     </div>
 
-    <!-- Tabla -->
+    
     <div class="overflow-x-auto">
       <table class="w-full text-sm">
-        <!-- Encabezados -->
+        
         <thead>
           <tr class="border-b border-gray-100 dark:border-white/6 bg-surface dark:bg-white/3">
             <th
@@ -49,7 +49,7 @@
           </tr>
         </thead>
 
-        <!-- Cuerpo -->
+        
         <tbody v-if="filasPagina.length > 0">
           <tr
             v-for="(fila, idx) in filasPagina"
@@ -58,7 +58,7 @@
             class="border-b border-gray-100 text-xs dark:border-white/5 last:border-none transition-colors"
             :class="clickable ? 'cursor-pointer hover:bg-primary/5 dark:hover:bg-white/5' : ''">
             <td v-for="col in columnas" :key="col.clave" class="px-4 py-3 text-gray-700 dark:text-gray-300">
-              <!-- Slot personalizado para la celda -->
+              
               <slot :name="`celda-${col.clave}`" :fila="fila" :valor="fila[col.clave]">
                 {{ fila[col.clave] ?? '—' }}
               </slot>
@@ -66,7 +66,7 @@
           </tr>
         </tbody>
 
-        <!-- Sin resultados -->
+        
         <tbody v-else>
           <tr>
             <td :colspan="columnas.length" class="px-4 py-14 text-center">
@@ -82,7 +82,7 @@
       </table>
     </div>
 
-    <!-- Pie: info de paginación y navegación -->
+    
     <div v-if="totalFilasFiltradas > 0" class="flex flex-wrap items-center justify-between gap-3 border-t border-gray-100 dark:border-white/6 px-5 py-3">
       <p class="text-xs text-gray-400 dark:text-gray-500">
         Mostrando
@@ -148,16 +148,16 @@
   import { ref, computed, watch } from 'vue'
   import { Search, SearchX, ArrowUp, ArrowDown, ArrowUpDown, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-vue-next'
 
-  // ─── Tipos ────────────────────────────────────────────────
+  
   interface Columna {
     clave: string
     titulo: string
     ancho?: string
     ordenable?: boolean
-    busqueda?: boolean // si false, se excluye de la búsqueda global
+    busqueda?: boolean 
   }
 
-  // ─── Props ────────────────────────────────────────────────
+  
   const props = withDefaults(
     defineProps<{
       columnas: Columna[]
@@ -179,17 +179,17 @@
     (e: 'click-fila', fila: any): void
   }>()
 
-  // ─── Estado ───────────────────────────────────────────────
+  
   const busqueda = ref('')
   const paginaActual = ref(1)
   const filasPorPagina = ref(15)
   const columnaOrden = ref<string | null>(null)
   const direccionOrden = ref<'asc' | 'desc'>('asc')
 
-  // Reiniciar página al cambiar búsqueda o tamaño
+  
   watch([busqueda, filasPorPagina], () => (paginaActual.value = 1))
 
-  // ─── Lógica ───────────────────────────────────────────────
+  
   function ordenarPor(clave: string) {
     const col = props.columnas.find((c) => c.clave === clave)
     if (col?.ordenable === false) return
@@ -240,7 +240,7 @@
     return filasFiltradas.value.slice(inicio, inicio + filasPorPagina.value)
   })
 
-  // Páginas visibles en el paginador (con puntos suspensivos)
+  
   const paginasVisibles = computed<(number | '…')[]>(() => {
     const total = totalPaginas.value
     const actual = paginaActual.value

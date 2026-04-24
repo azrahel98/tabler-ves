@@ -17,7 +17,7 @@
       </div>
     </Transition>
 
-    <!-- Stepper -->
+    
     <div class="mb-6 overflow-x-auto">
       <div class="flex items-center justify-between min-w-[500px]">
         <div v-for="(nombre, indice) in pasosNombres" :key="indice" class="flex items-center" :class="{ 'flex-1': indice < pasosNombres.length - 1 }">
@@ -40,7 +40,7 @@
       </div>
     </div>
 
-    <!-- Contenido del paso actual -->
+    
     <Transition name="slide" mode="out-in">
       <PasoBuscarPlaza v-if="pasoActualId === 'plaza'" key="plaza" />
       <PasoAreaCargo v-else-if="pasoActualId === 'area-cargo'" key="area-cargo" />

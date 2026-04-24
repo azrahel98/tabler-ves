@@ -1,7 +1,7 @@
 <template>
   <div v-if="vinculos.length > 0" class="rounded-2xl border border-gray-100 bg-card dark:border-white/6 dark:bg-white/3">
 
-    <!-- Header -->
+    
     <div class="flex items-center justify-between px-5 py-4 border-b border-gray-100 dark:border-white/6">
       <div class="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-gray-800 dark:text-white/90">
         <Briefcase class="h-4 w-4 text-primary shrink-0" />
@@ -33,7 +33,7 @@
             :key="v.id"
             class="hover:bg-primary/5 dark:hover:bg-white/5 transition-colors">
 
-            <!-- Estado -->
+            
             <td class=" pl-4 middle text-start ">
               <span
                 class="inline-block h-2.5 w-2.5 rounded-full"
@@ -42,18 +42,18 @@
               </span>
             </td>
 
-            <!-- Área / Cargo -->
+            
             <td class=" pl-2  py-3.5 max-w-[220px]">
               <p class="text-sm font-medium text-gray-800 dark:text-white truncate" :title="v.cargo ?? undefined">{{ v.cargo }}</p>
               <p class="text-xs text-gray-400 dark:text-gray-500 truncate mt-0.5" :title="v.area ?? undefined">{{ v.area }}</p>
             </td>
 
-            <!-- Régimen -->
+            
             <td class="px-5 py-3.5">
               <span class="text-sm text-gray-500 dark:text-gray-400 whitespace-nowrap">{{ v.regimen }}</span>
             </td>
 
-            <!-- Período -->
+            
             <td class="px-5 py-3.5 whitespace-nowrap">
               <span class="text-sm text-gray-600 dark:text-gray-300">{{ format(addDays(new Date(v.fecha_ingreso),1),'dd/MM/yyyy') }}</span>
               <span class="mx-1.5 text-gray-300 dark:text-gray-600">→</span>
@@ -63,12 +63,12 @@
               </span>
             </td>
 
-            <!-- Sueldo -->
+            
             <td class="px-5 py-3.5 text-right whitespace-nowrap">
               <span class="text-sm font-semibold text-gray-800 dark:text-white">S/ {{ v.sueldo }}</span>
             </td>
 
-            <!-- Info -->
+            
             <td class="px-5 py-3.5 text-center">
               <Popover posicion="abajo" alineacion="fin" ancho="320px" :mostrarFlecha="true" :mostrarCerrar="true" titulo="Información Adicional">
                 <template #disparador>
@@ -136,7 +136,7 @@
               </Popover>
             </td>
 
-            <!-- Acciones admin -->
+            
             <td class="px-3 py-3.5 text-center" v-if="esAdmin">
               <Popover posicion="abajo" alineacion="fin" ancho="160px" :mostrarCerrar="false" :mostrarFlecha="false">
                 <template #disparador>
@@ -169,11 +169,11 @@
       </table>
     </div>
 
-    <!-- Cards mobile -->
+    
     <div class="md:hidden divide-y divide-gray-100 dark:divide-gray-800">
       <div v-for="v in vinculos" :key="v.id" class="px-5 py-4 space-y-3">
 
-        <!-- Fila superior: cargo + badges -->
+        
         <div class="flex items-start justify-between gap-3">
           <div class="min-w-0">
             <p class="text-sm font-semibold text-gray-800 dark:text-white truncate">{{ v.cargo }}</p>
@@ -269,7 +269,7 @@
           </div>
         </div>
 
-        <!-- Grid de datos -->
+        
         <div class="grid grid-cols-2 gap-x-4 gap-y-2.5 pt-3 border-t border-gray-100 dark:border-gray-800">
           <div>
             <p class="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">Régimen</p>

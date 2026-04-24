@@ -1,7 +1,7 @@
 <template>
   <main>
     <div class="p-4 pt-1 mx-auto max-w-(--breakpoint-2xl) md:p-6">
-      <!-- Encabezado -->
+      
       <div class="mb-6 flex flex-wrap items-center justify-between gap-4">
         <div class="flex items-center gap-3">
           <button
@@ -34,13 +34,13 @@
         </div>
       </div>
 
-      <!-- Estado: cargando -->
+      
       <div v-if="cargando" class="flex flex-col items-center gap-3 py-20">
         <Loading size="md" />
         <span class="text-sm text-gray-500 dark:text-gray-400">Cargando personal del sindicato…</span>
       </div>
 
-      <!-- Estado: sin afiliados -->
+      
       <div v-else-if="listaCompleta.length === 0" class="flex flex-col items-center justify-center py-20 text-center">
         <UserX class="h-16 w-16 text-gray-300 dark:text-gray-600 mb-4" />
         <p class="text-lg font-semibold text-gray-600 dark:text-gray-400">Sin afiliados activos</p>
@@ -50,14 +50,14 @@
         </p>
       </div>
 
-      <!-- Contenido principal -->
+      
       <template v-else>
-        <!-- Gráfico de distribución por régimen -->
+        
         <div class="mb-6 max-w-sm">
           <GraficoRegimen :trabajadores="listaCompleta" />
         </div>
 
-        <!-- DataTable -->
+        
         <DataTable
           :columnas="columnas"
           :filas="listaCompleta"
@@ -65,7 +65,7 @@
           subtitulo="Haga clic en una fila para ver el perfil completo"
           placeholder-busqueda="Buscar por nombre, DNI, cargo o área..."
           @click-fila="(t) => router.push({ name: 'personal-profile', params: { dni: t.dni } })">
-          <!-- Celda: nombre con avatar -->
+          
           <template #celda-nombre="{ fila }">
             <div class="flex items-center gap-3">
               <img
@@ -76,7 +76,7 @@
             </div>
           </template>
 
-          <!-- Celda: estado -->
+          
           <template #celda-estado="{ valor }">
             <span
               class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium"
@@ -85,7 +85,7 @@
             </span>
           </template>
 
-          <!-- Celda: régimen -->
+          
           <template #celda-regimen="{ valor }">
             <span v-if="valor" class="inline-flex items-center rounded-full bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-700 dark:bg-blue-500/10 dark:text-blue-400">
               {{ valor }}
@@ -111,7 +111,7 @@
   const route = useRoute()
   const router = useRouter()
 
-  // El nombre del sindicato viene codificado en la URL (ej: /sindicato/SITRAMUN)
+  
   const nombreDelSindicato = computed(() => decodeURIComponent(String(route.params.nombre)))
 
   const reportesStore = useReportesStore()

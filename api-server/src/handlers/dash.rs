@@ -264,7 +264,7 @@ where
         .iter()
         .map(|row| {
             let ingreso: NaiveDate = row.get("ingreso");
-            let renuncia: Option<NaiveDate> = row.try_get("renuncia").ok(); // puede ser NULL
+            let renuncia: Option<NaiveDate> = row.try_get("renuncia").ok(); 
 
             json!({
                 "dni": row.get::<String, _>("dni"),
@@ -586,29 +586,29 @@ ORDER BY a.nombre, p.apaterno
 
     let formato_cabecera = Format::new().set_bold();
     let cabeceras = [
-        "UNIDAD_ORGANICA",             // 0
-        "CODIGO_PUESTO_CPE",           // 1
-        "ESTADO",                      // 2
-        "NUMERO_DOCUMENTO_IDENTIDAD",  // 3
-        "APELLIDO_PATERNO",            // 4
-        "APELLIDO_MATERNO",            // 5
-        "NOMBRES",                     // 6
-        "CODIGO_SEXO",                 // 7
-        "DESC_SEXO",                   // 8
-        "FECHA_NACIMIENTO",            // 9
-        "FECHA_INGRESO_PERSONAL",      // 10
-        "REGIMEN_LABORAL",             // 11
-        "CONDICION_LABORAL",           // 12
-        "CODIGO_GRUPO_OCUPACIONAL",    // 13
-        "GRUPO_OCUPACIONAL",           // 14
-        "CODIGO_CARGO_ESTRUCTURAL",    // 15
-        "CARGO_ESTRUCTURAL",           // 16
-        "CARGO_FUNCIONAL",             // 17
-        "ENTIDAD_FINANCIERA",          // 18
-        "TIPO_CUENTA_FINANCIERA",      // 19
-        "NUMERO_CUENTA_FINANCIERA",    // 20
-        "CODIGO_CUENTA_INTERBANCARIA", // 21
-        "SUELDO",                      // 22,
+        "UNIDAD_ORGANICA",             
+        "CODIGO_PUESTO_CPE",           
+        "ESTADO",                      
+        "NUMERO_DOCUMENTO_IDENTIDAD",  
+        "APELLIDO_PATERNO",            
+        "APELLIDO_MATERNO",            
+        "NOMBRES",                     
+        "CODIGO_SEXO",                 
+        "DESC_SEXO",                   
+        "FECHA_NACIMIENTO",            
+        "FECHA_INGRESO_PERSONAL",      
+        "REGIMEN_LABORAL",             
+        "CONDICION_LABORAL",           
+        "CODIGO_GRUPO_OCUPACIONAL",    
+        "GRUPO_OCUPACIONAL",           
+        "CODIGO_CARGO_ESTRUCTURAL",    
+        "CARGO_ESTRUCTURAL",           
+        "CARGO_FUNCIONAL",             
+        "ENTIDAD_FINANCIERA",          
+        "TIPO_CUENTA_FINANCIERA",      
+        "NUMERO_CUENTA_FINANCIERA",    
+        "CODIGO_CUENTA_INTERBANCARIA", 
+        "SUELDO",                      
         "SINDICATO",
     ];
 
@@ -815,9 +815,9 @@ pub async fn reporte_eventos(data: web::Data<AppState>) -> Result<impl Responder
     Ok(HttpResponse::Ok().json(resultado))
 }
 
-// ===========================================================================
-// COMPARADOR PLANILLA PROPIA vs MEF
-// ===========================================================================
+
+
+
 
 struct DatosMef {
     codigo_registro: String,
@@ -832,7 +832,7 @@ struct DatosMef {
     tipo_cuenta: String,
     num_cuenta: String,
     cci: String,
-    regimen: String, // "CAS" | "276" | "728" | "276/728"
+    regimen: String, 
     codigo_grupo_ocupacional: String,
     codigo_cargo_estructural: String,
 }
@@ -862,7 +862,7 @@ fn mef_celda_fecha(cell: &calamine::Data) -> String {
             if s.is_empty() {
                 return String::new();
             }
-            // ISO YYYY-MM-DD o YYYY-MM-DDThh:mm:ss
+            
             if s.len() >= 10 && s.as_bytes().get(4) == Some(&b'-') {
                 return format!("{}/{}/{}", &s[8..10], &s[5..7], &s[0..4]);
             }
@@ -903,9 +903,9 @@ fn mef_get_cell(row: &[calamine::Data], col: Option<usize>, es_fecha: bool) -> S
     }
 }
 
-/// Parsea una hoja MEF y construye el diccionario DNI -> DatosMef.
-/// `regimen_default` se aplica cuando el archivo no tiene columna de régimen
-/// (p.ej. el archivo CAS es siempre "CAS").
+
+
+
 fn mef_parsear_hoja(
     range: &calamine::Range<calamine::Data>,
     regimen_default: &str,
@@ -961,7 +961,7 @@ fn mef_parsear_hoja(
     let col_cci = col_map.get("CODIGO_CUENTA_INTERBANCARIA").copied();
     let col_grupo_ocup = col_map.get("CODIGO_GRUPO_OCUPACIONAL").copied();
     let col_cargo_estr = col_map.get("CODIGO_CARGO_ESTRUCTURAL").copied();
-    // Columna opcional de régimen (presente en el archivo 276/728)
+    
     let col_regimen = col_map
         .get("REGIMEN_LABORAL")
         .or_else(|| col_map.get("CODIGO_REGIMEN_LABORAL"))
@@ -979,7 +979,7 @@ fn mef_parsear_hoja(
             continue;
         }
         if dict.contains_key(&dni) {
-            continue; // primer duplicado gana
+            continue; 
         }
 
         let regimen = if let Some(ci) = col_regimen {
@@ -1026,9 +1026,9 @@ pub async fn comparar_mef(
     use std::collections::HashMap;
     use std::io::Cursor;
 
-    // 1. Leer los 2 archivos MEF desde el multipart
-    //    "archivo_cas"   -> régimen CAS
-    //    "archivo_otros" -> régimen 276/728 (columna interna distingue 276 vs 728)
+    
+    
+    
     let mut bytes_cas: Vec<u8> = Vec::new();
     let mut bytes_otros: Vec<u8> = Vec::new();
 
@@ -1046,7 +1046,7 @@ pub async fn comparar_mef(
         let buf: &mut Vec<u8> = match field_name.as_str() {
             "archivo_cas" => &mut bytes_cas,
             "archivo_otros" => &mut bytes_otros,
-            // compatibilidad con llamadas de un solo archivo
+            
             "archivo" | "file" => &mut bytes_cas,
             _ => {
                 while field
@@ -1074,7 +1074,7 @@ pub async fn comparar_mef(
         ));
     }
 
-    // 2. Parsear cada archivo y unificar en un solo diccionario
+    
     let mut dict_mef: HashMap<String, DatosMef> = HashMap::new();
 
     if !bytes_cas.is_empty() {
@@ -1106,13 +1106,13 @@ pub async fn comparar_mef(
         let range = wb
             .worksheet_range(&sheet)
             .map_err(|e| ApiError::InternalError(format!("Error leyendo hoja 276/728: {}", e)))?;
-        // CAS tiene prioridad si un DNI aparece en ambos archivos
+        
         for (dni, datos) in mef_parsear_hoja(&range, "276/728")? {
             dict_mef.entry(dni).or_insert(datos);
         }
     }
 
-    // 3. Consultar datos propios de la BD (incluyendo régimen, grupo y cargo)
+    
     let filas_bd = sqlx::query(
         r#"
         SELECT
@@ -1154,7 +1154,7 @@ pub async fn comparar_mef(
         ApiError::InternalError("Error al consultar datos propios".into())
     })?;
 
-    // 5. Comparar registro por registro
+    
     let etiquetas = [
         "CODIGO_REGISTRO",
         "APELLIDO_PATERNO",
@@ -1178,7 +1178,7 @@ pub async fn comparar_mef(
     let mut total_no_en_sistema: u64 = 0;
     let mut counter: u64 = 0;
 
-    // Conjunto de DNIs presentes en la BD (para detectar MEF no en sistema)
+    
     let mut dnis_sistema: std::collections::HashSet<String> = std::collections::HashSet::new();
 
     for fila in &filas_bd {
@@ -1250,7 +1250,7 @@ pub async fn comparar_mef(
             for i in 0..etiquetas.len() {
                 let vp = &valores_propios[i];
                 let vm = &valores_mef[i];
-                // Si ambos están vacíos no se cuenta como diferencia
+                
                 let igual = vp == vm || (vp.is_empty() && vm.is_empty());
                 if igual {
                     total_ok += 1;
@@ -1290,7 +1290,7 @@ pub async fn comparar_mef(
         }
     }
 
-    // 6. Registros del MEF que NO existen en el sistema
+    
     let mut counter_mef: u64 = 0;
     for (dni, datos) in &dict_mef {
         if !dnis_sistema.contains(dni) {
@@ -1327,9 +1327,9 @@ pub async fn comparar_mef(
     })))
 }
 
-// ===========================================================================
-// EXPORTAR COMPARACIÓN MEF → EXCEL
-// ===========================================================================
+
+
+
 
 #[derive(serde::Deserialize)]
 pub struct ExportarComparacionRequest {
@@ -1369,7 +1369,7 @@ pub async fn exportar_comparacion_mef(
         "#", "DNI", "NOMBRE", "RÉGIMEN", "CAMPO", "SISTEMA", "MEF", "ESTADO",
     ];
 
-    // Hojas: una por categoría + una con todo
+    
     let categorias: &[(&str, Option<&str>)] = &[
         ("DIFERENCIAS", Some("DIFERENCIA")),
         ("SOLO EN SISTEMA", Some("NO_EXISTE_EN_MEF")),
@@ -1389,11 +1389,11 @@ pub async fn exportar_comparacion_mef(
         }
         hoja.set_row_height(0, 18.0)
             .map_err(|e| ApiError::InternalError(format!("Error alto fila: {}", e)))?;
-        let _ = hoja.set_column_width(2, 35); // Nombre
-        let _ = hoja.set_column_width(4, 30); // Campo
-        let _ = hoja.set_column_width(5, 25); // Sistema
-        let _ = hoja.set_column_width(6, 25); // MEF
-        let _ = hoja.set_column_width(7, 22); // Estado
+        let _ = hoja.set_column_width(2, 35); 
+        let _ = hoja.set_column_width(4, 30); 
+        let _ = hoja.set_column_width(5, 25); 
+        let _ = hoja.set_column_width(6, 25); 
+        let _ = hoja.set_column_width(7, 22); 
 
         let mut fila_excel = 1u32;
 

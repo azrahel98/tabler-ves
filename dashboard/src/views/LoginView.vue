@@ -58,7 +58,7 @@ const handleLogin = async () => {
 <template>
   <div class="min-h-screen min-h-dvh flex items-center justify-center bg-surface dark:bg-gray-950 px-4 py-12">
 
-    <!-- Dark mode toggle -->
+    
     <button
       class="fixed top-5 right-5 inline-flex items-center justify-center w-9 h-9 rounded-lg border border-gray-100 bg-card text-gray-500 transition-colors duration-200 hover:bg-primary/5 hover:text-primary dark:border-white/6 dark:bg-white/3 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
       @click.prevent="configuracionStore.alternarModoOscuro()"
@@ -68,12 +68,12 @@ const handleLogin = async () => {
       <Moon v-else :size="17" />
     </button>
 
-    <!-- Card -->
+    
     <div
       class="w-full max-w-[400px] transition-all duration-500 ease-out"
       :class="mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'"
     >
-      <!-- Logo + branding -->
+      
       <div class="flex flex-col items-center mb-8">
         <div class="flex items-center justify-center w-12 h-12 rounded-2xl bg-primary mb-4">
           <img src="/logo-icon.svg" alt="Logo" class="w-7 h-7" />
@@ -86,7 +86,7 @@ const handleLogin = async () => {
         </p>
       </div>
 
-      <!-- Form card -->
+      
       <div class="rounded-2xl border border-gray-100 bg-card p-6 dark:border-white/6 dark:bg-white/3">
         <div class="mb-6">
           <h2 class="text-lg font-semibold text-gray-800 dark:text-white/90">
@@ -98,7 +98,7 @@ const handleLogin = async () => {
         </div>
 
         <form @submit.prevent="handleLogin" class="flex flex-col gap-4" novalidate>
-          <!-- Usuario -->
+          
           <div>
             <label
               for="login-nick"
@@ -128,7 +128,7 @@ const handleLogin = async () => {
             </div>
           </div>
 
-          <!-- Contraseña -->
+          
           <div>
             <label
               for="login-password"
@@ -167,7 +167,7 @@ const handleLogin = async () => {
             </div>
           </div>
 
-          <!-- Error -->
+          
           <Transition name="error-slide">
             <div
               v-if="errorMessage"
@@ -180,7 +180,7 @@ const handleLogin = async () => {
             </div>
           </Transition>
 
-          <!-- Submit -->
+          
           <button
             type="submit"
             :disabled="loading"
@@ -200,7 +200,7 @@ const handleLogin = async () => {
         </form>
       </div>
 
-      <!-- Footer -->
+      
       <div class="mt-5 flex items-center justify-center gap-1.5 text-xs text-gray-400 dark:text-gray-600">
         <Shield :size="12" class="shrink-0" />
         <span>Acceso seguro · Solo personal autorizado</span>
