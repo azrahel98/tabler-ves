@@ -67,12 +67,12 @@
   
   --text-title-xl: clamp(1.5rem, 1.8vw, 2rem);    
   --text-title-lg: clamp(1.25rem, 1.4vw, 1.6rem);  
-  --text-title-md: clamp(1.1rem, 1.2vw, 1.35rem);  
+  --text-title-md: clamp(1.1rem, 1.1vw, 1.18em);  
   --text-title-sm: clamp(1rem, 1.05vw, 1.15rem);   
 
   
   --text-xl: clamp(0.95rem, 1vw, 1.1rem);          
-  --text-sm: clamp(0.825rem, 0.8vw, 0.9rem);       
+  --text-sm: clamp(0.8rem, 0.75vw, 0.85rem);       
   --text-xs: clamp(0.75rem, 0.7vw, 0.8rem);        
   
   
@@ -325,10 +325,20 @@
   }
 
   html {
-    font-size: clamp(11px, 0.5vw + 7px, 13px);
+    font-size: 12px;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
+  }
+
+  @media (min-width: 640px) {
+    html { font-size: 13px; }
+  }
+  @media (min-width: 1280px) {
+    html { font-size: 13px; }
+  }
+  @media (min-width: 2000px) {
+    html { font-size: 14px; }
   }
 
   .dark * {
