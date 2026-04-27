@@ -55,7 +55,7 @@
       <td class="px-4 py-3 text-center">
         <span
           v-if="tieneHijos"
-          class="inline-flex items-center justify-center min-w-6 h-5.5 px-2 rounded-full text-[11px] font-bold"
+          class="inline-flex items-center justify-center min-w-6 h-5.5 px-2 rounded-full text-2xs font-bold"
           :class="nivelCountClasses">
           {{ nodo.subgerencias.length }}
         </span>
@@ -92,18 +92,18 @@
         </button>
 
         <span
-          class="flex items-center justify-center w-6 h-6 rounded-md text-[10px] font-bold shrink-0"
+          class="flex items-center justify-center w-6 h-6 rounded-md text-2xs font-bold shrink-0"
           :class="nivelBadgeClasses">
           {{ nodo.area.charAt(0) }}
         </span>
 
-        <span class="font-semibold text-[13px] text-gray-900 dark:text-gray-100 flex-1 min-w-0 truncate">
+        <span class="font-semibold text-sm text-gray-900 dark:text-gray-100 flex-1 min-w-0 truncate">
           {{ nodo.area }}
         </span>
 
         <span
           v-if="tieneHijos"
-          class="inline-flex items-center justify-center min-w-5 h-5 px-1.5 rounded-full text-[11px] font-bold shrink-0"
+          class="inline-flex items-center justify-center min-w-5 h-5 px-1.5 rounded-full text-2xs font-bold shrink-0"
           :class="nivelCountClasses">
           {{ nodo.subgerencias.length }}
         </span>
@@ -122,7 +122,7 @@
           <span class="truncate">{{ nodo.jefe || 'Sin asignar' }}</span>
         </div>
 
-        <span v-if="nodo.dni" class="font-mono text-[11px] text-gray-400 dark:text-gray-500 shrink-0">
+        <span v-if="nodo.dni" class="font-mono text-2xs text-gray-400 dark:text-gray-500 shrink-0">
           {{ nodo.dni }}
         </span>
       </div>

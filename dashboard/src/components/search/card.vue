@@ -15,7 +15,7 @@
     </div>
 
     <h4
-      class="mb-1 w-full truncate text-center text-md font-medium text-black transition-colors group-hover:text-primary dark:text-white dark:group-hover:text-primary"
+      class="mb-1 w-full truncate text-center text-sm font-semibold text-black transition-colors group-hover:text-primary dark:text-white dark:group-hover:text-primary"
       :title="person.nombre">
       {{ person.nombre }}
     </h4>

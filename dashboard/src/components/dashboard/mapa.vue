@@ -80,9 +80,9 @@
     const trabajadores = d?.trabajadores ?? 0
 
     return `
-    <div class="" style="system-ui;min-width:120px;padding:2px 0">
-      <div class="text-md font-semibold text-primary">${nombre}</div>
-      <div class="text-sm text-bold">${trabajadores}</div>
+    <div style="font-family:var(--font-inter);min-width:120px;padding:2px 0">
+      <div style="font-size:var(--text-title-sm);font-weight:600;color:var(--color-primary);line-height:1.3">${nombre}</div>
+      <div style="font-size:var(--text-sm);font-weight:600;color:var(--color-gray-800)">${trabajadores}</div>
       <div style="font-size:var(--text-xs);color:var(--color-gray-400)">activos &mdash; ${pct(trabajadores)}% del total</div>
     </div>`
   }

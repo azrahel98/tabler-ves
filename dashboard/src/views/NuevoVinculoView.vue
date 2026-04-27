@@ -2,7 +2,7 @@
   <div>
     <div class="flex flex-wrap items-center justify-between gap-3 mb-6">
       <div>
-        <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">Nuevo Vínculo Laboral</h3>
+        <h3 class="text-title-md font-semibold leading-snug text-gray-800 dark:text-white/90">Nuevo Vínculo Laboral</h3>
         <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Registre un nuevo trabajador asignándolo a una plaza vacante</p>
       </div>
     </div>

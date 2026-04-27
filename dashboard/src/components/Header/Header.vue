@@ -76,7 +76,7 @@
 
         <div class="relative" ref="userDropdownRef">
           <a class="flex items-center text-gray-700 dark:text-gray-400" href="#" @click.prevent="userDropdownOpen = !userDropdownOpen">
-            <span class="text-theme-sm mr-1 block font-medium"> {{ autenticacionStore.usuario?.nombre || 'Usuario' }} </span>
+            <span class="text-sm mr-1 block font-medium"> {{ autenticacionStore.usuario?.nombre || 'Usuario' }} </span>
 
             <svg
               :class="userDropdownOpen && 'rotate-180'"
@@ -94,7 +94,7 @@
             v-show="userDropdownOpen"
             class="shadow-theme-lg absolute right-0 mt-[17px] flex w-[260px] flex-col rounded-2xl border border-gray-100 bg-card p-3 dark:border-white/6 dark:bg-gray-950">
             <div>
-              <span class="text-theme-sm block font-medium text-gray-700 dark:text-gray-400"> {{ autenticacionStore.usuario?.nombre || 'Usuario' }} </span>
+              <span class="text-sm block font-semibold text-gray-800 dark:text-white/90 px-3 py-2"> {{ autenticacionStore.usuario?.nombre || 'Usuario' }} </span>
               
               
             </div>
@@ -102,7 +102,7 @@
 
             <button
               @click="handleLogout"
-              class="group text-theme-sm mt-3 flex items-center gap-3 rounded-lg px-3 py-2 font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300">
+              class="group text-sm mt-3 flex items-center gap-3 rounded-lg px-3 py-2 font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300">
               <LogOut class="h-5 w-5 fill-none stroke-gray-500 group-hover:stroke-gray-700 dark:stroke-gray-400 dark:group-hover:stroke-gray-300" />
               Cerrar sesión
             </button>

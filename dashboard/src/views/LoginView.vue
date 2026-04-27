@@ -78,7 +78,7 @@ const handleLogin = async () => {
         <div class="flex items-center justify-center w-12 h-12 rounded-2xl bg-primary mb-4">
           <img src="/logo-icon.svg" alt="Logo" class="w-7 h-7" />
         </div>
-        <h1 class="text-xl font-bold text-gray-800 tracking-tight dark:text-white/90">
+        <h1 class="text-title-lg font-bold leading-tight text-gray-800 tracking-tight dark:text-white/90">
           Tabler VES
         </h1>
         <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
@@ -89,7 +89,7 @@ const handleLogin = async () => {
       
       <div class="rounded-2xl border border-gray-100 bg-card p-6 dark:border-white/6 dark:bg-white/3">
         <div class="mb-6">
-          <h2 class="text-lg font-semibold text-gray-800 dark:text-white/90">
+          <h2 class="text-title-md font-semibold leading-snug text-gray-800 dark:text-white/90">
             Iniciá sesión
           </h2>
           <p class="mt-0.5 text-sm text-gray-500 dark:text-gray-400">

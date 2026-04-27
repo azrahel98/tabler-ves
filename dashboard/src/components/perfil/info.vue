@@ -18,41 +18,41 @@
 
     <div v-if="perfilActual" class="space-y-3 flex flex-col justify-between">
       <div>
-        <p class="text-[10px] font-medium uppercase tracking-wider text-gray-400">Telefono Celular</p>
-        <p class="font-medium text-sm text-gray-800 dark:text-white/90">{{ perfilActual.telf || 'No tiene registros' }}</p>
+        <p class="text-2xs font-medium uppercase tracking-wider text-gray-400">Telefono Celular</p>
+        <p class="font-medium text-xs uppercase text-gray-800 dark:text-white/90">{{ formatPhone(perfilActual.telf) || 'No tiene registros' }}</p>
       </div>
       <div>
-        <p class="text-[10px] font-medium uppercase tracking-wider text-gray-400">Correo electronico</p>
-        <p class="font-medium text-sm text-gray-800 dark:text-white/90">{{ perfilActual.email || 'No tiene registros' }}</p>
+        <p class="text-2xs font-medium uppercase tracking-wider text-gray-400">Correo electronico</p>
+        <p class="font-medium text-xs uppercase text-gray-800 dark:text-white/90">{{ perfilActual.email || 'No tiene registros' }}</p>
       </div>
       <div>
-        <p class="text-[10px] font-medium uppercase tracking-wider text-gray-400">Direccion</p>
-        <p class="font-medium text-sm text-gray-800 dark:text-white/90">{{ perfilActual.direccion || 'No tiene registros' }}</p>
+        <p class="text-2xs font-medium uppercase tracking-wider text-gray-400">Direccion</p>
+        <p class="font-medium text-xs uppercase text-gray-800 dark:text-white/90">{{ perfilActual.direccion || 'No tiene registros' }}</p>
       </div>
       <div class="grid grid-cols-2 gap-4">
         <div>
-          <p class="text-[10px] font-medium uppercase tracking-wider text-gray-400">Region</p>
-          <p class="font-medium text-sm text-gray-800 dark:text-white/90">{{ perfilActual.region || 'No tiene registros' }}</p>
+          <p class="text-2xs font-medium uppercase tracking-wider text-gray-400">Region</p>
+          <p class="font-medium text-xs uppercase text-gray-800 dark:text-white/90">{{ perfilActual.region || 'No tiene registros' }}</p>
         </div>
         <div>
-          <p class="text-[10px] font-medium uppercase tracking-wider text-gray-400">Distrito</p>
-          <p class="font-medium text-sm text-gray-800 dark:text-white/90">{{ perfilActual.distrito || 'No tiene registros' }}</p>
+          <p class="text-2xs font-medium uppercase tracking-wider text-gray-400">Distrito</p>
+          <p class="font-medium text-xs uppercase text-gray-800 dark:text-white/90">{{ perfilActual.distrito || 'No tiene registros' }}</p>
         </div>
       </div>
       <div>
-        <p class="text-[10px] font-medium uppercase tracking-wider text-gray-400">DNI / RUC</p>
-        <p class="font-medium text-sm text-gray-800 dark:text-white/90">
+        <p class="text-2xs font-medium uppercase tracking-wider text-gray-400">DNI / RUC</p>
+        <p class="font-medium text-xs uppercase text-gray-800 dark:text-white/90">
           {{ perfilActual.dni }} <span v-if="perfilActual.ruc" class="text-gray-400">| {{ perfilActual.ruc }}</span>
         </p>
       </div>
       <div class="grid grid-cols-2 gap-4">
         <div>
-          <p class="text-[10px] font-medium uppercase tracking-wider text-gray-400">FECHA DE NACIMIENTO</p>
-          <p class="font-medium text-sm text-gray-800 dark:text-white/90">{{ formatUTC(perfilActual.nacimiento) || 'No tiene registros' }}</p>
+          <p class="text-2xs font-medium uppercase tracking-wider text-gray-400">FECHA DE NACIMIENTO</p>
+          <p class="font-medium text-xs text-gray-800 dark:text-white/90">{{ formatUTC(perfilActual.nacimiento) || 'No tiene registros' }}</p>
         </div>
         <div>
-          <p class="text-[10px] font-medium uppercase tracking-wider text-gray-400">SEXO</p>
-          <p class="font-medium text-sm text-gray-800 dark:text-white/90">{{ perfilActual.sexo === 'M' ? 'Masculino' : perfilActual.sexo === 'F' ? 'Femenino' : '-' }}</p>
+          <p class="text-2xs font-medium uppercase tracking-wider text-gray-400">SEXO</p>
+          <p class="font-medium text-xs text-gray-800 dark:text-white/90">{{ perfilActual.sexo === 'M' ? 'Masculino' : perfilActual.sexo === 'F' ? 'Femenino' : '-' }}</p>
         </div>
       </div>
     </div>
@@ -70,6 +70,7 @@
   import { es } from 'date-fns/locale'
   import { Pencil } from 'lucide-vue-next'
   import { useAutenticacionStore } from '../../stores/auth'
+  import { formatPhone } from '../../utils/formatters'
 
   const EditInfoModal = defineAsyncComponent(() => import('./modals/EditInfoModal.vue'))
 

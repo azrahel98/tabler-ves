@@ -3,7 +3,7 @@
     <div class="p-4 pt-1 mx-auto max-w-(--breakpoint-2xl) md:p-6">
       <div class="mb-6 flex items-center justify-between">
         <div>
-          <h1 class="text-lg font-bold text-gray-900 dark:text-white tracking-tight">Comparación MEF</h1>
+          <h1 class="text-title-lg font-bold leading-tight text-gray-900 dark:text-white tracking-tight">Comparación MEF</h1>
           <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Contraste los datos del sistema con los archivos Excel del MEF</p>
         </div>
         <div v-if="resultado" class="text-xs text-gray-400 dark:text-gray-500">
@@ -84,27 +84,27 @@
         <div class="mb-6 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
           <div class="rounded-xl border border-gray-100 bg-card px-4 py-3 shadow-theme-xs dark:border-white/6">
             <p class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">En sistema</p>
-            <p class="mt-1 text-2xl font-bold text-gray-900 dark:text-white">{{ resultado.resumen.procesados }}</p>
+            <p class="mt-1 text-title-lg font-bold leading-tight text-gray-900 dark:text-white">{{ resultado.resumen.procesados }}</p>
           </div>
           <div class="rounded-xl border border-gray-100 bg-card px-4 py-3 shadow-theme-xs dark:border-white/6">
             <p class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">En MEF</p>
-            <p class="mt-1 text-2xl font-bold text-gray-900 dark:text-white">{{ resultado.resumen.encontrados_mef }}</p>
+            <p class="mt-1 text-title-lg font-bold leading-tight text-gray-900 dark:text-white">{{ resultado.resumen.encontrados_mef }}</p>
           </div>
           <div class="rounded-xl border border-green-100 bg-green-50 px-4 py-3 shadow-theme-xs dark:border-green-800/30 dark:bg-green-900/10">
             <p class="text-xs font-medium text-green-600 dark:text-green-400 uppercase tracking-wider">Coincidencias</p>
-            <p class="mt-1 text-2xl font-bold text-green-700 dark:text-green-400">{{ resultado.resumen.ok }}</p>
+            <p class="mt-1 text-title-lg font-bold leading-tight text-green-700 dark:text-green-400">{{ resultado.resumen.ok }}</p>
           </div>
           <div class="rounded-xl border border-orange-100 bg-orange-50 px-4 py-3 shadow-theme-xs dark:border-orange-800/30 dark:bg-orange-900/10">
             <p class="text-xs font-medium text-orange-600 dark:text-orange-400 uppercase tracking-wider">Diferencias</p>
-            <p class="mt-1 text-2xl font-bold text-orange-700 dark:text-orange-400">{{ resultado.resumen.diferencias }}</p>
+            <p class="mt-1 text-title-lg font-bold leading-tight text-orange-700 dark:text-orange-400">{{ resultado.resumen.diferencias }}</p>
           </div>
           <div class="rounded-xl border border-red-100 bg-red-50 px-4 py-3 shadow-theme-xs dark:border-red-800/30 dark:bg-red-900/10">
             <p class="text-xs font-medium text-red-600 dark:text-red-400 uppercase tracking-wider">Solo en sistema</p>
-            <p class="mt-1 text-2xl font-bold text-red-700 dark:text-red-400">{{ resultado.resumen.no_encontrados }}</p>
+            <p class="mt-1 text-title-lg font-bold leading-tight text-red-700 dark:text-red-400">{{ resultado.resumen.no_encontrados }}</p>
           </div>
           <div class="rounded-xl border border-purple-100 bg-purple-50 px-4 py-3 shadow-theme-xs dark:border-purple-800/30 dark:bg-purple-900/10">
             <p class="text-xs font-medium text-purple-600 dark:text-purple-400 uppercase tracking-wider">Solo en MEF</p>
-            <p class="mt-1 text-2xl font-bold text-purple-700 dark:text-purple-400">{{ resultado.resumen.no_en_sistema }}</p>
+            <p class="mt-1 text-title-lg font-bold leading-tight text-purple-700 dark:text-purple-400">{{ resultado.resumen.no_en_sistema }}</p>
           </div>
         </div>
 

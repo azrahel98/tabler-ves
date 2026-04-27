@@ -1,5 +1,5 @@
 <template>
-  <div class="rounded-2xl border border-gray-100 bg-card h-full p-6 dark:border-white/6 max-h-60 overflow-y-auto dark:bg-white/3">
+  <div class="rounded-2xl border border-gray-100 bg-card p-6 dark:border-white/6 dark:bg-white/3">
     <div class="flex items-center justify-between gap-2 text-xs font-bold uppercase tracking-wider text-gray-800 dark:text-white/90 mb-6">
       <div class="flex items-center gap-2">
         <svg class="h-5 w-5 text-primary" fill="currentColor" viewBox="0 0 24 24">
@@ -14,7 +14,7 @@
         class="rounded-full flex items-center gap-1 px-2 py-1 text-gray-500 hover:bg-primary/10 hover:text-primary dark:text-gray-400 dark:hover:bg-primary/20 dark:hover:text-brand-300 transition-colors"
         title="Cargar historial">
         <RefreshCw class="h-3.5 w-3.5" :class="{ 'animate-spin': cargando }" />
-        <span class="text-[10px] font-medium">Cargar</span>
+        <span class="text-2xs font-medium">Cargar</span>
       </button>
     </div>
 
@@ -37,13 +37,13 @@
         </div>
         <div class="pb-4 min-w-0">
           <div class="flex items-center gap-2 flex-wrap">
-            <span class="text-[10px] font-semibold uppercase px-1.5 py-0.5 rounded" :class="colorOperacion(item.operacion)">
+            <span class="text-2xs font-semibold uppercase px-1.5 py-0.5 rounded" :class="colorOperacion(item.operacion)">
               {{ item.operacion }}
             </span>
-            <span class="text-[10px] text-gray-400">{{ item.fecha }}</span>
+            <span class="text-2xs text-gray-400">{{ item.fecha }}</span>
           </div>
           <p class="text-sm text-gray-800 dark:text-white/90 mt-1 wrap-break-word">{{ item.detalle }}</p>
-          <p class="text-[10px] text-gray-400 mt-0.5">por {{ item.nombre }}</p>
+          <p class="text-2xs text-gray-400 mt-0.5">por {{ item.nombre }}</p>
         </div>
       </div>
     </div>

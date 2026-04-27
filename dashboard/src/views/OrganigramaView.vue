@@ -3,7 +3,7 @@
     <div class="p-4 pt-1 mx-auto max-w-(--breakpoint-2xl) md:p-6">
       <div class="mb-6 flex items-center justify-between">
         <div>
-          <h1 class="text-2xl font-bold text-gray-900 dark:text-white tracking-tight">Organigrama</h1>
+          <h1 class="text-title-lg font-bold leading-tight text-gray-900 dark:text-white tracking-tight">Organigrama</h1>
           <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Estructura jerárquica de la organización</p>
         </div>
         <div class="flex items-center gap-2">
@@ -33,7 +33,7 @@
         <div class="flex items-center justify-center w-16 h-16 rounded-2xl bg-surface dark:bg-white/5 mb-4">
           <Network class="h-8 w-8 text-gray-400 dark:text-gray-500" />
         </div>
-        <p class="text-lg font-semibold text-gray-700 dark:text-gray-300">Sin datos de organigrama</p>
+        <p class="text-base font-semibold text-gray-700 dark:text-gray-300">Sin datos de organigrama</p>
         <p class="text-sm text-gray-400 dark:text-gray-500 mt-1 max-w-xs">No se encontró información jerárquica disponible</p>
       </div>
 
@@ -53,11 +53,11 @@
           <table class="w-full text-sm">
             <thead>
               <tr class="border-b border-gray-100 dark:border-white/6 bg-surface dark:bg-white/3">
-                <th class="px-3 py-3.5 text-left text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500 w-10"></th>
-                <th class="px-4 py-3.5 text-left text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500">Área / Gerencia</th>
-                <th class="px-4 py-3.5 text-left text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500">Jefe Responsable</th>
-                <th class="px-4 py-3.5 text-left text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500">DNI</th>
-                <th class="px-4 py-3.5 text-center text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500">Sub-áreas</th>
+                <th class="px-3 py-3.5 text-left text-2xs font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500 w-10"></th>
+                <th class="px-4 py-3.5 text-left text-2xs font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500">Área / Gerencia</th>
+                <th class="px-4 py-3.5 text-left text-2xs font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500">Jefe Responsable</th>
+                <th class="px-4 py-3.5 text-left text-2xs font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500">DNI</th>
+                <th class="px-4 py-3.5 text-center text-2xs font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500">Sub-áreas</th>
               </tr>
             </thead>
             <tbody>

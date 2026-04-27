@@ -35,7 +35,7 @@
               v-for="col in columnas"
               :key="col.clave"
               @click="ordenarPor(col.clave)"
-              class="px-4 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-gray-400 select-none"
+              class="px-4 py-3 text-left text-2xs font-bold uppercase tracking-wider text-gray-400 select-none"
               :class="[col.ancho ?? '', col.ordenable !== false ? 'cursor-pointer hover:text-gray-600 dark:hover:text-gray-300' : '']">
               <div class="flex items-center gap-1">
                 {{ col.titulo }}

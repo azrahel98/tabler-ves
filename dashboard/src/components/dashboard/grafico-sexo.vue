@@ -2,7 +2,7 @@
   <div class="rounded-2xl border border-gray-200 bg-card p-5 dark:border-gray-800 dark:bg-white/[0.03] md:p-6 h-full flex flex-col">
     <div class="mb-4 justify-between gap-4 sm:flex shrink-0">
       <div>
-        <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">Distribución por Sexo</h3>
+        <h3 class="text-title-md font-semibold leading-snug text-gray-800 dark:text-white/90">Distribución por Sexo</h3>
       </div>
     </div>
 

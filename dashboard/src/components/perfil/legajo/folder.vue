@@ -43,7 +43,7 @@
 
      <modal :isOpen="mostrarModal" @close="cerrarModal">
       <template #header>
-        <h3 class="text-lg font-bold text-black dark:text-white flex items-center gap-2 m-0">
+        <h3 class="text-title-md font-semibold leading-snug text-black dark:text-white flex items-center gap-2 m-0">
           <Upload class="h-5 w-5 text-primary" />
           Subir Nuevo Documento
         </h3>
@@ -67,7 +67,7 @@
             type="text"
             placeholder="Ej: Contrato de Trabajo 2024"
             class="w-full rounded-lg border-[1.5px] border-stroke bg-transparent px-4 py-2.5 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary" />
-          <p class="mt-1 text-[10px] text-gray-500">Si se deja en blanco, se usará el nombre original del archivo.</p>
+          <p class="mt-1 text-2xs text-gray-500">Si se deja en blanco, se usará el nombre original del archivo.</p>
         </div>
 
         <div>
@@ -80,7 +80,7 @@
               {{ doc.sigla }}
             </option>
           </select>
-          <p class="mt-1 text-[10px] text-gray-500">Selecciona un documento administrativo para vincular a este archivo.</p>
+          <p class="mt-1 text-2xs text-gray-500">Selecciona un documento administrativo para vincular a este archivo.</p>
         </div>
 
         <p v-if="errorArchivo" class="text-xs text-red-500 font-medium">{{ errorArchivo }}</p>

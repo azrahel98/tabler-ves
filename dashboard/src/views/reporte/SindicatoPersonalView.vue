@@ -10,7 +10,7 @@
             <ArrowLeft class="h-4 w-4" />
           </button>
           <div>
-            <h1 class="text-xl font-bold text-gray-900 dark:text-white">
+            <h1 class="text-title-lg font-bold leading-tight text-gray-900 dark:text-white">
               {{ nombreDelSindicato }}
             </h1>
             <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">Personal activo afiliado a este sindicato</p>
@@ -43,7 +43,7 @@
       
       <div v-else-if="listaCompleta.length === 0" class="flex flex-col items-center justify-center py-20 text-center">
         <UserX class="h-16 w-16 text-gray-300 dark:text-gray-600 mb-4" />
-        <p class="text-lg font-semibold text-gray-600 dark:text-gray-400">Sin afiliados activos</p>
+        <p class="text-base font-semibold text-gray-600 dark:text-gray-400">Sin afiliados activos</p>
         <p class="text-sm text-gray-400 dark:text-gray-500 mt-1">
           No hay trabajadores activos afiliados a
           <span class="font-semibold">{{ nombreDelSindicato }}</span>

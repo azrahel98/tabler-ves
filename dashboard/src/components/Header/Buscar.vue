@@ -75,9 +75,9 @@
       <Transition name="dropdown">
         <div
           v-if="showDropdown"
-          class="absolute left-0 top-full mt-2 w-full rounded-xl border border-gray-100 bg-card py-2 shadow-theme-lg dark:border-white/6 dark:bg-gray-950 z-50 max-h-[400px] overflow-y-auto">
+          class="absolute left-0 top-full mt-2 w-full rounded-xl border border-gray-100 bg-card p-2 space-y-1 shadow-theme-lg dark:border-white/6 dark:bg-gray-950 z-50 max-h-[400px] overflow-y-auto">
           <template v-if="isLoading">
-            <div v-for="i in 3" :key="i" class="px-4 py-3 border-b border-gray-100 dark:border-white/5">
+            <div v-for="i in 3" :key="i" class="px-4 py-3 rounded-lg">
               <div class="h-3 w-3/4 rounded bg-gray-100 dark:bg-white/10 animate-pulse mb-1.5"></div>
               <div class="h-2.5 w-1/3 rounded bg-gray-50 dark:bg-white/5 animate-pulse"></div>
             </div>
@@ -94,7 +94,7 @@
                   searchQuery = ''
                 }
               "
-              class="block px-4 py-2 hover:bg-primary/5 dark:hover:bg-white/5 transition-colors border-b last:border-0 border-gray-100 dark:border-white/5">
+              class="block px-4 py-3 rounded-lg hover:bg-primary/5 dark:hover:bg-white/5 transition-colors">
               <p class="text-sm font-semibold text-gray-800 dark:text-white uppercase">{{ person.nombre }}</p>
               <p class="text-xs text-gray-500 dark:text-gray-400 ">DNI: {{ person.dni }}</p>
             </RouterLink>

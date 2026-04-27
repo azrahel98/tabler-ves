@@ -10,7 +10,7 @@
       </div>
       <div class="mt-5">
         <span class="text-sm text-gray-500 dark:text-gray-400">Total Personal</span>
-        <h4 class="mt-1 text-2xl font-bold text-gray-800 dark:text-white/90">
+        <h4 class="mt-1 text-title-lg font-bold leading-tight text-gray-800 dark:text-white/90">
           {{ resumen ? resumen.total.toLocaleString() : '---' }}
         </h4>
         <div class="mt-3">
@@ -41,7 +41,7 @@
       </div>
       <div class="mt-5">
         <span class="text-sm text-gray-500 dark:text-gray-400">Personal Activo</span>
-        <h4 class="mt-1 text-2xl font-bold text-gray-800 dark:text-white/90">
+        <h4 class="mt-1 text-title-lg font-bold leading-tight text-gray-800 dark:text-white/90">
           {{ resumen ? resumen.activos.toLocaleString() : '---' }}
         </h4>
         <p class="mt-2 text-xs text-gray-400">
@@ -62,7 +62,7 @@
       </div>
       <div class="mt-5">
         <span class="text-sm text-gray-500 dark:text-gray-400">Nuevos Ingresos</span>
-        <h4 class="mt-1 text-2xl font-bold text-gray-800 dark:text-white/90">
+        <h4 class="mt-1 text-title-lg font-bold leading-tight text-gray-800 dark:text-white/90">
           {{ nuevosTrabajadores.length }}
         </h4>
         <div class="mt-2 flex items-center gap-1.5">
@@ -86,7 +86,7 @@
       </div>
       <div class="mt-5">
         <span class="text-sm text-gray-500 dark:text-gray-400">Renuncias {{ anio }}</span>
-        <h4 class="mt-1 text-2xl font-bold text-gray-800 dark:text-white/90">
+        <h4 class="mt-1 text-title-lg font-bold leading-tight text-gray-800 dark:text-white/90">
           {{ totalRenunciasAnio }}
         </h4>
         <div class="mt-2 flex items-center gap-1.5">

@@ -3,7 +3,7 @@
 
     
     <div class="flex items-center justify-between gap-3">
-      <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">Movimientos de Personal</h3>
+      <h3 class="text-title-md font-semibold leading-snug text-gray-800 dark:text-white/90">Movimientos de Personal</h3>
 
     </div>
 
@@ -23,17 +23,17 @@
         
         <div class="min-w-0 flex-1">
           <div class="flex items-center gap-2 justify-between">
-            <p class="text-xs font-semibold uppercase  text-gray-800 dark:text-white/90 leading-snug">
+            <p class="text-sm font-semibold text-gray-800 dark:text-white/90 leading-snug truncate">
               {{ item.nombre }}
             </p>
             <span
-              class="shrink-0 inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium capitalize tracking-wide"
+              class="shrink-0 inline-flex items-center rounded-md px-2 py-0.5 text-2xs font-medium capitalize tracking-wide"
               :class="tipoBadge(item.tipo)">
               {{ tipoLabel(item.tipo) }}
             </span>
           </div>
           <p class="text-xs text-gray-400 uppercase tracking-wide truncate">
-            <template v-if="item.area">  {{ item.area }}</template>
+            <template v-if="item.area">{{ item.area }}</template>
           </p>
           <div class="flex items-center gap-1 mt-1.5">
             <Calendar class="w-3 h-3 text-gray-400 shrink-0" />

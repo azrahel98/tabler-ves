@@ -83,7 +83,7 @@
           </div>
           <div v-if="persona.telf">
             <span class="text-xs text-gray-500 dark:text-gray-400">Teléfono</span>
-            <p class="font-medium text-gray-800 dark:text-white/90">{{ persona.telf }}</p>
+            <p class="font-medium text-gray-800 dark:text-white/90">{{ formatPhone(persona.telf) }}</p>
           </div>
           <div v-if="persona.email">
             <span class="text-xs text-gray-500 dark:text-gray-400">Email</span>
@@ -166,6 +166,7 @@
   import { storeToRefs } from 'pinia'
   import { MapPin, User, FileText, AlertCircle, ArrowLeft, Check, Building } from 'lucide-vue-next'
   import Loading from '../ui/Loading.vue'
+  import { formatPhone } from '../../utils/formatters'
 
   const emit = defineEmits<{
     (e: 'exito', mensaje: string): void

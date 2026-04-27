@@ -2,7 +2,7 @@
   <main class="p-4 pt-1 mx-auto max-w-(--breakpoint-2xl) md:p-6">
     <div class="space-y-6">
       <div class="flex items-center justify-between">
-        <h2 class="text-xl font-bold text-gray-800 dark:text-white/90">Dashboard</h2>
+        <h2 class="text-title-xl font-bold leading-tight text-gray-800 dark:text-white/90">Dashboard</h2>
       </div>
 
       <Metrica />

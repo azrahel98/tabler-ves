@@ -16,7 +16,7 @@
         :title="infoBancaria ? 'Editar Información' : 'Agregar Información'">
         <Pencil v-if="infoBancaria" class="h-4 w-4" />
         <Plus v-else class="h-4 w-4" />
-        <span class="text-[10px] font-medium">{{ infoBancaria ? 'Editar' : 'Agregar' }}</span>
+        <span class="text-2xs font-medium">{{ infoBancaria ? 'Editar' : 'Agregar' }}</span>
       </button>
     </div>
 
@@ -38,14 +38,14 @@
             <div class="rounded-sm bg-yellow-200/60"></div>
             <div class="col-span-3 rounded-sm bg-yellow-200/60"></div>
           </div>
-          <span class="text-[10px] font-bold uppercase tracking-widest text-white/70">
+          <span class="text-2xs font-bold uppercase tracking-widest text-white/70">
             {{ infoBancaria.tipo_cuenta }}
           </span>
         </div>
 
         
         <div class="relative mb-4">
-          <p class="text-[9px] font-semibold uppercase tracking-widest text-white/50 mb-1">Número de Cuenta</p>
+          <p class="text-3xs font-semibold uppercase tracking-widest text-white/50 mb-1">Número de Cuenta</p>
           <p class="font-mono text-base font-bold tracking-widest text-white">
             {{ formatCuenta(infoBancaria.numero_cuenta) }}
           </p>
@@ -54,11 +54,11 @@
         
         <div class="relative flex items-end justify-between">
           <div>
-            <p class="text-[9px] font-semibold uppercase tracking-widest text-white/50 mb-0.5">Banco</p>
+            <p class="text-3xs font-semibold uppercase tracking-widest text-white/50 mb-0.5">Banco</p>
             <p class="text-sm font-bold text-white uppercase tracking-wide">{{ infoBancaria.banco }}</p>
           </div>
           <span
-            class="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider"
+            class="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-2xs font-semibold uppercase tracking-wider"
             :class="infoBancaria.estado === 1
               ? 'bg-emerald-400/20 text-emerald-200'
               : 'bg-red-400/20 text-red-200'">
@@ -71,7 +71,7 @@
       
       <div v-if="infoBancaria.cci" class="mt-4 flex items-center justify-between rounded-xl bg-gray-50 dark:bg-white/[0.03] border border-gray-100 dark:border-gray-800 px-4 py-3">
         <div>
-          <p class="text-[9px] font-semibold uppercase tracking-widest text-gray-400 mb-0.5">CCI</p>
+          <p class="text-3xs font-semibold uppercase tracking-widest text-gray-400 mb-0.5">CCI</p>
           <p class="font-mono text-sm font-semibold text-gray-700 dark:text-gray-200 tracking-wider">{{ infoBancaria.cci }}</p>
         </div>
         <button

@@ -69,13 +69,13 @@
 <template>
   <div>
     <div class="flex flex-wrap items-center justify-between gap-3 mb-6">
-      <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">Personal</h3>
+      <h3 class="text-title-lg font-bold leading-tight text-gray-800 dark:text-white/90">Personal</h3>
     </div>
 
     <div class="overflow-hidden rounded-2xl border border-gray-100 bg-card dark:border-white/6 dark:bg-white/3">
       <div class="flex flex-col justify-between gap-5 border-b border-gray-100 px-5 py-4 sm:flex-row sm:items-center dark:border-white/6">
         <div>
-          <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">Lista de Personal</h3>
+          <h3 class="text-title-md font-semibold leading-snug text-gray-800 dark:text-white/90">Lista de Personal</h3>
           <p class="text-sm text-gray-500 dark:text-gray-400">Busque al personal por su nombre</p>
         </div>
         <div class="flex gap-3">
@@ -123,7 +123,7 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
         </div>
-        <h3 class="mb-2 text-xl font-bold text-gray-800 dark:text-white">No se encontraron resultados</h3>
+        <h3 class="mb-2 text-title-md font-bold leading-snug text-gray-800 dark:text-white">No se encontraron resultados</h3>
         <p class="text-gray-500 dark:text-gray-400">
           No hay trabajadores que coincidan con "<span class="font-medium text-gray-700 dark:text-gray-300">{{ searchQuery }}</span
           >". Intenta con otros términos.
@@ -132,7 +132,7 @@
 
       <template v-else-if="resultadosBusqueda.length > 0">
         <div class="flex items-center justify-between">
-          <h4 class="text-md font-medium text-gray-800 dark:text-white/90">Resultados de la búsqueda</h4>
+          <h4 class="text-base font-semibold text-gray-800 dark:text-white/90">Resultados de la búsqueda</h4>
           <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium bg-primary/10 text-primary ring-1 ring-inset ring-primary/20 dark:bg-primary/15 dark:text-brand-300 dark:ring-primary/20">
             {{ resultadosBusqueda.length }} {{ resultadosBusqueda.length === 1 ? 'trabajador' : 'trabajadores' }}
           </span>

@@ -2,7 +2,14 @@
   "permissions": {
     "allow": [
       "Read(//c/Users/Olaf/Documents/tabler-ves/api-server/**)",
-      "Bash(cargo check *)"
+      "Bash(cargo check *)",
+      "Bash(npm run *)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:5173/)",
+      "Bash(taskkill //F //IM node.exe)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git *)",
+      "Bash(npx vite *)"
     ]
   }
 }

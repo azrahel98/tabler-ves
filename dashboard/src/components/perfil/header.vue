@@ -8,7 +8,7 @@
         </div>
 
         <div class="flex flex-col">
-          <h4 class="text-2xl font-semibold text-gray-800 dark:text-white/90">
+          <h4 class="text-title-lg font-semibold leading-tight text-gray-800 dark:text-white/90">
             {{ store.perfilActual.nombre }}
           </h4>
 

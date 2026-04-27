@@ -3,7 +3,7 @@
     <div class="p-4 pt-1 mx-auto max-w-(--breakpoint-2xl) md:p-6">
       <div class="mb-6 flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 class="text-lg font-bold text-gray-900 dark:text-white tracking-tight">Gestión de Usuarios</h1>
+          <h1 class="text-title-lg font-bold leading-tight text-gray-900 dark:text-white tracking-tight">Gestión de Usuarios</h1>
           <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Administra los usuarios del sistema</p>
         </div>
         <button
@@ -17,7 +17,7 @@
       
       <div v-if="errorAcceso" class="flex flex-col items-center justify-center py-20 text-center">
         <ShieldOff class="h-16 w-16 text-red-300 dark:text-red-700 mb-4" />
-        <p class="text-lg font-semibold text-gray-600 dark:text-gray-400">Acceso denegado</p>
+        <p class="text-base font-semibold text-gray-600 dark:text-gray-400">Acceso denegado</p>
         <p class="text-sm text-gray-400 dark:text-gray-500 mt-1">Solo los administradores pueden gestionar usuarios.</p>
       </div>
 

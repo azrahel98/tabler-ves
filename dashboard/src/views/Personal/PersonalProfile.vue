@@ -11,7 +11,7 @@
         </div>
         <div class="lg:col-span-3 space-y-4">
           <vinculos-tabla />
-          <div class="grid grid-cols-1 md:grid-cols-6 gap-6 items-stretch justify-between w-full">
+          <div class="grid grid-cols-1 md:grid-cols-6 gap-6 items-start justify-between w-full">
             <contacto class="col-span-2" />
             <grado class="col-span-2" />
           </div>

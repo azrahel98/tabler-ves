@@ -11,7 +11,7 @@
                 class="flex items-center justify-between px-4 py-3"
                 :class="title || $slots.header ? 'border-b border-gray-100 dark:border-white/6 px-6 py-4' : 'absolute top-0 right-0 z-30'">
 
-                <h3 v-if="title" class="text-lg font-semibold text-gray-800 dark:text-white/90" id="modal-title">
+                <h3 v-if="title" class="text-title-md font-semibold leading-snug text-gray-800 dark:text-white/90" id="modal-title">
                   {{ title }}
                 </h3>
                 <slot name="header" v-else-if="$slots.header"></slot>

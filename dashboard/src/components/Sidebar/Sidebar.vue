@@ -16,13 +16,13 @@
     <div class="flex flex-col overflow-y-auto duration-300 mx-0 px-3 ease-linear no-scrollbar">
       <nav class="mt-5 py-2 lg:mt-9 px-0">
         <div>
-          <h3 class="mb-4 text-xs font-semibold text-gray-500 uppercase tracking-wider" :class="sidebarToggle ? 'lg:hidden' : ''">MENU</h3>
+          <h3 class="mb-4 text-2xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider" :class="sidebarToggle ? 'lg:hidden' : ''">MENU</h3>
 
           <ul class="mb-6 flex flex-col gap-1.5">
             <li>
               <router-link to="/dash" class="flex items-center gap-2.5 rounded-sm py-2 menu-item-inactive" :class="sidebarToggle ? 'justify-center px-0' : 'px-4'">
                 <LayoutDashboard class="size-5" />
-                <span class="text-sm" :class="sidebarToggle ? 'lg:hidden' : ''">Dashboard</span>
+                <span class="text-sm font-medium" :class="sidebarToggle ? 'lg:hidden' : ''">Dashboard</span>
               </router-link>
             </li>
 
@@ -33,7 +33,7 @@
                 :class="sidebarToggle ? 'justify-center px-0' : 'px-4'"
                 active-class="bg-primary/10 text-primary dark:bg-primary/20 dark:text-brand-300">
                 <Users class="size-5" />
-                <span class="text-sm" :class="sidebarToggle ? 'lg:hidden' : ''">Personal</span>
+                <span class="text-sm font-medium" :class="sidebarToggle ? 'lg:hidden' : ''">Personal</span>
               </router-link>
             </li>
 
@@ -44,7 +44,7 @@
                 :class="sidebarToggle ? 'justify-center px-0' : 'px-4'"
                 active-class="bg-primary/10 text-primary dark:bg-primary/20 dark:text-brand-300">
                 <Network class="size-5" />
-                <span class="text-sm" :class="sidebarToggle ? 'lg:hidden' : ''">Organigrama</span>
+                <span class="text-sm font-medium" :class="sidebarToggle ? 'lg:hidden' : ''">Organigrama</span>
               </router-link>
             </li>
 
@@ -55,7 +55,7 @@
                 :class="sidebarToggle ? 'justify-center px-0' : 'px-4'"
                 active-class="bg-primary/10 text-primary dark:bg-primary/20 dark:text-brand-300">
                 <Shield class="size-5" />
-                <span class="text-sm" :class="sidebarToggle ? 'lg:hidden' : ''">Sindicatos</span>
+                <span class="text-sm font-medium" :class="sidebarToggle ? 'lg:hidden' : ''">Sindicatos</span>
               </router-link>
             </li>
 
@@ -66,7 +66,7 @@
                 :class="sidebarToggle ? 'justify-center px-0' : 'px-4'"
                 active-class="bg-primary/10 text-primary dark:bg-primary/20 dark:text-brand-300">
                 <UserPlus class="size-5" />
-                <span class="text-sm" :class="sidebarToggle ? 'lg:hidden' : ''">Nuevo Vínculo</span>
+                <span class="text-sm font-medium" :class="sidebarToggle ? 'lg:hidden' : ''">Nuevo Vínculo</span>
               </router-link>
             </li>
 
@@ -77,7 +77,7 @@
                 :class="sidebarToggle ? 'justify-center px-0' : 'px-4'"
                 active-class="bg-primary/10 text-primary dark:bg-primary/20 dark:text-brand-300">
                 <Settings class="size-5" />
-                <span class="text-sm" :class="sidebarToggle ? 'lg:hidden' : ''">Usuarios</span>
+                <span class="text-sm font-medium" :class="sidebarToggle ? 'lg:hidden' : ''">Usuarios</span>
               </router-link>
             </li>
 
@@ -88,7 +88,7 @@
                 :class="sidebarToggle ? 'justify-center px-0' : 'px-4'"
                 active-class="bg-primary/10 text-primary dark:bg-primary/20 dark:text-brand-300">
                 <FileSpreadsheet class="size-5" />
-                <span class="text-sm" :class="sidebarToggle ? 'lg:hidden' : ''">Comparar MEF</span>
+                <span class="text-sm font-medium" :class="sidebarToggle ? 'lg:hidden' : ''">Comparar MEF</span>
               </router-link>
             </li>
 
@@ -99,7 +99,7 @@
                 :class="sidebarToggle ? 'justify-center px-0' : 'px-4'"
                 active-class="bg-primary/10 text-primary dark:bg-primary/20 dark:text-brand-300">
                 <FileUp class="size-5" />
-                <span class="text-sm" :class="sidebarToggle ? 'lg:hidden' : ''">Carga Masiva</span>
+                <span class="text-sm font-medium" :class="sidebarToggle ? 'lg:hidden' : ''">Carga Masiva</span>
               </router-link>
             </li>
 
@@ -116,14 +116,14 @@
                 :class="sidebarToggle ? 'justify-center px-0' : 'px-4'"
                 active-class="bg-primary/10 text-primary dark:bg-primary/20 dark:text-brand-300">
                 <Users class="size-5" />
-                <span class="text-sm" :class="sidebarToggle ? 'lg:hidden' : ''">Perfil</span>
+                <span class="text-sm font-medium" :class="sidebarToggle ? 'lg:hidden' : ''">Perfil</span>
               </router-link>
             </li>
           </ul>
         </div>
 
         <div>
-          <h3 class="mb-4 text-xs font-semibold text-gray-500 uppercase tracking-wider" :class="sidebarToggle ? 'lg:hidden' : ''">CONFIGURACIÓN</h3>
+          <h3 class="mb-4 text-2xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider" :class="sidebarToggle ? 'lg:hidden' : ''">CONFIGURACIÓN</h3>
 
           <ul class="mb-6 flex flex-col gap-1.5">
             <li>
@@ -133,7 +133,7 @@
                 :class="sidebarToggle ? 'justify-center px-0' : 'px-4'"
                 active-class="bg-primary/10 text-primary dark:bg-primary/20 dark:text-brand-300">
                 <KeyRound class="size-5" />
-                <span class="text-sm" :class="sidebarToggle ? 'lg:hidden' : ''">Contraseña</span>
+                <span class="text-sm font-medium" :class="sidebarToggle ? 'lg:hidden' : ''">Contraseña</span>
               </router-link>
             </li>
           </ul>

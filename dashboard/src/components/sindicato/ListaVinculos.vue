@@ -70,7 +70,7 @@
                 <p class="text-sm font-medium text-gray-700 dark:text-gray-200">{{ vinculo.cargo }}</p>
                 <span
                   v-if="vinculo.yaAfiliado"
-                  class="inline-flex items-center rounded-full bg-orange-100 px-2 py-0.5 text-[10px] font-medium text-orange-700 dark:bg-orange-500/15 dark:text-orange-400">
+                  class="inline-flex items-center rounded-full bg-orange-100 px-2 py-0.5 text-2xs font-medium text-orange-700 dark:bg-orange-500/15 dark:text-orange-400">
                   Ya afiliado: {{ vinculo.sindicato }}
                 </span>
               </div>

@@ -3,7 +3,7 @@
     <div class="p-4 pt-1 mx-auto max-w-(--breakpoint-2xl) md:p-6">
       <div class="mb-6 flex items-center justify-between">
         <div>
-          <h1 class="text-lg font-bold text-gray-900 dark:text-white tracking-tight">{{ nombreDelArea || 'Área' }}</h1>
+          <h1 class="text-title-lg font-bold leading-tight text-gray-900 dark:text-white tracking-tight">{{ nombreDelArea || 'Área' }}</h1>
           <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Personal activo asignado a esta área</p>
         </div>
 
@@ -32,7 +32,7 @@
 
       <div v-else-if="!nombreDelArea" class="flex flex-col items-center justify-center py-20 text-center">
         <Building2 class="h-16 w-16 text-gray-300 dark:text-gray-600 mb-4" />
-        <p class="text-lg font-semibold text-gray-600 dark:text-gray-400">Área no encontrada</p>
+        <p class="text-base font-semibold text-gray-600 dark:text-gray-400">Área no encontrada</p>
         <p class="text-sm text-gray-400 dark:text-gray-500 mt-1">
           No existe un área con el ID <span class="font-mono font-semibold">{{ idArea }}</span>
         </p>
@@ -40,7 +40,7 @@
 
       <div v-else-if="listaCompleta.length === 0" class="flex flex-col items-center justify-center py-20 text-center">
         <UserX class="h-16 w-16 text-gray-300 dark:text-gray-600 mb-4" />
-        <p class="text-lg font-semibold text-gray-600 dark:text-gray-400">Sin personal activo</p>
+        <p class="text-base font-semibold text-gray-600 dark:text-gray-400">Sin personal activo</p>
         <p class="text-sm text-gray-400 dark:text-gray-500 mt-1">
           No hay trabajadores activos registrados en <span class="font-semibold">{{ nombreDelArea }}</span>
         </p>

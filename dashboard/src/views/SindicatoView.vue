@@ -2,7 +2,7 @@
   <div>
     <div class="flex flex-wrap items-center justify-between gap-3 mb-6">
       <div>
-        <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">Afiliación Sindical</h3>
+        <h3 class="text-title-md font-semibold leading-snug text-gray-800 dark:text-white/90">Afiliación Sindical</h3>
         <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Busque trabajadores y regístrelos en un sindicato</p>
       </div>
     </div>

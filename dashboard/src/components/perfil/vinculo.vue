@@ -96,27 +96,27 @@
     <div v-if="vinculoActual" class="space-y-4">
       <div class="grid grid-cols-2 gap-x-2 gap-y-1">
         <div class="col-span-2">
-          <p class="text-[10px] font-medium uppercase tracking-wider text-gray-400">Área</p>
+          <p class="text-2xs font-medium uppercase tracking-wider text-gray-400">Área</p>
           <p class="mt-0.5 font-medium text-sm text-gray-800 dark:text-white/90">{{ vinculoActual.area }}</p>
         </div>
         <div>
-          <p class="text-[10px] font-medium uppercase tracking-wider text-gray-400">Cargo</p>
+          <p class="text-2xs font-medium uppercase tracking-wider text-gray-400">Cargo</p>
           <p class="mt-0.5 font-medium text-sm text-gray-800 dark:text-white/90">{{ vinculoActual.cargo }}</p>
         </div>
         <div>
-          <p class="text-[10px] font-medium uppercase tracking-wider text-gray-400">Régimen</p>
+          <p class="text-2xs font-medium uppercase tracking-wider text-gray-400">Régimen</p>
           <div class="mt-0.5 font-medium text-sm text-gray-800 dark:text-white/90">{{ vinculoActual.regimen }}</div>
         </div>
         <div>
-          <p class="text-[10px] font-medium uppercase tracking-wider text-gray-400">Sueldo</p>
+          <p class="text-2xs font-medium uppercase tracking-wider text-gray-400">Sueldo</p>
           <p class="mt-0.5 text-sm font-semibold text-success-600 dark:text-success-400">
             S/ {{ vinculoActual.sueldo }}
             <span v-if="vinculoActual.codigo" class="text-gray-400 font-normal text-xs">· {{ vinculoActual.codigo }}</span>
           </p>
         </div>
         <div>
-          <p class="text-[10px] font-medium uppercase tracking-wider text-gray-400">Estado</p>
-          <span class="mt-0.5 inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium ring-1 ring-inset uppercase"
+          <p class="text-2xs font-medium uppercase tracking-wider text-gray-400">Estado</p>
+          <span class="mt-0.5 inline-flex items-center rounded-full px-2 py-0.5 text-2xs font-medium ring-1 ring-inset uppercase"
             :class="tieneRenuncia ? 'bg-red-50 text-red-700 ring-red-600/20 dark:bg-red-500/10 dark:text-red-400 dark:ring-red-500/20' : 
                    vinculoActual.tipo_evento ? 'bg-amber-50 text-amber-700 ring-amber-600/20 dark:bg-amber-500/10 dark:text-amber-400 dark:ring-amber-500/20' : 
                    'bg-green-50 text-green-700 ring-green-600/20 dark:bg-green-500/10 dark:text-green-400 dark:ring-green-500/20'">
@@ -124,17 +124,17 @@
           </span>
         </div>
         <div v-if="vinculoActual.numero_doc_ingreso">
-          <p class="text-[10px] font-medium uppercase tracking-wider text-gray-400">Doc. Ingreso</p>
+          <p class="text-2xs font-medium uppercase tracking-wider text-gray-400">Doc. Ingreso</p>
           <p class="mt-0.5 font-medium text-sm text-gray-800 dark:text-white/90 uppercase">{{ vinculoActual.doc_ingreso }} N° {{ vinculoActual.numero_doc_ingreso }}</p>
         </div>
         <div>
-          <p class="text-[10px] font-medium uppercase tracking-wider text-gray-400">Fecha Ingreso</p>
+          <p class="text-2xs font-medium uppercase tracking-wider text-gray-400">Fecha Ingreso</p>
           <p class="mt-0.5 font-medium text-sm text-gray-800 dark:text-white/90">{{ formatInTimeZone(vinculoActual.fecha_ingreso, 'America/Lima', 'dd/MM/yyyy') }}</p>
         </div>
       </div>
 
       <div v-if="vinculoActual.descrip_ingreso">
-        <p class="text-[10px] font-medium uppercase tracking-wider text-gray-400">Descripción Ingreso</p>
+        <p class="text-2xs font-medium uppercase tracking-wider text-gray-400">Descripción Ingreso</p>
         <p class="mt-0.5 font-medium text-sm text-gray-800 dark:text-white/90 leading-relaxed uppercase">{{ vinculoActual.descrip_ingreso }}</p>
       </div>
     </div>

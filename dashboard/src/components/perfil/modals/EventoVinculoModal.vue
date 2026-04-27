@@ -11,15 +11,15 @@
           </div>
           <div class="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
             <div>
-              <p class="text-[10px] font-medium uppercase tracking-wider text-gray-400">Tipo</p>
+              <p class="text-2xs font-medium uppercase tracking-wider text-gray-400">Tipo</p>
               <p class="font-medium text-gray-800 dark:text-gray-200">{{ eventoActual?.tipo_evento }}</p>
             </div>
             <div>
-              <p class="text-[10px] font-medium uppercase tracking-wider text-gray-400">Estado</p>
+              <p class="text-2xs font-medium uppercase tracking-wider text-gray-400">Estado</p>
               <p class="font-medium text-gray-800 dark:text-gray-200">{{ eventoActual?.estado_evento }}</p>
             </div>
             <div v-if="eventoActual?.fecha_evento" class="col-span-2">
-              <p class="text-[10px] font-medium uppercase tracking-wider text-gray-400">Fecha</p>
+              <p class="text-2xs font-medium uppercase tracking-wider text-gray-400">Fecha</p>
               <p class="font-medium text-gray-800 dark:text-gray-200">{{ eventoActual?.fecha_evento }}</p>
             </div>
           </div>
