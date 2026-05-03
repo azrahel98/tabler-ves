@@ -2,7 +2,7 @@
   <Teleport to="body">
     <Transition name="modal">
       <div v-if="isOpen" class="relative z-999999" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-        <div class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm transition-opacity" @click="close"></div>
+        <div class="modal-backdrop fixed inset-0 bg-gray-900/50 backdrop-blur-sm" @click="close"></div>
 
         <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
           <div class="flex min-h-full items-center justify-center p-4 sm:p-0">
@@ -80,37 +80,77 @@
 </script>
 
 <style scoped>
-  
-  .modal-enter-active {
-    transition: opacity 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+  .modal-card {
+    will-change: transform, opacity;
   }
+
+  .modal-backdrop {
+    transition: opacity 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+                backdrop-filter 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .modal-enter-active {
+    transition: opacity 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
   .modal-leave-active {
     transition: opacity 0.2s cubic-bezier(0.4, 0, 1, 1);
   }
+
   .modal-enter-from,
   .modal-leave-to {
     opacity: 0;
   }
 
-  
-  .modal-enter-active .modal-card {
-    transition:
-      opacity 0.32s cubic-bezier(0.16, 1, 0.3, 1),
-      transform 0.32s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-  .modal-enter-from .modal-card {
+  .modal-enter-from .modal-backdrop,
+  .modal-leave-to .modal-backdrop {
     opacity: 0;
-    transform: translateY(24px) scale(0.96);
+    backdrop-filter: blur(0);
+    -webkit-backdrop-filter: blur(0);
   }
 
-  
+  /* Entrada y Salida con coherencia direccional (hacia abajo) */
+  .modal-enter-active .modal-card {
+    transition:
+      opacity 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .modal-enter-from .modal-card {
+    opacity: 0;
+    transform: translateY(16px) scale(0.97);
+  }
+
   .modal-leave-active .modal-card {
     transition:
-      opacity 0.18s cubic-bezier(0.4, 0, 1, 1),
-      transform 0.18s cubic-bezier(0.4, 0, 1, 1);
+      opacity 0.2s cubic-bezier(0.4, 0, 1, 1),
+      transform 0.2s cubic-bezier(0.4, 0, 1, 1);
   }
+
   .modal-leave-to .modal-card {
     opacity: 0;
-    transform: translateY(-10px) scale(0.98);
+    transform: translateY(16px) scale(0.97);
+  }
+
+  /* Accesibilidad: Reducción de movimiento */
+  @media (prefers-reduced-motion: reduce) {
+    .modal-enter-active,
+    .modal-leave-active,
+    .modal-enter-active .modal-card,
+    .modal-leave-active .modal-card,
+    .modal-backdrop {
+      transition: opacity 150ms ease-in-out !important;
+    }
+
+    .modal-enter-from .modal-card,
+    .modal-leave-to .modal-card {
+      transform: none !important;
+    }
+
+    .modal-enter-from .modal-backdrop,
+    .modal-leave-to .modal-backdrop {
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+    }
   }
 </style>

@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import api from '../services/api'
 import { ref } from 'vue'
 import { useConfiguracionStore } from './layout'
-import type { Persona, Vinculo, InfoBancaria, GradoAcademico, ContactoEmergencia, Legajo } from '../types'
+import type { Persona, Vinculo, InfoBancaria, GradoAcademico, ContactoEmergencia, Legajo, CambioAreaPayload } from '../types'
 
 export const usePersonalStore = defineStore('personal', () => {
   const perfilActual = ref<Persona | null>(null)
@@ -173,6 +173,25 @@ export const usePersonalStore = defineStore('personal', () => {
     }
   }
 
+  async function cambioArea(payload: CambioAreaPayload) {
+    cargando.value = true
+    try {
+      await api.post('/personal/cambio_area', payload)
+      if (perfilActual.value?.dni) {
+        await obtenerVinculos(perfilActual.value.dni)
+      }
+    } finally {
+      cargando.value = false
+    }
+  }
+
+  async function eliminarGrado(id: number) {
+    await api.post('/personal/eliminar_gradoa', { id })
+    if (perfilActual.value?.dni) {
+      await obtenerGrados(perfilActual.value.dni)
+    }
+  }
+
   function limpiarDatos() {
     perfilActual.value = null
     vinculos.value = []
@@ -214,6 +233,8 @@ export const usePersonalStore = defineStore('personal', () => {
     eliminarSindicato,
     deleteEventoVinculo,
     upsertEvento,
+    cambioArea,
+    eliminarGrado,
     limpiarDatos,
   }
 })

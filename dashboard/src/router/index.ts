@@ -1,10 +1,11 @@
+/// <reference types="vite/client" />
 import { createRouter, createWebHistory, type NavigationGuardNext, type RouteLocationNormalized } from 'vue-router'
 import LoginView from '../views/LoginView.vue'
 import MainLayout from '../layouts/MainLayout.vue'
 import { decodificar, useAutenticacionStore } from '../stores/auth'
 
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
+  history: createWebHistory((import.meta as any).env.BASE_URL),
   linkActiveClass: 'menu-item-active',
   linkExactActiveClass: 'menu-item-active',
   routes: [
@@ -67,6 +68,11 @@ const router = createRouter({
           path: 'sindicato/:nombre',
           name: 'sindicato-personal',
           component: () => import('../views/reporte/SindicatoPersonalView.vue'),
+        },
+        {
+          path: 'distrito/:nombre',
+          name: 'distrito-personal',
+          component: () => import('../views/reporte/DistritoView.vue'),
         },
         {
           path: '/carga-masiva',

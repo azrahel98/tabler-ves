@@ -7,10 +7,16 @@
         </svg>
         VIRTUAL FOLDER (LEGAJO)
       </div>
-      <button @click="abrirModal" class="flex items-center gap-2 rounded bg-primary px-3 py-1.5 text-xs font-medium text-white hover:bg-opacity-90 transition-all">
-        <Upload class="h-4 w-4" />
-        Subir Documento
-      </button>
+      <div class="flex items-center gap-2">
+        <button @click="abrirModalUrl" class="flex items-center gap-2 rounded border border-primary/30 bg-primary/10 px-3 py-1.5 text-xs font-medium text-primary hover:bg-primary/15 dark:border-brand-300/30 dark:bg-brand-300/10 dark:text-brand-300 dark:hover:bg-brand-300/15 transition-all">
+          <Link2 class="h-4 w-4" />
+          Vincular URL
+        </button>
+        <button @click="abrirModal" class="flex items-center gap-2 rounded bg-primary px-3 py-1.5 text-xs font-medium text-white hover:bg-opacity-90 transition-all">
+          <Upload class="h-4 w-4" />
+          Subir Documento
+        </button>
+      </div>
     </div>
 
     <div class="p-6">
@@ -107,6 +113,13 @@
 
     <PreviewModal :isOpen="mostrarVistaPrevia" @close="cerrarVistaPrevia" :url="urlPrevia" :documentoActual="documentoActual" :urlPrevia="urlPrevia" @documento-asignado="onDocumentoAsignado" />
 
+    <RegistrarUrlModal
+      :isOpen="mostrarModalUrl"
+      :dni="perfilActual?.dni ?? null"
+      :documentosDisponibles="documentosDisponibles"
+      @close="mostrarModalUrl = false"
+      @registrado="onUrlRegistrada" />
+
      </div>
 </template>
 
@@ -116,7 +129,7 @@
   import { storeToRefs } from 'pinia'
   import { usePersonalStore } from '../../../stores/personal'
   import api from '../../../services/api'
-  import { Upload, Loader2, FolderOpen } from 'lucide-vue-next'
+  import { Upload, Loader2, FolderOpen, Link2 } from 'lucide-vue-next'
   import { baseURL } from '../../../services/api'
 
   const personalStore = usePersonalStore()
@@ -124,6 +137,7 @@
 
   const PreviewModal = defineAsyncComponent(() => import('./PreviewModal.vue'))
   const Modal = defineAsyncComponent(() => import('../../ui/Modal.vue'))
+  const RegistrarUrlModal = defineAsyncComponent(() => import('./RegistrarUrlModal.vue'))
 
   const archivo = ref<File | null>(null)
   const errorArchivo = ref('')
@@ -141,6 +155,8 @@
   const mostrarVistaPrevia = ref(false)
   const urlPrevia = ref<string | null>(null)
   const documentoActual = ref<any>(null)
+
+  const mostrarModalUrl = ref(false)
   
   const apiUrlBase = baseURL
 
@@ -168,6 +184,19 @@
 
   const cerrarModal = () => {
     mostrarModal.value = false
+  }
+
+  const abrirModalUrl = () => {
+    mostrarModalUrl.value = true
+    cargarDocumentos()
+  }
+
+  const onUrlRegistrada = (archivo: any) => {
+    if (archivo) {
+      archivosSubidos.value.unshift(archivo)
+    } else {
+      buscarDocumentos()
+    }
   }
 
   const abrirVistaPrevia = async (doc: any) => {

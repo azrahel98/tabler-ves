@@ -1,14 +1,17 @@
 use crate::{
     AppState,
-    middleware::error::{ApiError, validar},
+    middleware::{
+        error::{ApiError, validar},
+        jwt::Claims,
+    },
     models::personal::{
-        AsistenciaVw, ContactoEmergencia, DatosBancarios, DatosBancariosResponse,
-        Documento, DocumentoSindicato, EventoVinculoPayload,
-        GradoAcademico, LegajoPersonal, NuevoVinculo, Perfil, PerfilInput, Persona, Vinculos,
+        AsistenciaVw, ContactoEmergencia, DatosBancarios, DatosBancariosResponse, Documento,
+        DocumentoSindicato, EventoVinculoPayload, GradoAcademico, LegajoPersonal, NuevoVinculo,
+        Perfil, PerfilInput, Persona, Vinculos,
     },
 };
 use actix_web::{
-    HttpRequest, HttpResponse, Responder,
+    HttpMessage, HttpRequest, HttpResponse, Responder,
     web::{self},
 };
 
@@ -343,7 +346,6 @@ pub async fn editar_datos_bancarios(
     validar(&doc.0)?;
     let _key = std::env::var("DB_KEY").expect("DB_KEY must be set");
 
-    
     let actual = sqlx::query_as!(
         DatosBancarios,
         r#"SELECT
@@ -388,24 +390,38 @@ pub async fn editar_datos_bancarios(
                 .map_err(|e| ApiError::InternalError(format!("Error al obtener banco: {}", e)))?
                 .nombre;
 
-            
             let mut diff = serde_json::Map::new();
             let tipo_nuevo = doc.tipo_cuenta.clone().unwrap_or_default().to_uppercase();
 
             if actual.numero_cuenta != doc.numero_cuenta {
-                diff.insert("numero_cuenta".to_string(), json!({"antes": actual.numero_cuenta, "despues": doc.numero_cuenta}));
+                diff.insert(
+                    "numero_cuenta".to_string(),
+                    json!({"antes": actual.numero_cuenta, "despues": doc.numero_cuenta}),
+                );
             }
             if actual.tipo_cuenta != Some(tipo_nuevo.clone()) {
-                diff.insert("tipo_cuenta".to_string(), json!({"antes": actual.tipo_cuenta, "despues": tipo_nuevo}));
+                diff.insert(
+                    "tipo_cuenta".to_string(),
+                    json!({"antes": actual.tipo_cuenta, "despues": tipo_nuevo}),
+                );
             }
             if actual.cci != doc.cci {
-                diff.insert("cci".to_string(), json!({"antes": actual.cci, "despues": doc.cci}));
+                diff.insert(
+                    "cci".to_string(),
+                    json!({"antes": actual.cci, "despues": doc.cci}),
+                );
             }
             if actual.banco != nombre_banco_nuevo {
-                diff.insert("banco".to_string(), json!({"antes": actual.banco, "despues": nombre_banco_nuevo}));
+                diff.insert(
+                    "banco".to_string(),
+                    json!({"antes": actual.banco, "despues": nombre_banco_nuevo}),
+                );
             }
             if actual.estado != doc.estado {
-                diff.insert("estado".to_string(), json!({"antes": actual.estado, "despues": doc.estado}));
+                diff.insert(
+                    "estado".to_string(),
+                    json!({"antes": actual.estado, "despues": doc.estado}),
+                );
             }
 
             if !diff.is_empty() {
@@ -418,7 +434,7 @@ pub async fn editar_datos_bancarios(
                 )
                 .await;
             }
-            
+
             Ok(HttpResponse::Ok().json(format!("Rows affected: {}", result.rows_affected())))
         }
         Err(e) => Err(ApiError::InternalError(format!("Database error: {}", e))),
@@ -480,19 +496,34 @@ pub async fn upsert_gradoacademico(
 
             if let Some(antiguo) = actual {
                 if antiguo.profesion != doc.profesion {
-                    diff.insert("profesion".to_string(), json!({"antes": antiguo.profesion, "despues": doc.profesion}));
+                    diff.insert(
+                        "profesion".to_string(),
+                        json!({"antes": antiguo.profesion, "despues": doc.profesion}),
+                    );
                 }
                 if antiguo.universidad != doc.universidad {
-                    diff.insert("universidad".to_string(), json!({"antes": antiguo.universidad, "despues": doc.universidad}));
+                    diff.insert(
+                        "universidad".to_string(),
+                        json!({"antes": antiguo.universidad, "despues": doc.universidad}),
+                    );
                 }
                 if antiguo.colegiatura != doc.colegiatura {
-                    diff.insert("colegiatura".to_string(), json!({"antes": antiguo.colegiatura, "despues": doc.colegiatura}));
+                    diff.insert(
+                        "colegiatura".to_string(),
+                        json!({"antes": antiguo.colegiatura, "despues": doc.colegiatura}),
+                    );
                 }
                 if antiguo.nivel_academico != doc.nivel_academico {
-                    diff.insert("nivel_academico".to_string(), json!({"antes": antiguo.nivel_academico, "despues": doc.nivel_academico}));
+                    diff.insert(
+                        "nivel_academico".to_string(),
+                        json!({"antes": antiguo.nivel_academico, "despues": doc.nivel_academico}),
+                    );
                 }
             } else {
-                diff.insert("nuevo_grado".to_string(), serde_json::to_value(&doc.0).unwrap_or_default());
+                diff.insert(
+                    "nuevo_grado".to_string(),
+                    serde_json::to_value(&doc.0).unwrap_or_default(),
+                );
             }
 
             if !diff.is_empty() {
@@ -516,6 +547,60 @@ pub async fn upsert_gradoacademico(
             e
         ))),
     }
+}
+
+#[derive(Deserialize, Validate)]
+pub struct EliminarGradoBody {
+    #[validate(range(min = 1, message = "ID de grado inválido"))]
+    pub id: i32,
+}
+
+pub async fn eliminar_gradoa(
+    data: web::Data<AppState>,
+    body: web::Json<EliminarGradoBody>,
+    req: HttpRequest,
+) -> Result<impl Responder, ApiError> {
+    validar(&body.0)?;
+
+    let grado = sqlx::query_as!(
+        GradoAcademico,
+        "select * from gradoacademico where id = ?",
+        body.id
+    )
+    .fetch_optional(&data.db)
+    .await
+    .map_err(|e| ApiError::InternalError(format!("Error al capturar grado: {}", e)))?;
+
+    let grado = match grado {
+        Some(g) => g,
+        None => return Err(ApiError::NotFound("Grado académico no encontrado".into())),
+    };
+
+    sqlx::query("DELETE FROM gradoacademico WHERE id = ?")
+        .bind(body.id)
+        .execute(&data.db)
+        .await
+        .map_err(|e| ApiError::InternalError(format!("Error al eliminar grado: {}", e)))?;
+
+    let _ = registrar_historial(
+        &req,
+        &data.db,
+        "eliminar grado academico",
+        &grado.dni,
+        Some(serde_json::json!({
+            "objeto_eliminado": {
+                "id": grado.id,
+                "profesion": grado.profesion,
+                "universidad": grado.universidad,
+                "colegiatura": grado.colegiatura,
+                "nivel_academico": grado.nivel_academico,
+                "abrv": grado.abrv,
+            }
+        })),
+    )
+    .await;
+
+    Ok(HttpResponse::Ok().json("Grado académico eliminado"))
 }
 
 pub async fn editar_perfil(
@@ -553,22 +638,40 @@ pub async fn editar_perfil(
             let mut diff = serde_json::Map::new();
 
             if perfil_antes.telf != perfil.telf {
-                diff.insert("telf".to_string(), json!({"antes": perfil_antes.telf, "despues": perfil.telf}));
+                diff.insert(
+                    "telf".to_string(),
+                    json!({"antes": perfil_antes.telf, "despues": perfil.telf}),
+                );
             }
             if perfil_antes.direccion != perfil.direccion {
-                diff.insert("direccion".to_string(), json!({"antes": perfil_antes.direccion, "despues": perfil.direccion}));
+                diff.insert(
+                    "direccion".to_string(),
+                    json!({"antes": perfil_antes.direccion, "despues": perfil.direccion}),
+                );
             }
             if perfil_antes.email != perfil.email {
-                diff.insert("email".to_string(), json!({"antes": perfil_antes.email, "despues": perfil.email}));
+                diff.insert(
+                    "email".to_string(),
+                    json!({"antes": perfil_antes.email, "despues": perfil.email}),
+                );
             }
             if perfil_antes.ruc != perfil.ruc {
-                diff.insert("ruc".to_string(), json!({"antes": perfil_antes.ruc, "despues": perfil.ruc}));
+                diff.insert(
+                    "ruc".to_string(),
+                    json!({"antes": perfil_antes.ruc, "despues": perfil.ruc}),
+                );
             }
             if perfil_antes.region != perfil.region {
-                diff.insert("region".to_string(), json!({"antes": perfil_antes.region, "despues": perfil.region}));
+                diff.insert(
+                    "region".to_string(),
+                    json!({"antes": perfil_antes.region, "despues": perfil.region}),
+                );
             }
             if perfil_antes.distrito != perfil.distrito {
-                diff.insert("distrito".to_string(), json!({"antes": perfil_antes.distrito, "despues": perfil.distrito}));
+                diff.insert(
+                    "distrito".to_string(),
+                    json!({"antes": perfil_antes.distrito, "despues": perfil.distrito}),
+                );
             }
 
             if !diff.is_empty() {
@@ -804,7 +907,6 @@ pub async fn contacto_emergencia_add(
     validar(&contacto.0)?;
     let key = std::env::var("DB_KEY").expect("DB_KEY must be set");
 
-    
     let actual = sqlx::query_as!(
         ContactoEmergencia,
         r#"select persona_dni, nombre, relacion, cast(aes_decrypt(telefono,?) as char) telefono 
@@ -842,17 +944,29 @@ pub async fn contacto_emergencia_add(
             if let Some(antiguo) = actual {
                 operacion = "editar contacto de emergencia";
                 if antiguo.nombre != contacto.nombre {
-                    diff.insert("nombre".to_string(), json!({"antes": antiguo.nombre, "despues": contacto.nombre}));
+                    diff.insert(
+                        "nombre".to_string(),
+                        json!({"antes": antiguo.nombre, "despues": contacto.nombre}),
+                    );
                 }
                 if antiguo.telefono != contacto.telefono {
-                    diff.insert("telefono".to_string(), json!({"antes": antiguo.telefono, "despues": contacto.telefono}));
+                    diff.insert(
+                        "telefono".to_string(),
+                        json!({"antes": antiguo.telefono, "despues": contacto.telefono}),
+                    );
                 }
                 if antiguo.relacion != contacto.relacion {
-                    diff.insert("relacion".to_string(), json!({"antes": antiguo.relacion, "despues": contacto.relacion}));
+                    diff.insert(
+                        "relacion".to_string(),
+                        json!({"antes": antiguo.relacion, "despues": contacto.relacion}),
+                    );
                 }
             } else {
                 operacion = "crear contacto de emergencia";
-                diff.insert("nuevo_contacto".to_string(), serde_json::to_value(&contacto.0).unwrap_or_default());
+                diff.insert(
+                    "nuevo_contacto".to_string(),
+                    serde_json::to_value(&contacto.0).unwrap_or_default(),
+                );
             }
 
             if !diff.is_empty() {
@@ -1216,18 +1330,17 @@ pub async fn eliminar_vinculo(
     validar(&body.0)?;
     let mut tx = data.db.begin().await?;
 
-    let vinculo_full = sqlx::query!(
-        "SELECT * FROM vinculo WHERE id = ?",
-        body.id
-    )
-    .fetch_one(&mut *tx)
-    .await
-    .map_err(|e| ApiError::InternalError(format!("Error al capturar foto del vínculo: {}", e)))?;
+    let vinculo_full = sqlx::query!("SELECT * FROM vinculo WHERE id = ?", body.id)
+        .fetch_one(&mut *tx)
+        .await
+        .map_err(|e| {
+            ApiError::InternalError(format!("Error al capturar foto del vínculo: {}", e))
+        })?;
 
     let dni: String = vinculo_full.dni.clone();
-    let doc_ingreso_id: Option<i64> = vinculo_full.doc_ingreso_id.map(|id| id as i64);
-    let doc_salida_id: Option<i64> = vinculo_full.doc_salida_id.map(|id| id as i64);
-    let plaza_id: Option<String> = vinculo_full.plaza_id.clone();
+    let _doc_ingreso_id: Option<i64> = vinculo_full.doc_ingreso_id.map(|id| id as i64);
+    let _doc_salida_id: Option<i64> = vinculo_full.doc_salida_id.map(|id| id as i64);
+    let _plaza_id: Option<String> = vinculo_full.plaza_id.clone();
 
     sqlx::query("DELETE FROM vinculo_sindicato WHERE vinculo_id = ?")
         .bind(body.id)
@@ -1241,8 +1354,6 @@ pub async fn eliminar_vinculo(
         .await
         .map_err(|e| ApiError::InternalError(format!("Error al eliminar vínculo: {}", e)))?;
 
-    
-
     tx.commit().await?;
 
     let _ = registrar_historial(
@@ -1250,7 +1361,7 @@ pub async fn eliminar_vinculo(
         &data.db,
         "eliminar vínculo",
         &dni,
-        Some(serde_json::json!({ 
+        Some(serde_json::json!({
             "objeto_eliminado": {
                 "id": vinculo_full.id,
                 "dni": vinculo_full.dni,
@@ -1408,7 +1519,6 @@ pub async fn upsert_evento_vinculo(
         .await
         .map_err(|e| ApiError::InternalError(format!("Error al cerrar evento: {}", e)))?;
 
-        
         sqlx::query("UPDATE vinculo SET estado = 'activo' WHERE id = ?")
             .bind(payload.vinculo_id)
             .execute(&mut *tx)
@@ -1473,19 +1583,10 @@ pub async fn upsert_evento_vinculo(
         .await
         .map_err(|e| ApiError::InternalError(format!("Commit error: {}", e)))?;
 
-    let _ = registrar_historial(
-        &req,
-        &data.db,
-        &accion,
-        &dni,
-        Some(payload_historico),
-    )
-    .await;
+    let _ = registrar_historial(&req, &data.db, &accion, &dni, Some(payload_historico)).await;
 
     Ok(HttpResponse::Ok().json("Operación exitosa"))
 }
-
-
 
 #[derive(Deserialize, Validate)]
 pub struct EliminarContactoBody {
@@ -1518,24 +1619,23 @@ pub async fn eliminar_contacto(
 
     if let Some(c) = contacto {
         let _ = registrar_historial(
-            &req, 
-            &data.db, 
-            "eliminar contacto de emergencia", 
-            &body.persona_dni, 
+            &req,
+            &data.db,
+            "eliminar contacto de emergencia",
+            &body.persona_dni,
             Some(serde_json::json!({
                 "objeto_eliminado": {
                     "nombre": c.nombre,
                     "relacion": c.relacion,
                     "telefono": c.telefono
                 }
-            }))
-        ).await;
+            })),
+        )
+        .await;
     }
 
     Ok(HttpResponse::Ok().json("Contacto de emergencia eliminado"))
 }
-
-
 
 #[derive(Deserialize, Validate)]
 pub struct EliminarSindicatoBody {
@@ -1550,8 +1650,7 @@ pub async fn eliminar_sindicato(
     req: HttpRequest,
 ) -> Result<impl Responder, ApiError> {
     validar(&body.0)?;
-    
-    
+
     let info = sqlx::query!(
         "SELECT vs.*, s.nombre as sindicato_nombre 
          FROM vinculo_sindicato vs 
@@ -1571,18 +1670,19 @@ pub async fn eliminar_sindicato(
 
     if let Some(i) = info {
         let _ = registrar_historial(
-            &req, 
-            &data.db, 
-            "desafiliar sindicato", 
-            &body.dni, 
+            &req,
+            &data.db,
+            "desafiliar sindicato",
+            &body.dni,
             Some(serde_json::json!({
                 "objeto_eliminado": {
                     "vinculo_id": i.vinculo_id,
                     "sindicato": i.sindicato_nombre,
                     "documento_afiliacion_id": i.documento_afiliacion
                 }
-            }))
-        ).await;
+            })),
+        )
+        .await;
     }
 
     Ok(HttpResponse::Ok().json("Afiliación sindical eliminada"))
@@ -1600,7 +1700,10 @@ pub async fn delete_evento_vinculo(
     req: HttpRequest,
 ) -> Result<impl Responder, ApiError> {
     validar(&payload.0)?;
-    let mut tx = data.db.begin().await
+    let mut tx = data
+        .db
+        .begin()
+        .await
         .map_err(|e| ApiError::InternalError(format!("DB error: {}", e)))?;
 
     let evento_full = sqlx::query!(
@@ -1637,7 +1740,8 @@ pub async fn delete_evento_vinculo(
 
     let dni = evento_full.dni.clone();
 
-    tx.commit().await
+    tx.commit()
+        .await
         .map_err(|e| ApiError::InternalError(format!("Commit error: {}", e)))?;
 
     let _ = registrar_historial(
@@ -1652,9 +1756,245 @@ pub async fn delete_evento_vinculo(
                 "vinculo_id": evento_full.vinculo_id,
                 "estado": evento_full.estado
             }
-        }))
-    ).await;
+        })),
+    )
+    .await;
 
     Ok(HttpResponse::Ok().json("Evento de vínculo eliminado"))
 }
 
+#[derive(Deserialize, Validate)]
+pub struct ActivosPorDistritoBody {
+    #[validate(length(min = 1, message = "El distrito es requerido"))]
+    pub distrito: String,
+}
+
+pub async fn activos_por_distrito(
+    data: web::Data<AppState>,
+    body: web::Json<ActivosPorDistritoBody>,
+) -> Result<impl Responder, ApiError> {
+    validar(&body.0)?;
+    let key = std::env::var("DB_KEY").expect("DB_KEY must be set");
+    let distrito = body.distrito.trim();
+    let sin_asignar = distrito.eq_ignore_ascii_case("SIN ASIGNAR");
+
+    let base_query = r#"
+SELECT
+  CAST(p.dni AS CHAR)                                             AS dni,
+  CONCAT(p.apaterno, ' ', p.amaterno, ' ', p.nombre)              AS nombre,
+  dc.fecha                                                        AS ingreso,
+  cast(aes_decrypt(p.direccion,?) as char)  as direccion,
+  ar.nombre                                                       AS area,
+  cr.nombre                                                       AS cargo,
+  s.nombre                                                        AS sindicato,
+  rg.nombre                                                       AS regimen,
+  COALESCE(NULLIF(p.distrito, ''), 'SIN ASIGNAR')                 AS distrito
+FROM
+  vinculo v
+  INNER JOIN persona p ON v.dni = p.dni
+  INNER JOIN cargo cr ON v.cargo_id = cr.id
+  INNER JOIN area ar ON v.area_id = ar.id
+  INNER JOIN documento dc ON v.doc_ingreso_id = dc.id
+  INNER JOIN regimen rg ON v.regimen = rg.id
+  LEFT JOIN documento dcs ON v.doc_salida_id = dcs.id
+  LEFT JOIN vinculo_sindicato vs ON vs.vinculo_id = v.id
+  LEFT JOIN sindicato s ON vs.sindicato_id = s.id
+WHERE
+  v.estado = 'activo'
+"#;
+
+    let filas = if sin_asignar {
+        sqlx::query(&format!(
+            "{base_query} AND (p.distrito IS NULL OR p.distrito = '')"
+        ))
+        .bind(&key)
+        .fetch_all(&data.db)
+        .await
+    } else {
+        sqlx::query(&format!("{base_query} AND UPPER(p.distrito) = UPPER(?)"))
+            .bind(&key)
+            .bind(distrito)
+            .fetch_all(&data.db)
+            .await
+    }
+    .map_err(|e| {
+        eprintln!("Database error: {:?}", e);
+        ApiError::InternalError("Error al obtener activos por distrito".into())
+    })?;
+
+    let resultado: Vec<Value> = filas
+        .iter()
+        .map(|row| {
+            let ingreso: NaiveDate = row.get("ingreso");
+
+            json!({
+                "dni": row.get::<String, _>("dni"),
+                "nombre": row.get::<String, _>("nombre"),
+                "ingreso": ingreso.to_string(),
+                "direccion": row.try_get::<Option<String>, _>("direccion").unwrap_or(None),
+                "area": row.get::<String, _>("area"),
+                "cargo": row.get::<String, _>("cargo"),
+                "sindicato": row.try_get::<Option<String>, _>("sindicato").unwrap_or(None),
+                "regimen": row.get::<String, _>("regimen"),
+                "distrito": row.get::<String, _>("distrito"),
+            })
+        })
+        .collect();
+
+    Ok(HttpResponse::Ok().json(resultado))
+}
+
+#[derive(Deserialize, Validate)]
+pub struct CambioAreaPayload {
+    #[validate(range(min = 1, message = "ID de vínculo inválido"))]
+    pub vinculo_id: i32,
+    #[validate(range(min = 1, message = "ID de área inválido"))]
+    pub nueva_area_id: i32,
+    #[validate(length(min = 1, message = "La fecha del cambio es requerida"))]
+    pub fecha_cambio: String,
+    #[validate(nested)]
+    pub documento: Documento,
+}
+
+pub async fn registrar_cambio_area(
+    data: web::Data<AppState>,
+    payload: web::Json<CambioAreaPayload>,
+    req: HttpRequest,
+) -> Result<impl Responder, ApiError> {
+    validar(&payload.0)?;
+
+    let user_id = req
+        .extensions()
+        .get::<Claims>()
+        .map(|c| c.id)
+        .filter(|&id| id > 0);
+
+    let mut tx = data
+        .db
+        .begin()
+        .await
+        .map_err(|e| ApiError::InternalError(format!("DB transaction begin error: {}", e)))?;
+
+    let vinculo = sqlx::query!(
+        r#"
+        SELECT v.id, v.dni, v.area_id, v.estado, a.nombre AS area_nombre
+        FROM vinculo v
+        INNER JOIN area a ON v.area_id = a.id
+        WHERE v.id = ?
+        "#,
+        payload.vinculo_id
+    )
+    .fetch_optional(&mut *tx)
+    .await
+    .map_err(|e| ApiError::InternalError(format!("Error al buscar vínculo: {}", e)))?
+    .ok_or_else(|| ApiError::NotFound("Vínculo no encontrado".into()))?;
+
+    if vinculo.estado != "activo" {
+        return Err(ApiError::BadRequest(format!(
+            "El vínculo no está activo (estado actual: {})",
+            vinculo.estado
+        )));
+    }
+
+    if vinculo.area_id == payload.nueva_area_id {
+        return Err(ApiError::BadRequest(
+            "El vínculo ya pertenece a esa área".into(),
+        ));
+    }
+
+    let nueva_area = sqlx::query!(
+        "SELECT id, nombre FROM area WHERE id = ?",
+        payload.nueva_area_id
+    )
+    .fetch_optional(&mut *tx)
+    .await
+    .map_err(|e| ApiError::InternalError(format!("Error al buscar área nueva: {}", e)))?
+    .ok_or_else(|| ApiError::NotFound("Área nueva no encontrada".into()))?;
+
+    let rotacion_activa = sqlx::query!(
+        r#"
+        SELECT id FROM eventovinculo
+        WHERE vinculo_id = ? AND tipo_evento = 'rotacion' AND estado = 'activo'
+        LIMIT 1
+        "#,
+        payload.vinculo_id
+    )
+    .fetch_optional(&mut *tx)
+    .await
+    .map_err(|e| ApiError::InternalError(format!("Error al verificar rotación: {}", e)))?;
+
+    if rotacion_activa.is_some() {
+        return Err(ApiError::BadRequest(
+            "El vínculo tiene una rotación activa. Cierre la rotación antes de cambiar el área."
+                .into(),
+        ));
+    }
+
+    let documento_id = sqlx::query(
+        r#"
+        INSERT INTO documento (tipo_documento_id, numero, year, fecha, fecha_valida, descripcion)
+        VALUES (?, ?, ?, ?, ?, ?)
+        "#,
+    )
+    .bind(&payload.documento.tipo)
+    .bind(payload.documento.numero)
+    .bind(payload.documento.año)
+    .bind(&payload.documento.fecha)
+    .bind(&payload.documento.fecha_valida)
+    .bind(&payload.documento.descripcion)
+    .execute(&mut *tx)
+    .await
+    .map_err(|e| ApiError::InternalError(format!("Error al insertar documento: {}", e)))?
+    .last_insert_id() as i32;
+
+    sqlx::query(
+        r#"
+        INSERT INTO cambio_area
+            (vinculo_id, area_anterior_id, area_nueva_id, documento_id, fecha_cambio, user_id)
+        VALUES (?, ?, ?, ?, ?, ?)
+        "#,
+    )
+    .bind(payload.vinculo_id)
+    .bind(vinculo.area_id)
+    .bind(payload.nueva_area_id)
+    .bind(documento_id)
+    .bind(&payload.fecha_cambio)
+    .bind(user_id)
+    .execute(&mut *tx)
+    .await
+    .map_err(|e| ApiError::InternalError(format!("Error al insertar cambio de área: {}", e)))?;
+
+    sqlx::query("UPDATE vinculo SET area_id = ? WHERE id = ?")
+        .bind(payload.nueva_area_id)
+        .bind(payload.vinculo_id)
+        .execute(&mut *tx)
+        .await
+        .map_err(|e| ApiError::InternalError(format!("Error al actualizar vínculo: {}", e)))?;
+
+    tx.commit()
+        .await
+        .map_err(|e| ApiError::InternalError(format!("Commit error: {}", e)))?;
+
+    let _ = registrar_historial(
+        &req,
+        &data.db,
+        "cambio de area",
+        &vinculo.dni,
+        Some(json!({
+            "vinculo_id": payload.vinculo_id,
+            "area_anterior": { "id": vinculo.area_id, "nombre": vinculo.area_nombre },
+            "area_nueva":    { "id": nueva_area.id,   "nombre": nueva_area.nombre },
+            "fecha_cambio": payload.fecha_cambio,
+            "documento": {
+                "tipo": payload.documento.tipo,
+                "numero": payload.documento.numero,
+                "año": payload.documento.año,
+                "fecha": payload.documento.fecha,
+                "descripcion": payload.documento.descripcion,
+            }
+        })),
+    )
+    .await;
+
+    Ok(HttpResponse::Ok().json("Cambio de área registrado correctamente"))
+}

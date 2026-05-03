@@ -13,8 +13,11 @@
 <script setup lang="ts">
   import { ref, computed, onMounted, onUnmounted, watch, nextTick, markRaw } from 'vue'
   import { storeToRefs } from 'pinia'
+  import { useRouter } from 'vue-router'
   import { useTableroStore } from '../../stores/dashboard'
   import 'leaflet/dist/leaflet.css'
+
+  const router = useRouter()
 
   
   interface Props {
@@ -110,6 +113,12 @@
             geojsonLayer.resetStyle(e.target)
           },
           click(e: any) {
+            const datoDistrito = buscar(nombre)
+            const destino = datoDistrito?.nombre || nombre
+            if (destino) {
+              router.push({ name: 'distrito-personal', params: { nombre: destino } })
+              return
+            }
             mapInstance.fitBounds(e.target.getBounds(), { padding: [40, 40] })
           },
         })

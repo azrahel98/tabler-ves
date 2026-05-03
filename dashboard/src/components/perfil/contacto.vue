@@ -87,24 +87,43 @@
   const eliminando = ref(false)
   const copiado = ref(false)
 
-  const badgeRelacion = (relacion: string) => {
-    if (!relacion) return 'bg-gray-50 text-gray-600 ring-gray-600/10 dark:bg-gray-400/10 dark:text-gray-400 dark:ring-gray-400/20'
-    const r = relacion.toLowerCase()
-    if (r.includes('madre') || r.includes('padre')) return 'bg-blue-50 text-blue-700 ring-blue-700/10 dark:bg-blue-400/10 dark:text-blue-400 dark:ring-blue-400/30'
-    if (r.includes('hijo') || r.includes('hija')) return 'bg-green-50 text-green-700 ring-green-700/10 dark:bg-green-400/10 dark:text-green-400 dark:ring-green-400/30'
-    if (r.includes('espos') || r.includes('conyuge') || r.includes('cónyuge') || r.includes('pareja'))
-      return 'bg-rose-50 text-rose-700 ring-rose-700/10 dark:bg-rose-400/10 dark:text-rose-400 dark:ring-rose-400/30'
-    if (r.includes('herman')) return 'bg-amber-50 text-amber-700 ring-amber-700/10 dark:bg-amber-400/10 dark:text-amber-400 dark:ring-amber-400/30'
-    return 'bg-purple-50 text-purple-700 ring-purple-700/10 dark:bg-purple-400/10 dark:text-purple-400 dark:ring-purple-400/30'
+  const RELACION_CONFIG = {
+    PADRES: {
+      pattern: /(madre|padre|papá|mamá)/i,
+      class: 'bg-blue-50 text-blue-700 ring-blue-700/10 dark:bg-blue-400/10 dark:text-blue-400 dark:ring-blue-400/30',
+      icon: Home
+    },
+    HIJOS: {
+      pattern: /(hijo|hija)/i,
+      class: 'bg-green-50 text-green-700 ring-green-700/10 dark:bg-green-400/10 dark:text-green-400 dark:ring-green-400/30',
+      icon: Baby
+    },
+    PAREJA: {
+      pattern: /(espos|conyuge|cónyuge|pareja|novi|compañer)/i,
+      class: 'bg-rose-50 text-rose-700 ring-rose-700/10 dark:bg-rose-400/10 dark:text-rose-400 dark:ring-rose-400/30',
+      icon: Heart
+    },
+    HERMANOS: {
+      pattern: /(herman)/i,
+      class: 'bg-amber-50 text-amber-700 ring-amber-700/10 dark:bg-amber-400/10 dark:text-amber-400 dark:ring-amber-400/30',
+      icon: Users
+    },
+    OTROS: {
+      pattern: /.*/i,
+      class: 'bg-purple-50 text-purple-700 ring-purple-700/10 dark:bg-purple-400/10 dark:text-purple-400 dark:ring-purple-400/30',
+      icon: User
+    }
   }
 
-  const getRelacionIcon = (relacion: string) => {
-    const r = relacion.toLowerCase()
-    if (r.includes('madre') || r.includes('padre')) return Home
-    if (r.includes('hijo') || r.includes('hija')) return Baby
-    if (r.includes('espos') || r.includes('conyuge') || r.includes('cónyuge') || r.includes('pareja')) return Heart
-    return User
+  const getRelacionConfig = (relacion: string) => {
+    if (!relacion) return { class: 'bg-gray-50 text-gray-600 ring-gray-600/10 dark:bg-gray-400/10 dark:text-gray-400 dark:ring-gray-400/20', icon: User }
+    
+    const config = Object.values(RELACION_CONFIG).find(c => c.pattern.test(relacion))
+    return config || RELACION_CONFIG.OTROS
   }
+
+  const badgeRelacion = (relacion: string) => getRelacionConfig(relacion).class
+  const getRelacionIcon = (relacion: string) => getRelacionConfig(relacion).icon
 
   const copiarTelefono = async () => {
     if (!contactoEmergencia.value?.telefono) return

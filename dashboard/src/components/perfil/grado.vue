@@ -48,14 +48,21 @@
           </div>
         </div>
 
-        
-        <button
-          v-if="esAdmin"
-          @click="openModal(grado)"
-          class="opacity-0 group-hover:opacity-100 shrink-0 rounded-lg p-1 text-gray-400 hover:bg-primary/10 hover:text-primary dark:hover:bg-primary/20 dark:hover:text-brand-300 transition-all"
-          title="Editar">
-          <Pencil class="h-3 w-3" />
-        </button>
+
+        <div v-if="esAdmin" class="opacity-0 group-hover:opacity-100 shrink-0 flex items-center gap-1 transition-all">
+          <button
+            @click="openModal(grado)"
+            class="rounded-lg p-1 text-gray-400 hover:bg-primary/10 hover:text-primary dark:hover:bg-primary/20 dark:hover:text-brand-300 transition-all"
+            title="Editar">
+            <Pencil class="h-3 w-3" />
+          </button>
+          <button
+            @click="abrirEliminar(grado)"
+            class="rounded-lg p-1 text-gray-400 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-500/10 dark:hover:text-red-400 transition-all"
+            title="Eliminar">
+            <Trash2 class="h-3 w-3" />
+          </button>
+        </div>
       </div>
     </div>
 
@@ -67,6 +74,7 @@
     </div>
 
     <EditGradoModal :isOpen="isModalOpen" :grado="gradoSeleccionado" :isEdit="isEditMode" @close="isModalOpen = false" @save="handleSave" />
+    <ConfirmarEliminarGradoModal :isOpen="isEliminarOpen" :grado="gradoAEliminar" @close="isEliminarOpen = false" @confirm="handleEliminar" />
   </div>
 </template>
 
@@ -74,9 +82,11 @@
   import { ref } from 'vue'
   import { storeToRefs } from 'pinia'
   import { usePersonalStore } from '../../stores/personal'
-  import { Pencil, Plus, Building2, GraduationCap, Award, BookOpen, Star, School, Briefcase } from 'lucide-vue-next'
+  import { Pencil, Plus, Building2, GraduationCap, Award, BookOpen, Star, School, Briefcase, Trash2 } from 'lucide-vue-next'
   import EditGradoModal from './modals/EditGradoModal.vue'
+  import ConfirmarEliminarGradoModal from './modals/ConfirmarEliminarGradoModal.vue'
   import { useAutenticacionStore } from '../../stores/auth'
+  import type { GradoAcademico } from '../../types'
 
   const store = usePersonalStore()
   const { grados } = storeToRefs(store)
@@ -85,6 +95,8 @@
   const isModalOpen = ref(false)
   const isEditMode = ref(false)
   const gradoSeleccionado = ref<any>(null)
+  const isEliminarOpen = ref(false)
+  const gradoAEliminar = ref<GradoAcademico | null>(null)
 
   const colorNivel = (nivel: string) => {
     if (!nivel) return 'bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400'
@@ -131,6 +143,21 @@
       isModalOpen.value = false
     } catch (error) {
       console.error('Error al guardar grado académico', error)
+    }
+  }
+
+  const abrirEliminar = (grado: GradoAcademico) => {
+    gradoAEliminar.value = grado
+    isEliminarOpen.value = true
+  }
+
+  const handleEliminar = async (id: number) => {
+    try {
+      await store.eliminarGrado(id)
+      isEliminarOpen.value = false
+      gradoAEliminar.value = null
+    } catch (error) {
+      console.error('Error al eliminar grado académico', error)
     }
   }
 </script>

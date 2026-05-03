@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import api from '../services/api'
 import { ref } from 'vue'
 import { useConfiguracionStore } from '../stores/layout'
-import type { Resumen, Cumpleano, ReporteArea, PersonalActivo, Renuncia, NodoOrganigrama, Documento, Banco, NuevoTrabajador, EventoVinculo } from '../types'
+import type { Resumen, Cumpleano, ReporteArea, PersonalActivo, Renuncia, NodoOrganigrama, Documento, Banco, NuevoTrabajador, EventoVinculo, TrabajadorPorDistrito } from '../types'
 
 const TTL_MS = 2 * 60 * 1000 
 
@@ -21,6 +21,8 @@ export const useTableroStore = defineStore('tablero', () => {
   const renunciasAnio = ref<{ nombre: string; cantidad: number }[]>([])
   const nuevosTrabajadores = ref<NuevoTrabajador[]>([])
   const eventosVinculo = ref<EventoVinculo[]>([])
+  const trabajadoresPorDistrito = ref<TrabajadorPorDistrito[]>([])
+  const distritoActual = ref<string | null>(null)
 
   async function obtenerResumen() {
     const res = await api.post('/dash/info')
@@ -87,6 +89,12 @@ export const useTableroStore = defineStore('tablero', () => {
     eventosVinculo.value = res.data
   }
 
+  async function obtenerTrabajadoresPorDistrito(distrito: string) {
+    const res = await api.post('/personal/activos_por_distrito', { distrito })
+    trabajadoresPorDistrito.value = res.data
+    distritoActual.value = distrito
+  }
+
   async function obtenerTodo(forzar = false) {
     if (!forzar && ultimaActualizacion.value && Date.now() - ultimaActualizacion.value < TTL_MS) return
 
@@ -118,6 +126,8 @@ export const useTableroStore = defineStore('tablero', () => {
     renunciasAnio.value = []
     nuevosTrabajadores.value = []
     eventosVinculo.value = []
+    trabajadoresPorDistrito.value = []
+    distritoActual.value = null
   }
 
   return {
@@ -135,6 +145,8 @@ export const useTableroStore = defineStore('tablero', () => {
     renunciasAnio,
     nuevosTrabajadores,
     eventosVinculo,
+    trabajadoresPorDistrito,
+    distritoActual,
     obtenerResumen,
     obtenerCumpleanos,
     obtenerReporteAreas,
@@ -148,6 +160,7 @@ export const useTableroStore = defineStore('tablero', () => {
     obtenerRenunciasAnio,
     obtenerNuevosTrabajadores,
     obtenerEventosVinculo,
+    obtenerTrabajadoresPorDistrito,
     obtenerTodo,
     limpiarDatos,
   }

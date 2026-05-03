@@ -169,3 +169,37 @@ export interface Cargo {
   id: number
   nombre: string
 }
+
+export interface DocumentoRespaldo {
+  tipoDocumento?: string | null
+  numeroDocumento?: number | null
+  añoDocumento?: number | null
+  fecha: string
+  descripcion: string
+}
+
+export interface CambioAreaPayload {
+  vinculo_id: number
+  nueva_area_id: number
+  fecha_cambio: string
+  documento: DocumentoRespaldo
+}
+
+export interface TrabajadorPorDistrito {
+  dni: string
+  nombre: string
+  ingreso: string | null
+  renuncia: string | null
+  area: string | null
+  cargo: string | null
+  sindicato: string | null
+  regimen: string | null
+  distrito: string
+}
+
+export interface RegistrarUrlPayload {
+  dni_asociado: string
+  original_name: string
+  external_url: string
+  documento_id?: number
+}

@@ -149,6 +149,10 @@
                     <Activity class="h-3.5 w-3.5 shrink-0" />
                     <span>{{ v.tipo_evento ? 'Ver Evento' : 'Movimiento' }}</span>
                   </button>
+                  <button v-if="!v.fecha_salida" @click="abrirCambioArea(v)" class="accion-item accion-item--cambio">
+                    <ArrowRightLeft class="h-3.5 w-3.5 shrink-0" />
+                    <span>Cambio de Área</span>
+                  </button>
                   <button v-if="!v.fecha_salida" @click="abrirRenuncia(v)" class="accion-item accion-item--renuncia">
                     <UserMinus class="h-3.5 w-3.5 shrink-0" />
                     <span>Renuncia</span>
@@ -256,6 +260,10 @@
                   <Activity class="h-3.5 w-3.5 shrink-0" />
                   <span>{{ v.tipo_evento ? 'Ver Evento' : 'Movimiento' }}</span>
                 </button>
+                <button v-if="!v.fecha_salida" @click="abrirCambioArea(v)" class="accion-item accion-item--cambio">
+                  <ArrowRightLeft class="h-3.5 w-3.5 shrink-0" />
+                  <span>Cambio de Área</span>
+                </button>
                 <button v-if="!v.fecha_salida" @click="abrirRenuncia(v)" class="accion-item accion-item--renuncia">
                   <UserMinus class="h-3.5 w-3.5 shrink-0" />
                   <span>Renuncia</span>
@@ -308,6 +316,7 @@
       } : undefined"
       @close="isEventoOpen = false"
       @guardado="handleEventoGuardado" />
+    <CambioAreaModal v-if="esAdmin" :isOpen="isCambioAreaOpen" :vinculo="vinculoSeleccionado" @close="isCambioAreaOpen = false" @guardado="handleCambioAreaGuardado" />
   </div>
 </template>
 
@@ -315,10 +324,11 @@
   import { ref } from 'vue'
   import { storeToRefs } from 'pinia'
   import { usePersonalStore } from '../../stores/personal'
-  import { UserMinus, Info, Trash2, MoreHorizontal, Briefcase, Shield, Activity } from 'lucide-vue-next'
+  import { UserMinus, Info, Trash2, MoreHorizontal, Briefcase, Shield, Activity, ArrowRightLeft } from 'lucide-vue-next'
   import RenunciaModal from './modals/RenunciaModal.vue'
   import ConfirmarEliminarModal from './modals/ConfirmarEliminarModal.vue'
   import EventoVinculoModal from './modals/EventoVinculoModal.vue'
+  import CambioAreaModal from './modals/CambioAreaModal.vue'
   import Popover from '../ui/Popover.vue'
   import { useAutenticacionStore } from '../../stores/auth'
   import { addDays, format } from 'date-fns'
@@ -330,6 +340,7 @@
   const isRenunciaOpen = ref(false)
   const isEliminarOpen = ref(false)
   const isEventoOpen = ref(false)
+  const isCambioAreaOpen = ref(false)
   const vinculoSeleccionado = ref<any>(null)
 
   const abrirRenuncia = (vinculo: any) => {
@@ -378,6 +389,18 @@
       await store.eliminarSindicato(vinculo.id, vinculo.dni)
     } catch (error) {
       console.error('Error al desafiliar sindicato', error)
+    }
+  }
+
+  const abrirCambioArea = (vinculo: any) => {
+    vinculoSeleccionado.value = vinculo
+    isCambioAreaOpen.value = true
+  }
+
+  const handleCambioAreaGuardado = async () => {
+    isCambioAreaOpen.value = false
+    if (perfilActual.value?.dni) {
+      await store.obtenerVinculos(perfilActual.value.dni)
     }
   }
 </script>
@@ -477,5 +500,16 @@
   .dark .accion-item--evento:hover {
     background-color: rgba(22, 163, 74, 0.1);
     color: #86efac;
+  }
+
+  .accion-item--cambio:hover {
+    background-color: #eef2ff;
+    color: #4f46e5;
+  }
+
+  :root.dark .accion-item--cambio:hover,
+  .dark .accion-item--cambio:hover {
+    background-color: rgba(79, 70, 229, 0.1);
+    color: #a5b4fc;
   }
 </style>

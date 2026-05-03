@@ -4,7 +4,7 @@ use crate::{
 };
 use actix_files::NamedFile;
 use actix_multipart::Multipart;
-use actix_web::{HttpMessage, HttpRequest, HttpResponse, Responder, web};
+use actix_web::{Either, HttpMessage, HttpRequest, HttpResponse, Responder, web};
 use futures_util::TryStreamExt;
 use serde::Deserialize;
 use serde_json::json;
@@ -168,14 +168,15 @@ pub async fn listar_archivos_dni(
 ) -> Result<impl Responder, ApiError> {
     let records = sqlx::query!(
         r#"
-        SELECT 
-            id, 
-            documento_id, 
-            dni_asociado, 
-            original_name, 
-            CAST(file_hash AS CHAR) AS file_hash, 
-            extension, 
-            usuario_subida, 
+        SELECT
+            id,
+            documento_id,
+            dni_asociado,
+            original_name,
+            CAST(file_hash AS CHAR) AS file_hash,
+            extension,
+            external_url,
+            usuario_subida,
             CAST(fecha_subida AS CHAR) AS fecha_subida
         FROM fileserver
         WHERE dni_asociado = ?
@@ -196,6 +197,7 @@ pub async fn listar_archivos_dni(
             "original_name": rec.original_name,
             "file_hash": rec.file_hash,
             "extension": rec.extension,
+            "external_url": rec.external_url,
             "usuario_subida": rec.usuario_subida,
             "fecha_subida": rec.fecha_subida,
         }));
@@ -215,7 +217,8 @@ pub async fn eliminar_archivo(
 ) -> Result<impl Responder, ApiError> {
     let file_record = sqlx::query!(
         r#"
-        SELECT CAST(file_hash AS CHAR) AS file_hash, extension FROM fileserver WHERE id = ?
+        SELECT CAST(file_hash AS CHAR) AS file_hash, extension, external_url
+        FROM fileserver WHERE id = ?
         "#,
         input.id
     )
@@ -224,19 +227,19 @@ pub async fn eliminar_archivo(
     .map_err(|e| ApiError::InternalError(format!("Database error: {}", e)))?;
 
     if let Some(record) = file_record {
-        let upload_dir_str =
-            std::env::var("UPLOAD_DIR").unwrap_or_else(|_| "./uploads".to_string());
-        let mut file_path = std::path::PathBuf::from(upload_dir_str);
+        if record.external_url.is_none() {
+            let upload_dir_str =
+                std::env::var("UPLOAD_DIR").unwrap_or_else(|_| "./uploads".to_string());
+            let mut file_path = std::path::PathBuf::from(upload_dir_str);
 
-        
-        
-        let file_hash_str = record.file_hash.unwrap_or_else(|| "unknown".to_string());
-        let extension = record.extension.unwrap_or_else(|| "pdf".to_string());
+            let file_hash_str = record.file_hash.unwrap_or_else(|| "unknown".to_string());
+            let extension = record.extension.unwrap_or_else(|| "pdf".to_string());
 
-        file_path.push(format!("{}.{}", file_hash_str, extension));
+            file_path.push(format!("{}.{}", file_hash_str, extension));
 
-        if file_path.exists() {
-            let _ = std::fs::remove_file(&file_path);
+            if file_path.exists() {
+                let _ = std::fs::remove_file(&file_path);
+            }
         }
 
         sqlx::query!(
@@ -530,14 +533,14 @@ pub async fn upload_batch(
 pub async fn ver_archivo(
     state: web::Data<AppState>,
     path: web::Path<String>,
-) -> Result<impl Responder, ApiError> {
+) -> Result<Either<HttpResponse, NamedFile>, ApiError> {
     let hash = path.into_inner();
-
-    println!("{}    ", hash);
 
     let file_record = sqlx::query!(
         r#"
-        SELECT original_name, extension FROM fileserver WHERE CAST(file_hash AS CHAR) = ?
+        SELECT original_name, extension, external_url
+        FROM fileserver
+        WHERE CAST(file_hash AS CHAR) = ?
         "#,
         hash
     )
@@ -545,46 +548,112 @@ pub async fn ver_archivo(
     .await
     .map_err(|e| ApiError::InternalError(format!("Database error: {}", e)))?;
 
-    if let Some(record) = file_record {
-        let upload_dir_str =
-            std::env::var("UPLOAD_DIR").unwrap_or_else(|_| "./uploads".to_string());
-        let mut file_path = PathBuf::from(upload_dir_str.clone());
+    let record = file_record.ok_or_else(|| {
+        ApiError::NotFound("Archivo no encontrado en la base de datos".to_string())
+    })?;
 
-        let extension = record
-            .extension
-            .clone()
-            .unwrap_or_else(|| "pdf".to_string());
-        file_path.push(format!("{}.{}", hash, extension));
-        let absolute_path = std::fs::canonicalize(&file_path).unwrap_or_else(|_| file_path.clone());
-
-        println!("\n--- DEBUG ARCHIVO ---");
-        println!("Variable UPLOAD_DIR: {}", upload_dir_str);
-        println!("Buscando archivo en: {:?}", file_path);
-        println!("Ruta absoluta calculada: {:?}", absolute_path);
-        println!("¿El archivo existe?: {}", file_path.exists());
-        println!("----------------------\n");
-        if file_path.exists() {
-            let named_file = NamedFile::open(file_path)
-                .map_err(|e| ApiError::InternalError(format!("Error opening file: {}", e)))?;
-
-            use actix_web::http::header::{ContentDisposition, DispositionParam, DispositionType};
-
-            let original_name = record.original_name;
-
-            let cd = ContentDisposition {
-                disposition: DispositionType::Inline,
-                parameters: vec![DispositionParam::Filename(original_name)],
-            };
-
-            Ok(named_file.set_content_disposition(cd))
-        } else {
-            Err(ApiError::InternalError(
-                "Archivo no encontrado en el disco".to_string(),
-            ))
-        }
-    } else {
-        Err(ApiError::InternalError(
-            "Archivo no encontrado en la base de datos".to_string(),
-        ))
+    if let Some(url) = record.external_url {
+        return Ok(Either::Left(
+            HttpResponse::Found()
+                .append_header(("Location", url.as_str()))
+                .finish(),
+        ));
     }
+
+    let upload_dir_str =
+        std::env::var("UPLOAD_DIR").unwrap_or_else(|_| "./uploads".to_string());
+    let mut file_path = PathBuf::from(upload_dir_str);
+
+    let extension = record.extension.clone().unwrap_or_else(|| "pdf".to_string());
+    file_path.push(format!("{}.{}", hash, extension));
+
+    if !file_path.exists() {
+        return Err(ApiError::NotFound(
+            "Archivo no encontrado en el disco".to_string(),
+        ));
+    }
+
+    let named_file = NamedFile::open(file_path)
+        .map_err(|e| ApiError::InternalError(format!("Error opening file: {}", e)))?;
+
+    use actix_web::http::header::{ContentDisposition, DispositionParam, DispositionType};
+    let cd = ContentDisposition {
+        disposition: DispositionType::Inline,
+        parameters: vec![DispositionParam::Filename(record.original_name)],
+    };
+
+    Ok(Either::Right(named_file.set_content_disposition(cd)))
+}
+
+#[derive(Deserialize)]
+pub struct RegistrarUrlInput {
+    pub dni_asociado: String,
+    pub original_name: String,
+    pub external_url: String,
+    pub documento_id: Option<i32>,
+}
+
+pub async fn registrar_url(
+    data: web::Data<AppState>,
+    input: web::Json<RegistrarUrlInput>,
+    req: HttpRequest,
+) -> Result<impl Responder, ApiError> {
+    if !input.external_url.starts_with("https://") {
+        return Err(ApiError::BadRequest(
+            "La URL externa debe usar HTTPS".to_string(),
+        ));
+    }
+
+    if input.dni_asociado.trim().is_empty() {
+        return Err(ApiError::BadRequest(
+            "El campo dni_asociado es obligatorio".to_string(),
+        ));
+    }
+
+    if !input.original_name.to_lowercase().ends_with(".pdf") {
+        return Err(ApiError::BadRequest(
+            "El nombre del archivo debe terminar en .pdf".to_string(),
+        ));
+    }
+
+    let claims = req.extensions().get::<Claims>().cloned();
+    let usuario_subida = claims
+        .map(|c| c.nombre)
+        .unwrap_or_else(|| "Desconocido".to_string());
+
+    let extension = "pdf";
+
+    let result = sqlx::query!(
+        r#"
+        INSERT INTO fileserver (documento_id, dni_asociado, original_name, external_url, extension, usuario_subida)
+        VALUES (?, ?, ?, ?, ?, ?)
+        "#,
+        input.documento_id,
+        input.dni_asociado,
+        input.original_name,
+        input.external_url,
+        extension,
+        usuario_subida
+    )
+    .execute(&data.db)
+    .await
+    .map_err(|e| ApiError::InternalError(format!("Database error: {}", e)))?;
+
+    let id = result.last_insert_id();
+
+    let row = sqlx::query!(
+        r#"SELECT CAST(file_hash AS CHAR) AS file_hash FROM fileserver WHERE id = ?"#,
+        id
+    )
+    .fetch_one(&data.db)
+    .await
+    .map_err(|e| ApiError::InternalError(format!("Database error: {}", e)))?;
+
+    Ok(HttpResponse::Ok().json(json!({
+        "id": id,
+        "original_name": input.original_name,
+        "file_hash": row.file_hash,
+        "external_url": input.external_url,
+        "extension": extension,
+    })))
 }
