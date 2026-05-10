@@ -469,24 +469,24 @@ pub async fn upsert_gradoacademico(
 
     let query_result = sqlx::query(
         r#"
-        INSERT INTO gradoacademico (id, profesion, universidad, colegiatura, nivel_academico, abrv, dni)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO gradoacademico (id, profesion, universidad, nivel_academico, abrv, dni,fecha)
+        VALUES (?, ?, ?, ?, ?, ?, ?,?)
         ON DUPLICATE KEY UPDATE 
             profesion = VALUES(profesion),
             universidad = VALUES(universidad),
-            colegiatura = VALUES(colegiatura),
             nivel_academico = VALUES(nivel_academico),
             abrv = VALUES(abrv),
-            dni = VALUES(dni)
+            dni = VALUES(dni),
+            fecha = VALUES(fecha)
         "#,
     )
     .bind(doc.id)
     .bind(&doc.profesion)
     .bind(&doc.universidad)
-    .bind(&doc.colegiatura)
     .bind(&doc.nivel_academico)
     .bind(&doc.abrv)
     .bind(&doc.dni)
+    .bind(&doc.fecha)
     .execute(&data.db)
     .await;
 
@@ -507,12 +507,7 @@ pub async fn upsert_gradoacademico(
                         json!({"antes": antiguo.universidad, "despues": doc.universidad}),
                     );
                 }
-                if antiguo.colegiatura != doc.colegiatura {
-                    diff.insert(
-                        "colegiatura".to_string(),
-                        json!({"antes": antiguo.colegiatura, "despues": doc.colegiatura}),
-                    );
-                }
+
                 if antiguo.nivel_academico != doc.nivel_academico {
                     diff.insert(
                         "nivel_academico".to_string(),
@@ -592,7 +587,6 @@ pub async fn eliminar_gradoa(
                 "id": grado.id,
                 "profesion": grado.profesion,
                 "universidad": grado.universidad,
-                "colegiatura": grado.colegiatura,
                 "nivel_academico": grado.nivel_academico,
                 "abrv": grado.abrv,
             }

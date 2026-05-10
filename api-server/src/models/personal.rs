@@ -5,7 +5,6 @@ use sqlx::FromRow;
 use validator::Validate;
 use validator::ValidationError;
 
-
 pub fn es_dni_valido(dni: &str) -> Result<(), ValidationError> {
     if dni.len() == 8 && dni.chars().all(|c| c.is_ascii_digit()) {
         Ok(())
@@ -127,13 +126,13 @@ pub struct GradoAcademico {
     pub profesion: String,
     #[validate(length(min = 2, message = "Mínimo 2 caracteres"))]
     pub universidad: String,
-    pub colegiatura: Option<String>,
     #[validate(length(min = 2, message = "Mínimo 2 caracteres"))]
     pub nivel_academico: String,
     #[validate(length(min = 1, message = "La abreviatura es requerida"))]
     pub abrv: String,
     #[validate(custom(function = "es_dni_valido"))]
     pub dni: String,
+    pub fecha: Option<NaiveDate>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -242,4 +241,3 @@ pub struct EventoVinculoPayload {
     pub documento_salida: Option<Documento>,
     pub estado: Option<String>,
 }
-
