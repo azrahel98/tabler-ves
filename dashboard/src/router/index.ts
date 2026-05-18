@@ -91,6 +91,11 @@ const router = createRouter({
           name: 'comparacion-mef',
           component: () => import('../views/ComparacionMefView.vue'),
         },
+        {
+          path: 'calidad-datos',
+          name: 'calidad-datos',
+          component: () => import('../views/CalidadDatosView.vue'),
+        },
       ],
     },
   ],

@@ -1,0 +1,3194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>api-server — Complete Call Flow &amp; Architecture Documentation</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<style>
+:root {
+  --bg: #0f172a; --surface: #1e293b; --border: #334155;
+  --text: #e2e8f0; --muted: #94a3b8; --accent: #38bdf8;
+  --warn: #fbbf24; --err: #f87171; --ok: #34d399;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; }
+.container { max-width: 1200px; margin: 0 auto; padding: 40px 24px; }
+h1 { font-size: 2.4rem; margin-bottom: 8px; background: linear-gradient(135deg, var(--accent), #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+h2 { font-size: 1.7rem; margin: 48px 0 16px; padding-bottom: 8px; border-bottom: 2px solid var(--accent); }
+h3 { font-size: 1.25rem; margin: 32px 0 12px; color: var(--accent); }
+h4 { font-size: 1.05rem; margin: 20px 0 8px; color: var(--warn); }
+p { margin: 8px 0; color: var(--muted); }
+.subtitle { color: var(--muted); font-size: 1.1rem; margin-bottom: 32px; }
+.mermaid { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin: 20px 0; overflow-x: auto; position: relative; }
+.mermaid.is-enhanced { padding: 0; overflow: hidden; min-height: 260px; }
+.mermaid-viewport { padding: 54px 24px 24px; overflow: hidden; cursor: grab; touch-action: none; min-height: 260px; }
+.mermaid-viewport.is-dragging { cursor: grabbing; }
+.mermaid-viewport svg { max-width: none !important; height: auto; transform-origin: 0 0; transition: transform 120ms ease; }
+.mermaid-toolbar { position: absolute; top: 10px; right: 10px; z-index: 3; display: flex; align-items: center; gap: 6px; padding: 6px; background: rgba(15,23,42,0.92); border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.28); }
+.mermaid-toolbar button, .mermaid-toolbar .zoom-level { height: 28px; min-width: 32px; border: 1px solid var(--border); border-radius: 6px; background: #1e293b; color: var(--text); font: 600 0.78rem system-ui, sans-serif; display: inline-flex; align-items: center; justify-content: center; }
+.mermaid-toolbar button { cursor: pointer; }
+.mermaid-toolbar button:hover { border-color: var(--accent); color: var(--accent); }
+.mermaid-toolbar .zoom-level { min-width: 52px; color: var(--muted); background: transparent; }
+.call-table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 0.92rem; }
+.call-table th { background: #1a2744; color: var(--accent); text-align: left; padding: 10px 14px; border: 1px solid var(--border); }
+.call-table td { padding: 8px 14px; border: 1px solid var(--border); vertical-align: top; }
+.call-table tr:nth-child(even) { background: rgba(255,255,255,0.02); }
+.tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: 600; }
+.tag-async { background: #7c3aed33; color: #a78bfa; }
+.tag-class { background: #05966933; color: var(--ok); }
+.tag-func { background: #2563eb33; color: var(--accent); }
+.tag-cmd { background: #d9770633; color: var(--warn); }
+.tag-endpoint { background: #dc262633; color: var(--err); }
+.tag-hook { background: #db277733; color: #f472b6; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px; margin: 16px 0; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 16px; margin: 16px 0; }
+.arrow-chain { font-family: 'Fira Code', monospace; font-size: 0.85rem; color: var(--accent); padding: 10px; background: rgba(56,189,248,0.06); border-radius: 6px; }
+code { font-family: 'Fira Code', 'Cascadia Code', monospace; background: rgba(255,255,255,0.06); padding: 1px 6px; border-radius: 3px; font-size: 0.88em; }
+ul, ol { margin: 8px 0 8px 24px; color: var(--muted); }
+li { margin: 4px 0; }
+a { color: var(--accent); }
+hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
+.nav { position: sticky; top: 0; background: var(--bg); z-index: 10; padding: 12px 0; border-bottom: 1px solid var(--border); display: flex; gap: 20px; flex-wrap: wrap; font-size: 0.9rem; }
+.nav a { text-decoration: none; }
+.nav a:hover { text-decoration: underline; }
+@media (max-width: 768px) { .container { padding: 16px; } h1 { font-size: 1.8rem; } }
+
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>api-server — Complete Call Flow &amp; Architecture Documentation</h1>
+<p class="subtitle">Generated from graphify knowledge graph: 436 nodes, 525 edges, 49 communities. Commit: 801d40e</p>
+
+<div class="nav">
+    <a href="#overview">Architecture Overview</a>
+    <a href="#build-graph">Graph Build</a>
+    <a href="#outputs-docs">Outputs &amp; Docs</a>
+    <a href="#cli-skills">CLI &amp; Skill Installers</a>
+    <a href="#serve-api">Serving API</a>
+    <a href="#security-global">Security &amp; Global Graph</a>
+    <a href="#tests-fixtures">Tests &amp; Fixtures</a>
+    <a href="#personal-data-models">Personal Data Models</a>
+    <a href="#community-42">Community 42</a>
+    <a href="#data-models-for-reports">Data Models for Reports</a>
+    <a href="#middleware-components">Middleware Components</a>
+    <a href="#birthday-dashboard">Birthday Dashboard</a>
+    <a href="#middleware-execution">Middleware Execution</a>
+    <a href="#user-models">User Models</a>
+    <a href="#community-27">Community 27</a>
+    <a href="#other">Other</a>
+</div>
+
+<!-- ====== Architecture Overview ====== -->
+<h2 id="overview">1. Architecture Overview</h2>
+
+<div class="mermaid">
+
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    BUILD_GRAPH_321CBB04("Graph Build<br/><small>9 nodes</small>")
+    class BUILD_GRAPH_321CBB04 module;
+    OUTPUTS_DOCS_ED82387C("Outputs &amp; Docs<br/><small>33 nodes</small>")
+    class OUTPUTS_DOCS_ED82387C module;
+    CLI_SKILLS_9964CBB8("CLI &amp; Skill Installers<br/><small>71 nodes</small>")
+    class CLI_SKILLS_9964CBB8 module;
+    SERVE_API_35EC8E86("Serving API<br/><small>146 nodes</small>")
+    class SERVE_API_35EC8E86 module;
+    SECURITY_GLOBAL_5B9C6A04("Security &amp; Global Graph<br/><small>104 nodes</small>")
+    class SECURITY_GLOBAL_5B9C6A04 module;
+    TESTS_FIXTURES_B84B1DCC("Tests &amp; Fixtures<br/><small>3 nodes</small>")
+    class TESTS_FIXTURES_B84B1DCC module;
+    PERSONAL_DATA_MODELS_1A0EACFD("Personal Data Models<br/><small>17 nodes</small>")
+    class PERSONAL_DATA_MODELS_1A0EACFD module;
+    COMMUNITY_42_BA46CB2A("Community 42<br/><small>12 nodes</small>")
+    class COMMUNITY_42_BA46CB2A module;
+    DATA_MODELS_FOR_REPORTS_8413D704("Data Models for Reports<br/><small>8 nodes</small>")
+    class DATA_MODELS_FOR_REPORTS_8413D704 module;
+    MIDDLEWARE_COMPONENTS_56C83A21("Middleware Components<br/><small>4 nodes</small>")
+    class MIDDLEWARE_COMPONENTS_56C83A21 module;
+    BIRTHDAY_DASHBOARD_DAB79E25("Birthday Dashboard<br/><small>2 nodes</small>")
+    class BIRTHDAY_DASHBOARD_DAB79E25 module;
+    MIDDLEWARE_EXECUTION_EEEE3E4A("Middleware Execution<br/><small>2 nodes</small>")
+    class MIDDLEWARE_EXECUTION_EEEE3E4A module;
+    USER_MODELS_E8A5C653("User Models<br/><small>2 nodes</small>")
+    class USER_MODELS_E8A5C653 module;
+    COMMUNITY_27_99AD9ED4("Community 27<br/><small>2 nodes</small>")
+    class COMMUNITY_27_99AD9ED4 module;
+    OTHER_D0941E68("Other<br/><small>21 nodes</small>")
+    class OTHER_D0941E68 module;
+    SECURITY_GLOBAL_5B9C6A04 -->|calls x5| CLI_SKILLS_9964CBB8
+    CLI_SKILLS_9964CBB8 -->|calls x4| COMMUNITY_42_BA46CB2A
+    COMMUNITY_42_BA46CB2A -->|calls x4| CLI_SKILLS_9964CBB8
+    OUTPUTS_DOCS_ED82387C -->|contains x3| SERVE_API_35EC8E86
+    CLI_SKILLS_9964CBB8 -->|references x3| SERVE_API_35EC8E86
+    COMMUNITY_42_BA46CB2A -->|references x2| SERVE_API_35EC8E86
+    CLI_SKILLS_9964CBB8 -->|contains| OUTPUTS_DOCS_ED82387C
+    CLI_SKILLS_9964CBB8 -->|contains| SECURITY_GLOBAL_5B9C6A04
+    OUTPUTS_DOCS_ED82387C -->|calls| CLI_SKILLS_9964CBB8
+    SERVE_API_35EC8E86 -->|contains| CLI_SKILLS_9964CBB8
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<div class="grid">
+  <div class="card">
+    <h4>Architecture Layers</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>Layer</th><th>Nodes</th><th>Communities</th></tr>
+      <tr><td>Graph Build</td><td>9</td><td><code>12, 16</code></td></tr><tr><td>Outputs &amp; Docs</td><td>33</td><td><code>1</code></td></tr><tr><td>CLI &amp; Skill Installers</td><td>71</td><td><code>0, 17, 43</code></td></tr><tr><td>Serving API</td><td>146</td><td><code>7, 8, 41, 2, 6</code></td></tr><tr><td>Security &amp; Global Graph</td><td>104</td><td><code>5, 3, 14, 9, 10, 15, 47, 48, 18, 22</code></td></tr><tr><td>Tests &amp; Fixtures</td><td>3</td><td><code>23, 30</code></td></tr><tr><td>Personal Data Models</td><td>17</td><td><code>4</code></td></tr><tr><td>Community 42</td><td>12</td><td><code>42</code></td></tr><tr><td>Data Models for Reports</td><td>8</td><td><code>11</code></td></tr><tr><td>Middleware Components</td><td>4</td><td><code>13</code></td></tr><tr><td>Birthday Dashboard</td><td>2</td><td><code>19</code></td></tr><tr><td>Middleware Execution</td><td>2</td><td><code>20</code></td></tr><tr><td>User Models</td><td>2</td><td><code>21</code></td></tr><tr><td>Community 27</td><td>2</td><td><code>27</code></td></tr><tr><td>Other</td><td>21</td><td><code>44, 45, 46, 24, 25, 26, 28, 29, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40</code></td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Core Flow</h4>
+    <div class="arrow-chain">Graph Build -&gt; Outputs &amp; Docs -&gt; Serving API -&gt; CLI &amp; Skill Installers -&gt; Community 42 -&gt; Security &amp; Global Graph -&gt; Tests &amp; Fixtures</div>
+  </div>
+</div>
+<div class="grid">
+  <div class="card">
+    <h4>Graph Report Highlights</h4>
+    <ul>
+      <li>436 nodes · 525 edges · 49 communities (25 shown, 24 thin omitted)</li>
+      <li>Extraction: 83% EXTRACTED · 17% INFERRED · 0% AMBIGUOUS · INFERRED: 88 edges (avg confidence: 0.83)</li>
+      <li>Token cost: 0 input · 0 output</li>
+      <li>1. `validar()` - 34 edges</li>
+      <li>2. `Personal `/personal` 🔒` - 31 edges</li>
+      <li>3. `registrar_historial()` - 25 edges</li>
+    </ul>
+  </div>
+</div>
+<hr>
+<!-- ====== 2. Graph Build ====== -->
+<h2 id="build-graph">2. Graph Build</h2>
+<p>Graph Build groups implementation around settingsjson, gemini, settingslocaljson, graphify, mostly in .gemini/settings.json, .claude/settings.local.json, GEMINI.md. This section covers 9 nodes and 7 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: Graph Build (9 nodes, 7 edges)
+    subgraph build_graph_gemini_settings_json_f269f319[".gemini/settings.json"]
+        gemini_settings_hooks_10aa4c9f("hooks<br/><small>.gemini/settings.json</small>")
+        gemini_settings_json_fe3aab57("settings.json")
+        gemini_settings_graphify_hook_b569e6c0("Graphify BeforeTool Context Hook<br/><small>.gemini/settings.json</small>")
+        gemini_settings_hooks_beforetool_2c92a9df("BeforeTool<br/><small>.gemini/settings.json</small>")
+    end
+    subgraph build_graph_claude_settings_local_json_c6a18a30[".claude/settings.local.json"]
+        claude_settings_local_json_7193c627("settings.local.json")
+        claude_settings_local_permissions_644ef1f2("permissions<br/><small>.claude/settings.local.json</small>")
+        claude_settings_local_permissions_allow_dd87a585("allow<br/><small>.claude/settings.local.json</small>")
+    end
+    subgraph build_graph_GEMINI_md_e037213e["GEMINI.md"]
+        gemini_graphify_a7c05bf2("Graphify Knowledge Graph Integration<br/><small>GEMINI.md</small>")
+        gemini_rules_f8452ae3("Graphify Usage Rules<br/><small>GEMINI.md</small>")
+    end
+    gemini_settings_hooks_10aa4c9f -->|references| gemini_settings_graphify_hook_b569e6c0
+    gemini_graphify_a7c05bf2 -->|references| gemini_rules_f8452ae3
+    claude_settings_local_json_7193c627 -->|contains| claude_settings_local_permissions_644ef1f2
+    claude_settings_local_permissions_644ef1f2 -->|contains| claude_settings_local_permissions_allow_dd87a585
+    gemini_settings_json_fe3aab57 -->|contains| gemini_settings_hooks_10aa4c9f
+    gemini_settings_hooks_10aa4c9f -->|contains| gemini_settings_hooks_beforetool_2c92a9df
+    gemini_settings_graphify_hook_b569e6c0 -->|explains| gemini_graphify_a7c05bf2
+    class gemini_settings_hooks_10aa4c9f ui;
+    class gemini_settings_json_fe3aab57 function;
+    class gemini_settings_graphify_hook_b569e6c0 concept;
+    class gemini_settings_hooks_beforetool_2c92a9df klass;
+    class claude_settings_local_json_7193c627 function;
+    class claude_settings_local_permissions_644ef1f2 function;
+    class claude_settings_local_permissions_allow_dd87a585 function;
+    class gemini_graphify_a7c05bf2 klass;
+    class gemini_rules_f8452ae3 concept;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>settings.json</code><br><small style="color:var(--muted)">.gemini/settings.json</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>settings.json node in .gemini/settings.json.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>hooks</code><br><small style="color:var(--muted)">.gemini/settings.json</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>hooks node in .gemini/settings.json.</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><code>BeforeTool</code><br><small style="color:var(--muted)">.gemini/settings.json</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>BeforeTool node in .gemini/settings.json.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>Graphify BeforeTool Context Hook</code><br><small style="color:var(--muted)">.gemini/settings.json</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Graphify BeforeTool Context Hook.</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td><code>Graphify Knowledge Graph Integration</code><br><small style="color:var(--muted)">GEMINI.md</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Builds dependency relationships and graph data.</td>
+</tr>
+<tr>
+  <td>6</td>
+  <td><code>Graphify Usage Rules</code><br><small style="color:var(--muted)">GEMINI.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Graphify Usage Rules.</td>
+</tr>
+<tr>
+  <td>7</td>
+  <td><code>settings.local.json</code><br><small style="color:var(--muted)">.claude/settings.local.json</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>settings.local.json node in .claude/settings.local.json.</td>
+</tr>
+<tr>
+  <td>8</td>
+  <td><code>permissions</code><br><small style="color:var(--muted)">.claude/settings.local.json</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>permissions node in .claude/settings.local.json.</td>
+</tr>
+<tr>
+  <td>9</td>
+  <td><code>allow</code><br><small style="color:var(--muted)">.claude/settings.local.json</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>allow node in .claude/settings.local.json.</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>.gemini/settings.json</code></td><td>4 nodes</td></tr>
+<tr><td><code>.claude/settings.local.json</code></td><td>3 nodes</td></tr>
+<tr><td><code>GEMINI.md</code></td><td>2 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x4, references x2, explains x1. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 3. Outputs & Docs ====== -->
+<h2 id="outputs-docs">3. Outputs &amp; Docs</h2>
+<p>Outputs &amp; Docs groups implementation around dashrs, handlers, model, models, mostly in src/handlers/dash.rs, src/models/dash.rs, src/handlers/personal.rs. This section covers 33 nodes and 39 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: Outputs &amp; Docs (33 nodes, 39 edges)
+    handlers_dash_mef_celda_texto_5b6a13de("mef_celda_texto()<br/><small>src/handlers/dash.rs</small>")
+    handlers_dash_mef_celda_fecha_3b1a019b("mef_celda_fecha()<br/><small>src/handlers/dash.rs</small>")
+    handlers_dash_mef_get_cell_9b85d768("mef_get_cell()<br/><small>src/handlers/dash.rs</small>")
+    handlers_dash_mef_parsear_hoja_93be36ba("mef_parsear_hoja()<br/><small>src/handlers/dash.rs</small>")
+    handlers_dash_datosmef_58f74e23("DatosMef<br/><small>src/handlers/dash.rs</small>")
+    handlers_dash_exportarcomparacionrequest_05b0f2cb("ExportarComparacionRequest<br/><small>src/handlers/dash.rs</small>")
+    handlers_dash_reportedocumento_d9011eee("ReporteDocumento<br/><small>src/handlers/dash.rs</small>")
+    handlers_dash_ReporteDocumento_0451326d("ReporteDocumento (local struct)<br/><small>src/handlers/dash.rs</small>")
+    handlers_dash_activos_por_distrito_e3c9d8db("activos_por_distrito()<br/><small>src/handlers/dash.rs</small>")
+    handlers_dash_bancos_report_8d128a0e("bancos_report()<br/><small>src/handlers/dash.rs</small>")
+    handlers_dash_cumplea_os_bf689fe5("cumpleaños()<br/><small>src/handlers/dash.rs</small>")
+    src_handlers_dash_rs_224f7939("dash.rs")
+    handlers_dash_renuncias_ano_bc7a147d("dash::renuncias_año<br/><small>src/handlers/dash.rs</small>")
+    handlers_dash_exportar_comparacion_mef_6ae0e761("exportar_comparacion_mef()<br/><small>src/handlers/dash.rs</small>")
+    handlers_dash_exportar_excel_9e010c10("exportar_excel()<br/><small>src/handlers/dash.rs</small>")
+    handlers_dash_info_9e0b3322("info()<br/><small>src/handlers/dash.rs</small>")
+    handlers_dash_nuevos_trabajadores_233f1b58("nuevos_trabajadores()<br/><small>src/handlers/dash.rs</small>")
+    handlers_dash_organigrama_fb4b8d6b("organigrama()<br/><small>src/handlers/dash.rs</small>")
+    handlers_dash_mef_celda_texto_5b6a13de -->|calls| handlers_dash_mef_celda_fecha_3b1a019b
+    handlers_dash_mef_celda_texto_5b6a13de -->|calls| handlers_dash_mef_get_cell_9b85d768
+    handlers_dash_mef_celda_texto_5b6a13de -->|calls| handlers_dash_mef_parsear_hoja_93be36ba
+    handlers_dash_mef_celda_fecha_3b1a019b -->|calls| handlers_dash_mef_get_cell_9b85d768
+    handlers_dash_mef_get_cell_9b85d768 -->|calls| handlers_dash_mef_parsear_hoja_93be36ba
+    %% Omitted for readability: 15 nodes, 0 edges
+    class handlers_dash_mef_celda_texto_5b6a13de function;
+    class handlers_dash_mef_celda_fecha_3b1a019b function;
+    class handlers_dash_mef_get_cell_9b85d768 function;
+    class handlers_dash_mef_parsear_hoja_93be36ba function;
+    class handlers_dash_datosmef_58f74e23 klass;
+    class handlers_dash_exportarcomparacionrequest_05b0f2cb klass;
+    class handlers_dash_reportedocumento_d9011eee klass;
+    class handlers_dash_ReporteDocumento_0451326d klass;
+    class handlers_dash_activos_por_distrito_e3c9d8db function;
+    class handlers_dash_bancos_report_8d128a0e function;
+    class handlers_dash_cumplea_os_bf689fe5 function;
+    class src_handlers_dash_rs_224f7939 module;
+    class handlers_dash_renuncias_ano_bc7a147d function;
+    class handlers_dash_exportar_comparacion_mef_6ae0e761 function;
+    class handlers_dash_exportar_excel_9e010c10 function;
+    class handlers_dash_info_9e0b3322 function;
+    class handlers_dash_nuevos_trabajadores_233f1b58 function;
+    class handlers_dash_organigrama_fb4b8d6b function;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>dash.rs</code><br><small style="color:var(--muted)">src/handlers/dash.rs</small></td>
+  <td><span class="tag tag-class">Module</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>dash.rs node in src/handlers/dash.rs.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>cumpleaños()</code><br><small style="color:var(--muted)">src/handlers/dash.rs</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>cumpleaños() node in src/handlers/dash.rs.</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><code>info()</code><br><small style="color:var(--muted)">src/handlers/dash.rs</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>info() node in src/handlers/dash.rs.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>personal_area_report()</code><br><small style="color:var(--muted)">src/handlers/dash.rs</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>personal_area_report() node in src/handlers/dash.rs.</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td><code>renuncias_año()</code><br><small style="color:var(--muted)">src/handlers/dash.rs</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>renuncias_año() node in src/handlers/dash.rs.</td>
+</tr>
+<tr>
+  <td>6</td>
+  <td><code>bancos_report()</code><br><small style="color:var(--muted)">src/handlers/dash.rs</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>bancos_report() node in src/handlers/dash.rs.</td>
+</tr>
+<tr>
+  <td>7</td>
+  <td><code>reporte_personal_activo()</code><br><small style="color:var(--muted)">src/handlers/dash.rs</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>reporte_personal_activo() node in src/handlers/dash.rs.</td>
+</tr>
+<tr>
+  <td>8</td>
+  <td><code>reporte_historial()</code><br><small style="color:var(--muted)">src/handlers/dash.rs</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>reporte_historial() node in src/handlers/dash.rs.</td>
+</tr>
+<tr>
+  <td>9</td>
+  <td><code>organigrama()</code><br><small style="color:var(--muted)">src/handlers/dash.rs</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>organigrama() node in src/handlers/dash.rs.</td>
+</tr>
+<tr>
+  <td>10</td>
+  <td><code>report_renuncias()</code><br><small style="color:var(--muted)">src/handlers/dash.rs</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>report_renuncias() node in src/handlers/dash.rs.</td>
+</tr>
+<tr>
+  <td>11</td>
+  <td><code>ReporteDocumento</code><br><small style="color:var(--muted)">src/handlers/dash.rs</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>ReporteDocumento node in src/handlers/dash.rs.</td>
+</tr>
+<tr>
+  <td>12</td>
+  <td><code>reporte_documentos()</code><br><small style="color:var(--muted)">src/handlers/dash.rs</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>reporte_documentos() node in src/handlers/dash.rs.</td>
+</tr>
+<tr>
+  <td>13</td>
+  <td><code>activos_por_distrito()</code><br><small style="color:var(--muted)">src/handlers/dash.rs</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>activos_por_distrito() node in src/handlers/dash.rs.</td>
+</tr>
+<tr>
+  <td>14</td>
+  <td><code>exportar_excel()</code><br><small style="color:var(--muted)">src/handlers/dash.rs</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Exports documentation data to a target format.</td>
+</tr>
+<tr>
+  <td>15</td>
+  <td><code>nuevos_trabajadores()</code><br><small style="color:var(--muted)">src/handlers/dash.rs</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>nuevos_trabajadores() node in src/handlers/dash.rs.</td>
+</tr>
+<tr>
+  <td>16</td>
+  <td><code>reporte_eventos()</code><br><small style="color:var(--muted)">src/handlers/dash.rs</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>reporte_eventos() node in src/handlers/dash.rs.</td>
+</tr>
+<tr>
+  <td>17</td>
+  <td><code>DatosMef</code><br><small style="color:var(--muted)">src/handlers/dash.rs</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>DatosMef node in src/handlers/dash.rs.</td>
+</tr>
+<tr>
+  <td>18</td>
+  <td><code>mef_celda_texto()</code><br><small style="color:var(--muted)">src/handlers/dash.rs</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>mef_celda_fecha()</code><br><small style="color:var(--muted)">src/handlers/dash.rs</small><br><code>mef_get_cell()</code><br><small style="color:var(--muted)">src/handlers/dash.rs</small><br><code>mef_parsear_hoja()</code><br><small style="color:var(--muted)">src/handlers/dash.rs</small></td>
+  <td>mef_celda_texto() node in src/handlers/dash.rs.</td>
+</tr>
+<tr>
+  <td>19</td>
+  <td><code>mef_celda_fecha()</code><br><small style="color:var(--muted)">src/handlers/dash.rs</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>mef_celda_texto()</code><br><small style="color:var(--muted)">src/handlers/dash.rs</small></td>
+  <td><code>mef_get_cell()</code><br><small style="color:var(--muted)">src/handlers/dash.rs</small></td>
+  <td>mef_celda_fecha() node in src/handlers/dash.rs.</td>
+</tr>
+<tr>
+  <td>20</td>
+  <td><code>mef_get_cell()</code><br><small style="color:var(--muted)">src/handlers/dash.rs</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>mef_celda_fecha()</code><br><small style="color:var(--muted)">src/handlers/dash.rs</small><br><code>mef_celda_texto()</code><br><small style="color:var(--muted)">src/handlers/dash.rs</small></td>
+  <td><code>mef_parsear_hoja()</code><br><small style="color:var(--muted)">src/handlers/dash.rs</small></td>
+  <td>mef_get_cell() node in src/handlers/dash.rs.</td>
+</tr>
+<tr>
+  <td>21</td>
+  <td><code>mef_parsear_hoja()</code><br><small style="color:var(--muted)">src/handlers/dash.rs</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>mef_celda_texto()</code><br><small style="color:var(--muted)">src/handlers/dash.rs</small><br><code>mef_get_cell()</code><br><small style="color:var(--muted)">src/handlers/dash.rs</small></td>
+  <td>No direct outbound edge</td>
+  <td>mef_parsear_hoja() node in src/handlers/dash.rs.</td>
+</tr>
+<tr>
+  <td>22</td>
+  <td><code>ExportarComparacionRequest</code><br><small style="color:var(--muted)">src/handlers/dash.rs</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Exports documentation data to a target format.</td>
+</tr>
+<tr>
+  <td>23</td>
+  <td><code>exportar_comparacion_mef()</code><br><small style="color:var(--muted)">src/handlers/dash.rs</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Exports documentation data to a target format.</td>
+</tr>
+<tr>
+  <td>24</td>
+  <td><code>perfil_por_dni()</code><br><small style="color:var(--muted)">src/handlers/personal.rs</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>perfil_por_dni() node in src/handlers/personal.rs.</td>
+</tr>
+<tr>
+  <td>25</td>
+  <td><code>dash::renuncias_año</code><br><small style="color:var(--muted)">src/handlers/dash.rs</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>dash::renuncias_año node in src/handlers/dash.rs.</td>
+</tr>
+<tr>
+  <td>26</td>
+  <td><code>ReporteDocumento (local struct)</code><br><small style="color:var(--muted)">src/handlers/dash.rs</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>ReporteDocumento (local struct) node in src/handlers/dash.rs.</td>
+</tr>
+<tr>
+  <td>27</td>
+  <td><code>PerfilDni</code><br><small style="color:var(--muted)">src/handlers/personal.rs</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>PerfilDni node in src/handlers/personal.rs.</td>
+</tr>
+<tr>
+  <td>28</td>
+  <td><code>ResumenResponse (model)</code><br><small style="color:var(--muted)">src/models/dash.rs</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>ResumenResponse (model) node in src/models/dash.rs.</td>
+</tr>
+<tr>
+  <td>29</td>
+  <td><code>DataResumen (model)</code><br><small style="color:var(--muted)">src/models/dash.rs</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>DataResumen (model) node in src/models/dash.rs.</td>
+</tr>
+<tr>
+  <td>30</td>
+  <td><code>BancosReport (model)</code><br><small style="color:var(--muted)">src/models/dash.rs</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>BancosReport (model) node in src/models/dash.rs.</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>src/handlers/dash.rs</code></td><td>25 nodes</td></tr>
+<tr><td><code>src/models/dash.rs</code></td><td>6 nodes</td></tr>
+<tr><td><code>src/handlers/personal.rs</code></td><td>2 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x22, references x11, calls x5. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 4. CLI & Skill Installers ====== -->
+<h2 id="cli-skills">4. CLI &amp; Skill Installers</h2>
+<p>CLI &amp; Skill Installers groups implementation around personalrs, handlers, model, models, mostly in src/handlers/personal.rs, src/models/personal.rs, src/main.rs. This section covers 71 nodes and 118 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: CLI &amp; Skill Installers (71 nodes, 118 edges)
+    subgraph cli_skills_src_handlers_personal_rs_07a728fa["src/handlers/personal.rs"]
+        handlers_personal_banco_por_dni_88e4fa58("banco_por_dni()<br/><small>src/handlers/personal.rs</small>")
+        handlers_personal_buscar_por_nombre_eebc5b19("buscar_por_nombre()<br/><small>src/handlers/personal.rs</small>")
+        handlers_personal_vinculos_por_dni_046986f7("vinculos_por_dni()<br/><small>src/handlers/personal.rs</small>")
+        handlers_personal_agregar_infobancaria_536c5b27("agregar_infobancaria()<br/><small>src/handlers/personal.rs</small>")
+        handlers_personal_agregar_sindicato_6adedcbf("agregar_sindicato()<br/><small>src/handlers/personal.rs</small>")
+        handlers_personal_editar_perfil_8ac69b9b("editar_perfil()<br/><small>src/handlers/personal.rs</small>")
+        handlers_personal_editar_datos_bancarios_e47c8d38("editar_datos_bancarios()<br/><small>src/handlers/personal.rs</small>")
+        handlers_personal_upsert_gradoacademico_c9b31371("upsert_gradoacademico()<br/><small>src/handlers/personal.rs</small>")
+        handlers_personal_eliminar_gradoa_cbbd2ad3("eliminar_gradoa()<br/><small>src/handlers/personal.rs</small>")
+        handlers_personal_contacto_emergencia_add_19a184d1("contacto_emergencia_add()<br/><small>src/handlers/personal.rs</small>")
+        handlers_personal_eliminar_contacto_5318b00d("eliminar_contacto()<br/><small>src/handlers/personal.rs</small>")
+        handlers_personal_eliminar_sindicato_d107154f("eliminar_sindicato()<br/><small>src/handlers/personal.rs</small>")
+        handlers_personal_agregar_evento_legajo_1a24faa6("agregar_evento_legajo()<br/><small>src/handlers/personal.rs</small>")
+        handlers_personal_registrar_trabajador_1efed08c("registrar_trabajador()<br/><small>src/handlers/personal.rs</small>")
+        handlers_personal_eliminar_vinculo_f5eee863("eliminar_vinculo()<br/><small>src/handlers/personal.rs</small>")
+        handlers_personal_renuncia_por_vinculo_47438fd2("renuncia_por_vinculo()<br/><small>src/handlers/personal.rs</small>")
+        handlers_personal_upsert_evento_vinculo_0710361c("upsert_evento_vinculo()<br/><small>src/handlers/personal.rs</small>")
+    end
+    handlers_mod_registrar_historial_06b80312("registrar_historial()<br/><small>src/handlers/mod.rs</small>")
+    handlers_mod_registrar_historial_06b80312 -->|calls| handlers_personal_editar_perfil_8ac69b9b
+    handlers_mod_registrar_historial_06b80312 -->|calls| handlers_personal_agregar_infobancaria_536c5b27
+    handlers_mod_registrar_historial_06b80312 -->|calls| handlers_personal_editar_datos_bancarios_e47c8d38
+    handlers_mod_registrar_historial_06b80312 -->|calls| handlers_personal_upsert_gradoacademico_c9b31371
+    handlers_mod_registrar_historial_06b80312 -->|calls| handlers_personal_eliminar_gradoa_cbbd2ad3
+    handlers_mod_registrar_historial_06b80312 -->|calls| handlers_personal_contacto_emergencia_add_19a184d1
+    handlers_mod_registrar_historial_06b80312 -->|calls| handlers_personal_eliminar_contacto_5318b00d
+    handlers_mod_registrar_historial_06b80312 -->|calls| handlers_personal_agregar_sindicato_6adedcbf
+    handlers_mod_registrar_historial_06b80312 -->|calls| handlers_personal_eliminar_sindicato_d107154f
+    handlers_mod_registrar_historial_06b80312 -->|calls| handlers_personal_agregar_evento_legajo_1a24faa6
+    handlers_mod_registrar_historial_06b80312 -->|calls| handlers_personal_registrar_trabajador_1efed08c
+    handlers_mod_registrar_historial_06b80312 -->|calls| handlers_personal_eliminar_vinculo_f5eee863
+    handlers_mod_registrar_historial_06b80312 -->|calls| handlers_personal_renuncia_por_vinculo_47438fd2
+    handlers_mod_registrar_historial_06b80312 -->|calls| handlers_personal_upsert_evento_vinculo_0710361c
+    %% Omitted for readability: 53 nodes, 0 edges
+    class handlers_personal_banco_por_dni_88e4fa58 function;
+    class handlers_personal_buscar_por_nombre_eebc5b19 function;
+    class handlers_personal_vinculos_por_dni_046986f7 function;
+    class handlers_personal_agregar_infobancaria_536c5b27 function;
+    class handlers_personal_agregar_sindicato_6adedcbf function;
+    class handlers_personal_editar_perfil_8ac69b9b function;
+    class handlers_personal_editar_datos_bancarios_e47c8d38 function;
+    class handlers_personal_upsert_gradoacademico_c9b31371 function;
+    class handlers_personal_eliminar_gradoa_cbbd2ad3 function;
+    class handlers_personal_contacto_emergencia_add_19a184d1 function;
+    class handlers_personal_eliminar_contacto_5318b00d function;
+    class handlers_personal_eliminar_sindicato_d107154f function;
+    class handlers_personal_agregar_evento_legajo_1a24faa6 function;
+    class handlers_personal_registrar_trabajador_1efed08c function;
+    class handlers_personal_eliminar_vinculo_f5eee863 function;
+    class handlers_personal_renuncia_por_vinculo_47438fd2 function;
+    class handlers_personal_upsert_evento_vinculo_0710361c function;
+    class handlers_mod_registrar_historial_06b80312 function;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>mod.rs</code><br><small style="color:var(--muted)">src/handlers/mod.rs</small></td>
+  <td><span class="tag tag-class">Module</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>mod.rs node in src/handlers/mod.rs.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>registrar_historial()</code><br><small style="color:var(--muted)">src/handlers/mod.rs</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>agregar_evento_legajo()</code><br><small style="color:var(--muted)">src/handlers/personal.rs</small><br><code>agregar_infobancaria()</code><br><small style="color:var(--muted)">src/handlers/personal.rs</small><br><code>agregar_sindicato()</code><br><small style="color:var(--muted)">src/handlers/personal.rs</small><br>+13 more</td>
+  <td>registrar_historial() node in src/handlers/mod.rs.</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><code>personal.rs</code><br><small style="color:var(--muted)">src/handlers/personal.rs</small></td>
+  <td><span class="tag tag-class">Module</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>personal.rs node in src/handlers/personal.rs.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>PerfilDni</code><br><small style="color:var(--muted)">src/handlers/personal.rs</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>PerfilDni node in src/handlers/personal.rs.</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td><code>BuscarNombre</code><br><small style="color:var(--muted)">src/handlers/personal.rs</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>BuscarNombre node in src/handlers/personal.rs.</td>
+</tr>
+<tr>
+  <td>6</td>
+  <td><code>buscar_por_nombre()</code><br><small style="color:var(--muted)">src/handlers/personal.rs</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>validar()</code><br><small style="color:var(--muted)">src/middleware/error.rs</small></td>
+  <td>buscar_por_nombre() node in src/handlers/personal.rs.</td>
+</tr>
+<tr>
+  <td>7</td>
+  <td><code>editar_perfil()</code><br><small style="color:var(--muted)">src/handlers/personal.rs</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>registrar_historial()</code><br><small style="color:var(--muted)">src/handlers/mod.rs</small></td>
+  <td><code>get_db_key()</code><br><small style="color:var(--muted)">src/repositories/mod.rs</small><br><code>validar()</code><br><small style="color:var(--muted)">src/middleware/error.rs</small></td>
+  <td>editar_perfil() node in src/handlers/personal.rs.</td>
+</tr>
+<tr>
+  <td>8</td>
+  <td><code>consultar_dni_reniec()</code><br><small style="color:var(--muted)">src/handlers/personal.rs</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>get_db_key()</code><br><small style="color:var(--muted)">src/repositories/mod.rs</small><br><code>validar()</code><br><small style="color:var(--muted)">src/middleware/error.rs</small></td>
+  <td>consultar_dni_reniec() node in src/handlers/personal.rs.</td>
+</tr>
+<tr>
+  <td>9</td>
+  <td><code>banco_por_dni()</code><br><small style="color:var(--muted)">src/handlers/personal.rs</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>validar()</code><br><small style="color:var(--muted)">src/middleware/error.rs</small></td>
+  <td>banco_por_dni() node in src/handlers/personal.rs.</td>
+</tr>
+<tr>
+  <td>10</td>
+  <td><code>agregar_infobancaria()</code><br><small style="color:var(--muted)">src/handlers/personal.rs</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>registrar_historial()</code><br><small style="color:var(--muted)">src/handlers/mod.rs</small></td>
+  <td><code>validar()</code><br><small style="color:var(--muted)">src/middleware/error.rs</small></td>
+  <td>agregar_infobancaria() node in src/handlers/personal.rs.</td>
+</tr>
+<tr>
+  <td>11</td>
+  <td><code>editar_datos_bancarios()</code><br><small style="color:var(--muted)">src/handlers/personal.rs</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>registrar_historial()</code><br><small style="color:var(--muted)">src/handlers/mod.rs</small></td>
+  <td><code>validar()</code><br><small style="color:var(--muted)">src/middleware/error.rs</small></td>
+  <td>editar_datos_bancarios() node in src/handlers/personal.rs.</td>
+</tr>
+<tr>
+  <td>12</td>
+  <td><code>upsert_gradoacademico()</code><br><small style="color:var(--muted)">src/handlers/personal.rs</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>registrar_historial()</code><br><small style="color:var(--muted)">src/handlers/mod.rs</small></td>
+  <td><code>validar()</code><br><small style="color:var(--muted)">src/middleware/error.rs</small></td>
+  <td>upsert_gradoacademico() node in src/handlers/personal.rs.</td>
+</tr>
+<tr>
+  <td>13</td>
+  <td><code>EliminarGradoBody</code><br><small style="color:var(--muted)">src/handlers/personal.rs</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>EliminarGradoBody node in src/handlers/personal.rs.</td>
+</tr>
+<tr>
+  <td>14</td>
+  <td><code>eliminar_gradoa()</code><br><small style="color:var(--muted)">src/handlers/personal.rs</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>registrar_historial()</code><br><small style="color:var(--muted)">src/handlers/mod.rs</small></td>
+  <td><code>validar()</code><br><small style="color:var(--muted)">src/middleware/error.rs</small></td>
+  <td>eliminar_gradoa() node in src/handlers/personal.rs.</td>
+</tr>
+<tr>
+  <td>15</td>
+  <td><code>conctaco_por_dni()</code><br><small style="color:var(--muted)">src/handlers/personal.rs</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>get_db_key()</code><br><small style="color:var(--muted)">src/repositories/mod.rs</small><br><code>validar()</code><br><small style="color:var(--muted)">src/middleware/error.rs</small></td>
+  <td>conctaco_por_dni() node in src/handlers/personal.rs.</td>
+</tr>
+<tr>
+  <td>16</td>
+  <td><code>contacto_emergencia_add()</code><br><small style="color:var(--muted)">src/handlers/personal.rs</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>registrar_historial()</code><br><small style="color:var(--muted)">src/handlers/mod.rs</small></td>
+  <td><code>get_db_key()</code><br><small style="color:var(--muted)">src/repositories/mod.rs</small><br><code>validar()</code><br><small style="color:var(--muted)">src/middleware/error.rs</small></td>
+  <td>contacto_emergencia_add() node in src/handlers/personal.rs.</td>
+</tr>
+<tr>
+  <td>17</td>
+  <td><code>EliminarContactoBody</code><br><small style="color:var(--muted)">src/handlers/personal.rs</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>EliminarContactoBody node in src/handlers/personal.rs.</td>
+</tr>
+<tr>
+  <td>18</td>
+  <td><code>eliminar_contacto()</code><br><small style="color:var(--muted)">src/handlers/personal.rs</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>registrar_historial()</code><br><small style="color:var(--muted)">src/handlers/mod.rs</small></td>
+  <td><code>get_db_key()</code><br><small style="color:var(--muted)">src/repositories/mod.rs</small><br><code>validar()</code><br><small style="color:var(--muted)">src/middleware/error.rs</small></td>
+  <td>eliminar_contacto() node in src/handlers/personal.rs.</td>
+</tr>
+<tr>
+  <td>19</td>
+  <td><code>agregar_sindicato()</code><br><small style="color:var(--muted)">src/handlers/personal.rs</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>registrar_historial()</code><br><small style="color:var(--muted)">src/handlers/mod.rs</small></td>
+  <td><code>validar()</code><br><small style="color:var(--muted)">src/middleware/error.rs</small></td>
+  <td>agregar_sindicato() node in src/handlers/personal.rs.</td>
+</tr>
+<tr>
+  <td>20</td>
+  <td><code>EliminarSindicatoBody</code><br><small style="color:var(--muted)">src/handlers/personal.rs</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>EliminarSindicatoBody node in src/handlers/personal.rs.</td>
+</tr>
+<tr>
+  <td>21</td>
+  <td><code>eliminar_sindicato()</code><br><small style="color:var(--muted)">src/handlers/personal.rs</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>registrar_historial()</code><br><small style="color:var(--muted)">src/handlers/mod.rs</small></td>
+  <td><code>validar()</code><br><small style="color:var(--muted)">src/middleware/error.rs</small></td>
+  <td>eliminar_sindicato() node in src/handlers/personal.rs.</td>
+</tr>
+<tr>
+  <td>22</td>
+  <td><code>EditarDocumentoBody</code><br><small style="color:var(--muted)">src/handlers/personal.rs</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>EditarDocumentoBody node in src/handlers/personal.rs.</td>
+</tr>
+<tr>
+  <td>23</td>
+  <td><code>editar_documento()</code><br><small style="color:var(--muted)">src/handlers/personal.rs</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>validar()</code><br><small style="color:var(--muted)">src/middleware/error.rs</small></td>
+  <td>editar_documento() node in src/handlers/personal.rs.</td>
+</tr>
+<tr>
+  <td>24</td>
+  <td><code>registrar_trabajador()</code><br><small style="color:var(--muted)">src/handlers/personal.rs</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>registrar_historial()</code><br><small style="color:var(--muted)">src/handlers/mod.rs</small></td>
+  <td><code>get_db_key()</code><br><small style="color:var(--muted)">src/repositories/mod.rs</small><br><code>validar()</code><br><small style="color:var(--muted)">src/middleware/error.rs</small></td>
+  <td>registrar_trabajador() node in src/handlers/personal.rs.</td>
+</tr>
+<tr>
+  <td>25</td>
+  <td><code>vinculos_por_dni()</code><br><small style="color:var(--muted)">src/handlers/personal.rs</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>validar()</code><br><small style="color:var(--muted)">src/middleware/error.rs</small></td>
+  <td>vinculos_por_dni() node in src/handlers/personal.rs.</td>
+</tr>
+<tr>
+  <td>26</td>
+  <td><code>EliminarVinculoBody</code><br><small style="color:var(--muted)">src/handlers/personal.rs</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>EliminarVinculoBody node in src/handlers/personal.rs.</td>
+</tr>
+<tr>
+  <td>27</td>
+  <td><code>eliminar_vinculo()</code><br><small style="color:var(--muted)">src/handlers/personal.rs</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>registrar_historial()</code><br><small style="color:var(--muted)">src/handlers/mod.rs</small></td>
+  <td><code>validar()</code><br><small style="color:var(--muted)">src/middleware/error.rs</small></td>
+  <td>eliminar_vinculo() node in src/handlers/personal.rs.</td>
+</tr>
+<tr>
+  <td>28</td>
+  <td><code>renuncia_por_vinculo()</code><br><small style="color:var(--muted)">src/handlers/personal.rs</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>registrar_historial()</code><br><small style="color:var(--muted)">src/handlers/mod.rs</small></td>
+  <td>No direct outbound edge</td>
+  <td>renuncia_por_vinculo() node in src/handlers/personal.rs.</td>
+</tr>
+<tr>
+  <td>29</td>
+  <td><code>upsert_evento_vinculo()</code><br><small style="color:var(--muted)">src/handlers/personal.rs</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>registrar_historial()</code><br><small style="color:var(--muted)">src/handlers/mod.rs</small></td>
+  <td><code>validar()</code><br><small style="color:var(--muted)">src/middleware/error.rs</small></td>
+  <td>upsert_evento_vinculo() node in src/handlers/personal.rs.</td>
+</tr>
+<tr>
+  <td>30</td>
+  <td><code>DeleteEventoVinculoBody</code><br><small style="color:var(--muted)">src/handlers/personal.rs</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>DeleteEventoVinculoBody node in src/handlers/personal.rs.</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>src/handlers/personal.rs</code></td><td>44 nodes</td></tr>
+<tr><td><code>src/models/personal.rs</code></td><td>13 nodes</td></tr>
+<tr><td><code>src/main.rs</code></td><td>5 nodes</td></tr>
+<tr><td><code>.agent/workflows/new-route.md</code></td><td>2 nodes</td></tr>
+<tr><td><code>src/handlers/mod.rs</code></td><td>2 nodes</td></tr>
+<tr><td><code>src/repositories/mod.rs</code></td><td>2 nodes</td></tr>
+<tr><td><code>src/services/audit_service.rs</code></td><td>2 nodes</td></tr>
+<tr><td><code>src/middleware/error.rs</code></td><td>1 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x49, calls x29, references x20, semantically similar to x1. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 5. Serving API ====== -->
+<h2 id="serve-api">5. Serving API</h2>
+<p>Serving API groups implementation around apimd, post, codejson, personal, mostly in API.md, src/handlers/fileserver.rs, src/middleware/error.rs. This section covers 146 nodes and 159 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: Serving API (146 nodes, 159 edges)
+    subgraph serve_api_src_handlers_fileserver_rs_9ab0acd4["src/handlers/fileserver.rs"]
+        handlers_fileserver_asignardocumentoinput_8c1256fa("AsignarDocumentoInput<br/><small>src/handlers/fileserver.rs</small>")
+        handlers_fileserver_documentospordniinput_3d2d1b9e("DocumentosPorDniInput<br/><small>src/handlers/fileserver.rs</small>")
+        handlers_fileserver_eliminararchivoinput_fb256544("EliminarArchivoInput<br/><small>src/handlers/fileserver.rs</small>")
+        handlers_fileserver_listararchivosdniinput_64a2d60e("ListarArchivosDniInput<br/><small>src/handlers/fileserver.rs</small>")
+        handlers_fileserver_registrarurlinput_456a0761("RegistrarUrlInput<br/><small>src/handlers/fileserver.rs</small>")
+        handlers_fileserver_asignar_documento_e9bc8d8d("asignar_documento()<br/><small>src/handlers/fileserver.rs</small>")
+        handlers_fileserver_documentos_por_dni_d161ed4f("documentos_por_dni()<br/><small>src/handlers/fileserver.rs</small>")
+        handlers_fileserver_eliminar_archivo_840d7d4d("eliminar_archivo()<br/><small>src/handlers/fileserver.rs</small>")
+        src_handlers_fileserver_rs_5a875009("fileserver.rs")
+        handlers_fileserver_listar_archivos_dni_1cece697("listar_archivos_dni()<br/><small>src/handlers/fileserver.rs</small>")
+        handlers_fileserver_registrar_url_6a2364e1("registrar_url()<br/><small>src/handlers/fileserver.rs</small>")
+        handlers_fileserver_upload_batch_963a1030("upload_batch()<br/><small>src/handlers/fileserver.rs</small>")
+        handlers_fileserver_upload_file_2ad15181("upload_file()<br/><small>src/handlers/fileserver.rs</small>")
+    end
+    subgraph serve_api_src_middleware_error_rs_abd259ba["src/middleware/error.rs"]
+        middleware_error_apierror_7d139553("ApiError<br/><small>src/middleware/error.rs</small>")
+        middleware_error_apierror_fmt_6bd0132f("fmt()<br/><small>src/middleware/error.rs</small>")
+        middleware_error_apierror_error_response_93a537bd("error_response()<br/><small>src/middleware/error.rs</small>")
+        middleware_error_apierror_from_f1af4067("from()<br/><small>src/middleware/error.rs</small>")
+    end
+    handlers_dash_comparar_mef_58aa1e61("comparar_mef()<br/><small>src/handlers/dash.rs</small>")
+    middleware_error_apierror_7d139553 -->|method| middleware_error_apierror_fmt_6bd0132f
+    middleware_error_apierror_7d139553 -->|method| middleware_error_apierror_error_response_93a537bd
+    middleware_error_apierror_7d139553 -->|method| middleware_error_apierror_from_f1af4067
+    %% Omitted for readability: 128 nodes, 0 edges
+    class handlers_fileserver_asignardocumentoinput_8c1256fa klass;
+    class handlers_fileserver_documentospordniinput_3d2d1b9e klass;
+    class handlers_fileserver_eliminararchivoinput_fb256544 klass;
+    class handlers_fileserver_listararchivosdniinput_64a2d60e klass;
+    class handlers_fileserver_registrarurlinput_456a0761 klass;
+    class handlers_fileserver_asignar_documento_e9bc8d8d function;
+    class handlers_fileserver_documentos_por_dni_d161ed4f function;
+    class handlers_fileserver_eliminar_archivo_840d7d4d function;
+    class src_handlers_fileserver_rs_5a875009 module;
+    class handlers_fileserver_listar_archivos_dni_1cece697 function;
+    class handlers_fileserver_registrar_url_6a2364e1 function;
+    class handlers_fileserver_upload_batch_963a1030 function;
+    class handlers_fileserver_upload_file_2ad15181 function;
+    class middleware_error_apierror_7d139553 api;
+    class middleware_error_apierror_fmt_6bd0132f function;
+    class middleware_error_apierror_error_response_93a537bd function;
+    class middleware_error_apierror_from_f1af4067 function;
+    class handlers_dash_comparar_mef_58aa1e61 function;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>Personal `/personal` 🔒</code><br><small style="color:var(--muted)">API.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Personal `/personal` 🔒.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>`POST /personal/buscar`</code><br><small style="color:var(--muted)">API.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing `POST /personal/buscar`.</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><code>code:json ([{ &quot;nombre&quot;: &quot;Nombre Apellido&quot;, &quot;dni&quot;: &quot;12345678&quot;, &quot;estado&quot;:)</code><br><small style="color:var(--muted)">API.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing code:json ([{ &quot;nombre&quot;: &quot;Nombre Apellido&quot;, &quot;dni&quot;: &quot;12345678&quot;, &quot;estado&quot;:).</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>`POST /personal/por_dni`</code><br><small style="color:var(--muted)">API.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing `POST /personal/por_dni`.</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td><code>code:json ({)</code><br><small style="color:var(--muted)">API.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing code:json ({).</td>
+</tr>
+<tr>
+  <td>6</td>
+  <td><code>`POST /personal/editar_por_dni`</code><br><small style="color:var(--muted)">API.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing `POST /personal/editar_por_dni`.</td>
+</tr>
+<tr>
+  <td>7</td>
+  <td><code>code:json (&quot;Rows affected: 1&quot;)</code><br><small style="color:var(--muted)">API.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing code:json (&quot;Rows affected: 1&quot;).</td>
+</tr>
+<tr>
+  <td>8</td>
+  <td><code>`POST /personal/vinculos_por_dni`</code><br><small style="color:var(--muted)">API.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing `POST /personal/vinculos_por_dni`.</td>
+</tr>
+<tr>
+  <td>9</td>
+  <td><code>code:json ([)</code><br><small style="color:var(--muted)">API.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing code:json ([).</td>
+</tr>
+<tr>
+  <td>10</td>
+  <td><code>`POST /personal/renuncia_por_vinculo`</code><br><small style="color:var(--muted)">API.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing `POST /personal/renuncia_por_vinculo`.</td>
+</tr>
+<tr>
+  <td>11</td>
+  <td><code>code:json ({ &quot;dni&quot;: &quot;12345678&quot;, &quot;estado&quot;: &quot;inactivo&quot; })</code><br><small style="color:var(--muted)">API.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing code:json ({ &quot;dni&quot;: &quot;12345678&quot;, &quot;estado&quot;: &quot;inactivo&quot; }).</td>
+</tr>
+<tr>
+  <td>12</td>
+  <td><code>`POST /personal/eliminar_vinculo`</code><br><small style="color:var(--muted)">API.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing `POST /personal/eliminar_vinculo`.</td>
+</tr>
+<tr>
+  <td>13</td>
+  <td><code>code:json (&quot;Vínculo eliminado correctamente&quot;)</code><br><small style="color:var(--muted)">API.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing code:json (&quot;Vínculo eliminado correctamente&quot;).</td>
+</tr>
+<tr>
+  <td>14</td>
+  <td><code>`POST /personal/banco_por_dni`</code><br><small style="color:var(--muted)">API.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing `POST /personal/banco_por_dni`.</td>
+</tr>
+<tr>
+  <td>15</td>
+  <td><code>code:json ({ &quot;id&quot;: 1, &quot;numero_cuenta&quot;: &quot;123456789&quot;, &quot;tipo_cuenta&quot;: &quot;AHO)</code><br><small style="color:var(--muted)">API.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing code:json ({ &quot;id&quot;: 1, &quot;numero_cuenta&quot;: &quot;123456789&quot;, &quot;tipo_cuenta&quot;: &quot;AHO).</td>
+</tr>
+<tr>
+  <td>16</td>
+  <td><code>`POST /personal/agregar_infobancaria`</code><br><small style="color:var(--muted)">API.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing `POST /personal/agregar_infobancaria`.</td>
+</tr>
+<tr>
+  <td>17</td>
+  <td><code>`POST /personal/editar_infobancaria`</code><br><small style="color:var(--muted)">API.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing `POST /personal/editar_infobancaria`.</td>
+</tr>
+<tr>
+  <td>18</td>
+  <td><code>`POST /personal/grado_por_dni`</code><br><small style="color:var(--muted)">API.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing `POST /personal/grado_por_dni`.</td>
+</tr>
+<tr>
+  <td>19</td>
+  <td><code>code:json ([{ &quot;id&quot;: 1, &quot;profesion&quot;: &quot;ABOGADO&quot;, &quot;universidad&quot;: &quot;UNIV.&quot;, )</code><br><small style="color:var(--muted)">API.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing code:json ([{ &quot;id&quot;: 1, &quot;profesion&quot;: &quot;ABOGADO&quot;, &quot;universidad&quot;: &quot;UNIV.&quot;, ).</td>
+</tr>
+<tr>
+  <td>20</td>
+  <td><code>`POST /personal/agregar_gradoa`</code><br><small style="color:var(--muted)">API.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing `POST /personal/agregar_gradoa`.</td>
+</tr>
+<tr>
+  <td>21</td>
+  <td><code>`POST /personal/eliminar_gradoa`</code><br><small style="color:var(--muted)">API.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing `POST /personal/eliminar_gradoa`.</td>
+</tr>
+<tr>
+  <td>22</td>
+  <td><code>`POST /personal/agregar_contacto`</code><br><small style="color:var(--muted)">API.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing `POST /personal/agregar_contacto`.</td>
+</tr>
+<tr>
+  <td>23</td>
+  <td><code>`POST /personal/contacto_dni`</code><br><small style="color:var(--muted)">API.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing `POST /personal/contacto_dni`.</td>
+</tr>
+<tr>
+  <td>24</td>
+  <td><code>code:json ({ &quot;persona_dni&quot;: &quot;12345678&quot;, &quot;nombre&quot;: &quot;María&quot;, &quot;relacion&quot;: )</code><br><small style="color:var(--muted)">API.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing code:json ({ &quot;persona_dni&quot;: &quot;12345678&quot;, &quot;nombre&quot;: &quot;María&quot;, &quot;relacion&quot;: ).</td>
+</tr>
+<tr>
+  <td>25</td>
+  <td><code>`POST /personal/eliminar_contacto`</code><br><small style="color:var(--muted)">API.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing `POST /personal/eliminar_contacto`.</td>
+</tr>
+<tr>
+  <td>26</td>
+  <td><code>`POST /personal/agregar_sindicato`</code><br><small style="color:var(--muted)">API.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing `POST /personal/agregar_sindicato`.</td>
+</tr>
+<tr>
+  <td>27</td>
+  <td><code>`POST /personal/eliminar_sindicato`</code><br><small style="color:var(--muted)">API.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing `POST /personal/eliminar_sindicato`.</td>
+</tr>
+<tr>
+  <td>28</td>
+  <td><code>`POST /personal/legajo_por_dni`</code><br><small style="color:var(--muted)">API.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing `POST /personal/legajo_por_dni`.</td>
+</tr>
+<tr>
+  <td>29</td>
+  <td><code>code:json ([{ &quot;id&quot;: 1, &quot;persona&quot;: &quot;Juan Pérez&quot;, &quot;dni&quot;: &quot;12345678&quot;, &quot;fec)</code><br><small style="color:var(--muted)">API.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing code:json ([{ &quot;id&quot;: 1, &quot;persona&quot;: &quot;Juan Pérez&quot;, &quot;dni&quot;: &quot;12345678&quot;, &quot;fec).</td>
+</tr>
+<tr>
+  <td>30</td>
+  <td><code>`POST /personal/nuevo_evento_legajo`</code><br><small style="color:var(--muted)">API.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing `POST /personal/nuevo_evento_legajo`.</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>API.md</code></td><td>106 nodes</td></tr>
+<tr><td><code>src/handlers/fileserver.rs</code></td><td>14 nodes</td></tr>
+<tr><td><code>src/middleware/error.rs</code></td><td>8 nodes</td></tr>
+<tr><td><code>src/routes/dash.rs</code></td><td>3 nodes</td></tr>
+<tr><td><code>src/middleware/check.rs</code></td><td>2 nodes</td></tr>
+<tr><td><code>src/routes/fileserver.rs</code></td><td>2 nodes</td></tr>
+<tr><td><code>src/routes/login.rs</code></td><td>2 nodes</td></tr>
+<tr><td><code>src/routes/personal.rs</code></td><td>2 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x125, references x26, method x3, explains x1. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 6. Security & Global Graph ====== -->
+<h2 id="security-global">6. Security &amp; Global Graph</h2>
+<p>Security &amp; Global Graph groups implementation around repors, repositories, servicers, services, mostly in src/repositories/banco_repo.rs, src/repositories/gradoaca_repo.rs, src/repositories/personal_repo.rs. This section covers 104 nodes and 117 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: Security &amp; Global Graph (104 nodes, 117 edges)
+    subgraph security_global_src_repositories_banco_repo_rs_de24357b["src/repositories/banco_repo.rs"]
+        banco_repo_actualizar_datos_bancarios_a467fa85("repo::actualizar datos bancarios<br/><small>src/repositories/banco_repo.rs</small>")
+        banco_repo_agregar_infobancaria_424b1965("banco repo::agregar infobancaria<br/><small>src/repositories/banco_repo.rs</small>")
+        banco_repo_banco_por_dni_34f14a8b("banco_repo::banco_por_dni<br/><small>src/repositories/banco_repo.rs</small>")
+        banco_repo_obtener_cuenta_por_id_8cf6992a("cuenta por id<br/><small>src/repositories/banco_repo.rs</small>")
+        banco_repo_obtener_nombre_banco_490b70c9("repo::obtener nombre banco<br/><small>src/repositories/banco_repo.rs</small>")
+    end
+    subgraph security_global_src_services_banco_service_rs_3607e3e2["src/services/banco_service.rs"]
+        banco_service_banco_por_dni_c921756a("banco_service::banco_por_dni<br/><small>src/services/banco_service.rs</small>")
+        banco_service_agregar_infobancaria_1c90319e("banco service::agregar infobancaria<br/><small>src/services/banco_service.rs</small>")
+        banco_service_editar_datos_bancarios_1fa167e6("banco_service::editar_datos_bancarios (...<br/><small>src/services/banco_service.rs</small>")
+    end
+    subgraph security_global_src_services_contacto_service_rs_abe7f64a["src/services/contacto_service.rs"]
+        services_contacto_service_get_contacto_by_dni_84fccf4d("get_contacto_by_dni()<br/><small>src/services/contacto_service.rs</small>")
+        services_contacto_service_upsert_contacto_61cce102("upsert_contacto()<br/><small>src/services/contacto_service.rs</small>")
+        services_contacto_service_delete_contacto_963f1da0("delete_contacto()<br/><small>src/services/contacto_service.rs</small>")
+    end
+    subgraph security_global_src_services_gradoaca_service_rs_e25173a2["src/services/gradoaca_service.rs"]
+        gradoaca_service_upsert_gradoacademico_33d71c34("gradoaca_service::upsert_gradoacademico...<br/><small>src/services/gradoaca_service.rs</small>")
+        gradoaca_service_eliminar_gradoa_6f44c753("gradoaca service::eliminar gradoa<br/><small>src/services/gradoaca_service.rs</small>")
+    end
+    subgraph security_global_src_services_personal_service_rs_20bf9d0b["src/services/personal_service.rs"]
+        services_personal_service_get_perfil_by_dni_c2de9876("get_perfil_by_dni()<br/><small>src/services/personal_service.rs</small>")
+        services_personal_service_update_perfil_5fc366ad("update_perfil()<br/><small>src/services/personal_service.rs</small>")
+    end
+    handlers_login_login_9fc5ed18("login()<br/><small>src/handlers/login.rs</small>")
+    middleware_jwt_generate_token_42bc9399("generate_token()<br/><small>src/middleware/jwt.rs</small>")
+    gradoaca_repo_obtener_grado_por_id_39effe4c("grado por id<br/><small>src/repositories/gradoaca_repo.rs</small>")
+    handlers_login_login_9fc5ed18 -->|calls| middleware_jwt_generate_token_42bc9399
+    services_contacto_service_get_contacto_by_dni_84fccf4d -->|calls| services_contacto_service_upsert_contacto_61cce102
+    services_contacto_service_get_contacto_by_dni_84fccf4d -->|calls| services_contacto_service_delete_contacto_963f1da0
+    services_personal_service_get_perfil_by_dni_c2de9876 -->|calls| services_personal_service_update_perfil_5fc366ad
+    banco_repo_banco_por_dni_34f14a8b -->|calls| banco_service_banco_por_dni_c921756a
+    banco_repo_agregar_infobancaria_424b1965 -->|calls| banco_service_agregar_infobancaria_1c90319e
+    banco_repo_obtener_cuenta_por_id_8cf6992a -->|calls| banco_service_editar_datos_bancarios_1fa167e6
+    banco_repo_actualizar_datos_bancarios_a467fa85 -->|calls| banco_service_editar_datos_bancarios_1fa167e6
+    banco_repo_obtener_nombre_banco_490b70c9 -->|calls| banco_service_editar_datos_bancarios_1fa167e6
+    gradoaca_repo_obtener_grado_por_id_39effe4c -->|calls| gradoaca_service_upsert_gradoacademico_33d71c34
+    gradoaca_repo_obtener_grado_por_id_39effe4c -->|calls| gradoaca_service_eliminar_gradoa_6f44c753
+    %% Omitted for readability: 86 nodes, 0 edges
+    class banco_repo_actualizar_datos_bancarios_a467fa85 function;
+    class banco_repo_agregar_infobancaria_424b1965 function;
+    class banco_repo_banco_por_dni_34f14a8b function;
+    class banco_repo_obtener_cuenta_por_id_8cf6992a function;
+    class banco_repo_obtener_nombre_banco_490b70c9 function;
+    class banco_service_banco_por_dni_c921756a function;
+    class banco_service_agregar_infobancaria_1c90319e function;
+    class banco_service_editar_datos_bancarios_1fa167e6 function;
+    class services_contacto_service_get_contacto_by_dni_84fccf4d function;
+    class services_contacto_service_upsert_contacto_61cce102 function;
+    class services_contacto_service_delete_contacto_963f1da0 function;
+    class gradoaca_service_upsert_gradoacademico_33d71c34 function;
+    class gradoaca_service_eliminar_gradoa_6f44c753 function;
+    class services_personal_service_get_perfil_by_dni_c2de9876 function;
+    class services_personal_service_update_perfil_5fc366ad function;
+    class handlers_login_login_9fc5ed18 function;
+    class middleware_jwt_generate_token_42bc9399 function;
+    class gradoaca_repo_obtener_grado_por_id_39effe4c function;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>banco_repo::banco_por_dni</code><br><small style="color:var(--muted)">src/repositories/banco_repo.rs</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>banco_service::banco_por_dni</code><br><small style="color:var(--muted)">src/services/banco_service.rs</small></td>
+  <td>banco_repo::banco_por_dni node in src/repositories/banco_repo.rs.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>banco_repo::obtener_cuenta_por_id</code><br><small style="color:var(--muted)">src/repositories/banco_repo.rs</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>banco_service::editar_datos_bancarios (...</code><br><small style="color:var(--muted)">src/services/banco_service.rs</small></td>
+  <td>banco_repo::obtener_cuenta_por_id node in src/repositories/banco_repo.rs.</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><code>banco_repo::actualizar_datos_bancarios</code><br><small style="color:var(--muted)">src/repositories/banco_repo.rs</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>banco_service::editar_datos_bancarios (...</code><br><small style="color:var(--muted)">src/services/banco_service.rs</small></td>
+  <td>banco_repo::actualizar_datos_bancarios node in src/repositories/banco_repo.rs.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>banco_repo::obtener_nombre_banco</code><br><small style="color:var(--muted)">src/repositories/banco_repo.rs</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>banco_service::editar_datos_bancarios (...</code><br><small style="color:var(--muted)">src/services/banco_service.rs</small></td>
+  <td>banco_repo::obtener_nombre_banco node in src/repositories/banco_repo.rs.</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td><code>gradoaca_repo::gradoacademico_por_dni</code><br><small style="color:var(--muted)">src/repositories/gradoaca_repo.rs</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>gradoaca_repo::gradoacademico_por_dni node in src/repositories/gradoaca_repo.rs.</td>
+</tr>
+<tr>
+  <td>6</td>
+  <td><code>gradoaca_repo::obtener_grado_por_id</code><br><small style="color:var(--muted)">src/repositories/gradoaca_repo.rs</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>gradoaca service::eliminar gradoa</code><br><small style="color:var(--muted)">src/services/gradoaca_service.rs</small><br><code>gradoaca_service::upsert_gradoacademico...</code><br><small style="color:var(--muted)">src/services/gradoaca_service.rs</small></td>
+  <td>gradoaca_repo::obtener_grado_por_id node in src/repositories/gradoaca_repo.rs.</td>
+</tr>
+<tr>
+  <td>7</td>
+  <td><code>gradoaca_repo::upsert_grado</code><br><small style="color:var(--muted)">src/repositories/gradoaca_repo.rs</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>gradoaca_service::upsert_gradoacademico...</code><br><small style="color:var(--muted)">src/services/gradoaca_service.rs</small></td>
+  <td>gradoaca_repo::upsert_grado node in src/repositories/gradoaca_repo.rs.</td>
+</tr>
+<tr>
+  <td>8</td>
+  <td><code>gradoaca_repo::eliminar_grado</code><br><small style="color:var(--muted)">src/repositories/gradoaca_repo.rs</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>gradoaca service::eliminar gradoa</code><br><small style="color:var(--muted)">src/services/gradoaca_service.rs</small></td>
+  <td>gradoaca_repo::eliminar_grado node in src/repositories/gradoaca_repo.rs.</td>
+</tr>
+<tr>
+  <td>9</td>
+  <td><code>repositories mod (module root)</code><br><small style="color:var(--muted)">src/repositories/mod.rs</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>repositories mod (module root) node in src/repositories/mod.rs.</td>
+</tr>
+<tr>
+  <td>10</td>
+  <td><code>personal_repo::buscar_por_nombre</code><br><small style="color:var(--muted)">src/repositories/personal_repo.rs</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>service::buscar por nombre</code><br><small style="color:var(--muted)">src/services/personal_service.rs</small></td>
+  <td>personal_repo::buscar_por_nombre node in src/repositories/personal_repo.rs.</td>
+</tr>
+<tr>
+  <td>11</td>
+  <td><code>personal_repo::get_perfil_by_dni (AES decrypt)</code><br><small style="color:var(--muted)">src/repositories/personal_repo.rs</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>perfil by dni</code><br><small style="color:var(--muted)">src/services/personal_service.rs</small></td>
+  <td>personal_repo::get_perfil_by_dni (AES decrypt) node in src/repositories/personal_repo.rs.</td>
+</tr>
+<tr>
+  <td>12</td>
+  <td><code>usuario_repo::find_by_nickname (AES decrypt)</code><br><small style="color:var(--muted)">src/repositories/usuario_repo.rs</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>auth_service::authenticate</code><br><small style="color:var(--muted)">src/services/auth_service.rs</small></td>
+  <td>usuario_repo::find_by_nickname (AES decrypt) node in src/repositories/usuario_repo.rs.</td>
+</tr>
+<tr>
+  <td>13</td>
+  <td><code>usuario_repo::get_password_by_id</code><br><small style="color:var(--muted)">src/repositories/usuario_repo.rs</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>auth service::change password</code><br><small style="color:var(--muted)">src/services/auth_service.rs</small></td>
+  <td>usuario_repo::get_password_by_id node in src/repositories/usuario_repo.rs.</td>
+</tr>
+<tr>
+  <td>14</td>
+  <td><code>usuario_repo::update_password (AES encrypt)</code><br><small style="color:var(--muted)">src/repositories/usuario_repo.rs</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>auth service::change password</code><br><small style="color:var(--muted)">src/services/auth_service.rs</small></td>
+  <td>usuario_repo::update_password (AES encrypt) node in src/repositories/usuario_repo.rs.</td>
+</tr>
+<tr>
+  <td>15</td>
+  <td><code>AES Encryption at Rest Pattern</code><br><small style="color:var(--muted)">src/repositories/usuario_repo.rs</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for AES Encryption at Rest Pattern.</td>
+</tr>
+<tr>
+  <td>16</td>
+  <td><code>auth_service::authenticate</code><br><small style="color:var(--muted)">src/services/auth_service.rs</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>usuario_repo::find_by_nickname (AES dec...</code><br><small style="color:var(--muted)">src/repositories/usuario_repo.rs</small></td>
+  <td>No direct outbound edge</td>
+  <td>auth_service::authenticate node in src/services/auth_service.rs.</td>
+</tr>
+<tr>
+  <td>17</td>
+  <td><code>auth_service::change_password</code><br><small style="color:var(--muted)">src/services/auth_service.rs</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>password by id</code><br><small style="color:var(--muted)">src/repositories/usuario_repo.rs</small><br><code>usuario_repo::update_password (AES encr...</code><br><small style="color:var(--muted)">src/repositories/usuario_repo.rs</small></td>
+  <td>No direct outbound edge</td>
+  <td>auth_service::change_password node in src/services/auth_service.rs.</td>
+</tr>
+<tr>
+  <td>18</td>
+  <td><code>LoginResult enum (Success / InvalidPassword / UserNotFound)</code><br><small style="color:var(--muted)">src/services/auth_service.rs</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>LoginResult enum (Success / InvalidPassword / UserNotFound) node in src/services/auth_service.rs.</td>
+</tr>
+<tr>
+  <td>19</td>
+  <td><code>banco_service::banco_por_dni</code><br><small style="color:var(--muted)">src/services/banco_service.rs</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>banco_repo::banco_por_dni</code><br><small style="color:var(--muted)">src/repositories/banco_repo.rs</small></td>
+  <td>No direct outbound edge</td>
+  <td>banco_service::banco_por_dni node in src/services/banco_service.rs.</td>
+</tr>
+<tr>
+  <td>20</td>
+  <td><code>banco_service::editar_datos_bancarios (diff builder)</code><br><small style="color:var(--muted)">src/services/banco_service.rs</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>cuenta por id</code><br><small style="color:var(--muted)">src/repositories/banco_repo.rs</small><br><code>repo::actualizar datos bancarios</code><br><small style="color:var(--muted)">src/repositories/banco_repo.rs</small><br><code>repo::obtener nombre banco</code><br><small style="color:var(--muted)">src/repositories/banco_repo.rs</small></td>
+  <td>No direct outbound edge</td>
+  <td>banco_service::editar_datos_bancarios (diff builder) node in src/services/banco_service.rs.</td>
+</tr>
+<tr>
+  <td>21</td>
+  <td><code>Diff Builder Pattern (audit log pre-computation)</code><br><small style="color:var(--muted)">src/services/banco_service.rs</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Diff Builder Pattern (audit log pre-computation).</td>
+</tr>
+<tr>
+  <td>22</td>
+  <td><code>gradoaca_service::upsert_gradoacademico (diff builder)</code><br><small style="color:var(--muted)">src/services/gradoaca_service.rs</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>grado por id</code><br><small style="color:var(--muted)">src/repositories/gradoaca_repo.rs</small><br><code>gradoaca_repo::upsert_grado</code><br><small style="color:var(--muted)">src/repositories/gradoaca_repo.rs</small></td>
+  <td>No direct outbound edge</td>
+  <td>gradoaca_service::upsert_gradoacademico (diff builder) node in src/services/gradoaca_service.rs.</td>
+</tr>
+<tr>
+  <td>23</td>
+  <td><code>gradoaca_service::eliminar_gradoa</code><br><small style="color:var(--muted)">src/services/gradoaca_service.rs</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>grado por id</code><br><small style="color:var(--muted)">src/repositories/gradoaca_repo.rs</small><br><code>gradoaca repo::eliminar grado</code><br><small style="color:var(--muted)">src/repositories/gradoaca_repo.rs</small></td>
+  <td>No direct outbound edge</td>
+  <td>gradoaca_service::eliminar_gradoa node in src/services/gradoaca_service.rs.</td>
+</tr>
+<tr>
+  <td>24</td>
+  <td><code>services mod (module root)</code><br><small style="color:var(--muted)">src/services/mod.rs</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>services mod (module root) node in src/services/mod.rs.</td>
+</tr>
+<tr>
+  <td>25</td>
+  <td><code>personal_service::buscar_por_nombre</code><br><small style="color:var(--muted)">src/services/personal_service.rs</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>repo::buscar por nombre</code><br><small style="color:var(--muted)">src/repositories/personal_repo.rs</small></td>
+  <td>No direct outbound edge</td>
+  <td>personal_service::buscar_por_nombre node in src/services/personal_service.rs.</td>
+</tr>
+<tr>
+  <td>26</td>
+  <td><code>personal_service::get_perfil_by_dni</code><br><small style="color:var(--muted)">src/services/personal_service.rs</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>personal_repo::get_perfil_by_dni (AES d...</code><br><small style="color:var(--muted)">src/repositories/personal_repo.rs</small></td>
+  <td>No direct outbound edge</td>
+  <td>personal_service::get_perfil_by_dni node in src/services/personal_service.rs.</td>
+</tr>
+<tr>
+  <td>27</td>
+  <td><code>login.rs</code><br><small style="color:var(--muted)">src/handlers/login.rs</small></td>
+  <td><span class="tag tag-class">Module</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>login.rs node in src/handlers/login.rs.</td>
+</tr>
+<tr>
+  <td>28</td>
+  <td><code>LoginRequest</code><br><small style="color:var(--muted)">src/handlers/login.rs</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>LoginRequest node in src/handlers/login.rs.</td>
+</tr>
+<tr>
+  <td>29</td>
+  <td><code>login()</code><br><small style="color:var(--muted)">src/handlers/login.rs</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>authenticate()</code><br><small style="color:var(--muted)">src/services/login.rs</small><br><code>authenticate()</code><br><small style="color:var(--muted)">src/services/auth_service.rs</small><br><code>generate_token()</code><br><small style="color:var(--muted)">src/middleware/jwt.rs</small></td>
+  <td>login() node in src/handlers/login.rs.</td>
+</tr>
+<tr>
+  <td>30</td>
+  <td><code>ChangePass</code><br><small style="color:var(--muted)">src/handlers/login.rs</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>ChangePass node in src/handlers/login.rs.</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>src/repositories/banco_repo.rs</code></td><td>11 nodes</td></tr>
+<tr><td><code>src/repositories/gradoaca_repo.rs</code></td><td>9 nodes</td></tr>
+<tr><td><code>src/repositories/personal_repo.rs</code></td><td>9 nodes</td></tr>
+<tr><td><code>src/services/personal_service.rs</code></td><td>9 nodes</td></tr>
+<tr><td><code>src/repositories/usuario_repo.rs</code></td><td>8 nodes</td></tr>
+<tr><td><code>src/services/banco_service.rs</code></td><td>8 nodes</td></tr>
+<tr><td><code>src/services/auth_service.rs</code></td><td>7 nodes</td></tr>
+<tr><td><code>src/handlers/login.rs</code></td><td>6 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x55, calls x19, references x10, relates x3. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 7. Tests & Fixtures ====== -->
+<h2 id="tests-fixtures">7. Tests &amp; Fixtures</h2>
+<p>Tests &amp; Fixtures groups implementation around test, actixrs, stub, mostly in test_actix.rs. This section covers 3 nodes and 1 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: Tests &amp; Fixtures (3 nodes, 1 edges)
+    test_actix_rs_42e7c182("test_actix.rs")
+    api_server_test_actix_main_fc4b9f8d("main()<br/><small>test_actix.rs</small>")
+    test_actix_test_actix_46e38b4c("test_actix.rs (test stub)<br/><small>test_actix.rs</small>")
+    test_actix_rs_42e7c182 -->|contains| api_server_test_actix_main_fc4b9f8d
+    class test_actix_rs_42e7c182 test;
+    class api_server_test_actix_main_fc4b9f8d test;
+    class test_actix_test_actix_46e38b4c test;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>test_actix.rs</code><br><small style="color:var(--muted)">test_actix.rs</small></td>
+  <td><span class="tag tag-func">Test</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Verifies imports, entry points, or version behavior.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>main()</code><br><small style="color:var(--muted)">test_actix.rs</small></td>
+  <td><span class="tag tag-func">Test</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>main() node in test_actix.rs.</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><code>test_actix.rs (test stub)</code><br><small style="color:var(--muted)">test_actix.rs</small></td>
+  <td><span class="tag tag-func">Test</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Verifies imports, entry points, or version behavior.</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>test_actix.rs</code></td><td>3 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x1. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 8. Personal Data Models ====== -->
+<h2 id="personal-data-models">8. Personal Data Models</h2>
+<p>Personal Data Models groups implementation around personalrs, models, dni, valido, mostly in src/models/personal.rs. This section covers 17 nodes and 16 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: Personal Data Models (17 nodes, 16 edges)
+    src_models_personal_rs_5c4e68d5("personal.rs")
+    models_personal_es_dni_valido_67563e4f("es_dni_valido()<br/><small>src/models/personal.rs</small>")
+    models_personal_persona_53aae372("Persona<br/><small>src/models/personal.rs</small>")
+    models_personal_perfil_d9b7196a("Perfil<br/><small>src/models/personal.rs</small>")
+    models_personal_vinculos_dd2695f8("Vinculos<br/><small>src/models/personal.rs</small>")
+    models_personal_documento_829c99dd("Documento<br/><small>src/models/personal.rs</small>")
+    models_personal_datosbancarios_6e245795("DatosBancarios<br/><small>src/models/personal.rs</small>")
+    models_personal_datosbancariosresponse_57313fa7("DatosBancariosResponse<br/><small>src/models/personal.rs</small>")
+    models_personal_gradoacademico_fb6e15e4("GradoAcademico<br/><small>src/models/personal.rs</small>")
+    models_personal_vinculossindicato_03b6ba4d("VinculosSindicato<br/><small>src/models/personal.rs</small>")
+    models_personal_documentosindicato_d2209c31("DocumentoSindicato<br/><small>src/models/personal.rs</small>")
+    models_personal_legajopersonal_08f2febb("LegajoPersonal<br/><small>src/models/personal.rs</small>")
+    models_personal_asistenciavw_e809687e("AsistenciaVw<br/><small>src/models/personal.rs</small>")
+    models_personal_contactoemergencia_c4046065("ContactoEmergencia<br/><small>src/models/personal.rs</small>")
+    models_personal_perfilinput_9ebcfecc("PerfilInput<br/><small>src/models/personal.rs</small>")
+    models_personal_nuevovinculo_19645234("NuevoVinculo<br/><small>src/models/personal.rs</small>")
+    models_personal_eventovinculopayload_4e6380d4("EventoVinculoPayload<br/><small>src/models/personal.rs</small>")
+    src_models_personal_rs_5c4e68d5 -->|contains| models_personal_es_dni_valido_67563e4f
+    src_models_personal_rs_5c4e68d5 -->|contains| models_personal_persona_53aae372
+    src_models_personal_rs_5c4e68d5 -->|contains| models_personal_perfil_d9b7196a
+    src_models_personal_rs_5c4e68d5 -->|contains| models_personal_vinculos_dd2695f8
+    src_models_personal_rs_5c4e68d5 -->|contains| models_personal_documento_829c99dd
+    src_models_personal_rs_5c4e68d5 -->|contains| models_personal_datosbancarios_6e245795
+    src_models_personal_rs_5c4e68d5 -->|contains| models_personal_datosbancariosresponse_57313fa7
+    src_models_personal_rs_5c4e68d5 -->|contains| models_personal_gradoacademico_fb6e15e4
+    src_models_personal_rs_5c4e68d5 -->|contains| models_personal_vinculossindicato_03b6ba4d
+    src_models_personal_rs_5c4e68d5 -->|contains| models_personal_documentosindicato_d2209c31
+    src_models_personal_rs_5c4e68d5 -->|contains| models_personal_legajopersonal_08f2febb
+    src_models_personal_rs_5c4e68d5 -->|contains| models_personal_asistenciavw_e809687e
+    src_models_personal_rs_5c4e68d5 -->|contains| models_personal_contactoemergencia_c4046065
+    src_models_personal_rs_5c4e68d5 -->|contains| models_personal_perfilinput_9ebcfecc
+    src_models_personal_rs_5c4e68d5 -->|contains| models_personal_nuevovinculo_19645234
+    src_models_personal_rs_5c4e68d5 -->|contains| models_personal_eventovinculopayload_4e6380d4
+    class src_models_personal_rs_5c4e68d5 module;
+    class models_personal_es_dni_valido_67563e4f function;
+    class models_personal_persona_53aae372 klass;
+    class models_personal_perfil_d9b7196a klass;
+    class models_personal_vinculos_dd2695f8 klass;
+    class models_personal_documento_829c99dd klass;
+    class models_personal_datosbancarios_6e245795 klass;
+    class models_personal_datosbancariosresponse_57313fa7 klass;
+    class models_personal_gradoacademico_fb6e15e4 klass;
+    class models_personal_vinculossindicato_03b6ba4d klass;
+    class models_personal_documentosindicato_d2209c31 klass;
+    class models_personal_legajopersonal_08f2febb klass;
+    class models_personal_asistenciavw_e809687e klass;
+    class models_personal_contactoemergencia_c4046065 klass;
+    class models_personal_perfilinput_9ebcfecc klass;
+    class models_personal_nuevovinculo_19645234 klass;
+    class models_personal_eventovinculopayload_4e6380d4 klass;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>personal.rs</code><br><small style="color:var(--muted)">src/models/personal.rs</small></td>
+  <td><span class="tag tag-class">Module</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>personal.rs node in src/models/personal.rs.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>es_dni_valido()</code><br><small style="color:var(--muted)">src/models/personal.rs</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>es_dni_valido() node in src/models/personal.rs.</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><code>Persona</code><br><small style="color:var(--muted)">src/models/personal.rs</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Persona node in src/models/personal.rs.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>Perfil</code><br><small style="color:var(--muted)">src/models/personal.rs</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Perfil node in src/models/personal.rs.</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td><code>Vinculos</code><br><small style="color:var(--muted)">src/models/personal.rs</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Vinculos node in src/models/personal.rs.</td>
+</tr>
+<tr>
+  <td>6</td>
+  <td><code>Documento</code><br><small style="color:var(--muted)">src/models/personal.rs</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documento node in src/models/personal.rs.</td>
+</tr>
+<tr>
+  <td>7</td>
+  <td><code>DatosBancarios</code><br><small style="color:var(--muted)">src/models/personal.rs</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>DatosBancarios node in src/models/personal.rs.</td>
+</tr>
+<tr>
+  <td>8</td>
+  <td><code>DatosBancariosResponse</code><br><small style="color:var(--muted)">src/models/personal.rs</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>DatosBancariosResponse node in src/models/personal.rs.</td>
+</tr>
+<tr>
+  <td>9</td>
+  <td><code>GradoAcademico</code><br><small style="color:var(--muted)">src/models/personal.rs</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>GradoAcademico node in src/models/personal.rs.</td>
+</tr>
+<tr>
+  <td>10</td>
+  <td><code>VinculosSindicato</code><br><small style="color:var(--muted)">src/models/personal.rs</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>VinculosSindicato node in src/models/personal.rs.</td>
+</tr>
+<tr>
+  <td>11</td>
+  <td><code>DocumentoSindicato</code><br><small style="color:var(--muted)">src/models/personal.rs</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>DocumentoSindicato node in src/models/personal.rs.</td>
+</tr>
+<tr>
+  <td>12</td>
+  <td><code>LegajoPersonal</code><br><small style="color:var(--muted)">src/models/personal.rs</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>LegajoPersonal node in src/models/personal.rs.</td>
+</tr>
+<tr>
+  <td>13</td>
+  <td><code>AsistenciaVw</code><br><small style="color:var(--muted)">src/models/personal.rs</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>AsistenciaVw node in src/models/personal.rs.</td>
+</tr>
+<tr>
+  <td>14</td>
+  <td><code>ContactoEmergencia</code><br><small style="color:var(--muted)">src/models/personal.rs</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>ContactoEmergencia node in src/models/personal.rs.</td>
+</tr>
+<tr>
+  <td>15</td>
+  <td><code>PerfilInput</code><br><small style="color:var(--muted)">src/models/personal.rs</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>PerfilInput node in src/models/personal.rs.</td>
+</tr>
+<tr>
+  <td>16</td>
+  <td><code>NuevoVinculo</code><br><small style="color:var(--muted)">src/models/personal.rs</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>NuevoVinculo node in src/models/personal.rs.</td>
+</tr>
+<tr>
+  <td>17</td>
+  <td><code>EventoVinculoPayload</code><br><small style="color:var(--muted)">src/models/personal.rs</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>EventoVinculoPayload node in src/models/personal.rs.</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>src/models/personal.rs</code></td><td>17 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x16. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 9. Community 42 ====== -->
+<h2 id="community-42">9. Community 42</h2>
+<p>Community 42 groups implementation around usuariosrs, handlers, usuario, verificar, mostly in src/handlers/usuarios.rs. This section covers 12 nodes and 16 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: Community 42 (12 nodes, 16 edges)
+    handlers_usuarios_verificar_admin_0a3a9b7d("verificar_admin()<br/><small>src/handlers/usuarios.rs</small>")
+    handlers_usuarios_listar_usuarios_431a4942("listar_usuarios()<br/><small>src/handlers/usuarios.rs</small>")
+    handlers_usuarios_crear_usuario_50442904("crear_usuario()<br/><small>src/handlers/usuarios.rs</small>")
+    handlers_usuarios_editar_usuario_f835b1fa("editar_usuario()<br/><small>src/handlers/usuarios.rs</small>")
+    handlers_usuarios_eliminar_usuario_62c3c6f8("eliminar_usuario()<br/><small>src/handlers/usuarios.rs</small>")
+    handlers_usuarios_reset_pass_usuario_f3083db7("reset_pass_usuario()<br/><small>src/handlers/usuarios.rs</small>")
+    handlers_usuarios_crearusuariobody_209f6451("CrearUsuarioBody<br/><small>src/handlers/usuarios.rs</small>")
+    handlers_usuarios_editarusuariobody_ccffaf5a("EditarUsuarioBody<br/><small>src/handlers/usuarios.rs</small>")
+    handlers_usuarios_eliminarusuariobody_2f01c532("EliminarUsuarioBody<br/><small>src/handlers/usuarios.rs</small>")
+    handlers_usuarios_resetpassbody_22eac2dc("ResetPassBody<br/><small>src/handlers/usuarios.rs</small>")
+    handlers_usuarios_usuariolistado_01445760("UsuarioListado<br/><small>src/handlers/usuarios.rs</small>")
+    src_handlers_usuarios_rs_e82b9fdf("usuarios.rs")
+    handlers_usuarios_verificar_admin_0a3a9b7d -->|calls| handlers_usuarios_listar_usuarios_431a4942
+    handlers_usuarios_verificar_admin_0a3a9b7d -->|calls| handlers_usuarios_crear_usuario_50442904
+    handlers_usuarios_verificar_admin_0a3a9b7d -->|calls| handlers_usuarios_editar_usuario_f835b1fa
+    handlers_usuarios_verificar_admin_0a3a9b7d -->|calls| handlers_usuarios_eliminar_usuario_62c3c6f8
+    handlers_usuarios_verificar_admin_0a3a9b7d -->|calls| handlers_usuarios_reset_pass_usuario_f3083db7
+    class handlers_usuarios_verificar_admin_0a3a9b7d function;
+    class handlers_usuarios_listar_usuarios_431a4942 function;
+    class handlers_usuarios_crear_usuario_50442904 function;
+    class handlers_usuarios_editar_usuario_f835b1fa function;
+    class handlers_usuarios_eliminar_usuario_62c3c6f8 function;
+    class handlers_usuarios_reset_pass_usuario_f3083db7 function;
+    class handlers_usuarios_crearusuariobody_209f6451 klass;
+    class handlers_usuarios_editarusuariobody_ccffaf5a klass;
+    class handlers_usuarios_eliminarusuariobody_2f01c532 klass;
+    class handlers_usuarios_resetpassbody_22eac2dc klass;
+    class handlers_usuarios_usuariolistado_01445760 klass;
+    class src_handlers_usuarios_rs_e82b9fdf module;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>usuarios.rs</code><br><small style="color:var(--muted)">src/handlers/usuarios.rs</small></td>
+  <td><span class="tag tag-class">Module</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>usuarios.rs node in src/handlers/usuarios.rs.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>verificar_admin()</code><br><small style="color:var(--muted)">src/handlers/usuarios.rs</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>crear_usuario()</code><br><small style="color:var(--muted)">src/handlers/usuarios.rs</small><br><code>editar_usuario()</code><br><small style="color:var(--muted)">src/handlers/usuarios.rs</small><br><code>eliminar_usuario()</code><br><small style="color:var(--muted)">src/handlers/usuarios.rs</small><br>+2 more</td>
+  <td>verificar_admin() node in src/handlers/usuarios.rs.</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><code>UsuarioListado</code><br><small style="color:var(--muted)">src/handlers/usuarios.rs</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>UsuarioListado node in src/handlers/usuarios.rs.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>listar_usuarios()</code><br><small style="color:var(--muted)">src/handlers/usuarios.rs</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>verificar_admin()</code><br><small style="color:var(--muted)">src/handlers/usuarios.rs</small></td>
+  <td>No direct outbound edge</td>
+  <td>listar_usuarios() node in src/handlers/usuarios.rs.</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td><code>CrearUsuarioBody</code><br><small style="color:var(--muted)">src/handlers/usuarios.rs</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>CrearUsuarioBody node in src/handlers/usuarios.rs.</td>
+</tr>
+<tr>
+  <td>6</td>
+  <td><code>crear_usuario()</code><br><small style="color:var(--muted)">src/handlers/usuarios.rs</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>verificar_admin()</code><br><small style="color:var(--muted)">src/handlers/usuarios.rs</small></td>
+  <td>No direct outbound edge</td>
+  <td>crear_usuario() node in src/handlers/usuarios.rs.</td>
+</tr>
+<tr>
+  <td>7</td>
+  <td><code>EditarUsuarioBody</code><br><small style="color:var(--muted)">src/handlers/usuarios.rs</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>EditarUsuarioBody node in src/handlers/usuarios.rs.</td>
+</tr>
+<tr>
+  <td>8</td>
+  <td><code>editar_usuario()</code><br><small style="color:var(--muted)">src/handlers/usuarios.rs</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>verificar_admin()</code><br><small style="color:var(--muted)">src/handlers/usuarios.rs</small></td>
+  <td>No direct outbound edge</td>
+  <td>editar_usuario() node in src/handlers/usuarios.rs.</td>
+</tr>
+<tr>
+  <td>9</td>
+  <td><code>EliminarUsuarioBody</code><br><small style="color:var(--muted)">src/handlers/usuarios.rs</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>EliminarUsuarioBody node in src/handlers/usuarios.rs.</td>
+</tr>
+<tr>
+  <td>10</td>
+  <td><code>eliminar_usuario()</code><br><small style="color:var(--muted)">src/handlers/usuarios.rs</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>verificar_admin()</code><br><small style="color:var(--muted)">src/handlers/usuarios.rs</small></td>
+  <td>No direct outbound edge</td>
+  <td>eliminar_usuario() node in src/handlers/usuarios.rs.</td>
+</tr>
+<tr>
+  <td>11</td>
+  <td><code>ResetPassBody</code><br><small style="color:var(--muted)">src/handlers/usuarios.rs</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>ResetPassBody node in src/handlers/usuarios.rs.</td>
+</tr>
+<tr>
+  <td>12</td>
+  <td><code>reset_pass_usuario()</code><br><small style="color:var(--muted)">src/handlers/usuarios.rs</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>verificar_admin()</code><br><small style="color:var(--muted)">src/handlers/usuarios.rs</small></td>
+  <td>No direct outbound edge</td>
+  <td>reset_pass_usuario() node in src/handlers/usuarios.rs.</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>src/handlers/usuarios.rs</code></td><td>12 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x11, calls x5. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 10. Data Models for Reports ====== -->
+<h2 id="data-models-for-reports">10. Data Models for Reports</h2>
+<p>Data Models for Reports groups implementation around dashrs, models, cumpleaños, resumenresponse, mostly in src/models/dash.rs. This section covers 8 nodes and 7 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: Data Models for Reports (8 nodes, 7 edges)
+    src_models_dash_rs_8622b49b("dash.rs")
+    models_dash_cumplea_os_2d502117("Cumpleaños<br/><small>src/models/dash.rs</small>")
+    models_dash_resumenresponse_8436419a("ResumenResponse<br/><small>src/models/dash.rs</small>")
+    models_dash_dataresumen_4445c120("DataResumen<br/><small>src/models/dash.rs</small>")
+    models_dash_bancosreport_2bd331c9("BancosReport<br/><small>src/models/dash.rs</small>")
+    models_dash_organigrama_56a84257("Organigrama<br/><small>src/models/dash.rs</small>")
+    models_dash_dborgani_f30b9723("DbOrgani<br/><small>src/models/dash.rs</small>")
+    models_dash_reporterenuncias_8a198093("ReporteRenuncias<br/><small>src/models/dash.rs</small>")
+    src_models_dash_rs_8622b49b -->|contains| models_dash_cumplea_os_2d502117
+    src_models_dash_rs_8622b49b -->|contains| models_dash_resumenresponse_8436419a
+    src_models_dash_rs_8622b49b -->|contains| models_dash_dataresumen_4445c120
+    src_models_dash_rs_8622b49b -->|contains| models_dash_bancosreport_2bd331c9
+    src_models_dash_rs_8622b49b -->|contains| models_dash_organigrama_56a84257
+    src_models_dash_rs_8622b49b -->|contains| models_dash_dborgani_f30b9723
+    src_models_dash_rs_8622b49b -->|contains| models_dash_reporterenuncias_8a198093
+    class src_models_dash_rs_8622b49b module;
+    class models_dash_cumplea_os_2d502117 klass;
+    class models_dash_resumenresponse_8436419a klass;
+    class models_dash_dataresumen_4445c120 klass;
+    class models_dash_bancosreport_2bd331c9 klass;
+    class models_dash_organigrama_56a84257 klass;
+    class models_dash_dborgani_f30b9723 klass;
+    class models_dash_reporterenuncias_8a198093 klass;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>dash.rs</code><br><small style="color:var(--muted)">src/models/dash.rs</small></td>
+  <td><span class="tag tag-class">Module</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>dash.rs node in src/models/dash.rs.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>Cumpleaños</code><br><small style="color:var(--muted)">src/models/dash.rs</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Cumpleaños node in src/models/dash.rs.</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><code>ResumenResponse</code><br><small style="color:var(--muted)">src/models/dash.rs</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>ResumenResponse node in src/models/dash.rs.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>DataResumen</code><br><small style="color:var(--muted)">src/models/dash.rs</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>DataResumen node in src/models/dash.rs.</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td><code>BancosReport</code><br><small style="color:var(--muted)">src/models/dash.rs</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>BancosReport node in src/models/dash.rs.</td>
+</tr>
+<tr>
+  <td>6</td>
+  <td><code>Organigrama</code><br><small style="color:var(--muted)">src/models/dash.rs</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Organigrama node in src/models/dash.rs.</td>
+</tr>
+<tr>
+  <td>7</td>
+  <td><code>DbOrgani</code><br><small style="color:var(--muted)">src/models/dash.rs</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>DbOrgani node in src/models/dash.rs.</td>
+</tr>
+<tr>
+  <td>8</td>
+  <td><code>ReporteRenuncias</code><br><small style="color:var(--muted)">src/models/dash.rs</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>ReporteRenuncias node in src/models/dash.rs.</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>src/models/dash.rs</code></td><td>8 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x7. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 11. Middleware Components ====== -->
+<h2 id="middleware-components">11. Middleware Components</h2>
+<p>Middleware Components groups implementation around checkrs, middleware, jwt, new, mostly in src/middleware/check.rs. This section covers 4 nodes and 3 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: Middleware Components (4 nodes, 3 edges)
+    middleware_check_jwt_b44e1f2c("JWT<br/><small>src/middleware/check.rs</small>")
+    middleware_check_jwt_new_transform_1ff4661d("new_transform()<br/><small>src/middleware/check.rs</small>")
+    middleware_check_checkloginmiddleware_65af1d47("CheckLoginMiddleware<br/><small>src/middleware/check.rs</small>")
+    src_middleware_check_rs_8fc61de1("check.rs")
+    middleware_check_jwt_b44e1f2c -->|method| middleware_check_jwt_new_transform_1ff4661d
+    class middleware_check_jwt_b44e1f2c klass;
+    class middleware_check_jwt_new_transform_1ff4661d function;
+    class middleware_check_checkloginmiddleware_65af1d47 klass;
+    class src_middleware_check_rs_8fc61de1 module;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>check.rs</code><br><small style="color:var(--muted)">src/middleware/check.rs</small></td>
+  <td><span class="tag tag-class">Module</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>check.rs node in src/middleware/check.rs.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>JWT</code><br><small style="color:var(--muted)">src/middleware/check.rs</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>new_transform()</code><br><small style="color:var(--muted)">src/middleware/check.rs</small></td>
+  <td>JWT node in src/middleware/check.rs.</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><code>.new_transform()</code><br><small style="color:var(--muted)">src/middleware/check.rs</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>JWT</code><br><small style="color:var(--muted)">src/middleware/check.rs</small></td>
+  <td>No direct outbound edge</td>
+  <td>.new_transform() node in src/middleware/check.rs.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>CheckLoginMiddleware</code><br><small style="color:var(--muted)">src/middleware/check.rs</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>CheckLoginMiddleware node in src/middleware/check.rs.</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>src/middleware/check.rs</code></td><td>4 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x2, method x1. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 12. Birthday Dashboard ====== -->
+<h2 id="birthday-dashboard">12. Birthday Dashboard</h2>
+<p>Birthday Dashboard groups implementation around dashrs, dashcumpleaños, handlers, cumpleaños, mostly in src/handlers/dash.rs, src/models/dash.rs. This section covers 2 nodes and 1 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: Birthday Dashboard (2 nodes, 1 edges)
+    handlers_dash_cumpleanos_37e723af("dash::cumpleaños<br/><small>src/handlers/dash.rs</small>")
+    models_dash_Cumpleanos_a24220a4("Cumpleaños (model)<br/><small>src/models/dash.rs</small>")
+    handlers_dash_cumpleanos_37e723af -->|references| models_dash_Cumpleanos_a24220a4
+    class handlers_dash_cumpleanos_37e723af function;
+    class models_dash_Cumpleanos_a24220a4 klass;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>dash::cumpleaños</code><br><small style="color:var(--muted)">src/handlers/dash.rs</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>dash::cumpleaños node in src/handlers/dash.rs.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>Cumpleaños (model)</code><br><small style="color:var(--muted)">src/models/dash.rs</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Cumpleaños (model) node in src/models/dash.rs.</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>src/handlers/dash.rs</code></td><td>1 nodes</td></tr>
+<tr><td><code>src/models/dash.rs</code></td><td>1 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: references x1. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 13. Middleware Execution ====== -->
+<h2 id="middleware-execution">13. Middleware Execution</h2>
+<p>Middleware Execution groups implementation around middleware, checkrs, checkloginmiddlewares, call, mostly in src/middleware/check.rs. This section covers 2 nodes and 1 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: Middleware Execution (2 nodes, 1 edges)
+    middleware_check_checkloginmiddleware_s_7bcb112c("CheckLoginMiddleware&lt;S&gt;<br/><small>src/middleware/check.rs</small>")
+    middleware_check_checkloginmiddleware_s_call_cf653af7("call()<br/><small>src/middleware/check.rs</small>")
+    middleware_check_checkloginmiddleware_s_7bcb112c -->|method| middleware_check_checkloginmiddleware_s_call_cf653af7
+    class middleware_check_checkloginmiddleware_s_7bcb112c klass;
+    class middleware_check_checkloginmiddleware_s_call_cf653af7 function;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>CheckLoginMiddleware&lt;S&gt;</code><br><small style="color:var(--muted)">src/middleware/check.rs</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>call()</code><br><small style="color:var(--muted)">src/middleware/check.rs</small></td>
+  <td>CheckLoginMiddleware&lt;S&gt; node in src/middleware/check.rs.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>.call()</code><br><small style="color:var(--muted)">src/middleware/check.rs</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>CheckLoginMiddleware&lt;S&gt;</code><br><small style="color:var(--muted)">src/middleware/check.rs</small></td>
+  <td>No direct outbound edge</td>
+  <td>.call() node in src/middleware/check.rs.</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>src/middleware/check.rs</code></td><td>2 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: method x1. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 14. User Models ====== -->
+<h2 id="user-models">14. User Models</h2>
+<p>User Models groups implementation around loginrs, models, usuario, mostly in src/models/login.rs. This section covers 2 nodes and 1 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: User Models (2 nodes, 1 edges)
+    src_models_login_rs_f7253682("login.rs")
+    models_login_usuario_37634163("Usuario<br/><small>src/models/login.rs</small>")
+    src_models_login_rs_f7253682 -->|contains| models_login_usuario_37634163
+    class src_models_login_rs_f7253682 module;
+    class models_login_usuario_37634163 klass;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>login.rs</code><br><small style="color:var(--muted)">src/models/login.rs</small></td>
+  <td><span class="tag tag-class">Module</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>login.rs node in src/models/login.rs.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>Usuario</code><br><small style="color:var(--muted)">src/models/login.rs</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Usuario node in src/models/login.rs.</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>src/models/login.rs</code></td><td>2 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x1. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 15. Community 27 ====== -->
+<h2 id="community-27">15. Community 27</h2>
+<p>Community 27 groups implementation around auditrs, models, auditcontext, mostly in src/models/audit.rs. This section covers 2 nodes and 1 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: Community 27 (2 nodes, 1 edges)
+    src_models_audit_rs_1f5e1bb4("audit.rs")
+    models_audit_auditcontext_4c48a029("AuditContext<br/><small>src/models/audit.rs</small>")
+    src_models_audit_rs_1f5e1bb4 -->|contains| models_audit_auditcontext_4c48a029
+    class src_models_audit_rs_1f5e1bb4 module;
+    class models_audit_auditcontext_4c48a029 klass;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>audit.rs</code><br><small style="color:var(--muted)">src/models/audit.rs</small></td>
+  <td><span class="tag tag-class">Module</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>audit.rs node in src/models/audit.rs.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>AuditContext</code><br><small style="color:var(--muted)">src/models/audit.rs</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>AuditContext node in src/models/audit.rs.</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>src/models/audit.rs</code></td><td>2 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x1. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 16. Other ====== -->
+<h2 id="other">16. Other</h2>
+<p>Other groups implementation around modrs, models, middleware, module, mostly in src/models/mod.rs, src/middleware/mod.rs, .agents/rules/graphify.md. This section covers 21 nodes and 3 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: Other (21 nodes, 3 edges)
+    subgraph other_src_models_mod_rs_db4316dd["src/models/mod.rs"]
+        models_mod_dash_50724bae("dash model module<br/><small>src/models/mod.rs</small>")
+        models_mod_fileserver_66c510da("fileserver model module<br/><small>src/models/mod.rs</small>")
+        models_mod_login_0c5d9439("login model module<br/><small>src/models/mod.rs</small>")
+        src_models_mod_rs_af5c9a07("mod.rs")
+        models_mod_personal_855d9afb("personal model module<br/><small>src/models/mod.rs</small>")
+    end
+    subgraph other_src_middleware_mod_rs_ef0d4a03["src/middleware/mod.rs"]
+        middleware_mod_check_a3c7f8c1("check middleware module<br/><small>src/middleware/mod.rs</small>")
+        middleware_mod_error_0da0ab0d("error middleware module<br/><small>src/middleware/mod.rs</small>")
+        middleware_mod_jwt_32bfaf9c("jwt middleware module<br/><small>src/middleware/mod.rs</small>")
+        src_middleware_mod_rs_8dd43309("mod.rs")
+    end
+    subgraph other_agents_rules_graphify_md_46085eba[".agents/rules/graphify.md"]
+        agents_rules_graphify_md_4b23c981("graphify.md")
+        rules_graphify_graphify_492e01fa("graphify<br/><small>.agents/rules/graphify.md</small>")
+    end
+    subgraph other_agents_workflows_graphify_md_fa0cc363[".agents/workflows/graphify.md"]
+        agents_workflows_graphify_md_bb08c945("graphify.md")
+        workflows_graphify_workflow_graphify_f1045e4e("Workflow: graphify<br/><small>.agents/workflows/graphify.md</small>")
+    end
+    subgraph other_GEMINI_md_00b7e308["GEMINI.md"]
+        gemini_md_200e7460("GEMINI.md")
+        api_server_gemini_graphify_d9661b75("graphify<br/><small>GEMINI.md</small>")
+    end
+    handlers_dash_DatosMef_0ade6835("DatosMef (private struct)<br/><small>src/handlers/dash.rs</small>")
+    src_models_fileserver_rs_3158066a("fileserver.rs")
+    models_login_Usuario_3c35a59f("Usuario (model)<br/><small>src/models/login.rs</small>")
+    gemini_md_200e7460 -->|contains| api_server_gemini_graphify_d9661b75
+    agents_rules_graphify_md_4b23c981 -->|contains| rules_graphify_graphify_492e01fa
+    agents_workflows_graphify_md_bb08c945 -->|contains| workflows_graphify_workflow_graphify_f1045e4e
+    %% Omitted for readability: 3 nodes, 0 edges
+    class models_mod_dash_50724bae function;
+    class models_mod_fileserver_66c510da function;
+    class models_mod_login_0c5d9439 function;
+    class src_models_mod_rs_af5c9a07 module;
+    class models_mod_personal_855d9afb function;
+    class middleware_mod_check_a3c7f8c1 function;
+    class middleware_mod_error_0da0ab0d function;
+    class middleware_mod_jwt_32bfaf9c function;
+    class src_middleware_mod_rs_8dd43309 module;
+    class agents_rules_graphify_md_4b23c981 concept;
+    class rules_graphify_graphify_492e01fa concept;
+    class agents_workflows_graphify_md_bb08c945 concept;
+    class workflows_graphify_workflow_graphify_f1045e4e concept;
+    class gemini_md_200e7460 concept;
+    class api_server_gemini_graphify_d9661b75 concept;
+    class handlers_dash_DatosMef_0ade6835 klass;
+    class src_models_fileserver_rs_3158066a module;
+    class models_login_Usuario_3c35a59f klass;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>graphify.md</code><br><small style="color:var(--muted)">.agents/rules/graphify.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing graphify.md.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>graphify</code><br><small style="color:var(--muted)">.agents/rules/graphify.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing graphify.</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><code>graphify.md</code><br><small style="color:var(--muted)">.agents/workflows/graphify.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing graphify.md.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>Workflow: graphify</code><br><small style="color:var(--muted)">.agents/workflows/graphify.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Workflow: graphify.</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td><code>GEMINI.md</code><br><small style="color:var(--muted)">GEMINI.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing GEMINI.md.</td>
+</tr>
+<tr>
+  <td>6</td>
+  <td><code>graphify</code><br><small style="color:var(--muted)">GEMINI.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing graphify.</td>
+</tr>
+<tr>
+  <td>7</td>
+  <td><code>mod.rs</code><br><small style="color:var(--muted)">src/middleware/mod.rs</small></td>
+  <td><span class="tag tag-class">Module</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>mod.rs node in src/middleware/mod.rs.</td>
+</tr>
+<tr>
+  <td>8</td>
+  <td><code>fileserver.rs</code><br><small style="color:var(--muted)">src/models/fileserver.rs</small></td>
+  <td><span class="tag tag-class">Module</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>fileserver.rs node in src/models/fileserver.rs.</td>
+</tr>
+<tr>
+  <td>9</td>
+  <td><code>mod.rs</code><br><small style="color:var(--muted)">src/models/mod.rs</small></td>
+  <td><span class="tag tag-class">Module</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>mod.rs node in src/models/mod.rs.</td>
+</tr>
+<tr>
+  <td>10</td>
+  <td><code>mod.rs</code><br><small style="color:var(--muted)">src/routes/mod.rs</small></td>
+  <td><span class="tag tag-class">Module</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>mod.rs node in src/routes/mod.rs.</td>
+</tr>
+<tr>
+  <td>11</td>
+  <td><code>mod.rs</code><br><small style="color:var(--muted)">src/services/mod.rs</small></td>
+  <td><span class="tag tag-class">Module</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>mod.rs node in src/services/mod.rs.</td>
+</tr>
+<tr>
+  <td>12</td>
+  <td><code>DatosMef (private struct)</code><br><small style="color:var(--muted)">src/handlers/dash.rs</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>DatosMef (private struct) node in src/handlers/dash.rs.</td>
+</tr>
+<tr>
+  <td>13</td>
+  <td><code>Usuario (model)</code><br><small style="color:var(--muted)">src/models/login.rs</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Usuario (model) node in src/models/login.rs.</td>
+</tr>
+<tr>
+  <td>14</td>
+  <td><code>Vinculos (model)</code><br><small style="color:var(--muted)">src/models/personal.rs</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Vinculos (model) node in src/models/personal.rs.</td>
+</tr>
+<tr>
+  <td>15</td>
+  <td><code>check middleware module</code><br><small style="color:var(--muted)">src/middleware/mod.rs</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>check middleware module node in src/middleware/mod.rs.</td>
+</tr>
+<tr>
+  <td>16</td>
+  <td><code>error middleware module</code><br><small style="color:var(--muted)">src/middleware/mod.rs</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>error middleware module node in src/middleware/mod.rs.</td>
+</tr>
+<tr>
+  <td>17</td>
+  <td><code>jwt middleware module</code><br><small style="color:var(--muted)">src/middleware/mod.rs</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>jwt middleware module node in src/middleware/mod.rs.</td>
+</tr>
+<tr>
+  <td>18</td>
+  <td><code>dash model module</code><br><small style="color:var(--muted)">src/models/mod.rs</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>dash model module node in src/models/mod.rs.</td>
+</tr>
+<tr>
+  <td>19</td>
+  <td><code>login model module</code><br><small style="color:var(--muted)">src/models/mod.rs</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>login model module node in src/models/mod.rs.</td>
+</tr>
+<tr>
+  <td>20</td>
+  <td><code>personal model module</code><br><small style="color:var(--muted)">src/models/mod.rs</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>personal model module node in src/models/mod.rs.</td>
+</tr>
+<tr>
+  <td>21</td>
+  <td><code>fileserver model module</code><br><small style="color:var(--muted)">src/models/mod.rs</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>fileserver model module node in src/models/mod.rs.</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>src/models/mod.rs</code></td><td>5 nodes</td></tr>
+<tr><td><code>src/middleware/mod.rs</code></td><td>4 nodes</td></tr>
+<tr><td><code>.agents/rules/graphify.md</code></td><td>2 nodes</td></tr>
+<tr><td><code>.agents/workflows/graphify.md</code></td><td>2 nodes</td></tr>
+<tr><td><code>GEMINI.md</code></td><td>2 nodes</td></tr>
+<tr><td><code>src/handlers/dash.rs</code></td><td>1 nodes</td></tr>
+<tr><td><code>src/models/fileserver.rs</code></td><td>1 nodes</td></tr>
+<tr><td><code>src/models/login.rs</code></td><td>1 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x3. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<h2 id="hyperedges">Group Relationships (Hyperedges)</h2>
+<div class="grid">
+
+  <div class="card">
+    <h4>MEF Comparison Pipeline (parsear_hoja, comparar_mef, exportar_comparacion_mef)</h4>
+    <p><code>form</code> — 3 participants</p>
+    <ul>
+      <li><code>handlers_dash_mef_parsear_hoja</code></li>
+      <li><code>handlers_dash_comparar_mef</code></li>
+      <li><code>handlers_dash_exportar_comparacion_mef</code></li>
+    </ul>
+  </div>
+  <div class="card">
+    <h4>Audit Log Pattern (registrar_historial + Claims + MySQL stored proc)</h4>
+    <p><code>participate_in</code> — 3 participants</p>
+    <ul>
+      <li><code>handlers_mod_registrar_historial</code></li>
+      <li><code>middleware_jwt_Claims</code></li>
+      <li><code>middleware_error_ApiError</code></li>
+    </ul>
+  </div>
+  <div class="card">
+    <h4>JWT Authentication Flow (JWT middleware, Claims, ApiError)</h4>
+    <p><code>implement</code> — 3 participants</p>
+    <ul>
+      <li><code>middleware_check_JWT</code></li>
+      <li><code>middleware_check_CheckLoginMiddleware</code></li>
+      <li><code>middleware_jwt_Claims</code></li>
+    </ul>
+  </div>
+  <div class="card">
+    <h4>AES Encryption at Rest: usuario, personal, and key-based decryption repos</h4>
+    <p><code>participate_in</code> — 3 participants</p>
+    <ul>
+      <li><code>usuario_repo_find_by_nickname</code></li>
+      <li><code>personal_repo_get_perfil_by_dni</code></li>
+      <li><code>usuario_repo_update_password</code></li>
+    </ul>
+  </div>
+  <div class="card">
+    <h4>Banco Data Flow: routes -&gt; handlers -&gt; banco_service -&gt; banco_repo</h4>
+    <p><code>implement</code> — 3 participants</p>
+    <ul>
+      <li><code>routes_personal_init_routes</code></li>
+      <li><code>banco_service_editar_datos_bancarios</code></li>
+      <li><code>banco_repo_actualizar_datos_bancarios</code></li>
+    </ul>
+  </div>
+  <div class="card">
+    <h4>Diff Builder Audit Pattern: fetch-before, mutate, compute diff</h4>
+    <p><code>implement</code> — 3 participants</p>
+    <ul>
+      <li><code>banco_service_editar_datos_bancarios</code></li>
+      <li><code>gradoaca_service_upsert_gradoacademico</code></li>
+      <li><code>concept_diff_builder_pattern</code></li>
+    </ul>
+  </div>
+  <div class="card">
+    <h4>System Middleware Layers</h4>
+    <p><code>participate_in</code> — 3 participants</p>
+    <ul>
+      <li><code>middleware_mod_check</code></li>
+      <li><code>middleware_mod_error</code></li>
+      <li><code>middleware_mod_jwt</code></li>
+    </ul>
+  </div>
+  <div class="card">
+    <h4>System Domain Models</h4>
+    <p><code>participate_in</code> — 4 participants</p>
+    <ul>
+      <li><code>models_mod_dash</code></li>
+      <li><code>models_mod_login</code></li>
+      <li><code>models_mod_personal</code></li>
+      <li><code>models_mod_fileserver</code></li>
+    </ul>
+  </div>
+  <div class="card">
+    <h4>Banco Data Flow: routes -&gt; handlers -&gt; banco_service -&gt; banco_repo</h4>
+    <p><code>implement</code> — 3 participants</p>
+    <ul>
+      <li><code>routes_personal_init_routes</code></li>
+      <li><code>banco_service_editar_datos_bancarios</code></li>
+      <li><code>banco_repo_actualizar_datos_bancarios</code></li>
+    </ul>
+  </div>
+</div>
+<hr>
+<h2 id="stats">Project Statistics</h2>
+
+<div class="grid">
+  <div class="card">
+    <h4>Graph</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><td>Nodes</td><td>436</td></tr>
+      <tr><td>Edges</td><td>525</td></tr>
+      <tr><td>Hyperedges</td><td>11</td></tr>
+      <tr><td>Communities</td><td>49</td></tr>
+      <tr><td>Documented Sections</td><td>15</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Edge Confidence</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><td>EXTRACTED</td><td>437</td></tr>
+      <tr><td>INFERRED</td><td>88</td></tr>
+      <tr><td>AMBIGUOUS</td><td>0</td></tr>
+    </table>
+  </div>
+</div>
+
+<div style="text-align:center; padding:40px 0; color: var(--muted); font-size:0.9rem;">
+  <p>api-server — Architecture Documentation</p>
+  <p>Generated: 2026-05-17 15:54 UTC · graphify callflow-html</p>
+</div>
+
+</div><!-- .container -->
+
+<script>
+(function () {
+  const mermaidConfig = {
+    startOnLoad: false,
+    theme: 'dark',
+    securityLevel: 'loose',
+    flowchart: { htmlLabels: true, useMaxWidth: true },
+    themeVariables: {
+      primaryColor: '#1e293b',
+      primaryTextColor: '#e2e8f0',
+      primaryBorderColor: '#38bdf8',
+      secondaryColor: '#0f172a',
+      tertiaryColor: '#334155',
+      lineColor: '#64748b',
+      textColor: '#e2e8f0',
+    }
+  };
+
+  mermaid.initialize(mermaidConfig);
+
+  function clamp(value, min, max) {
+    return Math.min(max, Math.max(min, value));
+  }
+
+  function enhanceMermaidDiagrams() {
+    document.querySelectorAll('.mermaid').forEach((container) => {
+      if (container.dataset.zoomReady === 'true') return;
+      const svg = container.querySelector('svg');
+      if (!svg) return;
+
+      container.dataset.zoomReady = 'true';
+      container.classList.add('is-enhanced');
+
+      const viewport = document.createElement('div');
+      viewport.className = 'mermaid-viewport';
+      svg.parentNode.insertBefore(viewport, svg);
+      viewport.appendChild(svg);
+
+      const toolbar = document.createElement('div');
+      toolbar.className = 'mermaid-toolbar';
+      toolbar.innerHTML = [
+        '<button type="button" data-action="zoom-out" title="Zoom out">-</button>',
+        '<span class="zoom-level" data-role="level">100%</span>',
+        '<button type="button" data-action="zoom-in" title="Zoom in">+</button>',
+        '<button type="button" data-action="fit" title="Fit width">Fit</button>',
+        '<button type="button" data-action="reset" title="Reset view">Reset</button>'
+      ].join('');
+      container.insertBefore(toolbar, viewport);
+
+      const state = { scale: 1, x: 0, y: 0, dragging: false, startX: 0, startY: 0, originX: 0, originY: 0 };
+      const level = toolbar.querySelector('[data-role="level"]');
+
+      function applyTransform() {
+        svg.style.transform = `translate(${state.x}px, ${state.y}px) scale(${state.scale})`;
+        level.textContent = `${Math.round(state.scale * 100)}%`;
+      }
+
+      function zoomBy(delta) {
+        state.scale = clamp(state.scale + delta, 0.25, 3);
+        applyTransform();
+      }
+
+      function reset() {
+        state.scale = 1;
+        state.x = 0;
+        state.y = 0;
+        applyTransform();
+      }
+
+      function fitWidth() {
+        const rawWidth = svg.viewBox && svg.viewBox.baseVal && svg.viewBox.baseVal.width
+          ? svg.viewBox.baseVal.width
+          : svg.getBoundingClientRect().width / state.scale;
+        if (!rawWidth) {
+          reset();
+          return;
+        }
+        state.scale = clamp((viewport.clientWidth - 48) / rawWidth, 0.25, 1.4);
+        state.x = 0;
+        state.y = 0;
+        applyTransform();
+      }
+
+      toolbar.addEventListener('click', (event) => {
+        const button = event.target.closest('button[data-action]');
+        if (!button) return;
+        const action = button.dataset.action;
+        if (action === 'zoom-in') zoomBy(0.15);
+        if (action === 'zoom-out') zoomBy(-0.15);
+        if (action === 'fit') fitWidth();
+        if (action === 'reset') reset();
+      });
+
+      viewport.addEventListener('wheel', (event) => {
+        if (!event.ctrlKey && !event.metaKey) return;
+        event.preventDefault();
+        zoomBy(event.deltaY < 0 ? 0.1 : -0.1);
+      }, { passive: false });
+
+      viewport.addEventListener('pointerdown', (event) => {
+        if (event.button !== 0) return;
+        state.dragging = true;
+        state.startX = event.clientX;
+        state.startY = event.clientY;
+        state.originX = state.x;
+        state.originY = state.y;
+        viewport.classList.add('is-dragging');
+        viewport.setPointerCapture(event.pointerId);
+      });
+
+      viewport.addEventListener('pointermove', (event) => {
+        if (!state.dragging) return;
+        state.x = state.originX + event.clientX - state.startX;
+        state.y = state.originY + event.clientY - state.startY;
+        applyTransform();
+      });
+
+      function endDrag(event) {
+        if (!state.dragging) return;
+        state.dragging = false;
+        viewport.classList.remove('is-dragging');
+        if (viewport.hasPointerCapture(event.pointerId)) {
+          viewport.releasePointerCapture(event.pointerId);
+        }
+      }
+
+      viewport.addEventListener('pointerup', endDrag);
+      viewport.addEventListener('pointercancel', endDrag);
+      applyTransform();
+    });
+  }
+
+  function renderMermaid() {
+    const result = mermaid.run
+      ? mermaid.run({ querySelector: '.mermaid' })
+      : Promise.resolve();
+    Promise.resolve(result)
+      .then(enhanceMermaidDiagrams)
+      .catch((error) => {
+        console.error('Mermaid render failed:', error);
+        enhanceMermaidDiagrams();
+      });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', renderMermaid);
+  } else {
+    renderMermaid();
+  }
+})();
+</script>
+
+</body>
+</html>

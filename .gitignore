@@ -17,9 +17,15 @@ dist-ssr
 *.local
 
 .claude/
-.antigravity/
 .claude
+.agents/
 .agents
+.agent/
+.agent
+.gemini/
+.gemini
+.antigravity/
+.antigravity
 
 # Editor directories and files
 .vscode/*
@@ -30,6 +36,10 @@ dist-ssr
 *.ntvs*
 *.njsproj
 *.sln
-*.sw?
+.sw?
 /target
 .env
+
+# graphify
+graphify-out/*
+!graphify-out/*.html

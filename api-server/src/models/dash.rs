@@ -1,7 +1,6 @@
 use chrono::NaiveDate;
 use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
-
 #[derive(Debug, Deserialize, Serialize, sqlx::FromRow)]
 #[allow(non_snake_case)]
 pub struct Cumpleaños {
@@ -10,7 +9,6 @@ pub struct Cumpleaños {
     pub nacimiento: NaiveDate,
     pub edad: Option<i64>,
 }
-
 #[derive(Serialize)]
 pub struct ResumenResponse {
     pub total: i64,
@@ -24,14 +22,12 @@ pub struct DataResumen {
     pub cantidad: i64,
     pub nombre: String,
 }
-
 #[derive(Debug, Deserialize, Serialize, sqlx::FromRow)]
 #[allow(non_snake_case)]
 pub struct BancosReport {
     pub id: i32,
     pub nombre: String,
 }
-
 #[derive(Serialize, Deserialize, Clone)]
 pub struct Organigrama {
     pub id: i32,
@@ -40,7 +36,6 @@ pub struct Organigrama {
     pub dni: Option<String>,
     pub subgerencias: Vec<Organigrama>,
 }
-
 #[derive(FromRow, Deserialize)]
 pub struct DbOrgani {
     pub id: i32,
@@ -49,7 +44,6 @@ pub struct DbOrgani {
     pub dni: Option<String>,
     pub nivel: Option<i32>,
 }
-
 #[derive(Serialize, Deserialize, Clone)]
 pub struct ReporteRenuncias {
     pub id: i32,
@@ -60,4 +54,3 @@ pub struct ReporteRenuncias {
     pub area: String,
     pub codigo: String,
 }
-

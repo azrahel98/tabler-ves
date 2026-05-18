@@ -1,13 +1,11 @@
 use actix_web::{HttpResponse, ResponseError};
 use serde::Serialize;
 use std::fmt;
-
 #[derive(Debug, Serialize)]
 pub struct ErrorResponse {
     pub code: u16,
     pub error: String,
 }
-
 #[derive(Debug)]
 pub enum ApiError {
     BadRequest(String),
@@ -16,7 +14,6 @@ pub enum ApiError {
     NotFound(String),
     InternalError(String),
 }
-
 impl fmt::Display for ApiError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
@@ -27,7 +24,6 @@ impl fmt::Display for ApiError {
         }
     }
 }
-
 impl ResponseError for ApiError {
     fn error_response(&self) -> HttpResponse {
         match self {
@@ -52,13 +48,11 @@ impl ResponseError for ApiError {
         }
     }
 }
-
 impl From<sqlx::Error> for ApiError {
     fn from(error: sqlx::Error) -> Self {
         ApiError::InternalError(format!("Error en la base de datos: {}", error))
     }
 }
-
 pub fn validar<T: validator::Validate>(dato: &T) -> Result<(), ApiError> {
     dato.validate().map_err(|errores| {
         let mensaje = errores

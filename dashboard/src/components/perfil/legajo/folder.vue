@@ -1,53 +1,67 @@
 <template>
-  <div class="rounded-2xl border border-stroke bg-white shadow-sm dark:border-strokedark dark:bg-boxdark overflow-hidden relative">
-    <div class="flex items-center justify-between border-b border-stroke p-6 dark:border-strokedark">
-      <div class="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-black dark:text-white">
-        <svg class="h-5 w-5 text-primary" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm0 12H4V8h16v10z" />
-        </svg>
-        VIRTUAL FOLDER (LEGAJO)
-      </div>
-      <div class="flex items-center gap-2">
-        <button @click="abrirModalUrl" class="flex items-center gap-2 rounded border border-primary/30 bg-primary/10 px-3 py-1.5 text-xs font-medium text-primary hover:bg-primary/15 dark:border-brand-300/30 dark:bg-brand-300/10 dark:text-brand-300 dark:hover:bg-brand-300/15 transition-all">
-          <Link2 class="h-4 w-4" />
-          Vincular URL
-        </button>
-        <button @click="abrirModal" class="flex items-center gap-2 rounded bg-primary px-3 py-1.5 text-xs font-medium text-white hover:bg-opacity-90 transition-all">
-          <Upload class="h-4 w-4" />
-          Subir Documento
-        </button>
-      </div>
-    </div>
-
-    <div class="p-6">
-      
-      <div v-if="cargandoLista" class="flex flex-col items-center justify-center py-16 gap-3">
-        <Loader2 class="h-8 w-8 animate-spin text-primary" />
-        <p class="text-xs text-gray-400">Cargando documentos...</p>
-      </div>
-
-      
-      <div v-else-if="archivosSubidos.length === 0" class="flex flex-col items-center justify-center py-16 gap-3 text-center">
-        <div class="flex h-14 w-14 items-center justify-center rounded-full bg-gray-100 dark:bg-white/5">
-          <FolderOpen class="h-7 w-7 text-gray-400" stroke-width="1.5" />
+  <Card>
+  
+ 
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between border-b border-stroke pt-0 px-3 pb-3 dark:border-strokedark gap-4">
+      <div class="flex items-center gap-2.5">
+        <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary dark:bg-white/5 dark:text-brand-300">
+          <Files class="h-5 w-5" />
         </div>
         <div>
-          <p class="text-sm font-medium text-black dark:text-white">Sin documentos</p>
-          <p class="text-xs text-gray-400 mt-0.5">Sube el primer documento usando el botón de arriba.</p>
+          <h3 class="text-sm font-bold uppercase tracking-wider text-black dark:text-white">Legajo Virtual</h3>
+          <p class="text-2xs text-gray-400 font-medium">Gestión de documentos administrativos</p>
         </div>
       </div>
-
       
-      <div v-else>
-        <p class="text-xs text-gray-400 mb-4">{{ archivosSubidos.length }} {{ archivosSubidos.length === 1 ? 'documento' : 'documentos' }}</p>
-        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
-          <legajo-item v-for="(item, i) in archivosSubidos" :key="item.id || i" :item="item" @delete="eliminarDocumento(item.id)" @preview="abrirVistaPrevia(item)" />
-        </div>
+      <div class="flex items-center gap-2 w-full sm:w-auto">
+        <button @click="abrirModalUrl" class="flex flex-1 sm:flex-none items-center justify-center gap-2 rounded-lg border border-stroke px-3 py-2 text-xs font-semibold text-gray-600 hover:bg-gray-50 dark:border-strokedark dark:text-gray-400 dark:hover:bg-white/5 transition-all">
+          <Link2 class="h-3.5 w-3.5" />
+          Vincular URL
+        </button>
+        <button @click="abrirModal" class="flex flex-1 sm:flex-none items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2 text-xs font-semibold text-white hover:bg-opacity-90 transition-all shadow-sm">
+          <Upload class="h-3.5 w-3.5" />
+          Subir PDF
+        </button>
       </div>
     </div>
 
 
-     <modal :isOpen="mostrarModal" @close="cerrarModal">
+
+    <div class="p-6 dark:bg-transparent relative">
+      <div v-if="cargandoLista" class="flex flex-col items-center justify-center py-0 gap-4">
+        <div class="relative flex h-min w-14 items-center justify-center rounded-full bg-primary/10">
+          <Loader2 class="h-7 w-7 animate-spin text-primary" />
+        </div>
+        <p class="text-sm font-medium text-gray-500">Sincronizando legajo...</p>
+      </div>
+
+      <div v-else-if="archivosSubidos.length === 0" class="flex flex-col items-center justify-center py-0 gap-4 text-center">
+        <div class="relative flex h-24 w-24 items-center justify-center rounded-full bg-white shadow-sm dark:bg-meta-4 mb-2 group-hover/folder:scale-105 transition-transform duration-500">
+          <div class="absolute inset-0 rounded-full border-2 border-dashed border-gray-300 dark:border-strokedark animate-[spin_20s_linear_infinite]"></div>
+          <FolderOpen class="h-10 w-10 text-gray-400" stroke-width="1.5" />
+        </div>
+        <div>
+          <h4 class="text-lg font-bold text-black dark:text-white">El legajo está vacío</h4>
+          <p class="text-sm text-body font-medium mt-1 max-w-sm mx-auto">Sube tu primer documento o vincula una URL para empezar a organizar este legajo.</p>
+        </div>
+        <button @click="abrirModal" class="mt-2 text-sm font-bold text-primary hover:text-primary/80 hover:underline underline-offset-4 transition-all">
+          Subir archivo ahora &rarr;
+        </button>
+      </div>
+
+      <div v-else class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 sm:gap-5">
+        <legajo-item
+          v-for="(item, i) in archivosSubidos"
+          :key="item.id || i"
+          :item="item"
+          @delete="eliminarDocumento(item.id)"
+          @preview="abrirVistaPrevia(item)"
+          @rename="abrirModalRenombrar(item)"
+        />
+      </div>
+    </div>
+
+    <modal :isOpen="mostrarModal" @close="cerrarModal">
       <template #header>
         <h3 class="text-title-md font-semibold leading-snug text-black dark:text-white flex items-center gap-2 m-0">
           <Upload class="h-5 w-5 text-primary" />
@@ -113,6 +127,47 @@
 
     <PreviewModal :isOpen="mostrarVistaPrevia" @close="cerrarVistaPrevia" :url="urlPrevia" :documentoActual="documentoActual" :urlPrevia="urlPrevia" @documento-asignado="onDocumentoAsignado" />
 
+    <modal :isOpen="mostrarModalRenombrar" @close="cerrarModalRenombrar">
+      <template #header>
+        <h3 class="text-title-md font-semibold leading-snug text-black dark:text-white flex items-center gap-2 m-0">
+          <Pencil class="h-5 w-5 text-primary" />
+          Renombrar documento
+        </h3>
+      </template>
+
+      <div class="space-y-4">
+        <div>
+          <label class="mb-2 block text-sm font-medium text-black dark:text-white">Nuevo nombre <span class="text-red-500">*</span></label>
+          <input
+            v-model="nuevoNombreArchivo"
+            type="text"
+            placeholder="Ej: Contrato de Trabajo 2024"
+            class="w-full rounded-lg border-[1.5px] border-stroke bg-transparent px-4 py-2.5 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+            @keyup.enter="renombrarArchivo" />
+          <p class="mt-1 text-2xs text-gray-500">La extensión .pdf se agrega automáticamente.</p>
+        </div>
+
+        <p v-if="errorRenombrar" class="text-xs text-red-500 font-medium">{{ errorRenombrar }}</p>
+      </div>
+
+      <template #footer>
+        <div class="flex justify-end gap-3 w-full">
+          <button
+            @click="cerrarModalRenombrar"
+            class="rounded-lg border border-stroke px-4 py-2 text-sm font-medium text-black hover:bg-gray-100 dark:border-strokedark dark:text-white dark:hover:bg-meta-4 transition-colors">
+            Cancelar
+          </button>
+          <button
+            @click="renombrarArchivo"
+            :disabled="cargandoRenombrar || !nuevoNombreArchivo.trim()"
+            class="flex items-center justify-center gap-2 rounded-lg bg-primary px-6 py-2 text-sm font-medium text-white hover:bg-opacity-90 disabled:bg-opacity-50 disabled:cursor-not-allowed transition-all">
+            <Loader2 v-if="cargandoRenombrar" class="h-4 w-4 animate-spin" />
+            <span>{{ cargandoRenombrar ? 'Guardando...' : 'Guardar' }}</span>
+          </button>
+        </div>
+      </template>
+    </modal>
+
     <RegistrarUrlModal
       :isOpen="mostrarModalUrl"
       :dni="perfilActual?.dni ?? null"
@@ -120,17 +175,18 @@
       @close="mostrarModalUrl = false"
       @registrado="onUrlRegistrada" />
 
-     </div>
+  </Card>
 </template>
 
 <script setup lang="ts">
   import LegajoItem from './items.vue'
-  import { ref, watch,defineAsyncComponent } from 'vue'
+  import { ref, watch, defineAsyncComponent } from 'vue'
   import { storeToRefs } from 'pinia'
   import { usePersonalStore } from '../../../stores/personal'
   import api from '../../../services/api'
-  import { Upload, Loader2, FolderOpen, Link2 } from 'lucide-vue-next'
+  import { Upload, Loader2, FolderOpen, Link2, Files, Pencil } from 'lucide-vue-next'
   import { baseURL } from '../../../services/api'
+  import Card from '../../ui/card.vue'
 
   const personalStore = usePersonalStore()
   const { perfilActual } = storeToRefs(personalStore)
@@ -157,7 +213,15 @@
   const documentoActual = ref<any>(null)
 
   const mostrarModalUrl = ref(false)
+
+  const mostrarModalRenombrar = ref(false)
+  const archivoARenombrar = ref<any>(null)
+  const nuevoNombreArchivo = ref('')
+  const errorRenombrar = ref('')
+  const cargandoRenombrar = ref(false)
   
+
+
   const apiUrlBase = baseURL
 
   const cargarDocumentos = async () => {
@@ -186,6 +250,47 @@
     mostrarModal.value = false
   }
 
+  const abrirModalRenombrar = (item: any) => {
+    archivoARenombrar.value = item
+    const nombre = item.original_name || ''
+    const ultimoPunto = nombre.lastIndexOf('.')
+    nuevoNombreArchivo.value = ultimoPunto > 0 ? nombre.slice(0, ultimoPunto) : nombre
+    errorRenombrar.value = ''
+    mostrarModalRenombrar.value = true
+  }
+
+  const cerrarModalRenombrar = () => {
+    mostrarModalRenombrar.value = false
+    archivoARenombrar.value = null
+    nuevoNombreArchivo.value = ''
+    errorRenombrar.value = ''
+  }
+
+  const renombrarArchivo = async () => {
+    if (!nuevoNombreArchivo.value.trim() || !archivoARenombrar.value) return
+
+    cargandoRenombrar.value = true
+    errorRenombrar.value = ''
+
+    try {
+      const response = await api.post('/fileserver/renombrar_archivo', {
+        id: archivoARenombrar.value.id,
+        nuevo_nombre: nuevoNombreArchivo.value.trim(),
+      })
+
+      const archivo = archivosSubidos.value.find((a) => a.id === archivoARenombrar.value.id)
+      if (archivo) {
+        archivo.original_name = response.data.original_name
+      }
+
+      cerrarModalRenombrar()
+    } catch (error: any) {
+      errorRenombrar.value = error.response?.data?.error || 'No se pudo renombrar el documento'
+    } finally {
+      cargandoRenombrar.value = false
+    }
+  }
+
   const abrirModalUrl = () => {
     mostrarModalUrl.value = true
     cargarDocumentos()
@@ -200,12 +305,17 @@
   }
 
   const abrirVistaPrevia = async (doc: any) => {
+    if (doc.external_url) {
+      window.open(doc.external_url, '_blank')
+      return
+    }
+
     documentoActual.value = doc
     mostrarVistaPrevia.value = true
     urlPrevia.value = null 
     
     if (doc.file_hash) {
-       urlPrevia.value = `${apiUrlBase}/fileserver/${doc.file_hash}`
+       urlPrevia.value = `${apiUrlBase}/fileserver/${doc.file_hash}#view=FitH`
     } else {
        console.error("El documento no tiene un hash válido para visualizar");
        cerrarVistaPrevia();
@@ -225,8 +335,6 @@
       archivo.documento_id = documentoId
     }
   }
-
-
 
   const buscarDocumentos = async () => {
     const dni = perfilActual.value?.dni
@@ -356,3 +464,4 @@
     }
   }
 </script>
+

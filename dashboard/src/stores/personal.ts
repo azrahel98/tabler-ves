@@ -142,8 +142,8 @@ export const usePersonalStore = defineStore('personal', () => {
     contactoEmergencia.value = null
   }
 
-  async function eliminarSindicato(vinculo_id: number, dni: string) {
-    await api.post('/personal/eliminar_sindicato', { vinculo_id, dni })
+  async function eliminarSindicato(vinculo_id: number, dni: string, doc: any) {
+    await api.post('/personal/eliminar_sindicato', { vinculo_id, dni, ...doc })
     if (perfilActual.value?.dni) {
       await obtenerVinculos(perfilActual.value.dni)
     }

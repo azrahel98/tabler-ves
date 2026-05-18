@@ -1,6 +1,5 @@
 use crate::{handlers::personal::*, middleware::check::JWT};
 use actix_web::web::{self};
-
 pub fn init_routes(cfg: &mut web::ServiceConfig) {
     cfg.service(
         web::scope("/personal")
@@ -24,13 +23,8 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
                 "/renuncia_por_vinculo",
                 web::post().to(renuncia_por_vinculo),
             )
-            .route("/legajo_por_dni", web::post().to(reporte_legajo))
-            .route(
-                "/nuevo_evento_legajo",
-                web::post().to(agregar_evento_legajo),
-            )
+            .route("/editar_documento", web::post().to(editar_documento))
             .route("/vinculos_por_dni", web::post().to(vinculos_por_dni))
-            .route("/asistencia", web::post().to(report_asistencia))
             .route("/agregar_contacto", web::post().to(contacto_emergencia_add))
             .route("/buscar_vacantes", web::post().to(buscar_vacantes))
             .route("/buscar_por_plaza", web::post().to(buscar_por_plaza))
@@ -58,6 +52,7 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
                 "/activos_por_distrito",
                 web::post().to(activos_por_distrito),
             )
-            .route("/cambio_area", web::post().to(registrar_cambio_area)),
+            .route("/cambio_area", web::post().to(registrar_cambio_area))
+            .route("/calidad_datos", web::post().to(calidad_datos)),
     );
 }

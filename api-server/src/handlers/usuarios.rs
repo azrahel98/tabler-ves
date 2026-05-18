@@ -10,7 +10,6 @@ use actix_web::{HttpMessage, HttpRequest, HttpResponse, Responder, web};
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
 use validator::Validate;
-
 fn verificar_admin(req: &HttpRequest) -> Result<(), ApiError> {
     let lvl = req
         .extensions()
@@ -24,7 +23,6 @@ fn verificar_admin(req: &HttpRequest) -> Result<(), ApiError> {
     }
     Ok(())
 }
-
 #[derive(Serialize, sqlx::FromRow)]
 pub struct UsuarioListado {
     pub id: i32,
@@ -32,7 +30,6 @@ pub struct UsuarioListado {
     pub nickname: String,
     pub nivel: i32,
 }
-
 pub async fn listar_usuarios(
     data: web::Data<AppState>,
     req: HttpRequest,
@@ -47,7 +44,6 @@ pub async fn listar_usuarios(
     .map_err(|e| ApiError::InternalError(format!("Error al listar usuarios: {}", e)))?;
     Ok(HttpResponse::Ok().json(usuarios))
 }
-
 #[derive(Deserialize, Validate)]
 pub struct CrearUsuarioBody {
     #[validate(length(min = 2, message = "El nombre es requerido"))]
@@ -59,7 +55,6 @@ pub struct CrearUsuarioBody {
     #[validate(range(min = 1, max = 2, message = "Nivel inválido (1=admin, 2=usuario)"))]
     pub nivel: i32,
 }
-
 pub async fn crear_usuario(
     data: web::Data<AppState>,
     body: web::Json<CrearUsuarioBody>,
@@ -79,7 +74,6 @@ pub async fn crear_usuario(
     .execute(&data.db)
     .await
     .map_err(|e| ApiError::InternalError(format!("Error al crear usuario: {}", e)))?;
-
     let _ = registrar_historial(
         &req,
         &data.db,
@@ -92,10 +86,8 @@ pub async fn crear_usuario(
         })),
     )
     .await;
-
     Ok(HttpResponse::Ok().json("Usuario creado correctamente"))
 }
-
 #[derive(Deserialize, Serialize, Validate)]
 pub struct EditarUsuarioBody {
     #[validate(range(min = 1, message = "ID inválido"))]
@@ -107,7 +99,6 @@ pub struct EditarUsuarioBody {
     #[validate(range(min = 1, max = 2, message = "Nivel inválido"))]
     pub nivel: i32,
 }
-
 pub async fn editar_usuario(
     data: web::Data<AppState>,
     body: web::Json<EditarUsuarioBody>,
@@ -115,8 +106,6 @@ pub async fn editar_usuario(
 ) -> Result<impl Responder, ApiError> {
     verificar_admin(&req)?;
     validar(&body.0)?;
-
-    
     let actual = sqlx::query!(
         "SELECT nombre, nickname, nivel FROM usuario WHERE id = ?",
         body.id
@@ -124,7 +113,6 @@ pub async fn editar_usuario(
     .fetch_one(&data.db)
     .await
     .map_err(|e| ApiError::InternalError(format!("Error al obtener usuario actual: {}", e)))?;
-
     sqlx::query("UPDATE usuario SET nombre = ?, nickname = ?, nivel = ? WHERE id = ?")
         .bind(&body.nombre)
         .bind(&body.nickname)
@@ -133,8 +121,6 @@ pub async fn editar_usuario(
         .execute(&data.db)
         .await
         .map_err(|e| ApiError::InternalError(format!("Error al editar usuario: {}", e)))?;
-
-    
     let mut diff = serde_json::Map::new();
     if actual.nombre != body.nombre {
         diff.insert("nombre".to_string(), json!({"antes": actual.nombre, "despues": body.nombre}));
@@ -145,7 +131,6 @@ pub async fn editar_usuario(
     if actual.nivel != body.nivel {
         diff.insert("nivel".to_string(), json!({"antes": actual.nivel, "despues": body.nivel}));
     }
-
     if !diff.is_empty() {
         let _ = registrar_historial(
             &req,
@@ -156,16 +141,13 @@ pub async fn editar_usuario(
         )
         .await;
     }
-
     Ok(HttpResponse::Ok().json("Usuario actualizado correctamente"))
 }
-
 #[derive(Deserialize, Validate)]
 pub struct EliminarUsuarioBody {
     #[validate(range(min = 1, message = "ID inválido"))]
     pub id: i32,
 }
-
 pub async fn eliminar_usuario(
     data: web::Data<AppState>,
     body: web::Json<EliminarUsuarioBody>,
@@ -173,8 +155,6 @@ pub async fn eliminar_usuario(
 ) -> Result<impl Responder, ApiError> {
     verificar_admin(&req)?;
     validar(&body.0)?;
-
-    
     let usuario_full = sqlx::query!(
         "SELECT id, nombre, nickname, nivel FROM usuario WHERE id = ?",
         body.id
@@ -182,7 +162,6 @@ pub async fn eliminar_usuario(
     .fetch_optional(&data.db)
     .await
     .map_err(|e| ApiError::InternalError(format!("Error al capturar usuario: {}", e)))?;
-
     let caller_id = req
         .extensions()
         .get::<Claims>()
@@ -193,13 +172,11 @@ pub async fn eliminar_usuario(
             "No puedes eliminar tu propia cuenta".into(),
         ));
     }
-
     sqlx::query("DELETE FROM usuario WHERE id = ?")
         .bind(body.id)
         .execute(&data.db)
         .await
         .map_err(|e| ApiError::InternalError(format!("Error al eliminar usuario: {}", e)))?;
-
     if let Some(u) = usuario_full {
         let _ = registrar_historial(
             &req,
@@ -217,10 +194,8 @@ pub async fn eliminar_usuario(
         )
         .await;
     }
-
     Ok(HttpResponse::Ok().json("Usuario eliminado"))
 }
-
 #[derive(Deserialize, Validate)]
 pub struct ResetPassBody {
     #[validate(range(min = 1, message = "ID inválido"))]
@@ -228,7 +203,6 @@ pub struct ResetPassBody {
     #[validate(length(min = 4, message = "La contraseña debe tener al menos 4 caracteres"))]
     pub nueva_pass: String,
 }
-
 pub async fn reset_pass_usuario(
     data: web::Data<AppState>,
     body: web::Json<ResetPassBody>,
@@ -244,7 +218,6 @@ pub async fn reset_pass_usuario(
         .execute(&data.db)
         .await
         .map_err(|e| ApiError::InternalError(format!("Error al resetear contraseña: {}", e)))?;
-
     let _ = registrar_historial(
         &req,
         &data.db,
@@ -253,6 +226,5 @@ pub async fn reset_pass_usuario(
         Some(serde_json::json!({ "id_usuario_reset": body.id })),
     )
     .await;
-
     Ok(HttpResponse::Ok().json("Contraseña restablecida correctamente"))
 }

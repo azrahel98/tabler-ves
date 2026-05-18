@@ -1,7 +1,11 @@
 <template>
-  <div class="rounded-2xl border border-gray-100 bg-card p-5 dark:border-white/6 dark:bg-white/3 md:p-6">
-    <div class="flex items-center justify-between mb-4">
-      <h3 class="text-sm uppercase font-semibold text-gray-800 dark:text-white/90">Contacto de Emergencia</h3>
+  <Card title="Contacto de Emergencia">
+    <template #icon>
+      <svg class="h-4 w-4 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+      </svg>
+    </template>
+    <template #action>
       <div v-if="esAdmin" class="flex items-center gap-0.5">
         <button
           @click="isEditModalOpen = true"
@@ -18,7 +22,7 @@
           <Trash2 class="h-3.5 w-3.5" />
         </button>
       </div>
-    </div>
+    </template>
 
     <div v-if="contactoEmergencia" class="space-y-4">
       <div class="flex items-center gap-3">
@@ -57,23 +61,32 @@
       </div>
     </div>
 
-    <div v-else class="flex flex-col items-center gap-2 py-6 text-center">
-      <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-gray-100 dark:bg-gray-800">
-        <Users class="h-5 w-5 text-gray-400 dark:text-gray-500" />
+    <div v-else class="flex items-center justify-between py-2">
+      <div class="flex items-center gap-3">
+        <div class="h-10 w-10 rounded-full bg-gray-50 dark:bg-gray-800/50 flex items-center justify-center ring-4 ring-white dark:ring-gray-900 shadow-xs shrink-0">
+          <Users class="h-4 w-4 text-gray-300 dark:text-gray-600" />
+        </div>
+        <div class="text-left">
+          <p class="text-xs font-semibold text-gray-500 dark:text-gray-400">Sin contacto</p>
+          <p class="text-2xs text-gray-400 dark:text-gray-500 mt-0.5">Añade alguien a contactar.</p>
+        </div>
       </div>
-      <p class="text-xs font-medium text-gray-400 dark:text-gray-500">Sin contacto registrado</p>
+      <button v-if="esAdmin" @click="isEditModalOpen = true" class="shrink-0 text-2xs font-medium text-primary hover:text-brand-500 flex items-center gap-1 transition-colors bg-primary/5 hover:bg-primary/10 px-2.5 py-1.5 rounded-lg">
+        <Plus class="h-3 w-3" /> Añadir
+      </button>
     </div>
 
     <EditContactoModal v-if="esAdmin" :isOpen="isEditModalOpen" :contacto="contactoEmergencia" @close="isEditModalOpen = false" />
-  </div>
+  </Card>
 </template>
 
 <script setup lang="ts">
   import { ref } from 'vue'
+  import Card from '../ui/card.vue'
   import { defineAsyncComponent } from 'vue'
   import { usePersonalStore } from '../../stores/personal'
   import { storeToRefs } from 'pinia'
-  import { Pencil, Trash2, Phone, Users, Copy, Check, Heart, User, Home, Baby } from 'lucide-vue-next'
+  import { Pencil, Trash2, Phone, Users, Copy, Check, Heart, User, Home, Baby, Plus } from 'lucide-vue-next'
   import { useAutenticacionStore } from '../../stores/auth'
   import { formatPhone } from '../../utils/formatters'
 

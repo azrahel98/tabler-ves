@@ -3,17 +3,16 @@ use actix_web::{App, HttpServer, middleware::Logger, web};
 use dotenv::from_filename;
 use sqlx::mysql::{MySqlPool, MySqlPoolOptions};
 use std::time::Duration;
-
 mod handlers;
 mod middleware;
 mod models;
 mod routes;
-
+mod repositories;
+mod services;
 pub struct AppState {
     pub db: MySqlPool,
     pub cliente_http: reqwest::Client,
 }
-
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     from_filename(".env").ok();
@@ -21,15 +20,12 @@ async fn main() -> std::io::Result<()> {
         unsafe { std::env::set_var("RUST_LOG", "debug,actix_web=info") };
     }
     env_logger::init();
-
     let database_url = std::env::var("DATABASE_URL").expect("DATABASE_URL must be set");
-
     println!("{}", database_url);
     let port: u16 = std::env::var("PORT")
         .unwrap_or_else(|_| "4010".to_string())
         .parse()
         .expect("PORT must be a number");
-
     let pool = match MySqlPoolOptions::new()
         .max_connections(10)
         .min_connections(5)
@@ -57,7 +53,6 @@ async fn main() -> std::io::Result<()> {
             std::process::exit(1);
         }
     };
-
     HttpServer::new(move || {
         let cors = Cors::default()
             .supports_credentials()

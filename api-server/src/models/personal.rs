@@ -4,7 +4,6 @@ use serde::Serialize;
 use sqlx::FromRow;
 use validator::Validate;
 use validator::ValidationError;
-
 pub fn es_dni_valido(dni: &str) -> Result<(), ValidationError> {
     if dni.len() == 8 && dni.chars().all(|c| c.is_ascii_digit()) {
         Ok(())
@@ -14,7 +13,6 @@ pub fn es_dni_valido(dni: &str) -> Result<(), ValidationError> {
         Err(err)
     }
 }
-
 #[derive(Serialize)]
 pub struct Persona {
     pub nombre: Option<String>,
@@ -22,7 +20,6 @@ pub struct Persona {
     pub estado: Option<String>,
     pub sexo: Option<String>,
 }
-
 #[derive(Serialize, Deserialize, Validate)]
 pub struct Perfil {
     #[validate(custom(function = "es_dni_valido"))]
@@ -37,7 +34,6 @@ pub struct Perfil {
     pub region: Option<String>,
     pub distrito: Option<String>,
 }
-
 #[derive(Serialize, Deserialize)]
 pub struct Vinculos {
     pub id: i32,
@@ -66,7 +62,6 @@ pub struct Vinculos {
     pub fecha_evento: Option<NaiveDate>,
     pub id_evento: Option<i32>,
 }
-
 #[derive(Debug, Serialize, Deserialize, FromRow, Validate)]
 pub struct Documento {
     pub id: Option<i32>,
@@ -85,7 +80,6 @@ pub struct Documento {
     pub descripcion: String,
     pub funcion: Option<i64>,
 }
-
 #[derive(Debug, Serialize, Deserialize, FromRow, Validate)]
 pub struct DatosBancarios {
     pub id: i32,
@@ -101,7 +95,6 @@ pub struct DatosBancarios {
     pub dni: String,
     pub estado: i8,
 }
-
 #[derive(Debug, Serialize, Deserialize, FromRow, Validate)]
 pub struct DatosBancariosResponse {
     #[validate(length(
@@ -118,7 +111,6 @@ pub struct DatosBancariosResponse {
     #[validate(custom(function = "es_dni_valido"))]
     pub dni: String,
 }
-
 #[derive(Debug, Serialize, Deserialize, FromRow, Validate)]
 pub struct GradoAcademico {
     pub id: i32,
@@ -134,13 +126,11 @@ pub struct GradoAcademico {
     pub dni: String,
     pub fecha: Option<NaiveDate>,
 }
-
 #[derive(Debug, Serialize, Deserialize)]
 pub struct VinculosSindicato {
     pub id_vinculo: i32,
     pub dni: String,
 }
-
 #[derive(Debug, Serialize, Deserialize, FromRow, Validate)]
 pub struct DocumentoSindicato {
     pub id: Option<i32>,
@@ -159,7 +149,6 @@ pub struct DocumentoSindicato {
     pub sindicato: i32,
     pub vinculos: Vec<VinculosSindicato>,
 }
-
 #[derive(Debug, Serialize, Deserialize, FromRow, Validate)]
 pub struct LegajoPersonal {
     pub id: i32,
@@ -172,14 +161,12 @@ pub struct LegajoPersonal {
     pub nuevo: i32,
     pub user: Option<i32>,
 }
-
 #[derive(Debug, Serialize, Deserialize, FromRow)]
 pub struct AsistenciaVw {
     pub dni: String,
     pub hora: Option<String>,
     pub fecha: Option<NaiveDate>,
 }
-
 #[derive(Debug, Serialize, Deserialize, FromRow, Validate)]
 pub struct ContactoEmergencia {
     #[validate(custom(function = "es_dni_valido"))]
@@ -190,7 +177,6 @@ pub struct ContactoEmergencia {
     pub relacion: String,
     pub telefono: Option<String>,
 }
-
 #[derive(Serialize, Deserialize, Validate)]
 pub struct PerfilInput {
     #[validate(custom(function = "es_dni_valido"))]
@@ -210,7 +196,6 @@ pub struct PerfilInput {
     pub region: Option<String>,
     pub distrito: Option<String>,
 }
-
 #[derive(Serialize, Deserialize, Validate)]
 pub struct NuevoVinculo {
     #[validate(nested)]
@@ -228,7 +213,6 @@ pub struct NuevoVinculo {
     #[validate(range(min = 0.0, message = "El sueldo debe ser mayor o igual a 0"))]
     pub sueldo: f64,
 }
-
 #[derive(Debug, Serialize, Deserialize, Validate)]
 pub struct EventoVinculoPayload {
     pub id: Option<i32>,

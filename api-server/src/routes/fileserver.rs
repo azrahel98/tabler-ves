@@ -1,6 +1,5 @@
 use crate::{handlers::fileserver::*, middleware::check::JWT};
 use actix_web::web::{self};
-
 pub fn init_routes(cfg: &mut web::ServiceConfig) {
     cfg.service(
         web::scope("/fileserver")
@@ -14,7 +13,8 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
                     .route("/listar_archivos_dni", web::post().to(listar_archivos_dni))
                     .route("/eliminar_archivo", web::post().to(eliminar_archivo))
                     .route("/asignar_documento", web::post().to(asignar_documento))
-                    .route("/documentos_por_dni", web::post().to(documentos_por_dni)),
+                    .route("/documentos_por_dni", web::post().to(documentos_por_dni))
+                    .route("/renombrar_archivo", web::post().to(renombrar_archivo)),
             ),
     );
 }

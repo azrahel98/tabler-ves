@@ -1,6 +1,5 @@
 use crate::{handlers::dash::*, middleware::check::JWT};
 use actix_web::web::{self};
-
 pub fn init_routes(cfg: &mut web::ServiceConfig) {
     cfg.service(
         web::scope("/dash")

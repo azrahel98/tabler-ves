@@ -94,6 +94,17 @@
 
             <li v-if="esAdmin">
               <router-link
+                to="/calidad-datos"
+                class="relative flex items-center gap-2.5 rounded-sm py-2 menu-item-inactive"
+                :class="sidebarToggle ? 'justify-center px-0' : 'px-4'"
+                active-class="bg-primary/10 text-primary dark:bg-primary/20 dark:text-brand-300">
+                <AlertTriangle class="size-5" />
+                <span class="text-sm font-medium" :class="sidebarToggle ? 'lg:hidden' : ''">Calidad de Datos</span>
+              </router-link>
+            </li>
+
+            <li v-if="esAdmin">
+              <router-link
                 to="/carga-masiva"
                 class="relative flex items-center gap-2.5 rounded-sm py-2 menu-item-inactive"
                 :class="sidebarToggle ? 'justify-center px-0' : 'px-4'"
@@ -145,7 +156,7 @@
 
 <script setup lang="ts">
   import { useConfiguracionStore } from '../../stores/layout'
-  import { LayoutDashboard, Users, KeyRound, Network, Shield, UserPlus, Settings, FileSpreadsheet, FileUp } from 'lucide-vue-next'
+  import { LayoutDashboard, Users, KeyRound, Network, Shield, UserPlus, Settings, FileSpreadsheet, FileUp, AlertTriangle } from 'lucide-vue-next'
   import { storeToRefs } from 'pinia'
   import router from '../../router'
   import { useAutenticacionStore } from '../../stores/auth'

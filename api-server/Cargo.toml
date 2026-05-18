@@ -2,10 +2,8 @@
 name = "api-server"
 version = "0.1.0"
 edition = "2024"
-
 [package.metadata.scripts]
 dev = "cargo watch -i '*.http' -x run"
-
 [dependencies]
 actix-cors = "0.7.1"
 actix-web = "4"

@@ -11,7 +11,6 @@ use serde_json::json;
 use std::io::Write;
 use std::path::PathBuf;
 use uuid::Uuid;
-
 pub async fn upload_file(
     data: web::Data<AppState>,
     mut payload: Multipart,
@@ -19,14 +18,11 @@ pub async fn upload_file(
 ) -> Result<impl Responder, ApiError> {
     let mut documento_id: Option<i32> = None;
     let mut dni_asociado: Option<String> = None;
-
     let claims = req.extensions().get::<Claims>().cloned();
     let usuario_subida = claims
         .map(|c| c.nombre)
         .unwrap_or_else(|| "Desconocido".to_string());
-
     let mut saved_files = Vec::new();
-
     let upload_dir_str = std::env::var("UPLOAD_DIR").unwrap_or_else(|_| "./uploads".to_string());
     let upload_dir = std::path::PathBuf::from(upload_dir_str);
     if !upload_dir.exists() {
@@ -34,7 +30,6 @@ pub async fn upload_file(
             ApiError::InternalError(format!("Error creating upload directory: {}", e))
         })?;
     }
-
     while let Some(mut field) = payload
         .try_next()
         .await
@@ -44,7 +39,6 @@ pub async fn upload_file(
         let field_name = content_disposition
             .and_then(|cd| cd.get_name())
             .unwrap_or("");
-
         if field_name == "documento_id" {
             let mut val = Vec::new();
             while let Some(chunk) = field
@@ -74,30 +68,24 @@ pub async fn upload_file(
                 .and_then(|cd| cd.get_filename())
                 .unwrap_or("unknown")
                 .to_string();
-
             let extension = std::path::Path::new(&original_name)
                 .extension()
                 .and_then(std::ffi::OsStr::to_str)
                 .unwrap_or("bin")
                 .to_string();
-
             if extension.to_lowercase() != "pdf" {
                 return Err(ApiError::InternalError(
                     "Solo se permiten archivos PDF".to_string(),
                 ));
             }
-
             let file_hash = Uuid::new_v4().to_string();
             let mut file_path = upload_dir.clone();
             file_path.push(format!("{}.{}", file_hash, extension));
-
             let mut f = std::fs::File::create(&file_path).map_err(|e| {
                 ApiError::InternalError(format!("Error creating file on disk: {}", e))
             })?;
-
             let mut current_size: usize = 0;
             let max_file_size: usize = 10 * 1024 * 1024; 
-
             while let Some(chunk) = field
                 .try_next()
                 .await
@@ -105,13 +93,11 @@ pub async fn upload_file(
             {
                 current_size += chunk.len();
                 if current_size > max_file_size {
-                    
                     let _ = std::fs::remove_file(&file_path);
                     return Err(ApiError::InternalError(
                         "El archivo no debe pesar más de 10 MB".to_string(),
                     ));
                 }
-
                 f = web::block(move || f.write_all(&chunk).map(|_| f))
                     .await
                     .map_err(|e| ApiError::InternalError(format!("Blocking thread error: {}", e)))?
@@ -119,17 +105,13 @@ pub async fn upload_file(
                         ApiError::InternalError(format!("Error writing to file: {}", e))
                     })?;
             }
-
             saved_files.push((original_name, file_hash, extension));
         }
     }
-
     let dni_asoc = dni_asociado.ok_or_else(|| {
         ApiError::InternalError("El campo dni_asociado es obligatorio.".to_string())
     })?;
-
     let mut results = Vec::new();
-
     for (orig_name, hash, ext) in saved_files {
         let insert_result = sqlx::query!(
             r#"
@@ -146,7 +128,6 @@ pub async fn upload_file(
         .execute(&data.db)
         .await
         .map_err(|e| ApiError::InternalError(format!("Database error: {}", e)))?;
-
         results.push(json!({
             "id": insert_result.last_insert_id(),
             "original_name": orig_name,
@@ -156,12 +137,10 @@ pub async fn upload_file(
     }
     Ok(HttpResponse::Ok().json(results))
 }
-
 #[derive(Deserialize)]
 pub struct ListarArchivosDniInput {
     pub dni: String,
 }
-
 pub async fn listar_archivos_dni(
     state: web::Data<AppState>,
     input: web::Json<ListarArchivosDniInput>,
@@ -187,7 +166,6 @@ pub async fn listar_archivos_dni(
     .fetch_all(&state.db)
     .await
     .map_err(|e| ApiError::InternalError(format!("Database error: {}", e)))?;
-
     let mut results = Vec::new();
     for rec in records {
         results.push(json!({
@@ -202,15 +180,12 @@ pub async fn listar_archivos_dni(
             "fecha_subida": rec.fecha_subida,
         }));
     }
-
     Ok(HttpResponse::Ok().json(results))
 }
-
 #[derive(Deserialize)]
 pub struct EliminarArchivoInput {
     pub id: i32,
 }
-
 pub async fn eliminar_archivo(
     state: web::Data<AppState>,
     input: web::Json<EliminarArchivoInput>,
@@ -225,23 +200,18 @@ pub async fn eliminar_archivo(
     .fetch_optional(&state.db)
     .await
     .map_err(|e| ApiError::InternalError(format!("Database error: {}", e)))?;
-
     if let Some(record) = file_record {
         if record.external_url.is_none() {
             let upload_dir_str =
                 std::env::var("UPLOAD_DIR").unwrap_or_else(|_| "./uploads".to_string());
             let mut file_path = std::path::PathBuf::from(upload_dir_str);
-
             let file_hash_str = record.file_hash.unwrap_or_else(|| "unknown".to_string());
             let extension = record.extension.unwrap_or_else(|| "pdf".to_string());
-
             file_path.push(format!("{}.{}", file_hash_str, extension));
-
             if file_path.exists() {
                 let _ = std::fs::remove_file(&file_path);
             }
         }
-
         sqlx::query!(
             r#"
             DELETE FROM fileserver WHERE id = ?
@@ -251,19 +221,16 @@ pub async fn eliminar_archivo(
         .execute(&state.db)
         .await
         .map_err(|e| ApiError::InternalError(format!("Database error: {}", e)))?;
-
         Ok(HttpResponse::Ok().json("Archivo eliminado correctamente"))
     } else {
         Err(ApiError::InternalError("Archivo no encontrado".to_string()))
     }
 }
-
 #[derive(Deserialize)]
 pub struct AsignarDocumentoInput {
     pub id: i32,
     pub documento_id: Option<i32>,
 }
-
 pub async fn asignar_documento(
     state: web::Data<AppState>,
     input: web::Json<AsignarDocumentoInput>,
@@ -278,15 +245,12 @@ pub async fn asignar_documento(
     .execute(&state.db)
     .await
     .map_err(|e| ApiError::InternalError(format!("Database error: {}", e)))?;
-
     Ok(HttpResponse::Ok().json(json!({ "message": "Documento asignado correctamente" })))
 }
-
 #[derive(Deserialize)]
 pub struct DocumentosPorDniInput {
     pub dni: String,
 }
-
 pub async fn documentos_por_dni(
     state: web::Data<AppState>,
     input: web::Json<DocumentosPorDniInput>,
@@ -305,9 +269,7 @@ FROM
 WHERE
   v.dni = ?
   AND d.id IS NOT NULL and d.numero is not null
-
 UNION ALL
-
 SELECT
   ds.id,
   CONCAT(tds.nombre, ' N° ', ds.numero, '-', ds.year, '-', tds.sigla) AS descripcion_doc,
@@ -327,7 +289,6 @@ WHERE
     .fetch_all(&state.db)
     .await
     .map_err(|e| ApiError::InternalError(format!("Database error: {}", e)))?;
-
     let mut results = Vec::new();
     for rec in records {
         results.push(json!({
@@ -337,10 +298,8 @@ WHERE
             "descripcion": rec.descripcion,
         }));
     }
-
     Ok(HttpResponse::Ok().json(results))
 }
-
 pub async fn upload_batch(
     data: web::Data<AppState>,
     mut payload: Multipart,
@@ -354,23 +313,18 @@ pub async fn upload_batch(
     let mut descripcion: Option<String> = None;
     let mut nombre_archivo: Option<String> = None;
     let mut dnis: Vec<String> = Vec::new();
-
     let claims = req.extensions().get::<Claims>().cloned();
     let usuario_subida = claims
         .map(|c| c.nombre)
         .unwrap_or_else(|| "Desconocido".to_string());
-
     let mut saved_file: Option<(String, String, String)> = None;
-
     let upload_dir_str = std::env::var("UPLOAD_DIR").unwrap_or_else(|_| "./uploads".to_string());
     let upload_dir = std::path::PathBuf::from(upload_dir_str);
-    
     if !upload_dir.exists() {
         std::fs::create_dir_all(&upload_dir).map_err(|e| {
             ApiError::InternalError(format!("Error creating upload directory: {}", e))
         })?;
     }
-
     while let Some(mut field) = payload
         .try_next()
         .await
@@ -380,15 +334,12 @@ pub async fn upload_batch(
             .and_then(|cd| cd.get_name())
             .unwrap_or("")
             .to_string();
-
         let mut val = Vec::new();
-        
         if field_name != "file" && field_name != "archivo" {
             while let Some(chunk) = field.try_next().await.map_err(|e| ApiError::InternalError(format!("Error reading chunk: {}", e)))? {
                 val.extend_from_slice(&chunk);
             }
         }
-
         match field_name.as_str() {
             "tipo_documento_id" => {
                 if let Ok(s) = String::from_utf8(val) {
@@ -431,28 +382,22 @@ pub async fn upload_batch(
                     .and_then(|cd| cd.get_filename())
                     .unwrap_or("unknown")
                     .to_string();
-
                 let extension = std::path::Path::new(&original_name)
                     .extension()
                     .and_then(std::ffi::OsStr::to_str)
                     .unwrap_or("bin")
                     .to_string();
-
                 if extension.to_lowercase() != "pdf" {
                     return Err(ApiError::InternalError("Solo se permiten archivos PDF".to_string()));
                 }
-
                 let file_hash = Uuid::new_v4().to_string();
                 let mut file_path = upload_dir.clone();
                 file_path.push(format!("{}.{}", file_hash, extension));
-
                 let mut f = std::fs::File::create(&file_path).map_err(|e| {
                     ApiError::InternalError(format!("Error creating file on disk: {}", e))
                 })?;
-
                 let mut current_size: usize = 0;
                 let max_file_size: usize = 20 * 1024 * 1024; 
-
                 while let Some(chunk) = field.try_next().await.map_err(|e| ApiError::InternalError(format!("Error reading file chunk: {}", e)))? {
                     current_size += chunk.len();
                     if current_size > max_file_size {
@@ -466,23 +411,16 @@ pub async fn upload_batch(
             _ => {}
         }
     }
-
     let (orig_name, hash, ext) = saved_file.ok_or_else(|| ApiError::InternalError("No se recibió ningún archivo".to_string()))?;
-    
-    
     let mut nombre_final = nombre_archivo.unwrap_or(orig_name);
     if !nombre_final.to_lowercase().ends_with(".pdf") {
         nombre_final = format!("{}.pdf", nombre_final);
     }
-
     let dnis_count = dnis.len();
     if dnis_count == 0 {
         return Err(ApiError::InternalError("Debe proporcionar al menos un DNI".to_string()));
     }
-
     let mut tx = data.db.begin().await.map_err(|e| ApiError::InternalError(format!("Transaction error: {}", e)))?;
-
-    
     let doc_result = sqlx::query!(
         r#"
         INSERT INTO documento (tipo_documento_id, numero, year, fecha, fecha_valida, descripcion)
@@ -498,10 +436,7 @@ pub async fn upload_batch(
     .execute(&mut *tx)
     .await
     .map_err(|e| ApiError::InternalError(format!("Database error creating documento: {}", e)))?;
-
     let new_documento_id = doc_result.last_insert_id() as i32;
-
-    
     for dni in &dnis {
         sqlx::query!(
             r#"
@@ -519,9 +454,7 @@ pub async fn upload_batch(
         .await
         .map_err(|e| ApiError::InternalError(format!("Database error linking DNI {}: {}", dni, e)))?;
     }
-
     tx.commit().await.map_err(|e| ApiError::InternalError(format!("Transaction commit error: {}", e)))?;
-
     Ok(HttpResponse::Ok().json(json!({
         "message": "Documento registrado y vinculado correctamente a todos los trabajadores",
         "documento_id": new_documento_id,
@@ -529,13 +462,11 @@ pub async fn upload_batch(
         "count": dnis_count
     })))
 }
-
 pub async fn ver_archivo(
     state: web::Data<AppState>,
     path: web::Path<String>,
 ) -> Result<Either<HttpResponse, NamedFile>, ApiError> {
     let hash = path.into_inner();
-
     let file_record = sqlx::query!(
         r#"
         SELECT original_name, extension, external_url
@@ -547,11 +478,9 @@ pub async fn ver_archivo(
     .fetch_optional(&state.db)
     .await
     .map_err(|e| ApiError::InternalError(format!("Database error: {}", e)))?;
-
     let record = file_record.ok_or_else(|| {
         ApiError::NotFound("Archivo no encontrado en la base de datos".to_string())
     })?;
-
     if let Some(url) = record.external_url {
         return Ok(Either::Left(
             HttpResponse::Found()
@@ -559,32 +488,25 @@ pub async fn ver_archivo(
                 .finish(),
         ));
     }
-
     let upload_dir_str =
         std::env::var("UPLOAD_DIR").unwrap_or_else(|_| "./uploads".to_string());
     let mut file_path = PathBuf::from(upload_dir_str);
-
     let extension = record.extension.clone().unwrap_or_else(|| "pdf".to_string());
     file_path.push(format!("{}.{}", hash, extension));
-
     if !file_path.exists() {
         return Err(ApiError::NotFound(
             "Archivo no encontrado en el disco".to_string(),
         ));
     }
-
     let named_file = NamedFile::open(file_path)
         .map_err(|e| ApiError::InternalError(format!("Error opening file: {}", e)))?;
-
     use actix_web::http::header::{ContentDisposition, DispositionParam, DispositionType};
     let cd = ContentDisposition {
         disposition: DispositionType::Inline,
         parameters: vec![DispositionParam::Filename(record.original_name)],
     };
-
     Ok(Either::Right(named_file.set_content_disposition(cd)))
 }
-
 #[derive(Deserialize)]
 pub struct RegistrarUrlInput {
     pub dni_asociado: String,
@@ -592,7 +514,43 @@ pub struct RegistrarUrlInput {
     pub external_url: String,
     pub documento_id: Option<i32>,
 }
-
+#[derive(Deserialize)]
+pub struct RenombrarArchivoInput {
+    pub id: i32,
+    pub nuevo_nombre: String,
+}
+pub async fn renombrar_archivo(
+    state: web::Data<AppState>,
+    input: web::Json<RenombrarArchivoInput>,
+) -> Result<impl Responder, ApiError> {
+    let nombre = input.nuevo_nombre.trim().to_string();
+    if nombre.is_empty() {
+        return Err(ApiError::BadRequest(
+            "El nombre no puede estar vacío".to_string(),
+        ));
+    }
+    let nombre_final = if nombre.to_lowercase().ends_with(".pdf") {
+        nombre
+    } else {
+        format!("{}.pdf", nombre)
+    };
+    let result = sqlx::query!(
+        r#"UPDATE fileserver SET original_name = ? WHERE id = ?"#,
+        nombre_final,
+        input.id
+    )
+    .execute(&state.db)
+    .await
+    .map_err(|e| ApiError::InternalError(format!("Database error: {}", e)))?;
+    if result.rows_affected() == 0 {
+        return Err(ApiError::NotFound("Archivo no encontrado".to_string()));
+    }
+    Ok(HttpResponse::Ok().json(json!({
+        "message": "Nombre actualizado correctamente",
+        "id": input.id,
+        "original_name": nombre_final
+    })))
+}
 pub async fn registrar_url(
     data: web::Data<AppState>,
     input: web::Json<RegistrarUrlInput>,
@@ -603,26 +561,21 @@ pub async fn registrar_url(
             "La URL externa debe usar HTTPS".to_string(),
         ));
     }
-
     if input.dni_asociado.trim().is_empty() {
         return Err(ApiError::BadRequest(
             "El campo dni_asociado es obligatorio".to_string(),
         ));
     }
-
     if !input.original_name.to_lowercase().ends_with(".pdf") {
         return Err(ApiError::BadRequest(
             "El nombre del archivo debe terminar en .pdf".to_string(),
         ));
     }
-
     let claims = req.extensions().get::<Claims>().cloned();
     let usuario_subida = claims
         .map(|c| c.nombre)
         .unwrap_or_else(|| "Desconocido".to_string());
-
     let extension = "pdf";
-
     let result = sqlx::query!(
         r#"
         INSERT INTO fileserver (documento_id, dni_asociado, original_name, external_url, extension, usuario_subida)
@@ -638,9 +591,7 @@ pub async fn registrar_url(
     .execute(&data.db)
     .await
     .map_err(|e| ApiError::InternalError(format!("Database error: {}", e)))?;
-
     let id = result.last_insert_id();
-
     let row = sqlx::query!(
         r#"SELECT CAST(file_hash AS CHAR) AS file_hash FROM fileserver WHERE id = ?"#,
         id
@@ -648,7 +599,6 @@ pub async fn registrar_url(
     .fetch_one(&data.db)
     .await
     .map_err(|e| ApiError::InternalError(format!("Database error: {}", e)))?;
-
     Ok(HttpResponse::Ok().json(json!({
         "id": id,
         "original_name": input.original_name,

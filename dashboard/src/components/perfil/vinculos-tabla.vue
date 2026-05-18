@@ -1,7 +1,5 @@
 <template>
   <div v-if="vinculos.length > 0" class="rounded-2xl border border-gray-100 bg-card dark:border-white/6 dark:bg-white/3">
-
-    
     <div class="flex items-center justify-between px-5 py-4 border-b border-gray-100 dark:border-white/6">
       <div class="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-gray-800 dark:text-white/90">
         <Briefcase class="h-4 w-4 text-primary shrink-0" />
@@ -12,12 +10,11 @@
       </div>
     </div>
 
-
     <div class="hidden md:block overflow-x-auto max-h-[25vh] overflow-y-auto">
       <table class="w-full">
         <thead class="sticky top-0 bg-white dark:bg-gray-900 z-10">
           <tr class="border-b border-gray-100 dark:border-gray-800">
-            <th class="py-2 text-center text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500 "></th>
+            <th class="py-2 text-center text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500"></th>
             <th class="px-5 py-2 text-left text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">Área / Cargo</th>
             <th class="px-5 py-2 text-left text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">Régimen</th>
             <th class="px-5 py-2 text-left text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">Período</th>
@@ -27,48 +24,39 @@
           </tr>
         </thead>
         <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
-          <tr
-            v-for="v in vinculos"
-            v-memo="[v.id, v.estado]"
-            :key="v.id"
-            class="hover:bg-primary/5 dark:hover:bg-white/5 transition-colors">
-
-            
-            <td class=" pl-4 middle text-start ">
-              <span
-                class="inline-block h-2.5 w-2.5 rounded-full"
-                :class="v.estado === 'activo' ? 'bg-emerald-500' : 'bg-red-400'"
-                :title="v.estado === 'activo' ? 'Activo' : 'Inactivo'">
+          <tr v-for="v in vinculos" v-memo="[v.id, v.estado]" :key="v.id" class="hover:bg-primary/5 dark:hover:bg-white/5 transition-colors">
+            <td class="pl-4 middle text-start">
+              <span class="inline-block h-2.5 w-2.5 rounded-full" :class="v.estado === 'activo' ? 'bg-emerald-500' : 'bg-red-400'" :title="v.estado === 'activo' ? 'Activo' : 'Inactivo'">
               </span>
             </td>
 
-            
-            <td class=" pl-2  py-3.5 max-w-[220px]">
+            <td class="pl-2 py-3.5 max-w-[220px]">
               <p class="text-sm font-medium text-gray-800 dark:text-white truncate" :title="v.cargo ?? undefined">{{ v.cargo }}</p>
               <p class="text-xs text-gray-400 dark:text-gray-500 truncate mt-0.5" :title="v.area ?? undefined">{{ v.area }}</p>
+              <span
+                v-if="v.sindicato"
+                class="mt-1.5 inline-flex items-center gap-1 rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-semibold text-amber-700 ring-1 ring-amber-200/70 dark:bg-amber-500/10 dark:text-amber-400 dark:ring-amber-500/20">
+                <Shield class="h-2.5 w-2.5 shrink-0" />
+                {{ v.sindicato }}
+              </span>
             </td>
 
-            
             <td class="px-5 py-3.5">
               <span class="text-sm text-gray-500 dark:text-gray-400 whitespace-nowrap">{{ v.regimen }}</span>
             </td>
 
-            
             <td class="px-5 py-3.5 whitespace-nowrap">
-              <span class="text-sm text-gray-600 dark:text-gray-300">{{ format(addDays(new Date(v.fecha_ingreso),1),'dd/MM/yyyy') }}</span>
+              <span class="text-sm text-gray-600 dark:text-gray-300">{{ format(addDays(new Date(v.fecha_ingreso), 1), 'dd/MM/yyyy') }}</span>
               <span class="mx-1.5 text-gray-300 dark:text-gray-600">→</span>
               <span class="text-sm" :class="v.fecha_salida ? 'text-gray-500 dark:text-gray-400' : 'text-emerald-600 dark:text-emerald-400 font-medium'">
-              {{ v.fecha_salida ? format(addDays(new Date(v.fecha_salida),1),'dd/MM/yyyy') : v.estado == 'activo' ? 'Presente' : ''}}
-                
+                {{ v.fecha_salida ? format(addDays(new Date(v.fecha_salida), 1), 'dd/MM/yyyy') : v.estado == 'activo' ? 'Presente' : '' }}
               </span>
             </td>
 
-            
             <td class="px-5 py-3.5 text-right whitespace-nowrap">
               <span class="text-sm font-semibold text-gray-800 dark:text-white">S/ {{ v.sueldo }}</span>
             </td>
 
-            
             <td class="px-5 py-3.5 text-center">
               <Popover posicion="abajo" alineacion="fin" ancho="320px" :mostrarFlecha="true" :mostrarCerrar="true" titulo="Información Adicional">
                 <template #disparador>
@@ -99,10 +87,6 @@
                     <span class="detalle-etiqueta">Código Plaza</span>
                     <span class="detalle-valor">{{ v.codigo }}</span>
                   </div>
-                  <div v-if="v.sindicato" class="detalle-fila">
-                    <span class="detalle-etiqueta">Sindicato</span>
-                    <span class="detalle-valor">{{ v.sindicato }}</span>
-                  </div>
                   <template v-if="v.fecha_salida">
                     <div class="border-t border-gray-100 dark:border-gray-800 my-1"></div>
                     <div v-if="v.doc_salida" class="detalle-fila">
@@ -125,7 +109,7 @@
                     </div>
                     <div v-if="v.doc_evento_tipo" class="detalle-fila">
                       <span class="detalle-etiqueta">Doc. Evento</span>
-                      <span class="detalle-valor">{{ v.doc_evento_tipo }} {{ v.numero_doc_evento }}</span>
+                      <span class="detalle-valor">{{ v.doc_evento_tipo }} N° {{ v.numero_doc_evento }}</span>
                     </div>
                     <div v-if="v.fecha_evento" class="detalle-fila">
                       <span class="detalle-etiqueta">Fecha Evento</span>
@@ -136,11 +120,11 @@
               </Popover>
             </td>
 
-            
             <td class="px-3 py-3.5 text-center" v-if="esAdmin">
               <Popover posicion="abajo" alineacion="fin" ancho="160px" :mostrarCerrar="false" :mostrarFlecha="false">
                 <template #disparador>
-                  <button class="inline-flex items-center justify-center rounded-lg p-1.5 text-gray-400 hover:bg-primary/5 hover:text-gray-600 dark:hover:bg-white/5 dark:hover:text-gray-300 transition-colors">
+                  <button
+                    class="inline-flex items-center justify-center rounded-lg p-1.5 text-gray-400 hover:bg-primary/5 hover:text-gray-600 dark:hover:bg-white/5 dark:hover:text-gray-300 transition-colors">
                     <MoreHorizontal class="h-3.5 w-3.5" />
                   </button>
                 </template>
@@ -157,7 +141,7 @@
                     <UserMinus class="h-3.5 w-3.5 shrink-0" />
                     <span>Renuncia</span>
                   </button>
-                  <button v-if="v.sindicato && !v.fecha_salida" @click="desafiliarSindicato(v)" class="accion-item accion-item--neutral">
+                  <button v-if="v.sindicato && !v.fecha_salida" @click="abrirDesafiliar(v)" class="accion-item accion-item--neutral">
                     <Shield class="h-3.5 w-3.5 shrink-0" />
                     <span>Desafiliar</span>
                   </button>
@@ -173,29 +157,31 @@
       </table>
     </div>
 
-    
     <div class="md:hidden divide-y divide-gray-100 dark:divide-gray-800">
       <div v-for="v in vinculos" :key="v.id" class="px-5 py-4 space-y-3">
-
-        
         <div class="flex items-start justify-between gap-3">
           <div class="min-w-0">
             <p class="text-sm font-semibold text-gray-800 dark:text-white truncate">{{ v.cargo }}</p>
             <p class="text-xs text-gray-400 dark:text-gray-500 truncate mt-0.5">{{ v.area }}</p>
+            <span
+              v-if="v.sindicato"
+              class="mt-1.5 inline-flex items-center gap-1 rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-semibold text-amber-700 ring-1 ring-amber-200/70 dark:bg-amber-500/10 dark:text-amber-400 dark:ring-amber-500/20">
+              <Shield class="h-2.5 w-2.5 shrink-0" />
+              {{ v.sindicato }}
+            </span>
           </div>
           <div class="flex items-center gap-1.5 shrink-0">
             <span
               class="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold"
-              :class="v.fecha_salida
-                ? 'bg-red-50 text-red-600 dark:bg-red-500/10 dark:text-red-400'
-                : 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400'">
+              :class="v.fecha_salida ? 'bg-red-50 text-red-600 dark:bg-red-500/10 dark:text-red-400' : 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400'">
               <span class="h-1.5 w-1.5 rounded-full" :class="v.fecha_salida ? 'bg-red-500' : 'bg-emerald-500'"></span>
               {{ v.fecha_salida ? 'Inactivo' : 'Activo' }}
             </span>
 
             <Popover posicion="abajo" alineacion="fin" ancho="280px" :mostrarFlecha="true" :mostrarCerrar="true" titulo="Información Adicional">
               <template #disparador>
-                <button class="inline-flex items-center justify-center rounded-lg p-1.5 text-gray-400 hover:bg-primary/5 hover:text-gray-600 dark:hover:bg-white/5 dark:hover:text-gray-300 transition-colors">
+                <button
+                  class="inline-flex items-center justify-center rounded-lg p-1.5 text-gray-400 hover:bg-primary/5 hover:text-gray-600 dark:hover:bg-white/5 dark:hover:text-gray-300 transition-colors">
                   <Info class="h-3.5 w-3.5" />
                 </button>
               </template>
@@ -251,7 +237,8 @@
 
             <Popover v-if="esAdmin" posicion="abajo" alineacion="fin" ancho="160px" :mostrarCerrar="false" :mostrarFlecha="false">
               <template #disparador>
-                <button class="inline-flex items-center justify-center rounded-lg p-1.5 text-gray-400 hover:bg-primary/5 hover:text-gray-600 dark:hover:bg-white/5 dark:hover:text-gray-300 transition-colors">
+                <button
+                  class="inline-flex items-center justify-center rounded-lg p-1.5 text-gray-400 hover:bg-primary/5 hover:text-gray-600 dark:hover:bg-white/5 dark:hover:text-gray-300 transition-colors">
                   <MoreHorizontal class="h-3.5 w-3.5" />
                 </button>
               </template>
@@ -277,7 +264,6 @@
           </div>
         </div>
 
-        
         <div class="grid grid-cols-2 gap-x-4 gap-y-2.5 pt-3 border-t border-gray-100 dark:border-gray-800">
           <div>
             <p class="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">Régimen</p>
@@ -295,7 +281,6 @@
             <p class="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">Salida</p>
             <p class="text-sm mt-0.5" :class="v.fecha_salida ? 'text-gray-700 dark:text-gray-300' : 'text-emerald-600 dark:text-emerald-400 font-medium'">
               {{ v.fecha_salida || 'Presente' }}
-              
             </p>
           </div>
         </div>
@@ -303,17 +288,22 @@
     </div>
 
     <RenunciaModal v-if="esAdmin" :isOpen="isRenunciaOpen" @close="isRenunciaOpen = false" @save="handleRenuncia" />
+    <DesafiliarModal v-if="esAdmin" :isOpen="isDesafiliarOpen" :sindicato="vinculoSeleccionado?.sindicato" @close="isDesafiliarOpen = false" @save="handleDesafiliar" />
     <ConfirmarEliminarModal v-if="esAdmin" :isOpen="isEliminarOpen" :vinculo="vinculoSeleccionado" @close="isEliminarOpen = false" @confirm="handleEliminar" />
     <EventoVinculoModal
       v-if="esAdmin"
       :isOpen="isEventoOpen"
       :vinculoId="vinculoSeleccionado?.id ?? null"
-      :eventoActual="vinculoSeleccionado?.tipo_evento ? {
-        id_evento: vinculoSeleccionado.id_evento,
-        tipo_evento: vinculoSeleccionado.tipo_evento,
-        estado_evento: vinculoSeleccionado.estado_evento,
-        fecha_evento: vinculoSeleccionado.fecha_evento,
-      } : undefined"
+      :eventoActual="
+        vinculoSeleccionado?.tipo_evento
+          ? {
+              id_evento: vinculoSeleccionado.id_evento,
+              tipo_evento: vinculoSeleccionado.tipo_evento,
+              estado_evento: vinculoSeleccionado.estado_evento,
+              fecha_evento: vinculoSeleccionado.fecha_evento,
+            }
+          : undefined
+      "
       @close="isEventoOpen = false"
       @guardado="handleEventoGuardado" />
     <CambioAreaModal v-if="esAdmin" :isOpen="isCambioAreaOpen" :vinculo="vinculoSeleccionado" @close="isCambioAreaOpen = false" @guardado="handleCambioAreaGuardado" />
@@ -326,6 +316,7 @@
   import { usePersonalStore } from '../../stores/personal'
   import { UserMinus, Info, Trash2, MoreHorizontal, Briefcase, Shield, Activity, ArrowRightLeft } from 'lucide-vue-next'
   import RenunciaModal from './modals/RenunciaModal.vue'
+  import DesafiliarModal from './modals/DesafiliarModal.vue'
   import ConfirmarEliminarModal from './modals/ConfirmarEliminarModal.vue'
   import EventoVinculoModal from './modals/EventoVinculoModal.vue'
   import CambioAreaModal from './modals/CambioAreaModal.vue'
@@ -338,6 +329,7 @@
   const { esAdmin } = storeToRefs(useAutenticacionStore())
 
   const isRenunciaOpen = ref(false)
+  const isDesafiliarOpen = ref(false)
   const isEliminarOpen = ref(false)
   const isEventoOpen = ref(false)
   const isCambioAreaOpen = ref(false)
@@ -383,10 +375,15 @@
     }
   }
 
-  const desafiliarSindicato = async (vinculo: any) => {
-    if (!confirm(`¿Desafiliar a este trabajador del sindicato ${vinculo.sindicato}?`)) return
+  const abrirDesafiliar = (vinculo: any) => {
+    vinculoSeleccionado.value = vinculo
+    isDesafiliarOpen.value = true
+  }
+
+  const handleDesafiliar = async (datos: any) => {
     try {
-      await store.eliminarSindicato(vinculo.id, vinculo.dni)
+      await store.eliminarSindicato(vinculoSeleccionado.value.id, vinculoSeleccionado.value.dni, datos)
+      isDesafiliarOpen.value = false
     } catch (error) {
       console.error('Error al desafiliar sindicato', error)
     }
@@ -449,7 +446,9 @@
     font-size: var(--text-sm);
     font-weight: 500;
     color: var(--color-gray-600);
-    transition: background-color 0.12s ease, color 0.12s ease;
+    transition:
+      background-color 0.12s ease,
+      color 0.12s ease;
     text-align: left;
   }
 

@@ -15,7 +15,6 @@ use chrono::{NaiveDate, NaiveDateTime};
 use serde::Deserialize;
 use serde_json::{Value, json};
 use sqlx::Row;
-
 pub async fn cumpleaños(data: web::Data<AppState>) -> Result<impl Responder, ApiError> {
     let lista = sqlx::query_as!(
         Cumpleaños,
@@ -66,10 +65,8 @@ pub async fn cumpleaños(data: web::Data<AppState>) -> Result<impl Responder, Ap
         eprintln!("Database error: {:?}", e);
         ApiError::InternalError("Database consulta malformada".into())
     })?;
-
     Ok(HttpResponse::Ok().json(lista))
 }
-
 pub async fn info(data: web::Data<AppState>) -> Result<impl Responder, ApiError> {
     let (total, activos) = sqlx::query!(
         r#"
@@ -88,7 +85,6 @@ pub async fn info(data: web::Data<AppState>) -> Result<impl Responder, ApiError>
         eprintln!("Error total/activos: {:?}", e);
         ApiError::InternalError("Error al obtener resumen general".into())
     })?;
-
     let por_regimen = sqlx::query_as!(
         DataResumen,
         r#"
@@ -105,7 +101,6 @@ pub async fn info(data: web::Data<AppState>) -> Result<impl Responder, ApiError>
     .fetch_all(&data.db)
     .await
     .map_err(|_e| ApiError::InternalError("Error al obtener resumen por régimen".into()))?;
-
     let por_sexo = sqlx::query_as!(
         DataResumen,
         r#"
@@ -121,7 +116,6 @@ pub async fn info(data: web::Data<AppState>) -> Result<impl Responder, ApiError>
     .fetch_all(&data.db)
     .await
     .map_err(|_e| ApiError::InternalError("Error al obtener resumen por sexo".into()))?;
-
     let por_sindicato = sqlx::query_as!(
         DataResumen,
         r#"
@@ -138,7 +132,6 @@ pub async fn info(data: web::Data<AppState>) -> Result<impl Responder, ApiError>
     .fetch_all(&data.db)
     .await
     .map_err(|_e| ApiError::InternalError("Error al obtener resumen por sindicato".into()))?;
-
     let response = ResumenResponse {
         total,
         activos,
@@ -146,10 +139,8 @@ pub async fn info(data: web::Data<AppState>) -> Result<impl Responder, ApiError>
         por_sexo,
         por_sindicato,
     };
-
     Ok(HttpResponse::Ok().json(response))
 }
-
 pub async fn personal_area_report(data: web::Data<AppState>) -> Result<impl Responder, ApiError> {
     let data = sqlx::query_as!(
         DataResumen,
@@ -174,10 +165,8 @@ pub async fn personal_area_report(data: web::Data<AppState>) -> Result<impl Resp
         eprintln!("Database error: {:?}", e);
         ApiError::InternalError("Database consulta malformada".into())
     })?;
-
     Ok(HttpResponse::Ok().json(data))
 }
-
 pub async fn renuncias_año(data: web::Data<AppState>) -> Result<impl Responder, ApiError> {
     let data = sqlx::query_as!(
         DataResumen,
@@ -204,10 +193,8 @@ pub async fn renuncias_año(data: web::Data<AppState>) -> Result<impl Responder,
         eprintln!("Database error: {:?}", e);
         ApiError::InternalError("Database consulta malformada".into())
     })?;
-
     Ok(HttpResponse::Ok().json(data))
 }
-
 pub async fn bancos_report(data: web::Data<AppState>) -> Result<impl Responder, ApiError> {
     let data = sqlx::query_as!(
         BancosReport,
@@ -221,10 +208,8 @@ pub async fn bancos_report(data: web::Data<AppState>) -> Result<impl Responder, 
         eprintln!("Database error: {:?}", e);
         ApiError::InternalError("Database consulta malformada".into())
     })?;
-
     Ok(HttpResponse::Ok().json(data))
 }
-
 pub async fn reporte_personal_activo(
     data: web::Data<AppState>,
 ) -> Result<impl Responder, ApiError> {
@@ -259,13 +244,11 @@ where
         eprintln!("Database error: {:?}", e);
         ApiError::InternalError("Database consulta malformada".into())
     })?;
-
     let result: Vec<Value> = data
         .iter()
         .map(|row| {
             let ingreso: NaiveDate = row.get("ingreso");
             let renuncia: Option<NaiveDate> = row.try_get("renuncia").ok(); 
-
             json!({
                 "dni": row.get::<String, _>("dni"),
                 "nombre": row.get::<String, _>("nombre"),
@@ -278,16 +261,13 @@ where
             })
         })
         .collect();
-
     Ok(HttpResponse::Ok().json(result))
 }
-
 pub async fn reporte_historial(
     data: web::Data<AppState>,
     dni: web::Json<PerfilDni>,
 ) -> Result<impl Responder, ApiError> {
     let key = std::env::var("DB_KEY").expect("DB_KEY must be set");
-
     let data = sqlx::query(
         r#"
         SELECT f.operacion,cast(aes_decrypt(f.detalle,?) as char) detalle, f.fecha, u.nombre
@@ -305,7 +285,6 @@ pub async fn reporte_historial(
         eprintln!("Database error: {:?}", e);
         ApiError::InternalError("Consulta malformada".into())
     })?;
-
     let result: Vec<Value> = data
         .iter()
         .map(|row| {
@@ -317,10 +296,8 @@ pub async fn reporte_historial(
             })
         })
         .collect();
-
     Ok(HttpResponse::Ok().json(result))
 }
-
 pub async fn organigrama(data: web::Data<AppState>) -> Result<impl Responder, ApiError> {
     let rows = sqlx::query_as::<_, DbOrgani>(
         r#"
@@ -348,9 +325,7 @@ pub async fn organigrama(data: web::Data<AppState>) -> Result<impl Responder, Ap
         eprintln!("Database error: {:?}", e);
         ApiError::InternalError("Consulta malformada".into())
     })?;
-
     let mut organigrama: Vec<Organigrama> = Vec::new();
-
     for row in &rows {
         if row.nivel.is_none() {
             let org = Organigrama {
@@ -363,7 +338,6 @@ pub async fn organigrama(data: web::Data<AppState>) -> Result<impl Responder, Ap
             organigrama.push(org);
         }
     }
-
     for row in &rows {
         if let Some(nivel) = row.nivel {
             for org in organigrama.iter_mut() {
@@ -380,7 +354,6 @@ pub async fn organigrama(data: web::Data<AppState>) -> Result<impl Responder, Ap
             }
         }
     }
-
     for row in &rows {
         if let Some(nivel) = row.nivel {
             for org in organigrama.iter_mut() {
@@ -401,7 +374,6 @@ pub async fn organigrama(data: web::Data<AppState>) -> Result<impl Responder, Ap
     }
     Ok(HttpResponse::Ok().json(organigrama))
 }
-
 pub async fn report_renuncias(data: web::Data<AppState>) -> Result<impl Responder, ApiError> {
     let data = sqlx::query_as!(
         ReporteRenuncias,
@@ -437,17 +409,14 @@ pub async fn report_renuncias(data: web::Data<AppState>) -> Result<impl Responde
         eprintln!("Database error: {:?}", e);
         ApiError::InternalError("Database consulta malformada".into())
     })?;
-
     Ok(HttpResponse::Ok().json(data))
 }
-
 #[derive(Deserialize, serde::Serialize)]
 pub struct ReporteDocumento {
     pub id: i32,
     pub nombre: Option<String>,
     pub sigla: Option<String>,
 }
-
 pub async fn reporte_documentos(data: web::Data<AppState>) -> Result<impl Responder, ApiError> {
     let data = sqlx::query_as!(
         ReporteDocumento,
@@ -461,10 +430,8 @@ pub async fn reporte_documentos(data: web::Data<AppState>) -> Result<impl Respon
         eprintln!("Database error: {:?}", e);
         ApiError::InternalError("Database consulta malformada".into())
     })?;
-
     Ok(HttpResponse::Ok().json(data))
 }
-
 pub async fn activos_por_distrito(data: web::Data<AppState>) -> Result<impl Responder, ApiError> {
     let filas = sqlx::query(
         r#"
@@ -480,9 +447,7 @@ WHERE
   AND p.distrito != ''
 GROUP BY
   p.distrito
-
 UNION ALL
-
 SELECT
   'SIN ASIGNAR'  AS distrito,
   COUNT(*)       AS cantidad
@@ -492,7 +457,6 @@ FROM
 WHERE
   v.estado = 'activo'
   AND (p.distrito IS NULL OR p.distrito = '')
-
 ORDER BY
   distrito,
   cantidad DESC;
@@ -504,7 +468,6 @@ ORDER BY
         eprintln!("Database error: {:?}", e);
         ApiError::InternalError("Database consulta malformada".into())
     })?;
-
     let resultado: Vec<Value> = filas
         .iter()
         .map(|fila| {
@@ -516,10 +479,8 @@ ORDER BY
         .collect();
     Ok(HttpResponse::Ok().json(resultado))
 }
-
 pub async fn exportar_excel(data: web::Data<AppState>) -> Result<impl Responder, ApiError> {
     use rust_xlsxwriter::{Format, Workbook};
-
     let filas = sqlx::query(
         r#"
         SELECT
@@ -578,12 +539,10 @@ ORDER BY a.nombre, p.apaterno
         eprintln!("Database error: {:?}", e);
         ApiError::InternalError("Error al consultar datos para Excel".into())
     })?;
-
     let mut workbook = Workbook::new();
     let hoja = workbook.add_worksheet();
     hoja.set_name("AIRHSP")
         .map_err(|e| ApiError::InternalError(format!("Error al nombrar hoja: {}", e)))?;
-
     let formato_cabecera = Format::new().set_bold();
     let cabeceras = [
         "UNIDAD_ORGANICA",             
@@ -611,15 +570,12 @@ ORDER BY a.nombre, p.apaterno
         "SUELDO",                      
         "SINDICATO",
     ];
-
     for (col, cabecera) in cabeceras.iter().enumerate() {
         hoja.write_string_with_format(0, col as u16, *cabecera, &formato_cabecera)
             .map_err(|e| ApiError::InternalError(format!("Error escribiendo cabecera: {}", e)))?;
     }
-
     for (i, fila) in filas.iter().enumerate() {
         let num_fila = (i + 1) as u32;
-
         let dni: String = fila.get("dni");
         let apaterno: String = fila.get("apaterno");
         let amaterno: String = fila.get("amaterno");
@@ -643,7 +599,6 @@ ORDER BY a.nombre, p.apaterno
         let numero_cuenta: Option<String> = fila.try_get("numero_cuenta").ok();
         let cci: Option<String> = fila.try_get("cci").ok();
         let sindicato: Option<String> = fila.try_get("sindicato").ok();
-
         macro_rules! escribir {
             ($col:expr, $val:expr) => {
                 if let Some(ref v) = $val {
@@ -651,7 +606,6 @@ ORDER BY a.nombre, p.apaterno
                 }
             };
         }
-
         let _ = hoja.write_string(num_fila, 0, &area);
         escribir!(1, plaza_id);
         escribir!(2, estado);
@@ -686,11 +640,9 @@ ORDER BY a.nombre, p.apaterno
         }
         escribir!(23, sindicato);
     }
-
     let buffer = workbook
         .save_to_buffer()
         .map_err(|e| ApiError::InternalError(format!("Error al generar Excel: {}", e)))?;
-
     Ok(HttpResponse::Ok()
         .content_type("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
         .insert_header((
@@ -699,7 +651,6 @@ ORDER BY a.nombre, p.apaterno
         ))
         .body(buffer))
 }
-
 pub async fn nuevos_trabajadores(data: web::Data<AppState>) -> Result<impl Responder, ApiError> {
     let filas = sqlx::query(
         r#"
@@ -733,7 +684,6 @@ pub async fn nuevos_trabajadores(data: web::Data<AppState>) -> Result<impl Respo
         eprintln!("Database error: {:?}", e);
         ApiError::InternalError("Error al consultar nuevos trabajadores".into())
     })?;
-
     let resultado: Vec<Value> = filas
         .iter()
         .map(|fila| {
@@ -752,10 +702,8 @@ pub async fn nuevos_trabajadores(data: web::Data<AppState>) -> Result<impl Respo
             })
         })
         .collect();
-
     Ok(HttpResponse::Ok().json(resultado))
 }
-
 pub async fn reporte_eventos(data: web::Data<AppState>) -> Result<impl Responder, ApiError> {
     let filas = sqlx::query(
         r#"
@@ -789,7 +737,6 @@ pub async fn reporte_eventos(data: web::Data<AppState>) -> Result<impl Responder
         eprintln!("Database error: {:?}", e);
         ApiError::InternalError("Error al consultar eventos".into())
     })?;
-
     let resultado: Vec<Value> = filas
         .iter()
         .map(|fila| {
@@ -811,14 +758,8 @@ pub async fn reporte_eventos(data: web::Data<AppState>) -> Result<impl Responder
             })
         })
         .collect();
-
     Ok(HttpResponse::Ok().json(resultado))
 }
-
-
-
-
-
 struct DatosMef {
     codigo_registro: String,
     #[allow(dead_code)]
@@ -836,7 +777,6 @@ struct DatosMef {
     codigo_grupo_ocupacional: String,
     codigo_cargo_estructural: String,
 }
-
 fn mef_celda_texto(cell: &calamine::Data) -> String {
     use calamine::Data;
     match cell {
@@ -853,7 +793,6 @@ fn mef_celda_texto(cell: &calamine::Data) -> String {
         _ => String::new(),
     }
 }
-
 fn mef_celda_fecha(cell: &calamine::Data) -> String {
     use calamine::{Data, DataType};
     match cell {
@@ -862,7 +801,6 @@ fn mef_celda_fecha(cell: &calamine::Data) -> String {
             if s.is_empty() {
                 return String::new();
             }
-            
             if s.len() >= 10 && s.as_bytes().get(4) == Some(&b'-') {
                 return format!("{}/{}/{}", &s[8..10], &s[5..7], &s[0..4]);
             }
@@ -886,7 +824,6 @@ fn mef_celda_fecha(cell: &calamine::Data) -> String {
         _ => String::new(),
     }
 }
-
 fn mef_get_cell(row: &[calamine::Data], col: Option<usize>, es_fecha: bool) -> String {
     match col {
         None => String::new(),
@@ -902,20 +839,14 @@ fn mef_get_cell(row: &[calamine::Data], col: Option<usize>, es_fecha: bool) -> S
         }
     }
 }
-
-
-
-
 fn mef_parsear_hoja(
     range: &calamine::Range<calamine::Data>,
     regimen_default: &str,
 ) -> Result<std::collections::HashMap<String, DatosMef>, ApiError> {
     use calamine::Data;
     use std::collections::HashMap;
-
     const MEF_HEADER_IDX: usize = 3;
     const MEF_DATA_START: usize = 4;
-
     let mut col_map: HashMap<String, usize> = HashMap::new();
     {
         let mut iter = range.rows();
@@ -934,14 +865,12 @@ fn mef_parsear_hoja(
             ));
         }
     }
-
     let col_dni = col_map
         .get("NUMERO_DOCUMENTO_IDENTIDAD")
         .copied()
         .ok_or_else(|| {
             ApiError::BadRequest("NUMERO_DOCUMENTO_IDENTIDAD no encontrado en el MEF".to_string())
         })?;
-
     let col_registro = col_map.get("CODIGO_REGISTRO").copied();
     let col_puesto = col_map.get("CODIGO_PUESTO_CPE").copied();
     let col_apepat = col_map.get("APELLIDO_PATERNO").copied();
@@ -961,15 +890,12 @@ fn mef_parsear_hoja(
     let col_cci = col_map.get("CODIGO_CUENTA_INTERBANCARIA").copied();
     let col_grupo_ocup = col_map.get("CODIGO_GRUPO_OCUPACIONAL").copied();
     let col_cargo_estr = col_map.get("CODIGO_CARGO_ESTRUCTURAL").copied();
-    
     let col_regimen = col_map
         .get("REGIMEN_LABORAL")
         .or_else(|| col_map.get("CODIGO_REGIMEN_LABORAL"))
         .or_else(|| col_map.get("REGIMEN"))
         .copied();
-
     let mut dict: HashMap<String, DatosMef> = HashMap::new();
-
     for row in range.rows().skip(MEF_DATA_START) {
         if col_dni >= row.len() {
             continue;
@@ -981,7 +907,6 @@ fn mef_parsear_hoja(
         if dict.contains_key(&dni) {
             continue; 
         }
-
         let regimen = if let Some(ci) = col_regimen {
             let v = mef_celda_texto(&row[ci]);
             if v.is_empty() {
@@ -992,7 +917,6 @@ fn mef_parsear_hoja(
         } else {
             regimen_default.to_string()
         };
-
         dict.insert(
             dni,
             DatosMef {
@@ -1013,10 +937,8 @@ fn mef_parsear_hoja(
             },
         );
     }
-
     Ok(dict)
 }
-
 pub async fn comparar_mef(
     data: web::Data<AppState>,
     mut payload: actix_multipart::Multipart,
@@ -1025,13 +947,8 @@ pub async fn comparar_mef(
     use futures_util::TryStreamExt;
     use std::collections::HashMap;
     use std::io::Cursor;
-
-    
-    
-    
     let mut bytes_cas: Vec<u8> = Vec::new();
     let mut bytes_otros: Vec<u8> = Vec::new();
-
     while let Some(mut field) = payload
         .try_next()
         .await
@@ -1042,11 +959,9 @@ pub async fn comparar_mef(
             .and_then(|cd| cd.get_name())
             .unwrap_or("")
             .to_string();
-
         let buf: &mut Vec<u8> = match field_name.as_str() {
             "archivo_cas" => &mut bytes_cas,
             "archivo_otros" => &mut bytes_otros,
-            
             "archivo" | "file" => &mut bytes_cas,
             _ => {
                 while field
@@ -1058,7 +973,6 @@ pub async fn comparar_mef(
                 continue;
             }
         };
-
         while let Some(chunk) = field
             .try_next()
             .await
@@ -1067,16 +981,12 @@ pub async fn comparar_mef(
             buf.extend_from_slice(&chunk);
         }
     }
-
     if bytes_cas.is_empty() && bytes_otros.is_empty() {
         return Err(ApiError::BadRequest(
             "No se recibió ningún archivo ('archivo_cas' y/o 'archivo_otros')".to_string(),
         ));
     }
-
-    
     let mut dict_mef: HashMap<String, DatosMef> = HashMap::new();
-
     if !bytes_cas.is_empty() {
         let cursor = Cursor::new(bytes_cas);
         let mut wb: Xlsx<_> = open_workbook_from_rs(cursor)
@@ -1091,7 +1001,6 @@ pub async fn comparar_mef(
             .map_err(|e| ApiError::InternalError(format!("Error leyendo hoja CAS: {}", e)))?;
         dict_mef.extend(mef_parsear_hoja(&range, "CAS")?);
     }
-
     if !bytes_otros.is_empty() {
         let cursor = Cursor::new(bytes_otros);
         let mut wb: Xlsx<_> = open_workbook_from_rs(cursor)
@@ -1106,13 +1015,10 @@ pub async fn comparar_mef(
         let range = wb
             .worksheet_range(&sheet)
             .map_err(|e| ApiError::InternalError(format!("Error leyendo hoja 276/728: {}", e)))?;
-        
         for (dni, datos) in mef_parsear_hoja(&range, "276/728")? {
             dict_mef.entry(dni).or_insert(datos);
         }
     }
-
-    
     let filas_bd = sqlx::query(
         r#"
         SELECT
@@ -1153,8 +1059,6 @@ pub async fn comparar_mef(
         eprintln!("Database error comparar_mef: {:?}", e);
         ApiError::InternalError("Error al consultar datos propios".into())
     })?;
-
-    
     let etiquetas = [
         "CODIGO_REGISTRO",
         "APELLIDO_PATERNO",
@@ -1170,17 +1074,13 @@ pub async fn comparar_mef(
         "NUMERO_CUENTA_FINANCIERA",
         "CODIGO_CUENTA_INTERBANCARIA",
     ];
-
     let mut comparaciones: Vec<Value> = Vec::new();
     let mut total_ok: u64 = 0;
     let mut total_diff: u64 = 0;
     let mut total_no_encontrado: u64 = 0;
     let mut total_no_en_sistema: u64 = 0;
     let mut counter: u64 = 0;
-
-    
     let mut dnis_sistema: std::collections::HashSet<String> = std::collections::HashSet::new();
-
     for fila in &filas_bd {
         let dni: String = fila.get("dni");
         let apaterno: String = fila.get("apaterno");
@@ -1196,9 +1096,7 @@ pub async fn comparar_mef(
         let regimen_sistema: String = fila.try_get("regimen_sistema").unwrap_or_default();
         let codigo_cargo: String = fila.try_get("codigo_cargo_estructural").unwrap_or_default();
         let codigo_grupo: String = fila.try_get("codigo_grupo_ocupacional").unwrap_or_default();
-
         dnis_sistema.insert(dni.clone());
-
         let nombre_completo = format!("{} {}, {}", apaterno.trim(), amaterno.trim(), nombre.trim());
         let fnac_str = nacimiento
             .map(|d| d.format("%d/%m/%Y").to_string())
@@ -1211,9 +1109,7 @@ pub async fn comparar_mef(
         let num_cta_str = numero_cuenta.unwrap_or_default().trim().to_uppercase();
         let cci_str = cci.unwrap_or_default().trim().to_uppercase();
         let cpp_str = plaza_id.unwrap_or_default().trim().to_uppercase();
-
         counter += 1;
-
         if let Some(mef) = dict_mef.get(&dni) {
             let valores_propios = [
                 cpp_str.clone(),
@@ -1230,7 +1126,6 @@ pub async fn comparar_mef(
                 num_cta_str.clone(),
                 cci_str.clone(),
             ];
-
             let valores_mef = [
                 mef.codigo_registro.clone(),
                 mef.apepat.clone(),
@@ -1246,18 +1141,15 @@ pub async fn comparar_mef(
                 mef.num_cuenta.clone(),
                 mef.cci.clone(),
             ];
-
             for i in 0..etiquetas.len() {
                 let vp = &valores_propios[i];
                 let vm = &valores_mef[i];
-                
                 let igual = vp == vm || (vp.is_empty() && vm.is_empty());
                 if igual {
                     total_ok += 1;
                 } else {
                     total_diff += 1;
                 }
-
                 comparaciones.push(json!({
                     "num": counter,
                     "dni": dni,
@@ -1289,8 +1181,6 @@ pub async fn comparar_mef(
             }));
         }
     }
-
-    
     let mut counter_mef: u64 = 0;
     for (dni, datos) in &dict_mef {
         if !dnis_sistema.contains(dni) {
@@ -1312,7 +1202,6 @@ pub async fn comparar_mef(
             }));
         }
     }
-
     Ok(HttpResponse::Ok().json(json!({
         "resumen": {
             "procesados": counter,
@@ -1326,32 +1215,22 @@ pub async fn comparar_mef(
         "comparaciones": comparaciones
     })))
 }
-
-
-
-
-
 #[derive(serde::Deserialize)]
 pub struct ExportarComparacionRequest {
     pub comparaciones: Vec<Value>,
 }
-
 pub async fn exportar_comparacion_mef(
     body: web::Json<ExportarComparacionRequest>,
 ) -> Result<impl Responder, ApiError> {
     use rust_xlsxwriter::{Color, Format, FormatAlign, FormatBorder, Workbook};
-
     let comparaciones = &body.comparaciones;
-
     let mut workbook = Workbook::new();
-
     let fmt_cab = Format::new()
         .set_bold()
         .set_background_color(Color::RGB(0x1F3864))
         .set_font_color(Color::White)
         .set_border(FormatBorder::Thin)
         .set_align(FormatAlign::Center);
-
     let fmt_diferencia = Format::new()
         .set_background_color(Color::RGB(0xFFF3CD))
         .set_font_color(Color::RGB(0x856404));
@@ -1364,12 +1243,9 @@ pub async fn exportar_comparacion_mef(
     let fmt_ok = Format::new()
         .set_background_color(Color::RGB(0xD4EDDA))
         .set_font_color(Color::RGB(0x155724));
-
     let cabeceras = [
         "#", "DNI", "NOMBRE", "RÉGIMEN", "CAMPO", "SISTEMA", "MEF", "ESTADO",
     ];
-
-    
     let categorias: &[(&str, Option<&str>)] = &[
         ("DIFERENCIAS", Some("DIFERENCIA")),
         ("SOLO EN SISTEMA", Some("NO_EXISTE_EN_MEF")),
@@ -1377,12 +1253,10 @@ pub async fn exportar_comparacion_mef(
         ("CORRECTOS", Some("OK")),
         ("TODOS", None),
     ];
-
     for (nombre_hoja, filtro) in categorias {
         let hoja = workbook.add_worksheet();
         hoja.set_name(*nombre_hoja)
             .map_err(|e| ApiError::InternalError(format!("Error al nombrar hoja: {}", e)))?;
-
         for (col, cab) in cabeceras.iter().enumerate() {
             hoja.write_string_with_format(0, col as u16, *cab, &fmt_cab)
                 .map_err(|e| ApiError::InternalError(format!("Error cabecera: {}", e)))?;
@@ -1394,18 +1268,14 @@ pub async fn exportar_comparacion_mef(
         let _ = hoja.set_column_width(5, 25); 
         let _ = hoja.set_column_width(6, 25); 
         let _ = hoja.set_column_width(7, 22); 
-
         let mut fila_excel = 1u32;
-
         for comp in comparaciones.iter() {
             let resultado = comp["resultado"].as_str().unwrap_or("");
-
             if let Some(f) = filtro {
                 if resultado != *f {
                     continue;
                 }
             }
-
             let fmt_fila = match resultado {
                 "DIFERENCIA" => &fmt_diferencia,
                 "NO_EXISTE_EN_MEF" => &fmt_no_mef,
@@ -1413,7 +1283,6 @@ pub async fn exportar_comparacion_mef(
                 "OK" => &fmt_ok,
                 _ => &fmt_ok,
             };
-
             let etiqueta_estado = match resultado {
                 "OK" => "OK",
                 "DIFERENCIA" => "Diferencia",
@@ -1421,7 +1290,6 @@ pub async fn exportar_comparacion_mef(
                 "NO_EXISTE_EN_SISTEMA" => "Solo en MEF",
                 _ => resultado,
             };
-
             let num = comp["num"].as_f64().unwrap_or(0.0);
             let _ = hoja.write_number_with_format(fila_excel, 0, num, fmt_fila);
             let _ = hoja.write_string_with_format(
@@ -1461,18 +1329,14 @@ pub async fn exportar_comparacion_mef(
                 fmt_fila,
             );
             let _ = hoja.write_string_with_format(fila_excel, 7, etiqueta_estado, fmt_fila);
-
             fila_excel += 1;
         }
     }
-
     let buffer = workbook
         .save_to_buffer()
         .map_err(|e| ApiError::InternalError(format!("Error al generar Excel: {}", e)))?;
-
     let fecha = chrono::Local::now().format("%Y%m%d_%H%M%S");
     let filename = format!("comparacion_mef_{}.xlsx", fecha);
-
     Ok(HttpResponse::Ok()
         .content_type("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
         .insert_header((
