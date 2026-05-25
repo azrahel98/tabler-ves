@@ -23,6 +23,8 @@ export const useTableroStore = defineStore('tablero', () => {
   const eventosVinculo = ref<EventoVinculo[]>([])
   const trabajadoresPorDistrito = ref<TrabajadorPorDistrito[]>([])
   const distritoActual = ref<string | null>(null)
+  const rangosEdad = ref<{ nombre: string; cantidad: number }[]>([])
+  const rangosAntiguedad = ref<{ nombre: string; cantidad: number }[]>([])
 
   async function obtenerResumen() {
     const res = await api.post('/dash/info')
@@ -89,6 +91,16 @@ export const useTableroStore = defineStore('tablero', () => {
     eventosVinculo.value = res.data
   }
 
+  async function obtenerRangosEdad() {
+    const res = await api.post('/dash/rangos_edad')
+    rangosEdad.value = res.data
+  }
+
+  async function obtenerRangosAntiguedad() {
+    const res = await api.post('/dash/rangos_antiguedad')
+    rangosAntiguedad.value = res.data
+  }
+
   async function obtenerTrabajadoresPorDistrito(distrito: string) {
     const res = await api.post('/personal/activos_por_distrito', { distrito })
     trabajadoresPorDistrito.value = res.data
@@ -102,7 +114,18 @@ export const useTableroStore = defineStore('tablero', () => {
 
     try {
       store.setLoading(true)
-      await Promise.all([obtenerResumen(), obtenerCumpleanos(), obtenerReporteAreas(), obtenerListaRenuncias(), obtenerActivosPorDistrito(), obtenerNuevosTrabajadores(), obtenerEventosVinculo(), obtenerRenunciasAnio()])
+      await Promise.all([
+        obtenerResumen(),
+        obtenerCumpleanos(),
+        obtenerReporteAreas(),
+        obtenerListaRenuncias(),
+        obtenerActivosPorDistrito(),
+        obtenerNuevosTrabajadores(),
+        obtenerEventosVinculo(),
+        obtenerRenunciasAnio(),
+        obtenerRangosEdad(),
+        obtenerRangosAntiguedad()
+      ])
       ultimaActualizacion.value = Date.now()
     } catch (e) {
       console.error('Error fetching dashboard data', e)
@@ -128,6 +151,8 @@ export const useTableroStore = defineStore('tablero', () => {
     eventosVinculo.value = []
     trabajadoresPorDistrito.value = []
     distritoActual.value = null
+    rangosEdad.value = []
+    rangosAntiguedad.value = []
   }
 
   return {
@@ -147,6 +172,8 @@ export const useTableroStore = defineStore('tablero', () => {
     eventosVinculo,
     trabajadoresPorDistrito,
     distritoActual,
+    rangosEdad,
+    rangosAntiguedad,
     obtenerResumen,
     obtenerCumpleanos,
     obtenerReporteAreas,
@@ -161,6 +188,8 @@ export const useTableroStore = defineStore('tablero', () => {
     obtenerNuevosTrabajadores,
     obtenerEventosVinculo,
     obtenerTrabajadoresPorDistrito,
+    obtenerRangosEdad,
+    obtenerRangosAntiguedad,
     obtenerTodo,
     limpiarDatos,
   }

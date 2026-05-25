@@ -1,52 +1,52 @@
 <template>
-  <div class="rounded-2xl border border-gray-100 bg-card h-min p-6 dark:border-white/6 dark:bg-white/3">
+  <div class="rounded-2xl border border-gray-100 bg-card p-5 dark:border-white/6 dark:bg-white/3 flex flex-col justify-between">
 
     
-    <div class="flex items-center justify-between gap-2 text-xs font-bold uppercase tracking-wider text-gray-800 dark:text-white/90 mb-5">
-      <div class="flex items-center gap-2">
-        <svg class="h-5 w-5 text-primary" fill="currentColor" viewBox="0 0 24 24">
+    <div class="flex items-center justify-between gap-2 text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-4">
+      <div class="flex items-center gap-2 text-gray-800 dark:text-white/90">
+        <svg class="h-4 w-4 text-primary shrink-0" fill="currentColor" viewBox="0 0 24 24">
           <path d="M4 10h3v7H4zm6.5 0h3v7h-3zM2 19h20v3H2zm15-9h3v7h-3zM12 1L2 6v2h20V6z" />
         </svg>
-        Información Bancaria
+        <span>Información Bancaria</span>
       </div>
       <button
         v-if="esAdmin"
         @click="openModal(infoBancaria ? true : false)"
-        class="rounded-full flex items-center gap-1 px-2 py-1 text-gray-500 hover:bg-primary/10 hover:text-primary dark:text-gray-400 dark:hover:bg-primary/20 dark:hover:text-brand-300 transition-colors"
+        class="rounded-full flex items-center gap-1 px-2.5 py-0.5 text-gray-500 hover:bg-primary/10 hover:text-primary dark:text-gray-400 dark:hover:bg-primary/20 dark:hover:text-brand-300 transition-colors"
         :title="infoBancaria ? 'Editar Información' : 'Agregar Información'">
-        <Pencil v-if="infoBancaria" class="h-4 w-4" />
-        <Plus v-else class="h-4 w-4" />
-        <span class="text-2xs font-medium">{{ infoBancaria ? 'Editar' : 'Agregar' }}</span>
+        <Pencil v-if="infoBancaria" class="h-3 w-3" />
+        <Plus v-else class="h-3 w-3" />
+        <span class="text-[9px] font-bold uppercase tracking-wider">{{ infoBancaria ? 'Editar' : 'Agregar' }}</span>
       </button>
     </div>
 
     
     <div v-if="infoBancaria">
-      <div class="relative rounded-2xl p-5 overflow-hidden text-white" style="background: linear-gradient(135deg, #3641f5 0%, #465fff 50%, #7592ff 100%);">
+      <div class="relative rounded-2xl p-4 overflow-hidden text-white shadow-lg" style="background: linear-gradient(135deg, #2563eb 0%, #3b82f6 50%, #60a5fa 100%);">
 
         
         <div class="absolute -top-6 -right-6 h-28 w-28 rounded-full bg-white/10"></div>
         <div class="absolute -bottom-8 -right-2 h-36 w-36 rounded-full bg-white/[0.07]"></div>
 
         
-        <div class="relative flex items-center justify-between mb-5">
+        <div class="relative flex items-center justify-between mb-3.5">
           
-          <div class="h-8 w-11 rounded-md bg-gradient-to-br from-yellow-300 to-yellow-500 grid grid-cols-3 grid-rows-3 gap-px p-1 shadow-inner">
+          <div class="h-7 w-10 rounded-md bg-gradient-to-br from-yellow-300 via-amber-400 to-yellow-500 grid grid-cols-3 grid-rows-3 gap-px p-1 shadow-inner opacity-90">
             <div class="col-span-3 rounded-sm bg-yellow-200/60"></div>
             <div class="rounded-sm bg-yellow-200/60"></div>
             <div class="rounded-sm bg-yellow-400/80"></div>
             <div class="rounded-sm bg-yellow-200/60"></div>
             <div class="col-span-3 rounded-sm bg-yellow-200/60"></div>
           </div>
-          <span class="text-2xs font-bold uppercase tracking-widest text-white/70">
+          <span class="text-[9px] font-bold uppercase tracking-widest text-white/80 bg-white/10 px-2 py-0.5 rounded-md">
             {{ infoBancaria.tipo_cuenta }}
           </span>
         </div>
 
         
-        <div class="relative mb-4">
-          <p class="text-3xs font-semibold uppercase tracking-widest text-white/50 mb-1">Número de Cuenta</p>
-          <p class="font-mono text-base font-bold tracking-widest text-white">
+        <div class="relative mb-3.5">
+          <p class="text-[9px] font-bold uppercase tracking-widest text-white/60 mb-0.5">Número de Cuenta</p>
+          <p class="font-mono text-sm font-bold tracking-widest text-white">
             {{ formatCuenta(infoBancaria.numero_cuenta) }}
           </p>
         </div>
@@ -54,32 +54,36 @@
         
         <div class="relative flex items-end justify-between">
           <div>
-            <p class="text-3xs font-semibold uppercase tracking-widest text-white/50 mb-0.5">Banco</p>
-            <p class="text-sm font-bold text-white uppercase tracking-wide">{{ infoBancaria.banco }}</p>
+            <p class="text-[9px] font-bold uppercase tracking-widest text-white/60 mb-0.5">Banco</p>
+            <p class="text-xs font-semibold text-white uppercase tracking-wider">{{ infoBancaria.banco }}</p>
           </div>
           <span
-            class="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-2xs font-semibold uppercase tracking-wider"
-            :class="infoBancaria.estado === 1
-              ? 'bg-emerald-400/20 text-emerald-200'
-              : 'bg-red-400/20 text-red-200'">
-            <span class="h-1.5 w-1.5 rounded-full" :class="infoBancaria.estado === 1 ? 'bg-emerald-300' : 'bg-red-300'"></span>
-            {{ infoBancaria.estado === 1 ? 'Activa' : 'Inactiva' }}
+            class="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[9px] font-bold uppercase tracking-widest bg-emerald-500/20 text-emerald-100 ring-1 ring-inset ring-emerald-400/30"
+            v-if="infoBancaria.estado === 1">
+            <span class="h-1 w-1 rounded-full bg-emerald-400 animate-pulse"></span>
+            Activa
+          </span>
+          <span
+            class="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[9px] font-bold uppercase tracking-widest bg-red-500/20 text-red-100 ring-1 ring-inset ring-red-400/30"
+            v-else>
+            <span class="h-1 w-1 rounded-full bg-red-400"></span>
+            Inactiva
           </span>
         </div>
       </div>
 
       
-      <div v-if="infoBancaria.cci" class="mt-4 flex items-center justify-between rounded-xl bg-gray-50 dark:bg-white/[0.03] border border-gray-100 dark:border-gray-800 px-4 py-3">
+      <div v-if="infoBancaria.cci" class="mt-3 flex items-center justify-between rounded-xl bg-gray-50 dark:bg-white/[0.03] border border-gray-100 dark:border-gray-800 px-3 py-2">
         <div>
-          <p class="text-3xs font-semibold uppercase tracking-widest text-gray-400 mb-0.5">CCI</p>
-          <p class="font-mono text-sm font-semibold text-gray-700 dark:text-gray-200 tracking-wider">{{ infoBancaria.cci }}</p>
+          <p class="text-[9px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-0.5">CCI</p>
+          <p class="font-mono text-xs font-semibold text-gray-800 dark:text-white tracking-wider">{{ infoBancaria.cci }}</p>
         </div>
         <button
           @click="copiarCCI"
-          class="rounded-lg p-1.5 text-gray-400 hover:bg-primary/10 hover:text-primary dark:hover:bg-primary/20 dark:hover:text-brand-300 transition-colors"
+          class="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
           :title="copiado ? 'Copiado!' : 'Copiar CCI'">
           <Check v-if="copiado" class="h-4 w-4 text-emerald-500" />
-          <Copy v-else class="h-4 w-4" />
+          <Copy v-else class="h-3.5 w-3.5" />
         </button>
       </div>
     </div>

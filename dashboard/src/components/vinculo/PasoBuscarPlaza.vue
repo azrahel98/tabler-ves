@@ -19,24 +19,26 @@
           <MapPin class="h-8 w-8 text-gray-400" />
         </div>
         <p class="text-sm text-gray-500 dark:text-gray-400">No se encontraron plazas vacantes</p>
-        <button
-          @click="recargar"
-          class="mt-4 inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/3">
-          <RefreshCw class="h-4 w-4" />
+        <Button variant="outline" class="mt-4" @click="recargar">
+          <template #icon-left>
+            <RefreshCw class="h-4 w-4" />
+          </template>
           Reintentar
-        </button>
+        </Button>
       </div>
 
       
       <div v-else class="space-y-3">
         <div class="mb-4 flex items-center justify-between">
-          <span class="rounded-full bg-brand-50 px-3 py-1 text-xs font-medium text-brand-600 dark:bg-brand-500/10 dark:text-brand-400">
+          <Badge variant="brand">
             {{ vacantes.length }} {{ vacantes.length === 1 ? 'vacante' : 'vacantes' }}
-          </span>
-          <button @click="recargar" class="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300">
-            <RefreshCw class="h-3.5 w-3.5" />
+          </Badge>
+          <Button variant="ghost" size="sm" @click="recargar" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300">
+            <template #icon-left>
+              <RefreshCw class="h-3.5 w-3.5" />
+            </template>
             Recargar
-          </button>
+          </Button>
         </div>
 
         <div class="overflow-x-auto">
@@ -67,13 +69,16 @@
                 </td>
                 <td class="px-3 py-3 text-gray-700 dark:text-gray-300">S/ {{ vacante.sueldo?.toFixed(2) }}</td>
                 <td class="px-3 py-3 text-center">
-                  <button
+                  <Button
+                    variant="primary"
+                    size="sm"
                     @click="seleccionar(vacante)"
-                    :disabled="cargandoPlaza"
-                    class="inline-flex items-center gap-1.5 rounded-lg bg-brand-500 px-3 py-1.5 text-xs font-medium text-white transition hover:bg-brand-600 disabled:opacity-50 disabled:cursor-not-allowed">
-                    <Check v-if="plazaSeleccionada?.codigo === vacante.codigo" class="h-3.5 w-3.5" />
+                    :disabled="cargandoPlaza">
+                    <template #icon-left v-if="plazaSeleccionada?.codigo === vacante.codigo">
+                      <Check class="h-3.5 w-3.5" />
+                    </template>
                     <span>{{ plazaSeleccionada?.codigo === vacante.codigo ? 'Seleccionada' : 'Seleccionar' }}</span>
-                  </button>
+                  </Button>
                 </td>
               </tr>
             </tbody>
@@ -111,13 +116,15 @@
         </Transition>
 
         <div class="flex justify-end pt-4">
-          <button
+          <Button
+            variant="primary"
             @click="confirmar"
-            :disabled="!puedeAvanzar"
-            class="inline-flex items-center gap-2 rounded-lg bg-brand-500 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-brand-600 disabled:opacity-50 disabled:cursor-not-allowed">
+            :disabled="!puedeAvanzar">
             Continuar
-            <ArrowRight class="h-4 w-4" />
-          </button>
+            <template #icon-right>
+              <ArrowRight class="h-4 w-4" />
+            </template>
+          </Button>
         </div>
       </div>
     </div>
@@ -130,6 +137,8 @@
   import { storeToRefs } from 'pinia'
   import { MapPin, RefreshCw, Check, ArrowRight } from 'lucide-vue-next'
   import Loading from '../ui/Loading.vue'
+  import Button from '../ui/Button.vue'
+  import Badge from '../ui/Badge.vue'
 
   const store = useVinculoStore()
   const { vacantes, cargando, plazaSeleccionada } = storeToRefs(store)

@@ -10,51 +10,62 @@
       </div>
     </div>
 
-    <div class="hidden md:block overflow-x-auto max-h-[25vh] overflow-y-auto">
+    <div class="hidden md:block overflow-x-auto max-h-[25vh] lg:max-h-[50vh] xl:max-h-[60vh] overflow-y-auto">
       <table class="w-full">
         <thead class="sticky top-0 bg-white dark:bg-gray-900 z-10">
           <tr class="border-b border-gray-100 dark:border-gray-800">
-            <th class="py-2 text-center text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500"></th>
-            <th class="px-5 py-2 text-left text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">Área / Cargo</th>
-            <th class="px-5 py-2 text-left text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">Régimen</th>
-            <th class="px-5 py-2 text-left text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">Período</th>
-            <th class="px-5 py-2 text-right text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">Sueldo</th>
-            <th class="px-5 py-2 text-center text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">Info</th>
-            <th v-if="esAdmin" class="px-5 py-2"></th>
+            <th class="py-2 text-center text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500"></th>
+            <th class="px-5 py-2.5 text-left text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500">Área / Cargo</th>
+            <th class="px-5 py-2.5 text-left text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500">Régimen</th>
+            <th class="px-5 py-2.5 text-left text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500">Período</th>
+            <th class="px-5 py-2.5 text-right text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500">Sueldo</th>
+            <th class="px-5 py-2.5 text-center text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500">Info</th>
+            <th v-if="esAdmin" class="px-5 py-2.5"></th>
           </tr>
         </thead>
         <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
-          <tr v-for="v in vinculos" v-memo="[v.id, v.estado]" :key="v.id" class="hover:bg-primary/5 dark:hover:bg-white/5 transition-colors">
+          <tr v-for="v in vinculos" v-memo="[v.id, v.estado]" :key="v.id" class="hover:bg-gray-50 dark:hover:bg-white/3 transition-colors">
             <td class="pl-4 middle text-start">
-              <span class="inline-block h-2.5 w-2.5 rounded-full" :class="v.estado === 'activo' ? 'bg-emerald-500' : 'bg-red-400'" :title="v.estado === 'activo' ? 'Activo' : 'Inactivo'">
-              </span>
+              <span class="inline-block h-2 w-2 rounded-full" :class="v.estado === 'activo' ? 'bg-emerald-500' : 'bg-red-400'" :title="v.estado === 'activo' ? 'Activo' : 'Inactivo'"> </span>
             </td>
 
-            <td class="pl-2 py-3.5 max-w-[220px]">
-              <p class="text-sm font-medium text-gray-800 dark:text-white truncate" :title="v.cargo ?? undefined">{{ v.cargo }}</p>
-              <p class="text-xs text-gray-400 dark:text-gray-500 truncate mt-0.5" :title="v.area ?? undefined">{{ v.area }}</p>
+            <td class="pl-2 py-3 max-w-[220px]">
+              <p class="text-xs font-semibold text-gray-800 dark:text-white truncate" :title="v.cargo ?? undefined">{{ v.cargo }}</p>
+              <p class="text-[10px] text-gray-400 dark:text-gray-500 truncate mt-0.5" :title="v.area ?? undefined">{{ v.area }}</p>
               <span
                 v-if="v.sindicato"
-                class="mt-1.5 inline-flex items-center gap-1 rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-semibold text-amber-700 ring-1 ring-amber-200/70 dark:bg-amber-500/10 dark:text-amber-400 dark:ring-amber-500/20">
+                class="mt-1.5 inline-flex items-center gap-1 rounded-full bg-amber-50 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-amber-700 ring-1 ring-amber-200/50 dark:bg-amber-500/10 dark:text-amber-400 dark:ring-amber-500/20">
                 <Shield class="h-2.5 w-2.5 shrink-0" />
                 {{ v.sindicato }}
               </span>
             </td>
 
-            <td class="px-5 py-3.5">
-              <span class="text-sm text-gray-500 dark:text-gray-400 whitespace-nowrap">{{ v.regimen }}</span>
+            <td class="px-5 py-3">
+              <span
+                class="text-xs font-medium text-gray-600 dark:text-gray-300 bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5 rounded-lg px-2.5 py-1 inline-block whitespace-nowrap uppercase tracking-wider text-[9px]"
+                >{{ v.regimen }}</span
+              >
             </td>
 
-            <td class="px-5 py-3.5 whitespace-nowrap">
-              <span class="text-sm text-gray-600 dark:text-gray-300">{{ format(addDays(new Date(v.fecha_ingreso), 1), 'dd/MM/yyyy') }}</span>
+            <td class="px-5 py-3 whitespace-nowrap">
+              <span class="text-xs font-mono text-gray-600 dark:text-gray-300 tracking-normal">{{ format(addDays(new Date(v.fecha_ingreso), 1), 'dd/MM/yyyy') }}</span>
               <span class="mx-1.5 text-gray-300 dark:text-gray-600">→</span>
-              <span class="text-sm" :class="v.fecha_salida ? 'text-gray-500 dark:text-gray-400' : 'text-emerald-600 dark:text-emerald-400 font-medium'">
-                {{ v.fecha_salida ? format(addDays(new Date(v.fecha_salida), 1), 'dd/MM/yyyy') : v.estado == 'activo' ? 'Presente' : '' }}
+              <span v-if="v.fecha_salida" class="text-xs font-mono text-gray-500 dark:text-gray-400 tracking-normal">
+                {{ format(addDays(new Date(v.fecha_salida), 1), 'dd/MM/yyyy') }}
+              </span>
+              <span
+                v-else-if="v.estado == 'activo'"
+                class="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-emerald-700 ring-1 ring-inset ring-emerald-600/10 dark:bg-emerald-500/10 dark:text-emerald-400 dark:ring-emerald-500/20">
+                <span class="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                Activo
               </span>
             </td>
 
-            <td class="px-5 py-3.5 text-right whitespace-nowrap">
-              <span class="text-sm font-semibold text-gray-800 dark:text-white">S/ {{ v.sueldo }}</span>
+            <td class="px-5 py-3 text-right whitespace-nowrap">
+              <div class="inline-flex items-center rounded-lg bg-gray-50/50 dark:bg-white/3 border border-gray-100 dark:border-white/5 px-2.5 py-0.5 shadow-theme-xs">
+                <span class="text-[10px] font-semibold text-gray-400 dark:text-gray-500 mr-1 select-none">S/</span>
+                <span class="text-xs font-bold font-mono text-gray-800 dark:text-white tracking-wide">{{ formatSueldo(v.sueldo) }}</span>
+              </div>
             </td>
 
             <td class="px-5 py-3.5 text-center">
@@ -66,7 +77,7 @@
                     <Info class="h-3.5 w-3.5" />
                   </button>
                 </template>
-                <div class="space-y-2.5">
+                <div class="space-y-1">
                   <div v-if="v.doc_ingreso" class="detalle-fila">
                     <span class="detalle-etiqueta">Doc. Ingreso</span>
                     <span class="detalle-valor">{{ v.doc_ingreso }} {{ v.numero_doc_ingreso }}</span>
@@ -88,7 +99,6 @@
                     <span class="detalle-valor">{{ v.codigo }}</span>
                   </div>
                   <template v-if="v.fecha_salida">
-                    <div class="border-t border-gray-100 dark:border-gray-800 my-1"></div>
                     <div v-if="v.doc_salida" class="detalle-fila">
                       <span class="detalle-etiqueta">Doc. Salida</span>
                       <span class="detalle-valor">{{ v.doc_salida }} {{ v.numero_doc_salida }}</span>
@@ -99,7 +109,6 @@
                     </div>
                   </template>
                   <template v-if="v.tipo_evento">
-                    <div class="border-t border-gray-100 dark:border-gray-800 my-1"></div>
                     <div class="detalle-fila">
                       <span class="detalle-etiqueta">Evento</span>
                       <span class="detalle-valor">
@@ -121,33 +130,40 @@
             </td>
 
             <td class="px-3 py-3.5 text-center" v-if="esAdmin">
-              <Popover posicion="abajo" alineacion="fin" ancho="160px" :mostrarCerrar="false" :mostrarFlecha="false">
+              <Popover posicion="abajo" alineacion="fin" ancho="170px" :mostrarCerrar="false" :mostrarFlecha="false" sinPadding>
                 <template #disparador>
                   <button
-                    class="inline-flex items-center justify-center rounded-lg p-1.5 text-gray-400 hover:bg-primary/5 hover:text-gray-600 dark:hover:bg-white/5 dark:hover:text-gray-300 transition-colors">
+                    class="inline-flex items-center justify-center rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-white/5 dark:hover:text-gray-300 transition-colors"
+                    title="Acciones de Vínculo">
                     <MoreHorizontal class="h-3.5 w-3.5" />
                   </button>
                 </template>
                 <div class="acciones-menu">
                   <button v-if="!v.fecha_salida" @click="abrirEvento(v)" class="accion-item accion-item--evento">
-                    <Activity class="h-3.5 w-3.5 shrink-0" />
+                    <Activity class="h-3.5 w-3.5 shrink-0 text-gray-400 dark:text-gray-500 transition-colors" />
                     <span>{{ v.tipo_evento ? 'Ver Evento' : 'Movimiento' }}</span>
                   </button>
                   <button v-if="!v.fecha_salida" @click="abrirCambioArea(v)" class="accion-item accion-item--cambio">
-                    <ArrowRightLeft class="h-3.5 w-3.5 shrink-0" />
+                    <ArrowRightLeft class="h-3.5 w-3.5 shrink-0 text-gray-400 dark:text-gray-500 transition-colors" />
                     <span>Cambio de Área</span>
                   </button>
-                  <button v-if="!v.fecha_salida" @click="abrirRenuncia(v)" class="accion-item accion-item--renuncia">
-                    <UserMinus class="h-3.5 w-3.5 shrink-0" />
-                    <span>Renuncia</span>
-                  </button>
                   <button v-if="v.sindicato && !v.fecha_salida" @click="abrirDesafiliar(v)" class="accion-item accion-item--neutral">
-                    <Shield class="h-3.5 w-3.5 shrink-0" />
+                    <Shield class="h-3.5 w-3.5 shrink-0 text-gray-400 dark:text-gray-500 transition-colors" />
                     <span>Desafiliar</span>
                   </button>
+
+                  <div v-if="!v.fecha_salida" class="acciones-separador"></div>
+
+                  <button v-if="!v.fecha_salida" @click="abrirRenuncia(v)" class="accion-item accion-item--renuncia">
+                    <UserMinus class="h-3.5 w-3.5 shrink-0 text-gray-400 dark:text-gray-500 transition-colors" />
+                    <span>Registrar Renuncia</span>
+                  </button>
+
+                  <div class="acciones-separador"></div>
+
                   <button @click="abrirEliminar(v)" class="accion-item accion-item--eliminar">
-                    <Trash2 class="h-3.5 w-3.5 shrink-0" />
-                    <span>Eliminar</span>
+                    <Trash2 class="h-3.5 w-3.5 shrink-0 text-gray-400 dark:text-gray-500 transition-colors" />
+                    <span>Eliminar Registro</span>
                   </button>
                 </div>
               </Popover>
@@ -235,29 +251,35 @@
               </div>
             </Popover>
 
-            <Popover v-if="esAdmin" posicion="abajo" alineacion="fin" ancho="160px" :mostrarCerrar="false" :mostrarFlecha="false">
+            <Popover v-if="esAdmin" posicion="abajo" alineacion="fin" ancho="170px" :mostrarCerrar="false" :mostrarFlecha="false" sinPadding>
               <template #disparador>
                 <button
-                  class="inline-flex items-center justify-center rounded-lg p-1.5 text-gray-400 hover:bg-primary/5 hover:text-gray-600 dark:hover:bg-white/5 dark:hover:text-gray-300 transition-colors">
+                  class="inline-flex items-center justify-center rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-white/5 dark:hover:text-gray-300 transition-colors">
                   <MoreHorizontal class="h-3.5 w-3.5" />
                 </button>
               </template>
               <div class="acciones-menu">
                 <button v-if="!v.fecha_salida" @click="abrirEvento(v)" class="accion-item accion-item--evento">
-                  <Activity class="h-3.5 w-3.5 shrink-0" />
+                  <Activity class="h-3.5 w-3.5 shrink-0 text-gray-400 dark:text-gray-500 transition-colors" />
                   <span>{{ v.tipo_evento ? 'Ver Evento' : 'Movimiento' }}</span>
                 </button>
                 <button v-if="!v.fecha_salida" @click="abrirCambioArea(v)" class="accion-item accion-item--cambio">
-                  <ArrowRightLeft class="h-3.5 w-3.5 shrink-0" />
+                  <ArrowRightLeft class="h-3.5 w-3.5 shrink-0 text-gray-400 dark:text-gray-500 transition-colors" />
                   <span>Cambio de Área</span>
                 </button>
+
+                <div v-if="!v.fecha_salida" class="acciones-separador"></div>
+
                 <button v-if="!v.fecha_salida" @click="abrirRenuncia(v)" class="accion-item accion-item--renuncia">
-                  <UserMinus class="h-3.5 w-3.5 shrink-0" />
-                  <span>Renuncia</span>
+                  <UserMinus class="h-3.5 w-3.5 shrink-0 text-gray-400 dark:text-gray-500 transition-colors" />
+                  <span>Registrar Renuncia</span>
                 </button>
+
+                <div class="acciones-separador"></div>
+
                 <button @click="abrirEliminar(v)" class="accion-item accion-item--eliminar">
-                  <Trash2 class="h-3.5 w-3.5 shrink-0" />
-                  <span>Eliminar</span>
+                  <Trash2 class="h-3.5 w-3.5 shrink-0 text-gray-400 dark:text-gray-500 transition-colors" />
+                  <span>Eliminar Registro</span>
                 </button>
               </div>
             </Popover>
@@ -400,6 +422,13 @@
       await store.obtenerVinculos(perfilActual.value.dni)
     }
   }
+
+  const formatSueldo = (sueldo: number | string | null | undefined) => {
+    if (sueldo === null || sueldo === undefined) return '0.00'
+    const num = typeof sueldo === 'string' ? parseFloat(sueldo) : sueldo
+    if (isNaN(num)) return sueldo.toString()
+    return num.toLocaleString('es-PE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+  }
 </script>
 
 <style scoped>
@@ -407,33 +436,63 @@
     display: flex;
     flex-direction: column;
     gap: 2px;
+    padding-bottom: 5.5px;
+    border-bottom: 1px solid var(--color-gray-50);
+  }
+
+  :root.dark .detalle-fila,
+  .dark .detalle-fila {
+    border-bottom-color: rgba(255, 255, 255, 0.04);
+  }
+
+  .detalle-fila:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
   }
 
   .detalle-etiqueta {
-    font-size: var(--text-2xs);
-    font-weight: 600;
+    font-size: 10px;
+    font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.08em;
     color: var(--color-gray-400);
   }
 
   .detalle-valor {
-    font-size: var(--text-xs);
+    font-size: var(--text-sm);
     font-weight: 500;
     color: var(--color-gray-800);
     word-break: break-word;
+    line-height: 1.4;
   }
 
   :root.dark .detalle-valor,
   .dark .detalle-valor {
-    color: var(--color-gray-200);
+    color: rgba(255, 255, 255, 0.9);
+  }
+
+  /* Anular el padding excesivo del cuerpo del popover para este menú de acciones */
+  :deep(.popover-cuerpo) {
+    padding: 0 !important;
   }
 
   .acciones-menu {
     display: flex;
     flex-direction: column;
-    gap: 2px;
-    padding: 4px 0;
+    gap: 1.5px;
+    padding: 4px;
+    background-color: var(--color-card);
+  }
+
+  .acciones-separador {
+    height: 1px;
+    background-color: var(--color-gray-100);
+    margin: 4px;
+  }
+
+  :root.dark .acciones-separador,
+  .dark .acciones-separador {
+    background-color: var(--color-gray-800);
   }
 
   .accion-item {
@@ -441,15 +500,15 @@
     align-items: center;
     gap: 8px;
     width: 100%;
-    padding: 7px 12px;
+    padding: 6.5px 9px;
     border-radius: 6px;
-    font-size: var(--text-sm);
+    font-size: var(--text-xs);
     font-weight: 500;
-    color: var(--color-gray-600);
-    transition:
-      background-color 0.12s ease,
-      color 0.12s ease;
+    color: var(--color-gray-700);
+    transition: all 0.12s cubic-bezier(0.4, 0, 0.2, 1);
     text-align: left;
+    background: transparent;
+    cursor: pointer;
   }
 
   :root.dark .accion-item,
@@ -457,58 +516,41 @@
     color: var(--color-gray-300);
   }
 
-  .accion-item--renuncia:hover {
-    background-color: #fff1f0;
-    color: #e53e3e;
-  }
-
-  :root.dark .accion-item--renuncia:hover,
-  .dark .accion-item--renuncia:hover {
-    background-color: rgba(229, 62, 62, 0.1);
-    color: #fc8181;
-  }
-
-  .accion-item--eliminar:hover {
-    background-color: #fff5f5;
-    color: #c53030;
-  }
-
-  :root.dark .accion-item--eliminar:hover,
-  .dark .accion-item--eliminar:hover {
-    background-color: rgba(197, 48, 48, 0.1);
-    color: #feb2b2;
-  }
-
+  /* Hovers Limpios y Premium (Estilo Archivo Nítido) */
+  .accion-item--evento:hover,
+  .accion-item--cambio:hover,
   .accion-item--neutral:hover {
-    background-color: #eff6ff;
-    color: #2563eb;
-  }
-
-  :root.dark .accion-item--neutral:hover,
-  .dark .accion-item--neutral:hover {
-    background-color: rgba(37, 99, 235, 0.1);
-    color: #93c5fd;
-  }
-
-  .accion-item--evento:hover {
-    background-color: #f0fdf4;
-    color: #16a34a;
+    background-color: var(--color-gray-50);
+    color: var(--color-gray-900);
   }
 
   :root.dark .accion-item--evento:hover,
-  .dark .accion-item--evento:hover {
-    background-color: rgba(22, 163, 74, 0.1);
-    color: #86efac;
-  }
-
-  .accion-item--cambio:hover {
-    background-color: #eef2ff;
-    color: #4f46e5;
-  }
-
+  .dark .accion-item--evento:hover,
   :root.dark .accion-item--cambio:hover,
-  .dark .accion-item--cambio:hover {
-    background-color: rgba(79, 70, 229, 0.1);
-    color: #a5b4fc;
+  .dark .accion-item--cambio:hover,
+  :root.dark .accion-item--neutral:hover,
+  .dark .accion-item--neutral:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+    color: var(--color-white);
+  }
+
+  /* Efecto hover suave para el icono del item */
+  .accion-item:hover svg {
+    color: currentColor !important;
+  }
+
+  /* Hovers de Peligro / Advertencia Sutiles */
+  .accion-item--renuncia:hover,
+  .accion-item--eliminar:hover {
+    background-color: #fef2f2;
+    color: #ef4444;
+  }
+
+  :root.dark .accion-item--renuncia:hover,
+  .dark .accion-item--renuncia:hover,
+  :root.dark .accion-item--eliminar:hover,
+  .dark .accion-item--eliminar:hover {
+    background-color: rgba(239, 68, 68, 0.12);
+    color: #fca5a5;
   }
 </style>

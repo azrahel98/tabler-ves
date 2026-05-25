@@ -25,10 +25,11 @@
     </div>
 
     
-    <div class="flex flex-col divide-y divide-gray-100 dark:divide-gray-800 overflow-y-auto max-h-128 custom-scrollbar -mx-1 px-1">
+    <div ref="scrollContainer" class="relative flex flex-col divide-y divide-gray-100 dark:divide-gray-800 overflow-y-auto max-h-128 custom-scrollbar -mx-1 px-1">
       <RouterLink
         v-for="item in listaDelMes"
         :key="item.dni"
+        :id="'cumple-' + item.dni"
         :to="{ name: 'personal-profile', params: { dni: item.dni } }"
         class="flex gap-2 items-start py-1 first:pt-0 last:pb-0 hover:opacity-80 transition-opacity group">
 
@@ -70,7 +71,7 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, computed } from 'vue'
+  import { ref, computed, watch, nextTick } from 'vue'
   import { RouterLink } from 'vue-router'
   import { useTableroStore } from '../../stores/dashboard'
   import { storeToRefs } from 'pinia'
@@ -155,4 +156,44 @@
     if (daysUntil === -1) return 'Ayer'
     return `hace ${Math.abs(daysUntil)} días`
   }
+  const scrollContainer = ref<HTMLElement | null>(null)
+
+  const nearestDni = computed(() => {
+    if (!listaDelMes.value.length) return null
+    let nearest = listaDelMes.value[0]
+    let minDiff = Math.abs(nearest.daysUntil)
+    
+    for (const item of listaDelMes.value) {
+      const diff = Math.abs(item.daysUntil)
+      if (diff < minDiff) {
+        minDiff = diff
+        nearest = item
+      }
+    }
+    return nearest.dni
+  })
+
+  const scrollToNearest = () => {
+    nextTick(() => {
+      if (!scrollContainer.value || !nearestDni.value) return
+      const element = scrollContainer.value.querySelector(`#cumple-${nearestDni.value}`) as HTMLElement | null
+      if (element) {
+        const container = scrollContainer.value
+        const elementTop = element.offsetTop
+        const elementHeight = element.offsetHeight
+        const containerHeight = container.clientHeight
+        
+        container.scrollTo({
+          top: elementTop - (containerHeight / 2) + (elementHeight / 2),
+          behavior: 'smooth'
+        })
+      }
+    })
+  }
+
+  watch(listaDelMes, (newVal) => {
+    if (newVal.length > 0) {
+      setTimeout(scrollToNearest, 150)
+    }
+  }, { immediate: true })
 </script>

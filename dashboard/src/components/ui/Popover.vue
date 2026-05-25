@@ -16,7 +16,7 @@
             </button>
           </div>
 
-          <div class="popover-cuerpo">
+          <div class="popover-cuerpo" :class="{ 'popover-cuerpo--sin-padding': sinPadding }">
             <slot></slot>
           </div>
 
@@ -44,6 +44,7 @@
       ancho?: string
       mostrarCerrar?: boolean
       cerrarAlClickFuera?: boolean
+      sinPadding?: boolean
     }>(),
     {
       posicion: 'abajo',
@@ -51,6 +52,7 @@
       ancho: '280px',
       mostrarCerrar: true,
       cerrarAlClickFuera: true,
+      sinPadding: false,
     }
   )
 
@@ -309,6 +311,10 @@
   
   .popover-cuerpo {
     padding: 0.75rem 1rem;
+  }
+
+  .popover-cuerpo--sin-padding {
+    padding: 0 !important;
   }
 
   

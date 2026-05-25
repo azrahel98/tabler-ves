@@ -34,8 +34,6 @@ dist-ssr
 docs
 skills-lock.json
 Dockerfile
-Dockerfile
-Dockerfile
 .env
 .agent/
 .agent
@@ -50,3 +48,6 @@ Dockerfile
 
 graphify-out/*
 !graphify-out/*.html
+*.md
+
+.impeccable/

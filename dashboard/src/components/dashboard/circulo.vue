@@ -1,6 +1,6 @@
 <template>
-  <div class="rounded-2xl border border-gray-200 bg-card p-5 dark:border-gray-800 dark:bg-white/[0.03] md:p-6">
-    <div class="mb-4 justify-between gap-4 sm:flex">
+  <div :class="sinContenedor ? 'h-full flex flex-col' : 'rounded-2xl border border-gray-200 bg-card p-4 md:p-5 flex flex-col h-full'">
+    <div class="mb-3 justify-between gap-4 sm:flex shrink-0">
       <div>
         <h3 class="text-title-md font-semibold leading-snug text-gray-800 dark:text-white/90">Distribución por Régimen</h3>
       </div>
@@ -8,23 +8,23 @@
 
     <div class="mb-2 shrink-0">
       <div id="chartThree" class="mx-auto flex justify-center">
-        <div class="relative flex justify-center w-full h-44">
+        <div class="relative flex justify-center w-full h-36">
           <Doughnut :data="chartData" :options="chartOptions" />
         </div>
       </div>
     </div>
 
     
-    <div class="mt-4 flex flex-wrap gap-x-6 gap-y-3 justify-center">
-      <div v-for="(regimen, index) in store.resumen?.por_regimen" :key="index" class="flex items-center gap-2">
-        <span class="block h-3 w-3 rounded-full shrink-0" :style="{ backgroundColor: colorPara(regimen.nombre) }"></span>
-        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">
+    <div class="mt-auto flex flex-wrap gap-x-4 gap-y-2 justify-center pt-2 border-t border-gray-100 dark:border-gray-800/50">
+      <div v-for="(regimen, index) in store.resumen?.por_regimen" :key="index" class="flex items-center gap-1.5">
+        <span class="block h-2.5 w-2.5 rounded-full shrink-0" :style="{ backgroundColor: colorPara(regimen.nombre) }"></span>
+        <span class="text-xs font-semibold text-gray-700 dark:text-gray-300">
           {{ regimen.nombre }}
         </span>
-        <span class="text-sm font-semibold text-gray-800 dark:text-white/90 ml-1">
+        <span class="text-xs font-bold text-gray-800 dark:text-white/90 ml-0.5">
           {{ regimen.cantidad }}
         </span>
-        <span class="text-xs text-gray-500 dark:text-gray-400"> ({{ calcularPorcentaje(regimen.cantidad) }}%) </span>
+        <span class="text-2xs text-gray-500 dark:text-gray-400"> ({{ calcularPorcentaje(regimen.cantidad) }}%) </span>
       </div>
     </div>
   </div>
@@ -35,6 +35,10 @@
   import { useTableroStore } from '../../stores/dashboard'
   import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js'
   import { Doughnut } from 'vue-chartjs'
+
+  defineProps<{
+    sinContenedor?: boolean
+  }>()
 
   ChartJS.register(ArcElement, Tooltip, Legend)
 

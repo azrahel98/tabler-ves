@@ -704,6 +704,61 @@ pub async fn nuevos_trabajadores(data: web::Data<AppState>) -> Result<impl Respo
         .collect();
     Ok(HttpResponse::Ok().json(resultado))
 }
+pub async fn rangos_edad(data: web::Data<AppState>) -> Result<impl Responder, ApiError> {
+    let data = sqlx::query_as!(
+        DataResumen,
+        r#"
+        SELECT
+            CASE
+                WHEN TIMESTAMPDIFF(YEAR, p.fecha_nacimiento, CURRENT_DATE) BETWEEN 18 AND 25 THEN '18-25'
+                WHEN TIMESTAMPDIFF(YEAR, p.fecha_nacimiento, CURRENT_DATE) BETWEEN 26 AND 35 THEN '26-35'
+                WHEN TIMESTAMPDIFF(YEAR, p.fecha_nacimiento, CURRENT_DATE) BETWEEN 36 AND 45 THEN '36-45'
+                WHEN TIMESTAMPDIFF(YEAR, p.fecha_nacimiento, CURRENT_DATE) BETWEEN 46 AND 55 THEN '46-55'
+                ELSE '55+'
+            END AS "nombre!",
+            COUNT(*) AS "cantidad!"
+        FROM vinculo v
+        INNER JOIN persona p ON v.dni = p.dni
+        WHERE v.estado = 'activo'
+        GROUP BY 1
+        ORDER BY MIN(TIMESTAMPDIFF(YEAR, p.fecha_nacimiento, CURRENT_DATE))
+        "#
+    )
+    .fetch_all(&data.db)
+    .await
+    .map_err(|e| {
+        eprintln!("Database error rangos_edad: {:?}", e);
+        ApiError::InternalError("Error al obtener rangos de edad".into())
+    })?;
+    Ok(HttpResponse::Ok().json(data))
+}
+pub async fn rangos_antiguedad(data: web::Data<AppState>) -> Result<impl Responder, ApiError> {
+    let data = sqlx::query_as!(
+        DataResumen,
+        r#"
+        SELECT
+            CASE
+                WHEN TIMESTAMPDIFF(YEAR, d.fecha, CURRENT_DATE) < 1 THEN '0-1 años'
+                WHEN TIMESTAMPDIFF(YEAR, d.fecha, CURRENT_DATE) BETWEEN 1 AND 4 THEN '1-5 años'
+                WHEN TIMESTAMPDIFF(YEAR, d.fecha, CURRENT_DATE) BETWEEN 5 AND 9 THEN '5-10 años'
+                ELSE '+10 años'
+            END AS "nombre!",
+            COUNT(*) AS "cantidad!"
+        FROM vinculo v
+        INNER JOIN documento d ON v.doc_ingreso_id = d.id
+        WHERE v.estado = 'activo'
+        GROUP BY 1
+        ORDER BY MIN(TIMESTAMPDIFF(YEAR, d.fecha, CURRENT_DATE))
+        "#
+    )
+    .fetch_all(&data.db)
+    .await
+    .map_err(|e| {
+        eprintln!("Database error rangos_antiguedad: {:?}", e);
+        ApiError::InternalError("Error al obtener rangos de antigüedad".into())
+    })?;
+    Ok(HttpResponse::Ok().json(data))
+}
 pub async fn reporte_eventos(data: web::Data<AppState>) -> Result<impl Responder, ApiError> {
     let filas = sqlx::query(
         r#"

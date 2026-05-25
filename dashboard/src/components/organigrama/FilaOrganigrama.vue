@@ -17,10 +17,11 @@
       <td class="px-4 py-3" :style="{ paddingLeft: `${nivel * 24 + 16}px` }">
         <router-link
           :to="{ name: 'area-personal', params: { id: nodo.id } }"
-          class="inline-flex items-center gap-2 font-semibold text-gray-900 dark:text-white hover:text-primary dark:hover:text-brand-300 transition-colors">
+          class="inline-flex items-center gap-2 hover:text-primary dark:hover:text-brand-300 transition-colors"
+          :class="areaClass">
           <span
-            class="flex items-center justify-center w-6 h-6 rounded-md text-xs font-bold shrink-0"
-            :class="nivelBadgeClasses">
+            class="flex items-center justify-center rounded-md shrink-0"
+            :class="[nivelBadgeClasses, badgeSizeClass]">
             {{ nodo.area.charAt(0) }}
           </span>
           <span class="truncate">{{ nodo.area }}</span>
@@ -31,22 +32,27 @@
         <RouterLink
           v-if="nodo.dni && nodo.jefe"
           :to="{ name: 'personal-profile', params: { dni: nodo.dni } }"
-          class="inline-flex items-center gap-2 text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-brand-300 transition-colors">
-          <span class="flex items-center justify-center w-6 h-6 rounded-full bg-gray-100 dark:bg-gray-800 shrink-0">
-            <User class="h-3.5 w-3.5 text-gray-400 dark:text-gray-500" />
+          class="inline-flex items-center gap-2 hover:text-primary dark:hover:text-brand-300 transition-colors"
+          :class="jefeClass">
+          <span 
+            class="flex items-center justify-center rounded-full bg-gray-100/80 dark:bg-gray-800/80 shrink-0"
+            :class="jefeIconContainerClass">
+            <User :class="jefeIconClass" class="text-gray-400 dark:text-gray-500" />
           </span>
           <span class="truncate">{{ nodo.jefe }}</span>
         </RouterLink>
-        <span v-else class="inline-flex items-center gap-2 text-gray-400 dark:text-gray-600 italic text-xs">
-          <span class="flex items-center justify-center w-6 h-6 rounded-full bg-gray-50 dark:bg-gray-800/50 shrink-0">
-            <UserX class="h-3.5 w-3.5 text-gray-300 dark:text-gray-600" />
+        <span v-else class="inline-flex items-center gap-2 text-gray-400 dark:text-gray-600 italic text-[11px]">
+          <span 
+            class="flex items-center justify-center rounded-full bg-gray-50/80 dark:bg-gray-800/30 shrink-0"
+            :class="jefeIconContainerClass">
+            <UserX :class="jefeIconClass" class="text-gray-300 dark:text-gray-600" />
           </span>
           Sin asignar
         </span>
       </td>
 
       <td class="px-4 py-3">
-        <span v-if="nodo.dni" class="font-mono text-xs text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800/50 px-2 py-0.5 rounded-md">
+        <span v-if="nodo.dni" class="font-mono text-[10px] text-gray-500 dark:text-gray-400 bg-gray-50/60 dark:bg-gray-800/30 border border-gray-100/50 dark:border-gray-800/50 px-1.5 py-0.5 rounded-md leading-none">
           {{ nodo.dni }}
         </span>
         <span v-else class="text-gray-300 dark:text-gray-700">—</span>
@@ -55,7 +61,7 @@
       <td class="px-4 py-3 text-center">
         <span
           v-if="tieneHijos"
-          class="inline-flex items-center justify-center min-w-6 h-5.5 px-2 rounded-full text-2xs font-bold"
+          class="inline-flex items-center justify-center min-w-5 h-5 px-1.5 rounded-full text-[10px] font-extrabold"
           :class="nivelCountClasses">
           {{ nodo.subgerencias.length }}
         </span>
@@ -92,18 +98,18 @@
         </button>
 
         <span
-          class="flex items-center justify-center w-6 h-6 rounded-md text-2xs font-bold shrink-0"
-          :class="nivelBadgeClasses">
+          class="flex items-center justify-center rounded-md shrink-0"
+          :class="[nivelBadgeClasses, badgeSizeClass]">
           {{ nodo.area.charAt(0) }}
         </span>
 
-        <span class="font-semibold text-sm text-gray-900 dark:text-gray-100 flex-1 min-w-0 truncate">
+        <span class="flex-1 min-w-0 truncate" :class="areaClass">
           {{ nodo.area }}
         </span>
 
         <span
           v-if="tieneHijos"
-          class="inline-flex items-center justify-center min-w-5 h-5 px-1.5 rounded-full text-2xs font-bold shrink-0"
+          class="inline-flex items-center justify-center min-w-5 h-5 px-1.5 rounded-full text-[10px] font-extrabold shrink-0"
           :class="nivelCountClasses">
           {{ nodo.subgerencias.length }}
         </span>
@@ -113,16 +119,17 @@
         <RouterLink
           v-if="nodo.dni"
           :to="{ name: 'personal-profile', params: { dni: nodo.dni } }"
-          class="inline-flex items-center gap-1.5 text-xs text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-brand-300 transition-colors min-w-0">
-          <User class="h-3.5 w-3.5 shrink-0 text-gray-400" />
+          class="inline-flex items-center gap-1.5 hover:text-primary dark:hover:text-brand-300 transition-colors min-w-0"
+          :class="jefeClass">
+          <User class="shrink-0 text-gray-400" :class="jefeIconClass" />
           <span class="truncate">{{ nodo.jefe || 'Sin asignar' }}</span>
         </RouterLink>
-        <div v-else class="inline-flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400 min-w-0">
-          <User class="h-3.5 w-3.5 shrink-0 text-gray-400" />
-          <span class="truncate">{{ nodo.jefe || 'Sin asignar' }}</span>
+        <div v-else class="inline-flex items-center gap-1.5 min-w-0" :class="jefeClass">
+          <User class="shrink-0 text-gray-400" :class="jefeIconClass" />
+          <span class="truncate text-gray-400 dark:text-gray-600 italic">{{ nodo.jefe || 'Sin asignar' }}</span>
         </div>
 
-        <span v-if="nodo.dni" class="font-mono text-2xs text-gray-400 dark:text-gray-500 shrink-0">
+        <span v-if="nodo.dni" class="font-mono text-[10px] text-gray-500 dark:text-gray-400 bg-gray-50/60 dark:bg-gray-800/30 border border-gray-100/50 dark:border-gray-800/50 px-1.5 py-0.5 rounded-md leading-none shrink-0">
           {{ nodo.dni }}
         </span>
       </div>
@@ -175,6 +182,37 @@
   const borderColorClass = computed(() => nivelColores[nivelIndex.value]!.border)
   const nivelBadgeClasses = computed(() => nivelColores[nivelIndex.value]!.badge)
   const nivelCountClasses = computed(() => nivelColores[nivelIndex.value]!.count)
+
+  // Clases tipográficas jerárquicas dinámicas
+  const areaClass = computed(() => {
+    if (props.nivel === 0) return 'text-sm font-bold text-gray-900 dark:text-white tracking-tight'
+    if (props.nivel === 1) return 'text-[13px] font-semibold text-gray-800 dark:text-gray-100'
+    return 'text-xs font-medium text-gray-600 dark:text-gray-400 dark:group-hover:text-gray-300 transition-colors'
+  })
+
+  const badgeSizeClass = computed(() => {
+    if (props.nivel === 0) return 'w-7 h-7 text-[11px] font-bold'
+    if (props.nivel === 1) return 'w-6 h-6 text-[10px] font-bold'
+    return 'w-5.5 h-5.5 text-[9px] font-semibold'
+  })
+
+  const jefeClass = computed(() => {
+    if (props.nivel === 0) return 'text-[13px] font-semibold text-gray-700 dark:text-gray-200'
+    if (props.nivel === 1) return 'text-xs font-medium text-gray-600 dark:text-gray-300'
+    return 'text-[11px] font-normal text-gray-500 dark:text-gray-400'
+  })
+
+  const jefeIconContainerClass = computed(() => {
+    if (props.nivel === 0) return 'w-6 h-6'
+    if (props.nivel === 1) return 'w-5.5 h-5.5'
+    return 'w-5 h-5'
+  })
+
+  const jefeIconClass = computed(() => {
+    if (props.nivel === 0) return 'h-3.5 w-3.5'
+    if (props.nivel === 1) return 'h-3 w-3'
+    return 'h-2.5 w-2.5'
+  })
 </script>
 
 <style scoped>

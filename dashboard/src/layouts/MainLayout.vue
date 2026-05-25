@@ -12,7 +12,9 @@
               <component :is="Component" :key="$route.path" />
             </Transition>
           </RouterView>
-          <Loading v-if="configuracionStore.loading" :full-page="true" size="md" />
+          <Transition name="fade">
+            <Loading v-if="configuracionStore.loading" :full-page="true" size="lg" message="Cargando sistema..." />
+          </Transition>
         </div>
       </main>
     </div>

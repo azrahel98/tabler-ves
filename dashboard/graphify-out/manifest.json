@@ -1,12 +1,12 @@
 {
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\package.json": {
-    "mtime": 1777841141.9731674,
-    "ast_hash": "caddac9c7c6b2fe59f36e14881e8c91d",
+    "mtime": 1779357210.4968,
+    "ast_hash": "b049c87cda7e376dfa843db3daebcf60",
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\skills-lock.json": {
-    "mtime": 1777838458.1702747,
-    "ast_hash": "7ba26e04acf587b949e3723a0b2567a1",
+    "mtime": 1779355003.666337,
+    "ast_hash": "3ab433c6a8d357f818ddc3c4a2648819",
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\tsconfig.app.json": {
@@ -29,9 +29,269 @@
     "ast_hash": "a778362e67c7bd7f7d15218f0a9c9d96",
     "semantic_hash": ""
   },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.agents\\skills\\impeccable\\scripts\\cleanup-deprecated.mjs": {
+    "mtime": 1779354929.3897686,
+    "ast_hash": "51208407b06e051bb6d8ceab244db39c",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.agents\\skills\\impeccable\\scripts\\command-metadata.json": {
+    "mtime": 1779354929.3902867,
+    "ast_hash": "b25ed9a4d6c24c83d5af46ec69b99a97",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.agents\\skills\\impeccable\\scripts\\critique-storage.mjs": {
+    "mtime": 1779354929.3908074,
+    "ast_hash": "69825b7f6236350030e72dd7dd3212b7",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.agents\\skills\\impeccable\\scripts\\design-parser.mjs": {
+    "mtime": 1779354929.3914955,
+    "ast_hash": "df65268bfe73ad8202ca309c2da3805c",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.agents\\skills\\impeccable\\scripts\\detect-csp.mjs": {
+    "mtime": 1779354929.392013,
+    "ast_hash": "0d3243060e66ba0d0a64684f9684ecc7",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.agents\\skills\\impeccable\\scripts\\detect.mjs": {
+    "mtime": 1779354929.392013,
+    "ast_hash": "db2157bcff7ab1b222d68cf96cb8643c",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.agents\\skills\\impeccable\\scripts\\impeccable-paths.mjs": {
+    "mtime": 1779354929.392013,
+    "ast_hash": "0e34c40e77c7a30eeabb1bac897f58a2",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.agents\\skills\\impeccable\\scripts\\is-generated.mjs": {
+    "mtime": 1779354929.3930209,
+    "ast_hash": "81ada1894b5f562b0993fdff1756d82c",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.agents\\skills\\impeccable\\scripts\\live-accept.mjs": {
+    "mtime": 1779354929.3935387,
+    "ast_hash": "feee297789fa52b5901e21bb354e8a4f",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.agents\\skills\\impeccable\\scripts\\live-browser-session.js": {
+    "mtime": 1779354929.394052,
+    "ast_hash": "e54c01fe1a8287f757161759beaab916",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.agents\\skills\\impeccable\\scripts\\live-browser.js": {
+    "mtime": 1779354929.3951423,
+    "ast_hash": "09d5959c4f68346ac3e032a1e16f8924",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.agents\\skills\\impeccable\\scripts\\live-complete.mjs": {
+    "mtime": 1779354929.3961492,
+    "ast_hash": "0ed6226feb3d80adf38f2098b6d7efd4",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.agents\\skills\\impeccable\\scripts\\live-completion.mjs": {
+    "mtime": 1779354929.3966556,
+    "ast_hash": "c51f1de5c7aae5aa3f2c67f5d9875d3e",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.agents\\skills\\impeccable\\scripts\\live-inject.mjs": {
+    "mtime": 1779354929.3971627,
+    "ast_hash": "01365c3718e920dbeee5eeb9159093fa",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.agents\\skills\\impeccable\\scripts\\live-poll.mjs": {
+    "mtime": 1779354929.3971627,
+    "ast_hash": "7b78710647b202a90d99852bdb7a5135",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.agents\\skills\\impeccable\\scripts\\live-resume.mjs": {
+    "mtime": 1779354929.3971627,
+    "ast_hash": "9187fc4ae434c0573b7c84c95b05f744",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.agents\\skills\\impeccable\\scripts\\live-server.mjs": {
+    "mtime": 1779354929.3981698,
+    "ast_hash": "2754268fc4579377e0d40d6a2e34679a",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.agents\\skills\\impeccable\\scripts\\live-session-store.mjs": {
+    "mtime": 1779354929.3981698,
+    "ast_hash": "b0c628113419432d164204b18587d681",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.agents\\skills\\impeccable\\scripts\\live-status.mjs": {
+    "mtime": 1779354929.3993883,
+    "ast_hash": "f7f787396f44ef06c890f97c45d0ba75",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.agents\\skills\\impeccable\\scripts\\live-wrap.mjs": {
+    "mtime": 1779354929.3999276,
+    "ast_hash": "9612f1254ce763221690053592892110",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.agents\\skills\\impeccable\\scripts\\live.mjs": {
+    "mtime": 1779354929.4004474,
+    "ast_hash": "073965c7d10925f8ad9651a336220ee8",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.agents\\skills\\impeccable\\scripts\\load-context.mjs": {
+    "mtime": 1779354929.4004474,
+    "ast_hash": "f96317a92230153a77069e4f81bd8e11",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.agents\\skills\\impeccable\\scripts\\modern-screenshot.umd.js": {
+    "mtime": 1779354929.4014547,
+    "ast_hash": "c6afaf6ebceb162206f6a2e5b0ed653c",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.agents\\skills\\impeccable\\scripts\\pin.mjs": {
+    "mtime": 1779354929.4014547,
+    "ast_hash": "59e1f8315c2083fb7997e5ff3edfcb57",
+    "semantic_hash": ""
+  },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.claude\\settings.local.json": {
-    "mtime": 1777838458.1678972,
-    "ast_hash": "fa9e3eb8060fa06cf6a24aeef111dee0",
+    "mtime": 1779035549.0738153,
+    "ast_hash": "a21973ef09b3d242e76bc38a612f698e",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.claude\\skills\\impeccable\\scripts\\cleanup-deprecated.mjs": {
+    "mtime": 1779354929.3897686,
+    "ast_hash": "51208407b06e051bb6d8ceab244db39c",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.claude\\skills\\impeccable\\scripts\\command-metadata.json": {
+    "mtime": 1779354929.3902867,
+    "ast_hash": "b25ed9a4d6c24c83d5af46ec69b99a97",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.claude\\skills\\impeccable\\scripts\\critique-storage.mjs": {
+    "mtime": 1779354929.3908074,
+    "ast_hash": "69825b7f6236350030e72dd7dd3212b7",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.claude\\skills\\impeccable\\scripts\\design-parser.mjs": {
+    "mtime": 1779354929.3914955,
+    "ast_hash": "df65268bfe73ad8202ca309c2da3805c",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.claude\\skills\\impeccable\\scripts\\detect-csp.mjs": {
+    "mtime": 1779354929.392013,
+    "ast_hash": "0d3243060e66ba0d0a64684f9684ecc7",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.claude\\skills\\impeccable\\scripts\\detect.mjs": {
+    "mtime": 1779354929.392013,
+    "ast_hash": "db2157bcff7ab1b222d68cf96cb8643c",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.claude\\skills\\impeccable\\scripts\\impeccable-paths.mjs": {
+    "mtime": 1779354929.392013,
+    "ast_hash": "0e34c40e77c7a30eeabb1bac897f58a2",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.claude\\skills\\impeccable\\scripts\\is-generated.mjs": {
+    "mtime": 1779354929.3930209,
+    "ast_hash": "81ada1894b5f562b0993fdff1756d82c",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.claude\\skills\\impeccable\\scripts\\live-accept.mjs": {
+    "mtime": 1779354929.3935387,
+    "ast_hash": "feee297789fa52b5901e21bb354e8a4f",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.claude\\skills\\impeccable\\scripts\\live-browser-session.js": {
+    "mtime": 1779354929.394052,
+    "ast_hash": "e54c01fe1a8287f757161759beaab916",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.claude\\skills\\impeccable\\scripts\\live-browser.js": {
+    "mtime": 1779354929.3951423,
+    "ast_hash": "09d5959c4f68346ac3e032a1e16f8924",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.claude\\skills\\impeccable\\scripts\\live-complete.mjs": {
+    "mtime": 1779354929.3961492,
+    "ast_hash": "0ed6226feb3d80adf38f2098b6d7efd4",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.claude\\skills\\impeccable\\scripts\\live-completion.mjs": {
+    "mtime": 1779354929.3966556,
+    "ast_hash": "c51f1de5c7aae5aa3f2c67f5d9875d3e",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.claude\\skills\\impeccable\\scripts\\live-inject.mjs": {
+    "mtime": 1779354929.3971627,
+    "ast_hash": "01365c3718e920dbeee5eeb9159093fa",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.claude\\skills\\impeccable\\scripts\\live-poll.mjs": {
+    "mtime": 1779354929.3971627,
+    "ast_hash": "7b78710647b202a90d99852bdb7a5135",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.claude\\skills\\impeccable\\scripts\\live-resume.mjs": {
+    "mtime": 1779354929.3971627,
+    "ast_hash": "9187fc4ae434c0573b7c84c95b05f744",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.claude\\skills\\impeccable\\scripts\\live-server.mjs": {
+    "mtime": 1779354929.3981698,
+    "ast_hash": "2754268fc4579377e0d40d6a2e34679a",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.claude\\skills\\impeccable\\scripts\\live-session-store.mjs": {
+    "mtime": 1779354929.3981698,
+    "ast_hash": "b0c628113419432d164204b18587d681",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.claude\\skills\\impeccable\\scripts\\live-status.mjs": {
+    "mtime": 1779354929.3993883,
+    "ast_hash": "f7f787396f44ef06c890f97c45d0ba75",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.claude\\skills\\impeccable\\scripts\\live-wrap.mjs": {
+    "mtime": 1779354929.3999276,
+    "ast_hash": "9612f1254ce763221690053592892110",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.claude\\skills\\impeccable\\scripts\\live.mjs": {
+    "mtime": 1779354929.4004474,
+    "ast_hash": "073965c7d10925f8ad9651a336220ee8",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.claude\\skills\\impeccable\\scripts\\load-context.mjs": {
+    "mtime": 1779354929.4004474,
+    "ast_hash": "f96317a92230153a77069e4f81bd8e11",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.claude\\skills\\impeccable\\scripts\\modern-screenshot.umd.js": {
+    "mtime": 1779354929.4014547,
+    "ast_hash": "c6afaf6ebceb162206f6a2e5b0ed653c",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.claude\\skills\\impeccable\\scripts\\pin.mjs": {
+    "mtime": 1779354929.4014547,
+    "ast_hash": "59e1f8315c2083fb7997e5ff3edfcb57",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.impeccable\\design.json": {
+    "mtime": 1779355948.5428076,
+    "ast_hash": "6f7c827bbf855155cdb2b0deae12a9aa",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.impeccable\\live\\config.json": {
+    "mtime": 1779668984.7122047,
+    "ast_hash": "db3f47aa64932b4c922bce752e0e6e0c",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.impeccable\\live\\server.json": {
+    "mtime": 1779669012.4595459,
+    "ast_hash": "6b546fb464b707b82da67442c1221f1c",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.impeccable\\live\\sessions\\c5212072.snapshot.json": {
+    "mtime": 1779669266.8822038,
+    "ast_hash": "04ae84c7b0a2d9423edcfe2308fb17bc",
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.vscode\\extensions.json": {
@@ -45,7 +305,7 @@
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\main.ts": {
-    "mtime": 1777032854.684353,
+    "mtime": 1779357220.2985764,
     "ast_hash": "492e96be948eab00987f4b7616fe4b55",
     "semantic_hash": ""
   },
@@ -55,13 +315,13 @@
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\components\\dashboard\\circulo.vue": {
-    "mtime": 1777224063.5786767,
-    "ast_hash": "c59f26bcd86f41960f23457371210679",
+    "mtime": 1779683072.7393613,
+    "ast_hash": "21cd32d1370b4e4248b8cd2b5efbcb31",
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\components\\dashboard\\cumpleanos.vue": {
-    "mtime": 1777224092.5032437,
-    "ast_hash": "ab1eee61ccafb53a7bf8b3be4cb566d3",
+    "mtime": 1779668540.9838655,
+    "ast_hash": "367ded2c13aeb8fcd27d82dda995b169",
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\components\\dashboard\\eventos-vinculo.vue": {
@@ -69,14 +329,24 @@
     "ast_hash": "4d66c3f3df65e279539914aa8d303f4a",
     "semantic_hash": ""
   },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\components\\dashboard\\grafico-antiguedad.vue": {
+    "mtime": 1779683093.5351171,
+    "ast_hash": "a81681853637d1c9f4cbbfa15085be58",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\components\\dashboard\\grafico-edad.vue": {
+    "mtime": 1779683088.6164393,
+    "ast_hash": "eaa64081c12b9fb7bb43a11182235d2d",
+    "semantic_hash": ""
+  },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\components\\dashboard\\grafico-sexo.vue": {
-    "mtime": 1777224065.0946054,
-    "ast_hash": "eda078626518c2bb0f258732e81c20bd",
+    "mtime": 1779683078.101936,
+    "ast_hash": "82f3902b99d4a078871c89f77ef28f60",
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\components\\dashboard\\grafico-sindicato.vue": {
-    "mtime": 1777224067.2096446,
-    "ast_hash": "1eefab7c0b66135bce5cc98228d006e3",
+    "mtime": 1779683083.330306,
+    "ast_hash": "4f99e7fc3ea5b66d51d00178f2f2cadc",
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\components\\dashboard\\mapa.vue": {
@@ -100,18 +370,18 @@
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\components\\Header\\Header.vue": {
-    "mtime": 1777239807.5491374,
-    "ast_hash": "d61875ffc2fba2950032593803d9631a",
+    "mtime": 1779623111.008653,
+    "ast_hash": "9caee21f147b1d5f776499a4651d1cec",
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\components\\organigrama\\FilaOrganigrama.vue": {
-    "mtime": 1777224744.9516046,
-    "ast_hash": "115b7cd38463d88151a9602b57ff50f4",
+    "mtime": 1779640565.4601736,
+    "ast_hash": "cf6a54d08e17dc6be9f4a697d0c41393",
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\components\\perfil\\banco.vue": {
-    "mtime": 1777224740.2100387,
-    "ast_hash": "9540ec1e4e0b05c599b68f18dec5a53f",
+    "mtime": 1779639604.7138405,
+    "ast_hash": "ee18067566f1ac9d1f7bbf340da3966b",
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\components\\perfil\\contacto.vue": {
@@ -120,13 +390,13 @@
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\components\\perfil\\grado.vue": {
-    "mtime": 1778471393.9302092,
-    "ast_hash": "6a9bd17427bd8024774bf647c7c140c6",
+    "mtime": 1779633094.7245107,
+    "ast_hash": "095ed86d8042012d2dc0e97029b820d9",
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\components\\perfil\\header.vue": {
-    "mtime": 1777224690.9186487,
-    "ast_hash": "645b2412b3ad137a89431905e5704cbe",
+    "mtime": 1779669370.6156945,
+    "ast_hash": "cee2245a9b2051e0f32455d531a11d0c",
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\components\\perfil\\historial.vue": {
@@ -135,8 +405,8 @@
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\components\\perfil\\info.vue": {
-    "mtime": 1777226697.1467223,
-    "ast_hash": "64283dbc6362dba012d86535dff806c8",
+    "mtime": 1779637180.8172698,
+    "ast_hash": "19d04042b1488e44c82c965db3c6357e",
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\components\\perfil\\vinculo.vue": {
@@ -145,23 +415,23 @@
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\components\\perfil\\vinculos-tabla.vue": {
-    "mtime": 1777838458.1755424,
-    "ast_hash": "c27c0d9b5c845d88708f5bd83f64c27a",
+    "mtime": 1779672775.4856918,
+    "ast_hash": "5518989241b36cbbe5f5f6a5180e08fa",
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\components\\perfil\\legajo\\folder.vue": {
-    "mtime": 1777838458.174528,
-    "ast_hash": "27b35f7093d3e440fa4af41a24ccf5d3",
+    "mtime": 1779358895.8574092,
+    "ast_hash": "8b446f18ea5a15c336b31dcd0d505af1",
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\components\\perfil\\legajo\\items.vue": {
-    "mtime": 1777032854.649371,
-    "ast_hash": "f8f12dc990568e79e1a1faae4f22ba67",
+    "mtime": 1779048485.5881634,
+    "ast_hash": "c1136a780bf167876753d164a86fafd1",
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\components\\perfil\\legajo\\PreviewModal.vue": {
-    "mtime": 1777032854.6503682,
-    "ast_hash": "755db3af49c3fa94e64aaf07da4648b7",
+    "mtime": 1779669700.2709079,
+    "ast_hash": "4f876d062172d4610cada45cc898e6ad",
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\components\\perfil\\legajo\\RegistrarUrlModal.vue": {
@@ -184,6 +454,11 @@
     "ast_hash": "35da056f6b4f7575c24be79574cfc0a4",
     "semantic_hash": ""
   },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\components\\perfil\\modals\\DesafiliarModal.vue": {
+    "mtime": 1779050200.451781,
+    "ast_hash": "53aa021fc0bcfccab6c7126ee244f109",
+    "semantic_hash": ""
+  },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\components\\perfil\\modals\\EditBancoModal.vue": {
     "mtime": 1777032854.6524272,
     "ast_hash": "db8968af411c7cc4962253384f3a2e5a",
@@ -200,8 +475,8 @@
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\components\\perfil\\modals\\EditInfoModal.vue": {
-    "mtime": 1777032854.6556537,
-    "ast_hash": "ad2e14c52bd3938bfcee89ceef001d90",
+    "mtime": 1779635936.41286,
+    "ast_hash": "eb092df215dfab0c7de099aafb6f1d13",
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\components\\perfil\\modals\\EventoVinculoModal.vue": {
@@ -230,8 +505,8 @@
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\components\\Sidebar\\Sidebar.vue": {
-    "mtime": 1777224504.4058962,
-    "ast_hash": "2e961779edb9f74e5ae7a0fb1850306c",
+    "mtime": 1779623106.586089,
+    "ast_hash": "ded73bb41af542ec85d6d75bc92c8331",
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\components\\sindicato\\BuscadorPersonal.vue": {
@@ -249,19 +524,29 @@
     "ast_hash": "84d65c7be767078214658461472a2a59",
     "semantic_hash": ""
   },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\components\\ui\\Badge.vue": {
+    "mtime": 1779356167.153579,
+    "ast_hash": "d1401c9c67dcde874ca3f3affde25e1d",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\components\\ui\\Button.vue": {
+    "mtime": 1779356165.1158717,
+    "ast_hash": "2fa8fcafa41ee5f63f18860a5c7b9720",
+    "semantic_hash": ""
+  },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\components\\ui\\card.vue": {
     "mtime": 1778470862.1740355,
     "ast_hash": "e4eb42d2251897ec14a2dcfa07fbec04",
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\components\\ui\\DataTable.vue": {
-    "mtime": 1777224696.342716,
-    "ast_hash": "89d3255e4c9ad088ba135488100b88f0",
+    "mtime": 1779622757.9371922,
+    "ast_hash": "92644e764065ccc2ee58032aed44a3b5",
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\components\\ui\\Loading.vue": {
-    "mtime": 1777032854.6713095,
-    "ast_hash": "9f1f9128017e990da1f238f2188cec24",
+    "mtime": 1779675779.39743,
+    "ast_hash": "668b34dd8258b101c3f45ef26255f87b",
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\components\\ui\\Modal.vue": {
@@ -270,13 +555,18 @@
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\components\\ui\\Popover.vue": {
-    "mtime": 1777032854.67332,
-    "ast_hash": "04adf2a6cf2bc934ccfff8ef7896408e",
+    "mtime": 1779638621.5077393,
+    "ast_hash": "0b2b6d51797e0c39068a1617e640eb16",
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\components\\ui\\SearchableSelect.vue": {
     "mtime": 1777032854.6743093,
     "ast_hash": "4246d718d6c6b70f39555462af17e4a2",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\components\\ui\\Skeleton.vue": {
+    "mtime": 1779675784.7378252,
+    "ast_hash": "7138a237cf6211258f1444d332a619d6",
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\components\\vinculo\\PasoAreaCargo.vue": {
@@ -290,8 +580,8 @@
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\components\\vinculo\\PasoBuscarPlaza.vue": {
-    "mtime": 1777032854.6779332,
-    "ast_hash": "7469dee62419343b6a698084b437915b",
+    "mtime": 1779356225.7926917,
+    "ast_hash": "6464da81160ecf2337e7ef6e606f20a9",
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\components\\vinculo\\PasoDatosPersonales.vue": {
@@ -320,18 +610,18 @@
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\layouts\\MainLayout.vue": {
-    "mtime": 1777032854.6838286,
-    "ast_hash": "31a9fc40f9e2469c739835d278008d5e",
+    "mtime": 1779675787.6341133,
+    "ast_hash": "f9b36d39283947cb1b3142dacd576081",
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\router\\index.ts": {
-    "mtime": 1777841240.5739262,
-    "ast_hash": "db1febdbf197603dfce471ec482f3f90",
+    "mtime": 1779052770.8905044,
+    "ast_hash": "8583d00041e2c0463c90289a1bab1b52",
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\services\\api.ts": {
-    "mtime": 1779034593.2653775,
-    "ast_hash": "845edbece83ef56932f3d218e7de46ac",
+    "mtime": 1779680198.8948567,
+    "ast_hash": "65fc46a1d8d02451f91134a1817511bc",
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\stores\\auth.ts": {
@@ -345,8 +635,8 @@
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\stores\\dashboard.ts": {
-    "mtime": 1777838458.179095,
-    "ast_hash": "f03c550f7bf3c6d596128d8dc3e7c843",
+    "mtime": 1779680626.8698332,
+    "ast_hash": "1afb2fab72b02b3be02afbdc29833050",
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\stores\\layout.ts": {
@@ -355,8 +645,8 @@
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\stores\\personal.ts": {
-    "mtime": 1777838458.1812413,
-    "ast_hash": "3d1fca95827d29f06c56ab6e9fb37969",
+    "mtime": 1779050238.7680554,
+    "ast_hash": "d919b571a6e82a6621805e9413b6f07e",
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\stores\\reportes.ts": {
@@ -384,9 +674,14 @@
     "ast_hash": "d12e1da3558e4b9b252fd95da065979f",
     "semantic_hash": ""
   },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\views\\CalidadDatosView.vue": {
+    "mtime": 1779675803.4839294,
+    "ast_hash": "03af5db6ddbed8903611d0a2e41576ff",
+    "semantic_hash": ""
+  },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\views\\CargaMasivaView.vue": {
-    "mtime": 1777224656.1571128,
-    "ast_hash": "e0d71059d366e22d5bcae67f3f03e938",
+    "mtime": 1779356321.4696116,
+    "ast_hash": "7ee733de45b2a201bf273e6ba0967f02",
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\views\\ChangePassword.vue": {
@@ -400,8 +695,8 @@
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\views\\DashboardView.vue": {
-    "mtime": 1777224055.216182,
-    "ast_hash": "e5de513d18f0e9e3cf95bc39fb119a50",
+    "mtime": 1779683171.4575455,
+    "ast_hash": "0846e373522cdf63baf6f38242d22e1f",
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\views\\LoginView.vue": {
@@ -415,8 +710,8 @@
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\views\\OrganigramaView.vue": {
-    "mtime": 1777224645.9680147,
-    "ast_hash": "9979c3b4b0c3f021c8cc3879c2ee583e",
+    "mtime": 1779640515.9620907,
+    "ast_hash": "997e7ff86400f2047e8a7f8d8d775d40",
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\views\\SindicatoView.vue": {
@@ -425,18 +720,18 @@
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\views\\UsuariosView.vue": {
-    "mtime": 1777224638.3757408,
-    "ast_hash": "5014afb038710aa3e3dff13b58db74d6",
+    "mtime": 1779675821.5162969,
+    "ast_hash": "8fb949308dd23b8aa9917b9f725e9a74",
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\views\\Personal\\PersonalProfile.vue": {
-    "mtime": 1777226563.0199902,
-    "ast_hash": "ca86cff227ac0133a4f2f300b9e810c2",
+    "mtime": 1779638217.0451462,
+    "ast_hash": "1b7308c88799f90552868707de1e6895",
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\views\\Personal\\PersonalSearch.vue": {
-    "mtime": 1777224620.480806,
-    "ast_hash": "b8e8f6c6233bf5e9d7efda27b28ea033",
+    "mtime": 1779622752.365437,
+    "ast_hash": "91154c029e9117a6ee1a2686704973b3",
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\views\\reporte\\AreaView.vue": {
@@ -450,8 +745,8 @@
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\views\\reporte\\SindicatoPersonalView.vue": {
-    "mtime": 1777224652.4449086,
-    "ast_hash": "3893953626d995654f1ac56f0e932a7c",
+    "mtime": 1779356259.4626613,
+    "ast_hash": "bd1f5a2c80782fd0db6ccd0eefb2dbe4",
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\API.md": {
@@ -459,14 +754,29 @@
     "ast_hash": "cc2fd88f932697b0682656c3791a7b73",
     "semantic_hash": ""
   },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\DESIGN.md": {
+    "mtime": 1779622141.1752164,
+    "ast_hash": "04b62ab2bb6dfd74cd8892cba166551e",
+    "semantic_hash": ""
+  },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\index.html": {
-    "mtime": 1774809484.3766308,
-    "ast_hash": "02d87f125e40aef8c59763be654f87a9",
+    "mtime": 1779668989.8821955,
+    "ast_hash": "6789fda8b95fe14532422c0b45385202",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\PRODUCT.md": {
+    "mtime": 1779355555.7283597,
+    "ast_hash": "48789f393734ca76f5ce11eb3dc3cf16",
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\README.md": {
     "mtime": 1774809484.375579,
     "ast_hash": "fd996d82c526808fef662fb9e41e3e81",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.agents\\rules\\graphify.md": {
+    "mtime": 1779668854.4655762,
+    "ast_hash": "a0e4d192b9e2e17256124dbfc8e24e6a",
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.agents\\skills\\frontend-design\\LICENSE.txt": {
@@ -479,6 +789,201 @@
     "ast_hash": "400c8b8231420f30b48aed0a6f37df9f",
     "semantic_hash": ""
   },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.agents\\skills\\impeccable\\SKILL.md": {
+    "mtime": 1779354929.3709686,
+    "ast_hash": "259cfd39515b1b390c02c811de7491f9",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.agents\\skills\\impeccable\\agents\\impeccable-asset-producer.md": {
+    "mtime": 1779354929.3719797,
+    "ast_hash": "892906b3db9443e58267e77d4038a0fb",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.agents\\skills\\impeccable\\reference\\adapt.md": {
+    "mtime": 1779354929.3719797,
+    "ast_hash": "27c29f5a41c6104b89a5ac22d6476853",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.agents\\skills\\impeccable\\reference\\animate.md": {
+    "mtime": 1779354929.3729873,
+    "ast_hash": "b62d806becc589f6e322568dbf1643ec",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.agents\\skills\\impeccable\\reference\\audit.md": {
+    "mtime": 1779354929.3729873,
+    "ast_hash": "bfa673574701e2910ca2b3473aa1c6ad",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.agents\\skills\\impeccable\\reference\\bolder.md": {
+    "mtime": 1779354929.3729873,
+    "ast_hash": "633d0f931184a8aac040a37ba0c2c0f6",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.agents\\skills\\impeccable\\reference\\brand.md": {
+    "mtime": 1779354929.3741164,
+    "ast_hash": "74e97fbbaad8eba976b3fd29943f4424",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.agents\\skills\\impeccable\\reference\\clarify.md": {
+    "mtime": 1779354929.3751254,
+    "ast_hash": "9dc6a767d5bbd31e9117d36d06e1261e",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.agents\\skills\\impeccable\\reference\\codex.md": {
+    "mtime": 1779354929.3751254,
+    "ast_hash": "c044e7cf44c58dea75e9c6a3413e8d70",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.agents\\skills\\impeccable\\reference\\cognitive-load.md": {
+    "mtime": 1779354929.3761587,
+    "ast_hash": "464d1b1b3566c74909fadcd2c13bc544",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.agents\\skills\\impeccable\\reference\\color-and-contrast.md": {
+    "mtime": 1779354929.3761587,
+    "ast_hash": "c51e5bca12b63f220ad15454852a8594",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.agents\\skills\\impeccable\\reference\\colorize.md": {
+    "mtime": 1779354929.3771653,
+    "ast_hash": "c9702b3f0c17fa6846747d369ad82699",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.agents\\skills\\impeccable\\reference\\craft.md": {
+    "mtime": 1779354929.3776722,
+    "ast_hash": "59729d8216df64493363d604df736563",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.agents\\skills\\impeccable\\reference\\critique.md": {
+    "mtime": 1779354929.3776722,
+    "ast_hash": "ccf66bd0f3b8fd0d11592290d078418e",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.agents\\skills\\impeccable\\reference\\delight.md": {
+    "mtime": 1779354929.3781886,
+    "ast_hash": "c302379f6c88c20d4886636aaf5e6dde",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.agents\\skills\\impeccable\\reference\\distill.md": {
+    "mtime": 1779354929.3781886,
+    "ast_hash": "15b690d4b8f6bf9c8a0d5208f1f6f1fb",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.agents\\skills\\impeccable\\reference\\document.md": {
+    "mtime": 1779354929.3791952,
+    "ast_hash": "8faba1b504418148860d159448194fc9",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.agents\\skills\\impeccable\\reference\\extract.md": {
+    "mtime": 1779354929.3791952,
+    "ast_hash": "bcbed7005945d9de131f69985cbc5e6f",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.agents\\skills\\impeccable\\reference\\harden.md": {
+    "mtime": 1779354929.380303,
+    "ast_hash": "b8c6ce7f60733c8dab39b12c7957750b",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.agents\\skills\\impeccable\\reference\\heuristics-scoring.md": {
+    "mtime": 1779354929.380303,
+    "ast_hash": "f1606921268571e14591682483b595ef",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.agents\\skills\\impeccable\\reference\\interaction-design.md": {
+    "mtime": 1779354929.3813162,
+    "ast_hash": "ea39b98601f17b5a87f7de799b953000",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.agents\\skills\\impeccable\\reference\\layout.md": {
+    "mtime": 1779354929.3813162,
+    "ast_hash": "400e8cbbc0688d27d288f80c5b52314a",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.agents\\skills\\impeccable\\reference\\live.md": {
+    "mtime": 1779354929.3813162,
+    "ast_hash": "443d531ec715bb64e48b660671e3ad78",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.agents\\skills\\impeccable\\reference\\motion-design.md": {
+    "mtime": 1779354929.3824477,
+    "ast_hash": "95de769ab6e30a4214a969ebb25ebe89",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.agents\\skills\\impeccable\\reference\\onboard.md": {
+    "mtime": 1779354929.3824477,
+    "ast_hash": "8def483b066f2c7fb906c313e3653c10",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.agents\\skills\\impeccable\\reference\\optimize.md": {
+    "mtime": 1779354929.383456,
+    "ast_hash": "613f211310d45abd984d0bd610abc1fb",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.agents\\skills\\impeccable\\reference\\overdrive.md": {
+    "mtime": 1779354929.383456,
+    "ast_hash": "891190b0148e5156aa007ca5917a0bb4",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.agents\\skills\\impeccable\\reference\\personas.md": {
+    "mtime": 1779354929.383456,
+    "ast_hash": "3022b396ec3f0977be627875594bfa81",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.agents\\skills\\impeccable\\reference\\polish.md": {
+    "mtime": 1779354929.3846204,
+    "ast_hash": "5ba31783c05352cbda780abd9e12d969",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.agents\\skills\\impeccable\\reference\\product.md": {
+    "mtime": 1779354929.3846204,
+    "ast_hash": "c073e67bbcec51f31af4ba132730aca9",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.agents\\skills\\impeccable\\reference\\quieter.md": {
+    "mtime": 1779354929.3856254,
+    "ast_hash": "9b34ed291f042b1dad31f66f487c4137",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.agents\\skills\\impeccable\\reference\\responsive-design.md": {
+    "mtime": 1779354929.3856254,
+    "ast_hash": "3a0e2834961edfe9d44cef19ffc84737",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.agents\\skills\\impeccable\\reference\\shape.md": {
+    "mtime": 1779354929.386639,
+    "ast_hash": "aab83193a1a58010b1de9f67074b5915",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.agents\\skills\\impeccable\\reference\\spatial-design.md": {
+    "mtime": 1779354929.386639,
+    "ast_hash": "28fd3d7f36c9ad72fdc5c3a90c7f5505",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.agents\\skills\\impeccable\\reference\\teach.md": {
+    "mtime": 1779354929.3876472,
+    "ast_hash": "ab273dd5cd15e248ebdf7f52671e3f81",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.agents\\skills\\impeccable\\reference\\typeset.md": {
+    "mtime": 1779354929.3876472,
+    "ast_hash": "3b4d239361890c9db44b5484d002f2d2",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.agents\\skills\\impeccable\\reference\\typography.md": {
+    "mtime": 1779354929.3876472,
+    "ast_hash": "841fa5dc3d8cf998ecb63b211b766c7c",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.agents\\skills\\impeccable\\reference\\ux-writing.md": {
+    "mtime": 1779354929.3887165,
+    "ast_hash": "74e4aac960c114a7b8761210f80a8cc5",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.agents\\workflows\\graphify.md": {
+    "mtime": 1779668854.4655762,
+    "ast_hash": "84de69efd46ab0b8430393bd4188f8f2",
+    "semantic_hash": ""
+  },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.claude\\skills\\frontend-design\\LICENSE.txt": {
     "mtime": 1777831251.0327208,
     "ast_hash": "29256199be2a609aac596980ffc11996",
@@ -487,6 +992,201 @@
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.claude\\skills\\frontend-design\\SKILL.md": {
     "mtime": 1777831251.0327208,
     "ast_hash": "400c8b8231420f30b48aed0a6f37df9f",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.claude\\skills\\impeccable\\SKILL.md": {
+    "mtime": 1779354929.3709686,
+    "ast_hash": "259cfd39515b1b390c02c811de7491f9",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.claude\\skills\\impeccable\\agents\\impeccable-asset-producer.md": {
+    "mtime": 1779354929.3719797,
+    "ast_hash": "892906b3db9443e58267e77d4038a0fb",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.claude\\skills\\impeccable\\reference\\adapt.md": {
+    "mtime": 1779354929.3719797,
+    "ast_hash": "27c29f5a41c6104b89a5ac22d6476853",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.claude\\skills\\impeccable\\reference\\animate.md": {
+    "mtime": 1779354929.3729873,
+    "ast_hash": "b62d806becc589f6e322568dbf1643ec",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.claude\\skills\\impeccable\\reference\\audit.md": {
+    "mtime": 1779354929.3729873,
+    "ast_hash": "bfa673574701e2910ca2b3473aa1c6ad",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.claude\\skills\\impeccable\\reference\\bolder.md": {
+    "mtime": 1779354929.3729873,
+    "ast_hash": "633d0f931184a8aac040a37ba0c2c0f6",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.claude\\skills\\impeccable\\reference\\brand.md": {
+    "mtime": 1779354929.3741164,
+    "ast_hash": "74e97fbbaad8eba976b3fd29943f4424",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.claude\\skills\\impeccable\\reference\\clarify.md": {
+    "mtime": 1779354929.3751254,
+    "ast_hash": "9dc6a767d5bbd31e9117d36d06e1261e",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.claude\\skills\\impeccable\\reference\\codex.md": {
+    "mtime": 1779354929.3751254,
+    "ast_hash": "c044e7cf44c58dea75e9c6a3413e8d70",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.claude\\skills\\impeccable\\reference\\cognitive-load.md": {
+    "mtime": 1779354929.3761587,
+    "ast_hash": "464d1b1b3566c74909fadcd2c13bc544",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.claude\\skills\\impeccable\\reference\\color-and-contrast.md": {
+    "mtime": 1779354929.3761587,
+    "ast_hash": "c51e5bca12b63f220ad15454852a8594",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.claude\\skills\\impeccable\\reference\\colorize.md": {
+    "mtime": 1779354929.3771653,
+    "ast_hash": "c9702b3f0c17fa6846747d369ad82699",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.claude\\skills\\impeccable\\reference\\craft.md": {
+    "mtime": 1779354929.3776722,
+    "ast_hash": "59729d8216df64493363d604df736563",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.claude\\skills\\impeccable\\reference\\critique.md": {
+    "mtime": 1779354929.3776722,
+    "ast_hash": "ccf66bd0f3b8fd0d11592290d078418e",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.claude\\skills\\impeccable\\reference\\delight.md": {
+    "mtime": 1779354929.3781886,
+    "ast_hash": "c302379f6c88c20d4886636aaf5e6dde",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.claude\\skills\\impeccable\\reference\\distill.md": {
+    "mtime": 1779354929.3781886,
+    "ast_hash": "15b690d4b8f6bf9c8a0d5208f1f6f1fb",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.claude\\skills\\impeccable\\reference\\document.md": {
+    "mtime": 1779354929.3791952,
+    "ast_hash": "8faba1b504418148860d159448194fc9",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.claude\\skills\\impeccable\\reference\\extract.md": {
+    "mtime": 1779354929.3791952,
+    "ast_hash": "bcbed7005945d9de131f69985cbc5e6f",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.claude\\skills\\impeccable\\reference\\harden.md": {
+    "mtime": 1779354929.380303,
+    "ast_hash": "b8c6ce7f60733c8dab39b12c7957750b",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.claude\\skills\\impeccable\\reference\\heuristics-scoring.md": {
+    "mtime": 1779354929.380303,
+    "ast_hash": "f1606921268571e14591682483b595ef",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.claude\\skills\\impeccable\\reference\\interaction-design.md": {
+    "mtime": 1779354929.3813162,
+    "ast_hash": "ea39b98601f17b5a87f7de799b953000",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.claude\\skills\\impeccable\\reference\\layout.md": {
+    "mtime": 1779354929.3813162,
+    "ast_hash": "400e8cbbc0688d27d288f80c5b52314a",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.claude\\skills\\impeccable\\reference\\live.md": {
+    "mtime": 1779354929.3813162,
+    "ast_hash": "443d531ec715bb64e48b660671e3ad78",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.claude\\skills\\impeccable\\reference\\motion-design.md": {
+    "mtime": 1779354929.3824477,
+    "ast_hash": "95de769ab6e30a4214a969ebb25ebe89",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.claude\\skills\\impeccable\\reference\\onboard.md": {
+    "mtime": 1779354929.3824477,
+    "ast_hash": "8def483b066f2c7fb906c313e3653c10",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.claude\\skills\\impeccable\\reference\\optimize.md": {
+    "mtime": 1779354929.383456,
+    "ast_hash": "613f211310d45abd984d0bd610abc1fb",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.claude\\skills\\impeccable\\reference\\overdrive.md": {
+    "mtime": 1779354929.383456,
+    "ast_hash": "891190b0148e5156aa007ca5917a0bb4",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.claude\\skills\\impeccable\\reference\\personas.md": {
+    "mtime": 1779354929.383456,
+    "ast_hash": "3022b396ec3f0977be627875594bfa81",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.claude\\skills\\impeccable\\reference\\polish.md": {
+    "mtime": 1779354929.3846204,
+    "ast_hash": "5ba31783c05352cbda780abd9e12d969",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.claude\\skills\\impeccable\\reference\\product.md": {
+    "mtime": 1779354929.3846204,
+    "ast_hash": "c073e67bbcec51f31af4ba132730aca9",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.claude\\skills\\impeccable\\reference\\quieter.md": {
+    "mtime": 1779354929.3856254,
+    "ast_hash": "9b34ed291f042b1dad31f66f487c4137",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.claude\\skills\\impeccable\\reference\\responsive-design.md": {
+    "mtime": 1779354929.3856254,
+    "ast_hash": "3a0e2834961edfe9d44cef19ffc84737",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.claude\\skills\\impeccable\\reference\\shape.md": {
+    "mtime": 1779354929.386639,
+    "ast_hash": "aab83193a1a58010b1de9f67074b5915",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.claude\\skills\\impeccable\\reference\\spatial-design.md": {
+    "mtime": 1779354929.386639,
+    "ast_hash": "28fd3d7f36c9ad72fdc5c3a90c7f5505",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.claude\\skills\\impeccable\\reference\\teach.md": {
+    "mtime": 1779354929.3876472,
+    "ast_hash": "ab273dd5cd15e248ebdf7f52671e3f81",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.claude\\skills\\impeccable\\reference\\typeset.md": {
+    "mtime": 1779354929.3876472,
+    "ast_hash": "3b4d239361890c9db44b5484d002f2d2",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.claude\\skills\\impeccable\\reference\\typography.md": {
+    "mtime": 1779354929.3876472,
+    "ast_hash": "841fa5dc3d8cf998ecb63b211b766c7c",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.claude\\skills\\impeccable\\reference\\ux-writing.md": {
+    "mtime": 1779354929.3887165,
+    "ast_hash": "74e4aac960c114a7b8761210f80a8cc5",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.superpowers\\brainstorm\\655-1779035550\\content\\direcciones-diseno.html": {
+    "mtime": 1779035664.0979567,
+    "ast_hash": "b12272bf9f31d99c63d2bd66b5874e32",
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\docs\\superpowers\\plans\\2026-04-26-tipografia-responsive.md": {

@@ -315,7 +315,7 @@
     urlPrevia.value = null 
     
     if (doc.file_hash) {
-       urlPrevia.value = `${apiUrlBase}/fileserver/${doc.file_hash}#view=FitH`
+       urlPrevia.value = `${apiUrlBase}/fileserver/${doc.file_hash}`
     } else {
        console.error("El documento no tiene un hash válido para visualizar");
        cerrarVistaPrevia();

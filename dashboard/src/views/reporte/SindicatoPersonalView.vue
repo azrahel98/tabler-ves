@@ -4,11 +4,11 @@
       
       <div class="mb-6 flex flex-wrap items-center justify-between gap-4">
         <div class="flex items-center gap-3">
-          <button
-            @click="$router.back()"
-            class="inline-flex items-center justify-center rounded-lg border border-gray-200 bg-white p-2 text-gray-500 shadow-sm hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 transition-colors">
-            <ArrowLeft class="h-4 w-4" />
-          </button>
+          <Button variant="outline" @click="$router.back()" custom-class="!p-2">
+            <template #icon-left>
+              <ArrowLeft class="h-4 w-4" />
+            </template>
+          </Button>
           <div>
             <h1 class="text-title-lg font-bold leading-tight text-gray-900 dark:text-white">
               {{ nombreDelSindicato }}
@@ -18,19 +18,17 @@
         </div>
 
         <div class="flex items-center gap-3">
-          <div v-if="!cargando" class="flex items-center gap-2 rounded-full bg-brand-50 px-3 py-1.5 dark:bg-brand-500/10">
-            <Users class="h-4 w-4 text-brand-600 dark:text-brand-400" />
-            <span class="text-sm font-semibold text-brand-700 dark:text-brand-400">
-              {{ listaCompleta.length }}
-              {{ listaCompleta.length === 1 ? 'afiliado' : 'afiliados' }}
-            </span>
-          </div>
-          <button
-            @click="recargar"
-            :disabled="cargando"
-            class="inline-flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-600 shadow-sm hover:bg-gray-50 disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 transition-colors">
-            <RefreshCw class="h-4 w-4" :class="cargando ? 'animate-spin' : ''" />
-          </button>
+          <Badge v-if="!cargando" variant="brand">
+            <template #icon>
+              <Users class="h-3 w-3" />
+            </template>
+            {{ listaCompleta.length }} {{ listaCompleta.length === 1 ? 'afiliado' : 'afiliados' }}
+          </Badge>
+          <Button variant="outline" @click="recargar" :disabled="cargando" custom-class="!px-3 !py-2">
+            <template #icon-left>
+              <RefreshCw class="h-4 w-4" :class="cargando ? 'animate-spin' : ''" />
+            </template>
+          </Button>
         </div>
       </div>
 
@@ -78,18 +76,16 @@
 
           
           <template #celda-estado="{ valor }">
-            <span
-              class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium"
-              :class="valor === 'activo' ? 'bg-green-50 text-green-700 dark:bg-green-500/10 dark:text-green-400' : 'bg-red-50 text-red-700 dark:bg-red-500/10 dark:text-red-400'">
+            <Badge :variant="valor === 'activo' ? 'success' : 'error'">
               {{ valor === 'activo' ? 'Activo' : 'Inactivo' }}
-            </span>
+            </Badge>
           </template>
 
           
           <template #celda-regimen="{ valor }">
-            <span v-if="valor" class="inline-flex items-center rounded-full bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-700 dark:bg-blue-500/10 dark:text-blue-400">
+            <Badge v-if="valor" variant="info">
               {{ valor }}
-            </span>
+            </Badge>
             <span v-else class="text-gray-300 dark:text-gray-600">—</span>
           </template>
         </DataTable>
@@ -107,6 +103,8 @@
   import GraficoRegimen from '../../components/reportes/GraficoRegimen.vue'
   import DataTable from '../../components/ui/DataTable.vue'
   import Loading from '../../components/ui/Loading.vue'
+  import Button from '../../components/ui/Button.vue'
+  import Badge from '../../components/ui/Badge.vue'
 
   const route = useRoute()
   const router = useRouter()

@@ -85,21 +85,29 @@
     </form>
 
     <template #footer>
-      <button
-        type="button"
-        @click="guardar"
-        class="inline-flex w-full justify-center items-center gap-2 rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-brand-700 transition sm:ml-3 sm:w-auto"
-        :disabled="isSubmitting">
-        <Loader2 v-if="isSubmitting" class="h-4 w-4 animate-spin" />
-        Guardar Cambios
-      </button>
-      <button
-        type="button"
-        @click="close"
-        class="mt-3 inline-flex w-full justify-center rounded-lg bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 transition dark:bg-gray-800 dark:text-gray-300 dark:ring-gray-700 dark:hover:bg-gray-700 sm:mt-0 sm:w-auto"
-        :disabled="isSubmitting">
-        Cancelar
-      </button>
+      <div class="w-full">
+        <div v-if="errorMsg" class="mb-4 flex items-center gap-2 rounded-xl bg-red-50 p-3.5 text-xs font-medium text-red-600 dark:bg-red-950/20 dark:text-red-400 border border-red-100 dark:border-red-900/30 animate-fade-in">
+          <AlertCircle class="h-4 w-4 shrink-0" />
+          <span>{{ errorMsg }}</span>
+        </div>
+        <div class="flex flex-wrap items-center justify-end gap-2">
+          <button
+            type="button"
+            @click="guardar"
+            class="inline-flex w-full justify-center items-center gap-2 rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-brand-700 transition sm:w-auto"
+            :disabled="isSubmitting">
+            <Loader2 v-if="isSubmitting" class="h-4 w-4 animate-spin" />
+            Guardar Cambios
+          </button>
+          <button
+            type="button"
+            @click="close"
+            class="inline-flex w-full justify-center rounded-lg bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 transition dark:bg-gray-800 dark:text-gray-300 dark:ring-gray-700 dark:hover:bg-gray-700 sm:w-auto"
+            :disabled="isSubmitting">
+            Cancelar
+          </button>
+        </div>
+      </div>
     </template>
   </Modal>
 </template>
@@ -110,7 +118,7 @@
   import Modal from '../../ui/Modal.vue'
   import SearchableSelect from '../../ui/SearchableSelect.vue'
   import { usePersonalStore } from '../../../stores/personal'
-  import { Loader2 } from 'lucide-vue-next'
+  import { Loader2, AlertCircle } from 'lucide-vue-next'
   import type { Persona } from '../../../types'
 
   const DISTRITOS = [
@@ -135,6 +143,7 @@
 
   const emit = defineEmits<{
     (e: 'close'): void
+    (e: 'save', payload: any): void
   }>()
 
   const infoSchema = z.object({
@@ -145,6 +154,7 @@
   })
 
   const isSubmitting = ref(false)
+  const errorMsg = ref('')
 
   const form = ref({
     dni: '',
@@ -163,6 +173,7 @@
 
   function limpiarErrores() {
     Object.keys(errores).forEach((k) => delete errores[k])
+    errorMsg.value = ''
   }
 
   watch(
@@ -211,9 +222,19 @@
         Object.entries(form.value).map(([k, v]) => [k, v === '' ? null : v])
       )
       await personalStore.actualizarPerfil(payload)
+      
+      // Emitimos el cierre de forma segura
       emit('close')
-    } catch (error) {
+      
+      // Emitimos save envuelto en try-catch para proteger el flujo en caso de errores en el padre
+      try {
+        emit('save', payload)
+      } catch (parentError) {
+        console.error('Error al ejecutar onSaved en el componente padre:', parentError)
+      }
+    } catch (error: any) {
       console.error('Error al guardar', error)
+      errorMsg.value = error?.response?.data?.message || error?.message || 'Error al guardar los cambios en el servidor.'
     } finally {
       isSubmitting.value = false
     }

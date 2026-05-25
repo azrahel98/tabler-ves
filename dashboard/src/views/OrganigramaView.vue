@@ -4,7 +4,7 @@
       <div class="mb-6 flex items-center justify-between">
         <div>
           <h1 class="text-title-lg font-bold leading-tight text-gray-900 dark:text-white tracking-tight">Organigrama</h1>
-          <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Estructura jerárquica de la organización</p>
+          <p class="mt-1 text-xs text-gray-500 dark:text-gray-400 font-medium">Estructura jerárquica de la organización</p>
         </div>
         <div class="flex items-center gap-2">
           <button
@@ -53,11 +53,11 @@
           <table class="w-full text-sm">
             <thead>
               <tr class="border-b border-gray-100 dark:border-white/6 bg-surface dark:bg-white/3">
-                <th class="px-3 py-3.5 text-left text-2xs font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500 w-10"></th>
-                <th class="px-4 py-3.5 text-left text-2xs font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500">Área / Gerencia</th>
-                <th class="px-4 py-3.5 text-left text-2xs font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500">Jefe Responsable</th>
-                <th class="px-4 py-3.5 text-left text-2xs font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500">DNI</th>
-                <th class="px-4 py-3.5 text-center text-2xs font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500">Sub-áreas</th>
+                <th class="px-3 py-3.5 text-left text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500 w-10"></th>
+                <th class="px-4 py-3.5 text-left text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500">Área / Gerencia</th>
+                <th class="px-4 py-3.5 text-left text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500">Jefe Responsable</th>
+                <th class="px-4 py-3.5 text-left text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500">DNI</th>
+                <th class="px-4 py-3.5 text-center text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500">Sub-áreas</th>
               </tr>
             </thead>
             <tbody>

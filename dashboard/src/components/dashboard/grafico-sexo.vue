@@ -1,6 +1,6 @@
 <template>
-  <div class="rounded-2xl border border-gray-200 bg-card p-5 dark:border-gray-800 dark:bg-white/[0.03] md:p-6 h-full flex flex-col">
-    <div class="mb-4 justify-between gap-4 sm:flex shrink-0">
+  <div :class="sinContenedor ? 'h-full flex flex-col' : 'rounded-2xl border border-gray-200 bg-card p-4 md:p-5 flex flex-col h-full'">
+    <div class="mb-3 justify-between gap-4 sm:flex shrink-0">
       <div>
         <h3 class="text-title-md font-semibold leading-snug text-gray-800 dark:text-white/90">Distribución por Sexo</h3>
       </div>
@@ -8,27 +8,23 @@
 
     <div class="mb-2 shrink-0">
       <div id="chartSexo" class="mx-auto flex justify-center">
-        <div class="relative flex justify-center w-full h-44">
+        <div class="relative flex justify-center w-full h-36">
           <Doughnut :data="chartData" :options="chartOptions" />
         </div>
       </div>
     </div>
 
     
-    <div class="mt-auto flex flex-col gap-3 pt-4">
-      <div v-for="(sexo, index) in store.resumen?.por_sexo" :key="index" class="flex items-center justify-between">
-        <div class="flex items-center gap-2">
-          <span class="block h-3 w-3 rounded-full" :style="{ backgroundColor: colorPara(sexo.nombre) }"></span>
-          <span class="text-sm font-medium text-gray-700 dark:text-gray-300">
-            {{ formatSexo(sexo.nombre) }}
-          </span>
-        </div>
-        <div class="flex items-center gap-4">
-          <span class="text-sm font-semibold text-gray-800 dark:text-white/90">
-            {{ sexo.cantidad }}
-          </span>
-          <span class="text-sm text-gray-500 dark:text-gray-400 w-12 text-right"> {{ calcularPorcentaje(sexo.cantidad) }}% </span>
-        </div>
+    <div class="mt-auto flex flex-wrap gap-x-6 gap-y-2 justify-center pt-2 border-t border-gray-100 dark:border-gray-800/50">
+      <div v-for="(sexo, index) in store.resumen?.por_sexo" :key="index" class="flex items-center gap-1.5">
+        <span class="block h-2.5 w-2.5 rounded-full shrink-0" :style="{ backgroundColor: colorPara(sexo.nombre) }"></span>
+        <span class="text-xs font-semibold text-gray-700 dark:text-gray-300">
+          {{ formatSexo(sexo.nombre) }}
+        </span>
+        <span class="text-xs font-bold text-gray-800 dark:text-white/90 ml-0.5">
+          {{ sexo.cantidad }}
+        </span>
+        <span class="text-2xs text-gray-500 dark:text-gray-400"> ({{ calcularPorcentaje(sexo.cantidad) }}%) </span>
       </div>
     </div>
   </div>
@@ -39,6 +35,10 @@
   import { useTableroStore } from '../../stores/dashboard'
   import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js'
   import { Doughnut } from 'vue-chartjs'
+
+  defineProps<{
+    sinContenedor?: boolean
+  }>()
 
   ChartJS.register(ArcElement, Tooltip, Legend)
 

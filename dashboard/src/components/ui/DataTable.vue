@@ -3,8 +3,8 @@
     
     <div class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-100 dark:border-white/6 px-5 py-4">
       <div>
-        <h3 v-if="titulo" class="text-base font-semibold text-gray-800 dark:text-white/90">{{ titulo }}</h3>
-        <p v-if="subtitulo" class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{{ subtitulo }}</p>
+        <h3 v-if="titulo" class="text-title-sm text-gray-800 dark:text-white/90">{{ titulo }}</h3>
+        <p v-if="subtitulo" class="text-body-small mt-0.5">{{ subtitulo }}</p>
       </div>
       <div class="flex items-center gap-2">
         
@@ -14,12 +14,12 @@
             v-model="busqueda"
             type="text"
             :placeholder="placeholderBusqueda"
-            class="w-56 rounded-lg border border-gray-100 bg-surface py-2 pl-8 pr-3 text-sm text-gray-800 placeholder:text-gray-400 focus:border-primary/40 focus:outline-none focus:ring-2 focus:ring-primary/10 dark:border-white/6 dark:bg-white/5 dark:text-white dark:placeholder:text-gray-500" />
+            class="w-56 rounded-lg border border-gray-100 bg-surface py-2 pl-8 pr-3 text-body-normal text-gray-800 placeholder:text-gray-400 focus:border-primary/40 focus:outline-none focus:ring-2 focus:ring-primary/10 dark:border-white/6 dark:bg-white/5 dark:text-white dark:placeholder:text-gray-500" />
         </div>
         
         <select
           v-model="filasPorPagina"
-          class="rounded-lg border border-gray-100 bg-surface py-2 px-2 text-sm text-gray-700 focus:outline-none dark:border-white/6 dark:bg-white/5 dark:text-gray-300">
+          class="rounded-lg border border-gray-100 bg-surface py-2 px-2 text-body-normal text-gray-700 focus:outline-none dark:border-white/6 dark:bg-white/5 dark:text-gray-300">
           <option v-for="n in [10, 25, 50]" :key="n" :value="n">{{ n }}</option>
         </select>
       </div>
@@ -27,7 +27,7 @@
 
     
     <div class="overflow-x-auto">
-      <table class="w-full text-sm">
+      <table class="w-full text-body-normal">
         
         <thead>
           <tr class="border-b border-gray-100 dark:border-white/6 bg-surface dark:bg-white/3">
@@ -35,7 +35,7 @@
               v-for="col in columnas"
               :key="col.clave"
               @click="ordenarPor(col.clave)"
-              class="px-4 py-3 text-left text-2xs font-bold uppercase tracking-wider text-gray-400 select-none"
+              class="px-4 py-3 text-left text-body-tiny font-bold text-gray-400 select-none"
               :class="[col.ancho ?? '', col.ordenable !== false ? 'cursor-pointer hover:text-gray-600 dark:hover:text-gray-300' : '']">
               <div class="flex items-center gap-1">
                 {{ col.titulo }}
@@ -55,7 +55,7 @@
             v-for="(fila, idx) in filasPagina"
             :key="idx"
             @click="$emit('click-fila', fila)"
-            class="border-b border-gray-100 text-xs dark:border-white/5 last:border-none transition-colors"
+            class="border-b border-gray-100 text-body-small dark:border-white/5 last:border-none transition-colors"
             :class="clickable ? 'cursor-pointer hover:bg-primary/5 dark:hover:bg-white/5' : ''">
             <td v-for="col in columnas" :key="col.clave" class="px-4 py-3 text-gray-700 dark:text-gray-300">
               
@@ -84,7 +84,7 @@
 
     
     <div v-if="totalFilasFiltradas > 0" class="flex flex-wrap items-center justify-between gap-3 border-t border-gray-100 dark:border-white/6 px-5 py-3">
-      <p class="text-xs text-gray-400 dark:text-gray-500">
+      <p class="text-body-small">
         Mostrando
         <span class="font-semibold text-gray-600 dark:text-gray-400">{{ inicioPagina }}–{{ finPagina }}</span>
         de

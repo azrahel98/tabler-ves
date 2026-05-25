@@ -120,20 +120,15 @@
             </div>
 
             <div class="flex items-center justify-end gap-3 pt-2">
-              <button
-                type="button"
-                @click="limpiarTodo"
-                class="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 transition hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/3">
+              <Button type="button" variant="outline" @click="limpiarTodo">
                 Limpiar
-              </button>
-              <button
-                type="submit"
-                :disabled="enviando || !puedeEnviar"
-                class="inline-flex items-center gap-2 rounded-lg bg-brand-500 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-brand-600 disabled:opacity-50 disabled:cursor-not-allowed">
-                <Loading v-if="enviando" size="xs" />
-                <FileUp v-else class="h-4 w-4" />
+              </Button>
+              <Button type="submit" variant="primary" :disabled="!puedeEnviar" :loading="enviando">
+                <template #icon-left v-if="!enviando">
+                  <FileUp class="h-4 w-4" />
+                </template>
                 Procesar Carga Masiva
-              </button>
+              </Button>
             </div>
           </form>
         </div>
@@ -152,12 +147,9 @@
                 placeholder="Nombre o DNI..."
                 class="h-11 w-full rounded-lg border border-gray-300 bg-transparent py-2.5 pl-11 text-sm text-gray-800 focus:border-brand-300 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90" />
             </div>
-            <button
-              type="submit"
-              :disabled="cargandoBusqueda"
-              class="rounded-lg bg-gray-100 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">
+            <Button type="submit" variant="secondary" :disabled="cargandoBusqueda">
               Buscar
-            </button>
+            </Button>
           </form>
 
           <div v-if="resultadosBusqueda.length > 0" class="mt-4 grid grid-cols-1 gap-2 max-h-60 overflow-y-auto pr-1 custom-scrollbar">
@@ -188,9 +180,9 @@
             <h4 class="text-sm font-semibold text-gray-800 dark:text-white/90">Trabajadores Seleccionados</h4>
             <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Estos trabajadores serán vinculados al documento</p>
           </div>
-          <span class="rounded-full bg-brand-500/10 px-2.5 py-1 text-xs font-medium text-brand-600 dark:bg-brand-500/20 dark:text-brand-400">
+          <Badge variant="brand">
             {{ trabajadoresSeleccionados.length }}
-          </span>
+          </Badge>
         </div>
 
         <div class="flex-1 overflow-y-auto p-5 space-y-2 custom-scrollbar">
@@ -225,7 +217,8 @@
   import { storeToRefs } from 'pinia'
   import { CheckCircle, AlertCircle, X, FileUp, Search, Plus, Trash2, Users, Check } from 'lucide-vue-next'
   import { useCargaMasivaStore } from '../stores/cargaMasiva'
-  import Loading from '../components/ui/Loading.vue'
+  import Button from '../components/ui/Button.vue'
+  import Badge from '../components/ui/Badge.vue'
 
   const store = useCargaMasivaStore()
   const { documentos, enviando, resultadosBusqueda, trabajadoresSeleccionados, cargandoBusqueda } = storeToRefs(store)

@@ -23,9 +23,8 @@
 
       
       <div v-else class="rounded-2xl border border-gray-100 bg-card dark:border-white/6 dark:bg-white/3 overflow-hidden">
-        <div v-if="cargando" class="flex flex-col items-center gap-3 py-16">
-          <Loader2 class="h-8 w-8 animate-spin text-primary" />
-          <span class="text-sm text-gray-500 dark:text-gray-400">Cargando usuarios…</span>
+        <div v-if="cargando" class="p-6">
+          <Skeleton preset="table" :rows="4" :show-avatar-in-table="false" />
         </div>
 
         <table v-else class="w-full">
@@ -182,6 +181,7 @@
   import { ref, onMounted, computed } from 'vue'
   import { UserPlus, Pencil, Trash2, KeyRound, Loader2, ShieldOff } from 'lucide-vue-next'
   import Modal from '../components/ui/Modal.vue'
+  import Skeleton from '../components/ui/Skeleton.vue'
   import api from '../services/api'
   import { useAutenticacionStore } from '../stores/auth'
   import { storeToRefs } from 'pinia'
