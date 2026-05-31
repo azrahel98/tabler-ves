@@ -398,6 +398,7 @@ dependencies = [
  "actix-files",
  "actix-multipart",
  "actix-web",
+ "base64 0.22.1",
  "calamine",
  "chrono",
  "chrono-tz",
