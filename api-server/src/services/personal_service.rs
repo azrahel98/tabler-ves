@@ -1,5 +1,6 @@
 use crate::middleware::error::ApiError;
 use crate::models::personal::{Perfil, PerfilInput, Persona, Vinculos};
+use base64::Engine;
 use chrono::NaiveDate;
 use reqwest::Client;
 use serde_json::Value;
@@ -147,4 +148,36 @@ pub async fn consultar_dni_reniec(
         distrito: None,
     };
     Ok(perfil)
+}
+pub async fn guardar_avatar(
+    db: &MySqlPool,
+    dni: &str,
+    imagen_base64: &str,
+) -> Result<String, ApiError> {
+    let base64_limpio = if let Some(pos) = imagen_base64.find("base64,") {
+        &imagen_base64[pos + 7..]
+    } else {
+        imagen_base64
+    };
+    let bytes = base64::engine::general_purpose::STANDARD
+        .decode(base64_limpio)
+        .map_err(|_| ApiError::BadRequest("La imagen base64 no es válida".into()))?;
+    if bytes.len() > 2_097_152 {
+        return Err(ApiError::BadRequest("La imagen no debe superar 2 MB".into()));
+    }
+    let upload_dir = std::env::var("UPLOAD_DIR").unwrap_or_else(|_| "./uploads".to_string());
+    let avatars_dir = std::path::PathBuf::from(&upload_dir).join("AVATARS");
+    std::fs::create_dir_all(&avatars_dir)
+        .map_err(|e| ApiError::InternalError(format!("Error creando directorio: {}", e)))?;
+    let file_path = avatars_dir.join(format!("{}.png", dni));
+    std::fs::write(&file_path, &bytes)
+        .map_err(|e| ApiError::InternalError(format!("Error guardando imagen: {}", e)))?;
+    let avatar_url = format!("/avatars/{}.png", dni);
+    personal_repo::actualizar_avatar(db, dni, &avatar_url)
+        .await
+        .map_err(|e| {
+            eprintln!("Database error: {:?}", e);
+            ApiError::InternalError("Error al actualizar avatar en BD".into())
+        })?;
+    Ok(avatar_url)
 }
