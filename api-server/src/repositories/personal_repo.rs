@@ -128,3 +128,13 @@ pub async fn consultar_dni_local(
     .fetch_optional(db)
     .await
 }
+pub async fn actualizar_avatar(db: &MySqlPool, dni: &str, url: &str) -> Result<u64, sqlx::Error> {
+    let result = sqlx::query!(
+        "UPDATE persona SET avatar = ? WHERE dni = ?",
+        url,
+        dni
+    )
+    .execute(db)
+    .await?;
+    Ok(result.rows_affected())
+}
