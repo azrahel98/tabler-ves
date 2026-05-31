@@ -872,6 +872,7 @@ pub struct Vacante {
     pub sueldo: Option<f64>,
     pub area_id: Option<i32>,
     pub cargo_id: Option<i32>,
+    pub avatar: Option<String>,
 }
 pub async fn buscar_vacantes(data: web::Data<AppState>) -> Result<impl Responder, ApiError> {
     let vacantes = sqlx::query_as!(
@@ -888,7 +889,8 @@ pub async fn buscar_vacantes(data: web::Data<AppState>) -> Result<impl Responder
         cr.nombre AS cargo,
         cr.id as cargo_id,
         pl.codigo,
-        v.sueldo
+        v.sueldo,
+        pe.avatar
         FROM plaza AS pl
         LEFT JOIN vinculo AS v ON pl.codigo = v.plaza_id
         LEFT JOIN documento AS d ON v.doc_salida_id = d.id
@@ -1022,7 +1024,8 @@ SELECT
   cr.nombre                                                       AS cargo,
   s.nombre                                                        AS sindicato,
   rg.nombre                                                       AS regimen,
-  COALESCE(NULLIF(p.distrito, ''), 'SIN ASIGNAR')                 AS distrito
+  COALESCE(NULLIF(p.distrito, ''), 'SIN ASIGNAR')                 AS distrito,
+  p.avatar                                                        AS avatar
 FROM
   vinculo v
   INNER JOIN persona p ON v.dni = p.dni
@@ -1068,6 +1071,7 @@ WHERE
                 "sindicato": row.try_get::<Option<String>, _>("sindicato").unwrap_or(None),
                 "regimen": row.get::<String, _>("regimen"),
                 "distrito": row.get::<String, _>("distrito"),
+                "avatar": row.try_get::<Option<String>, _>("avatar").unwrap_or(None),
             })
         })
         .collect();
