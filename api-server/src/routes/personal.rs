@@ -56,6 +56,8 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
                 web::post().to(activos_por_distrito),
             )
             .route("/cambio_area", web::post().to(registrar_cambio_area))
-            .route("/calidad_datos", web::post().to(calidad_datos)),
+            .route("/calidad_datos", web::post().to(calidad_datos))
+            .route("/avatar", web::post().to(subir_avatar))
+            .route("/avatar/{dni}", web::get().to(ver_avatar)),
     );
 }
