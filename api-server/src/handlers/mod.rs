@@ -3,6 +3,7 @@ pub mod login;
 pub mod personal;
 pub mod usuarios;
 pub mod fileserver;
+pub mod grado;
 use crate::middleware::error::ApiError;
 use actix_web::{HttpMessage, HttpRequest};
 pub async fn registrar_historial(
