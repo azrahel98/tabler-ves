@@ -14,6 +14,7 @@ use crate::{
         sindicato_service,
     },
 };
+use actix_files::NamedFile;
 use actix_web::{
     HttpMessage, HttpRequest, HttpResponse, Responder,
     web::{self},
@@ -1144,4 +1145,40 @@ pub async fn calidad_datos(data: web::Data<AppState>) -> Result<impl Responder, 
         "sin_domicilio": sin_domicilio,
         "sin_documento_salida": sin_documento_salida,
     })))
+}
+
+#[derive(Deserialize, Validate)]
+pub struct AvatarPayload {
+    #[validate(custom(function = "crate::models::personal::es_dni_valido"))]
+    pub dni: String,
+    #[validate(length(min = 1, message = "La imagen no puede estar vacía"))]
+    pub imagen_base64: String,
+}
+
+pub async fn subir_avatar(
+    data: web::Data<AppState>,
+    body: web::Json<AvatarPayload>,
+) -> Result<impl Responder, ApiError> {
+    validar(&body.0)?;
+    let avatar_url =
+        personal_service::guardar_avatar(&data.db, &body.dni, &body.imagen_base64).await?;
+    Ok(HttpResponse::Ok().json(serde_json::json!({ "avatar": avatar_url })))
+}
+
+pub async fn ver_avatar(
+    path: web::Path<String>,
+) -> Result<NamedFile, ApiError> {
+    let dni = path.into_inner();
+    if dni.len() != 8 || !dni.chars().all(|c| c.is_ascii_digit()) {
+        return Err(ApiError::BadRequest("DNI inválido".into()));
+    }
+    let upload_dir = std::env::var("UPLOAD_DIR").unwrap_or_else(|_| "./uploads".to_string());
+    let file_path = std::path::PathBuf::from(upload_dir)
+        .join("AVATARS")
+        .join(format!("{}.png", dni));
+    if !file_path.exists() {
+        return Err(ApiError::NotFound("Avatar no encontrado".into()));
+    }
+    NamedFile::open(file_path)
+        .map_err(|e| ApiError::InternalError(format!("Error abriendo archivo: {}", e)))
 }
