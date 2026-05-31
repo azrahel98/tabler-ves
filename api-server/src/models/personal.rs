@@ -19,6 +19,7 @@ pub struct Persona {
     pub dni: String,
     pub estado: Option<String>,
     pub sexo: Option<String>,
+    pub avatar: Option<String>,
 }
 #[derive(Serialize, Deserialize, Validate)]
 pub struct Perfil {
@@ -33,6 +34,7 @@ pub struct Perfil {
     pub sexo: Option<String>,
     pub region: Option<String>,
     pub distrito: Option<String>,
+    pub avatar: Option<String>,
 }
 #[derive(Serialize, Deserialize)]
 pub struct Vinculos {

@@ -11,10 +11,11 @@ pub async fn buscar_por_nombre(
         concat_ws(" ",dg.nombre,dg.apaterno,dg.amaterno) nombre,
         v.dni,
         MIN(v.estado) AS estado,
-        dg.sexo sexo
+        dg.sexo sexo,
+        MAX(dg.avatar) AS avatar
         from
         persona dg
-        inner join vinculo v on dg.dni = v.dni 
+        inner join vinculo v on dg.dni = v.dni
         WHERE
         concat_ws(" ",dg.nombre,dg.apaterno,dg.amaterno) LIKE ?
         GROUP BY
@@ -41,7 +42,8 @@ pub async fn get_perfil_by_dni(db: &MySqlPool, dni: &str) -> Result<Perfil, sqlx
         p.fecha_nacimiento nacimiento,
         p.sexo,
         p.region,
-        p.distrito
+        p.distrito,
+        p.avatar
         from
         vinculo v
         inner join persona p on v.dni = p.dni
