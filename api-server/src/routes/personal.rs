@@ -1,4 +1,7 @@
-use crate::{handlers::personal::*, middleware::check::JWT};
+use crate::{
+    handlers::{grado::*, personal::*},
+    middleware::check::JWT,
+};
 use actix_web::web::{self};
 pub fn init_routes(cfg: &mut web::ServiceConfig) {
     cfg.service(

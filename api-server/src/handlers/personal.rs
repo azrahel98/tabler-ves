@@ -5,13 +5,12 @@ use crate::{
         jwt::Claims,
     },
     models::personal::{
-        AsistenciaVw, ContactoEmergencia, DatosBancarios, DatosBancariosResponse, Documento,
-        DocumentoSindicato, EventoVinculoPayload, GradoAcademico, LegajoPersonal, NuevoVinculo,
-        Perfil, PerfilInput,
+        ContactoEmergencia, DatosBancarios, DatosBancariosResponse, Documento,
+        DocumentoSindicato, EventoVinculoPayload, NuevoVinculo,
+        Perfil,
     },
-    repositories::gradoaca_repo,
     services::{
-        banco_service, contacto_service, documento_service, gradoaca_service, personal_service,
+        banco_service, contacto_service, documento_service, personal_service,
         sindicato_service,
     },
 };
@@ -127,47 +126,6 @@ pub async fn editar_datos_bancarios(
         let _ = registrar_historial(&req, &data.db, accion, &doc.dni, Some(diff)).await;
     }
     Ok(HttpResponse::Ok().json(format!("Rows affected: {}", rows_affected)))
-}
-pub async fn grado_por_dni(
-    data: web::Data<AppState>,
-    dni: web::Json<PerfilDni>,
-) -> Result<impl Responder, ApiError> {
-    validar(&dni.0)?;
-    let gradoac = gradoaca_repo::gradoacademico_por_dni(&data.db, &dni.dni).await?;
-    Ok(HttpResponse::Ok().json(gradoac))
-}
-pub async fn upsert_gradoacademico(
-    data: web::Data<AppState>,
-    doc: web::Json<GradoAcademico>,
-    req: HttpRequest,
-) -> Result<impl Responder, ApiError> {
-    validar(&doc.0)?;
-    let (diff_value, accion, rows_affected) =
-        gradoaca_service::upsert_gradoacademico(&data.db, &doc.0).await?;
-    if let Some(diff) = diff_value {
-        let _ = registrar_historial(&req, &data.db, accion, &doc.dni, Some(diff)).await;
-    }
-    Ok(HttpResponse::Ok().json(format!(
-        "Operación exitosa. Filas afectadas: {}",
-        rows_affected
-    )))
-}
-#[derive(Deserialize, Validate)]
-pub struct EliminarGradoBody {
-    #[validate(range(min = 1, message = "ID de grado inválido"))]
-    pub id: i32,
-}
-pub async fn eliminar_gradoa(
-    data: web::Data<AppState>,
-    body: web::Json<EliminarGradoBody>,
-    req: HttpRequest,
-) -> Result<impl Responder, ApiError> {
-    validar(&body.0)?;
-    let (diff_value, accion, dni) = gradoaca_service::eliminar_gradoa(&data.db, body.id).await?;
-    if let Some(diff) = diff_value {
-        let _ = registrar_historial(&req, &data.db, accion, &dni, Some(diff)).await;
-    }
-    Ok(HttpResponse::Ok().json("Grado académico eliminado"))
 }
 pub async fn conctaco_por_dni(
     data: web::Data<AppState>,
