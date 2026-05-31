@@ -1151,17 +1151,26 @@ pub async fn calidad_datos(data: web::Data<AppState>) -> Result<impl Responder, 
 pub struct AvatarPayload {
     #[validate(custom(function = "crate::models::personal::es_dni_valido"))]
     pub dni: String,
-    #[validate(length(min = 1, message = "La imagen no puede estar vacía"))]
+    #[validate(length(min = 1, max = 3_000_000, message = "Imagen inválida o demasiado grande"))]
     pub imagen_base64: String,
 }
 
 pub async fn subir_avatar(
     data: web::Data<AppState>,
     body: web::Json<AvatarPayload>,
+    req: HttpRequest,
 ) -> Result<impl Responder, ApiError> {
     validar(&body.0)?;
     let avatar_url =
         personal_service::guardar_avatar(&data.db, &body.dni, &body.imagen_base64).await?;
+    let _ = registrar_historial(
+        &req,
+        &data.db,
+        "actualizar avatar",
+        &body.dni,
+        Some(serde_json::json!({ "avatar": avatar_url })),
+    )
+    .await;
     Ok(HttpResponse::Ok().json(serde_json::json!({ "avatar": avatar_url })))
 }
 

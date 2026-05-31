@@ -173,11 +173,15 @@ pub async fn guardar_avatar(
     std::fs::write(&file_path, &bytes)
         .map_err(|e| ApiError::InternalError(format!("Error guardando imagen: {}", e)))?;
     let avatar_url = format!("/avatars/{}.png", dni);
-    personal_repo::actualizar_avatar(db, dni, &avatar_url)
+    let rows = personal_repo::actualizar_avatar(db, dni, &avatar_url)
         .await
         .map_err(|e| {
             eprintln!("Database error: {:?}", e);
             ApiError::InternalError("Error al actualizar avatar en BD".into())
         })?;
+    if rows == 0 {
+        let _ = std::fs::remove_file(&file_path);
+        return Err(ApiError::NotFound("Persona no encontrada".into()));
+    }
     Ok(avatar_url)
 }
