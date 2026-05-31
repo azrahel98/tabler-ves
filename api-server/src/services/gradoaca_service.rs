@@ -84,5 +84,8 @@ pub async fn eliminar_gradoa(
 pub async fn get_por_dni(db: &MySqlPool, dni: &str) -> Result<Vec<GradoAcademico>, ApiError> {
     gradoaca_repo::gradoacademico_por_dni(db, dni)
         .await
-        .map_err(|e| ApiError::InternalError(format!("Error al obtener grados: {}", e)))
+        .map_err(|e| {
+            eprintln!("Database error: {:?}", e);
+            ApiError::InternalError("Error al obtener grados académicos".into())
+        })
 }
