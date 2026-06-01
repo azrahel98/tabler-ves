@@ -1,24 +1,18 @@
 <template>
-  <div class="space-y-2.5 mx-auto w-full max-w-6xl p-4 md:p-6 lg:p-8 lg:pt-0">
-    <header-perfil v-if="perfilActual" />
-
-    <div v-if="perfilActual" class="space-y-6">
-      <!-- Sección Superior: Ficha de Información Personal (Izquierda) junto a Grados Académicos e Información Bancaria (Derecha) -->
-      <div class="grid grid-cols-1 lg:grid-cols-[300px_1fr] gap-6 items-start">
-        <!-- Columna Izquierda: Ficha de Información Personal (ancho compacto) -->
-        <div class="w-full lg:w-[300px] shrink-0">
-          <info />
-        </div>
-        <!-- Columna Derecha: Grados Académicos e Información Bancaria (alto mínimo y flujo natural libre de superposiciones) -->
-        <div class="flex flex-col gap-6 min-w-0 w-full">
-          <grado />
-          <banco class="max-w-[320px] w-full" />
+  <div class="mx-auto w-full max-w-6xl p-4 md:p-6 lg:p-8 lg:pt-0">
+    <Transition name="profile" appear>
+      <div v-if="perfilActual" class="space-y-6">
+        <header-perfil />
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:items-start">
+        <info />
+        <div class="md:col-span-2 md:max-h-[380px] md:overflow-y-auto overflow-x-hidden">
+          <vinculos-tabla />
         </div>
       </div>
 
-      <!-- Tabla de Vínculos Laborales (Siempre ocupa todo el ancho de forma espaciosa) -->
-      <div class="w-full min-w-0">
-        <vinculos-tabla />
+      <div class="grid grid-cols-1 sm:grid-cols-[1fr_260px] lg:grid-cols-[1fr_300px] gap-6 items-start">
+        <grado />
+        <banco />
       </div>
 
       <!-- Sección de Legajo Digital (Archivos y Carpetas) -->
@@ -27,6 +21,7 @@
       <!-- Sección Final: Historial de Cambios / Auditoría (Al final de todo) -->
       <historial />
     </div>
+    </Transition>
   </div>
 </template>
 

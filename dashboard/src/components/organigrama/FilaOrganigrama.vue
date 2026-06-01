@@ -2,7 +2,6 @@
   <template v-if="modo === 'tabla'">
     <tr
       class="border-b border-gray-100 dark:border-gray-800/60 hover:bg-gray-50/80 dark:hover:bg-gray-800/30 transition-colors group"
-      :class="borderColorClass"
     >
       <td class="px-2 py-3 text-center w-10">
         <button
@@ -83,8 +82,7 @@
 
   <template v-else>
     <div
-      class="border-l-3 rounded-xl bg-white dark:bg-gray-900 mb-2 overflow-hidden shadow-theme-xs transition-all duration-200 hover:shadow-theme-sm"
-      :class="borderColorClass"
+      class="rounded-xl bg-card dark:bg-white/3 border border-gray-100 dark:border-white/6 overflow-hidden shadow-theme-xs transition-shadow duration-200 hover:shadow-theme-sm"
       :style="{ marginLeft: `${nivel * 16}px` }">
       <div
         class="flex items-center gap-2 px-3 py-2.5"
@@ -171,22 +169,21 @@
   })
 
   const nivelColores = [
-    { border: 'border-l-primary', badge: 'bg-primary/10 text-primary dark:bg-primary/15 dark:text-brand-300', count: 'bg-primary/10 text-primary dark:bg-primary/15 dark:text-brand-300' },
-    { border: 'border-l-blue-light-500', badge: 'bg-blue-light-50 text-blue-light-600 dark:bg-blue-light-500/15 dark:text-blue-light-400', count: 'bg-blue-light-50 text-blue-light-600 dark:bg-blue-light-500/15 dark:text-blue-light-400' },
-    { border: 'border-l-success-500', badge: 'bg-success-50 text-success-600 dark:bg-success-500/15 dark:text-success-400', count: 'bg-success-50 text-success-600 dark:bg-success-500/15 dark:text-success-400' },
-    { border: 'border-l-warning-500', badge: 'bg-warning-50 text-warning-600 dark:bg-warning-500/15 dark:text-warning-400', count: 'bg-warning-50 text-warning-600 dark:bg-warning-500/15 dark:text-warning-400' },
-    { border: 'border-l-orange-500', badge: 'bg-orange-50 text-orange-600 dark:bg-orange-500/15 dark:text-orange-400', count: 'bg-orange-50 text-orange-600 dark:bg-orange-500/15 dark:text-orange-400' },
+    { badge: 'bg-primary/10 text-primary dark:bg-primary/15 dark:text-brand-300', count: 'bg-primary/10 text-primary dark:bg-primary/15 dark:text-brand-300' },
+    { badge: 'bg-blue-light-50 text-blue-light-600 dark:bg-blue-light-500/15 dark:text-blue-light-400', count: 'bg-blue-light-50 text-blue-light-600 dark:bg-blue-light-500/15 dark:text-blue-light-400' },
+    { badge: 'bg-success-50 text-success-600 dark:bg-success-500/15 dark:text-success-400', count: 'bg-success-50 text-success-600 dark:bg-success-500/15 dark:text-success-400' },
+    { badge: 'bg-warning-50 text-warning-600 dark:bg-warning-500/15 dark:text-warning-400', count: 'bg-warning-50 text-warning-600 dark:bg-warning-500/15 dark:text-warning-400' },
+    { badge: 'bg-orange-50 text-orange-600 dark:bg-orange-500/15 dark:text-orange-400', count: 'bg-orange-50 text-orange-600 dark:bg-orange-500/15 dark:text-orange-400' },
   ]
 
   const nivelIndex = computed(() => Math.min(props.nivel, nivelColores.length - 1))
-  const borderColorClass = computed(() => nivelColores[nivelIndex.value]!.border)
   const nivelBadgeClasses = computed(() => nivelColores[nivelIndex.value]!.badge)
   const nivelCountClasses = computed(() => nivelColores[nivelIndex.value]!.count)
 
   // Clases tipográficas jerárquicas dinámicas
   const areaClass = computed(() => {
-    if (props.nivel === 0) return 'text-sm font-bold text-gray-900 dark:text-white tracking-tight'
-    if (props.nivel === 1) return 'text-[13px] font-semibold text-gray-800 dark:text-gray-100'
+    if (props.nivel === 0) return 'text-sm font-bold text-gray-800 dark:text-white/90'
+    if (props.nivel === 1) return 'text-xs font-semibold text-gray-700 dark:text-gray-200'
     return 'text-xs font-medium text-gray-600 dark:text-gray-400 dark:group-hover:text-gray-300 transition-colors'
   })
 
@@ -197,9 +194,9 @@
   })
 
   const jefeClass = computed(() => {
-    if (props.nivel === 0) return 'text-[13px] font-semibold text-gray-700 dark:text-gray-200'
-    if (props.nivel === 1) return 'text-xs font-medium text-gray-600 dark:text-gray-300'
-    return 'text-[11px] font-normal text-gray-500 dark:text-gray-400'
+    if (props.nivel === 0) return 'text-xs font-medium text-gray-600 dark:text-gray-300'
+    if (props.nivel === 1) return 'text-xs font-normal text-gray-500 dark:text-gray-400'
+    return 'text-[11px] font-normal text-gray-400 dark:text-gray-500'
   })
 
   const jefeIconContainerClass = computed(() => {
@@ -215,8 +212,3 @@
   })
 </script>
 
-<style scoped>
-  .border-l-3 {
-    border-left-width: 3px;
-  }
-</style>

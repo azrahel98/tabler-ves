@@ -2,7 +2,7 @@
   <main class="p-4 pt-1 mx-auto max-w-(--breakpoint-2xl) md:p-6">
     <div class="space-y-6">
       <div class="flex items-center justify-between">
-        <h2 class="text-title-xl text-gray-800 dark:text-white/90">Dashboard</h2>
+        <h2 class="text-title-md text-gray-800 dark:text-white/90">Dashboard</h2>
       </div>
 
       <Metrica />
@@ -12,12 +12,6 @@
         <Circulo />
         <GraficoSexo />
         <GraficoSindicato />
-      </div>
-
-      <!-- Fila 2 de Distribuciones (Área Polar Compactos) -->
-      <div class="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6">
-        <GraficoEdad />
-        <GraficoAntiguedad />
       </div>
 
       <!-- Fila de Listas y Operaciones (Balance original) -->
@@ -38,8 +32,6 @@
   import Circulo from '../components/dashboard/circulo.vue'
   import GraficoSexo from '../components/dashboard/grafico-sexo.vue'
   import GraficoSindicato from '../components/dashboard/grafico-sindicato.vue'
-  import GraficoEdad from '../components/dashboard/grafico-edad.vue'
-  import GraficoAntiguedad from '../components/dashboard/grafico-antiguedad.vue'
   import Cumpleanos from '../components/dashboard/cumpleanos.vue'
   import Movimientos from '../components/dashboard/movimientos.vue'
   import EventosVinculo from '../components/dashboard/eventos-vinculo.vue'

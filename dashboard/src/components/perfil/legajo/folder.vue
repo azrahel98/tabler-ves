@@ -8,8 +8,8 @@
           <Files class="h-5 w-5" />
         </div>
         <div>
-          <h3 class="text-sm font-bold uppercase tracking-wider text-black dark:text-white">Legajo Virtual</h3>
-          <p class="text-2xs text-gray-400 font-medium">Gestión de documentos administrativos</p>
+          <h3 class="text-xs font-bold uppercase tracking-wider text-gray-800 dark:text-white/90">Legajo Virtual</h3>
+          <p class="data-label normal-case tracking-normal">Gestión de documentos administrativos</p>
         </div>
       </div>
       
@@ -32,7 +32,7 @@
         <div class="relative flex h-min w-14 items-center justify-center rounded-full bg-primary/10">
           <Loader2 class="h-7 w-7 animate-spin text-primary" />
         </div>
-        <p class="text-sm font-medium text-gray-500">Sincronizando legajo...</p>
+        <p class="text-xs font-medium text-gray-500">Sincronizando legajo...</p>
       </div>
 
       <div v-else-if="archivosSubidos.length === 0" class="flex flex-col items-center justify-center py-0 gap-4 text-center">
@@ -41,10 +41,10 @@
           <FolderOpen class="h-10 w-10 text-gray-400" stroke-width="1.5" />
         </div>
         <div>
-          <h4 class="text-lg font-bold text-black dark:text-white">El legajo está vacío</h4>
-          <p class="text-sm text-body font-medium mt-1 max-w-sm mx-auto">Sube tu primer documento o vincula una URL para empezar a organizar este legajo.</p>
+          <h4 class="text-xs font-semibold text-gray-800 dark:text-white/90">El legajo está vacío</h4>
+          <p class="data-label normal-case tracking-normal mt-1 max-w-sm mx-auto">Sube tu primer documento o vincula una URL para empezar a organizar este legajo.</p>
         </div>
-        <button @click="abrirModal" class="mt-2 text-sm font-bold text-primary hover:text-primary/80 hover:underline underline-offset-4 transition-all">
+        <button @click="abrirModal" class="mt-2 text-xs font-semibold text-primary hover:text-primary/80 hover:underline underline-offset-4 transition-all">
           Subir archivo ahora &rarr;
         </button>
       </div>
@@ -71,7 +71,7 @@
 
       <div class="space-y-4">
         <div>
-          <label class="mb-2 block text-sm font-medium text-black dark:text-white">Archivo PDF (Máx 10MB) <span class="text-red-500">*</span></label>
+          <label class="mb-1.5 block text-xs font-medium text-gray-700 dark:text-white/80">Archivo PDF (Máx 10MB) <span class="text-red-500">*</span></label>
           <input
             type="file"
             accept=".pdf"
@@ -81,7 +81,7 @@
         </div>
 
         <div>
-          <label class="mb-2 block text-sm font-medium text-black dark:text-white">Nombre del documento (Opcional)</label>
+          <label class="mb-1.5 block text-xs font-medium text-gray-700 dark:text-white/80">Nombre del documento (Opcional)</label>
           <input
             v-model="nombreArchivoOpcional"
             type="text"
@@ -91,7 +91,7 @@
         </div>
 
         <div>
-          <label class="mb-2 block text-sm font-medium text-black dark:text-white">Asociar a documento (Opcional)</label>
+          <label class="mb-1.5 block text-xs font-medium text-gray-700 dark:text-white/80">Asociar a documento (Opcional)</label>
           <select
             v-model="documentoSeleccionado"
             class="w-full rounded-lg border-[1.5px] border-stroke bg-transparent px-4 py-2.5 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary">
@@ -111,13 +111,13 @@
         <div class="flex justify-end gap-3 w-full">
           <button
             @click="cerrarModal"
-            class="rounded-lg border border-stroke px-4 py-2 text-sm font-medium text-black hover:bg-gray-100 dark:border-strokedark dark:text-white dark:hover:bg-meta-4 transition-colors">
+            class="rounded-lg border border-gray-200 px-4 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50 dark:border-white/10 dark:text-white/80 dark:hover:bg-white/5 transition-colors">
             Cancelar
           </button>
           <button
             @click="subirArchivo"
             :disabled="cargando || !archivo"
-            class="flex items-center justify-center gap-2 rounded-lg bg-primary px-6 py-2 text-sm font-medium text-white hover:bg-opacity-90 disabled:bg-opacity-50 disabled:cursor-not-allowed transition-all">
+            class="flex items-center justify-center gap-2 rounded-lg bg-primary px-6 py-1.5 text-xs font-medium text-white hover:bg-opacity-90 disabled:bg-opacity-50 disabled:cursor-not-allowed transition-all">
             <Loader2 v-if="cargando" class="h-4 w-4 animate-spin" />
             <span>{{ cargando ? 'Subiendo...' : 'Subir Archivo' }}</span>
           </button>
@@ -137,7 +137,7 @@
 
       <div class="space-y-4">
         <div>
-          <label class="mb-2 block text-sm font-medium text-black dark:text-white">Nuevo nombre <span class="text-red-500">*</span></label>
+          <label class="mb-1.5 block text-xs font-medium text-gray-700 dark:text-white/80">Nuevo nombre <span class="text-red-500">*</span></label>
           <input
             v-model="nuevoNombreArchivo"
             type="text"
@@ -154,13 +154,13 @@
         <div class="flex justify-end gap-3 w-full">
           <button
             @click="cerrarModalRenombrar"
-            class="rounded-lg border border-stroke px-4 py-2 text-sm font-medium text-black hover:bg-gray-100 dark:border-strokedark dark:text-white dark:hover:bg-meta-4 transition-colors">
+            class="rounded-lg border border-gray-200 px-4 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50 dark:border-white/10 dark:text-white/80 dark:hover:bg-white/5 transition-colors">
             Cancelar
           </button>
           <button
             @click="renombrarArchivo"
             :disabled="cargandoRenombrar || !nuevoNombreArchivo.trim()"
-            class="flex items-center justify-center gap-2 rounded-lg bg-primary px-6 py-2 text-sm font-medium text-white hover:bg-opacity-90 disabled:bg-opacity-50 disabled:cursor-not-allowed transition-all">
+            class="flex items-center justify-center gap-2 rounded-lg bg-primary px-6 py-1.5 text-xs font-medium text-white hover:bg-opacity-90 disabled:bg-opacity-50 disabled:cursor-not-allowed transition-all">
             <Loader2 v-if="cargandoRenombrar" class="h-4 w-4 animate-spin" />
             <span>{{ cargandoRenombrar ? 'Guardando...' : 'Guardar' }}</span>
           </button>

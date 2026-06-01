@@ -3,7 +3,8 @@
     <div v-if="store.perfilActual" class="flex justify-center items-center bg-card">
       <div class="flex flex-row items-center gap-6">
         <div class="w-20 h-20 shrink-0 overflow-hidden border border-gray-100 rounded-full dark:border-white/6">
-          <img v-if="store.perfilActual.sexo == 'M'" src="/M.svg" alt="user" />
+          <img v-if="store.perfilActual.avatar" :src="`${baseURL}/personal/avatar/${store.perfilActual.dni}`" alt="avatar" class="w-full h-full object-cover" />
+          <img v-else-if="store.perfilActual.sexo == 'M'" src="/M.svg" alt="user" />
           <img v-else src="/F.svg" alt="user" />
         </div>
 
@@ -25,5 +26,7 @@
 
 <script setup lang="ts">
   import { usePersonalStore } from '../../stores/personal'
+  import { baseURL } from '../../services/api'
+
   const store = usePersonalStore()
 </script>

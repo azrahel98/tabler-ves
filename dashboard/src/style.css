@@ -297,6 +297,30 @@
   letter-spacing: 0.03em;
 }
 
+@utility data-label {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-gray-400);
+  line-height: 1;
+}
+
+@utility data-value {
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--color-gray-800);
+  line-height: 1.4;
+}
+
+@utility form-label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--color-gray-700);
+  margin-bottom: 0.25rem;
+}
+
 @utility menu-item {
   @apply text-body-normal relative flex items-center gap-3 rounded-lg px-3 py-2 font-medium xl:font-semibold;
 }
@@ -1058,4 +1082,33 @@ span.flatpickr-weekday,
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
+}
+
+/* Reveal de contenido de perfil */
+.profile-enter-active {
+  transition:
+    opacity 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.profile-enter-from {
+  opacity: 0;
+  transform: translateY(6px);
+}
+
+/* Icon swap (copiar CCI, etc.) */
+.icon-swap-enter-active,
+.icon-swap-leave-active {
+  transition:
+    opacity 0.1s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.1s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.icon-swap-enter-from { opacity: 0; transform: scale(0.6); }
+.icon-swap-leave-to   { opacity: 0; transform: scale(0.6); }
+
+@media (prefers-reduced-motion: reduce) {
+  .profile-enter-active,
+  .icon-swap-enter-active,
+  .icon-swap-leave-active {
+    transition-duration: 0.01ms !important;
+  }
 }

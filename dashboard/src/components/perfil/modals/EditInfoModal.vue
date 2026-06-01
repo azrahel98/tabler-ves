@@ -3,47 +3,47 @@
     <form @submit.prevent="guardar" class="space-y-5">
       <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
         <div>
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Teléfono / Celular</label>
+          <label class="form-label dark:text-white/70">Teléfono / Celular</label>
           <input
             type="text"
             v-model="form.telf"
-            class="h-11 w-full rounded-lg border bg-transparent px-3 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
+            class="h-9 w-full rounded-lg border bg-transparent px-3 py-2 text-xs text-gray-800 placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
             :class="errores.telf ? 'border-red-500' : 'border-gray-300'"
             placeholder="999999999" />
           <p v-if="errores.telf" class="mt-1 text-xs text-red-500">{{ errores.telf }}</p>
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Correo Electrónico</label>
+          <label class="form-label dark:text-white/70">Correo Electrónico</label>
           <input
             type="email"
             v-model="form.email"
-            class="h-11 w-full rounded-lg border bg-transparent px-3 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
+            class="h-9 w-full rounded-lg border bg-transparent px-3 py-2 text-xs text-gray-800 placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
             :class="errores.email ? 'border-red-500' : 'border-gray-300'"
             placeholder="correo@ejemplo.com" />
           <p v-if="errores.email" class="mt-1 text-xs text-red-500">{{ errores.email }}</p>
         </div>
 
         <div class="sm:col-span-2">
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Dirección</label>
+          <label class="form-label dark:text-white/70">Dirección</label>
           <input
             type="text"
             v-model="form.direccion"
-            class="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-3 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
+            class="h-9 w-full rounded-lg border border-gray-300 bg-transparent px-3 py-2 text-xs text-gray-800 placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
             placeholder="Av. Ejemplo 123" />
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Región</label>
+          <label class="form-label dark:text-white/70">Región</label>
           <input
             type="text"
             v-model="form.region"
-            class="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-3 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
+            class="h-9 w-full rounded-lg border border-gray-300 bg-transparent px-3 py-2 text-xs text-gray-800 placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
             placeholder="Lima" />
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Distrito</label>
+          <label class="form-label dark:text-white/70">Distrito</label>
           <SearchableSelect
             v-model="form.distrito"
             :options="DISTRITOS"
@@ -51,21 +51,21 @@
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">RUC</label>
+          <label class="form-label dark:text-white/70">RUC</label>
           <input
             type="text"
             v-model="form.ruc"
-            class="h-11 w-full rounded-lg border bg-transparent px-3 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
+            class="h-9 w-full rounded-lg border bg-transparent px-3 py-2 text-xs text-gray-800 placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
             :class="errores.ruc ? 'border-red-500' : 'border-gray-300'"
             placeholder="10123456789" />
           <p v-if="errores.ruc" class="mt-1 text-xs text-red-500">{{ errores.ruc }}</p>
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Sexo</label>
+          <label class="form-label dark:text-white/70">Sexo</label>
           <select
             v-model="form.sexo"
-            class="h-11 w-full rounded-lg border bg-transparent px-3 py-2.5 text-sm text-gray-800 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
+            class="h-9 w-full rounded-lg border bg-transparent px-3 py-2 text-xs text-gray-800 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
             :class="errores.sexo ? 'border-red-500' : 'border-gray-300'">
             <option value="">Seleccione</option>
             <option value="M">Masculino</option>
@@ -75,11 +75,11 @@
         </div>
 
         <div class="sm:col-span-2">
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Fecha de Nacimiento</label>
+          <label class="form-label dark:text-white/70">Fecha de Nacimiento</label>
           <input
             type="date"
             v-model="form.nacimiento"
-            class="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-3 py-2.5 text-sm text-gray-800 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90" />
+            class="h-9 w-full rounded-lg border border-gray-300 bg-transparent px-3 py-2 text-xs text-gray-800 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90" />
         </div>
       </div>
     </form>
@@ -94,7 +94,7 @@
           <button
             type="button"
             @click="guardar"
-            class="inline-flex w-full justify-center items-center gap-2 rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-brand-700 transition sm:w-auto"
+            class="inline-flex w-full justify-center items-center gap-2 rounded-lg bg-brand-600 px-4 py-1.5 text-xs font-medium text-white shadow-sm hover:bg-brand-700 transition sm:w-auto"
             :disabled="isSubmitting">
             <Loader2 v-if="isSubmitting" class="h-4 w-4 animate-spin" />
             Guardar Cambios
@@ -102,7 +102,7 @@
           <button
             type="button"
             @click="close"
-            class="inline-flex w-full justify-center rounded-lg bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 transition dark:bg-gray-800 dark:text-gray-300 dark:ring-gray-700 dark:hover:bg-gray-700 sm:w-auto"
+            class="inline-flex w-full justify-center rounded-lg bg-white px-4 py-1.5 text-xs font-medium text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 transition dark:bg-gray-800 dark:text-gray-300 dark:ring-gray-700 dark:hover:bg-gray-700 sm:w-auto"
             :disabled="isSubmitting">
             Cancelar
           </button>

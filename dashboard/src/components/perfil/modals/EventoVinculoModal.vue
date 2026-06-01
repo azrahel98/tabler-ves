@@ -39,11 +39,11 @@
 
           <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <div>
-              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tipo</label>
+              <label class="form-label dark:text-white/70">Tipo</label>
               <select
                 v-model="formularioSalida.tipoDocumento"
                 :disabled="cargandoDocumentos"
-                class="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-3 py-2.5 text-sm text-gray-800 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 disabled:opacity-60">
+                class="h-9 w-full rounded-lg border border-gray-300 bg-transparent px-3 py-2 text-xs text-gray-800 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 disabled:opacity-60">
                 <option value="" disabled>{{ cargandoDocumentos ? 'Cargando...' : 'Seleccionar tipo' }}</option>
                 <option v-for="doc in documentos" :key="doc.id" :value="doc.id">{{ doc.sigla }} — {{ doc.nombre }}</option>
               </select>
@@ -51,40 +51,40 @@
 
             <div class="grid grid-cols-2 gap-2">
               <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">N°</label>
+                <label class="form-label dark:text-white/70">N°</label>
                 <input
                   type="number"
                   v-model="formularioSalida.numeroDocumento"
                   placeholder="001"
-                  class="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-3 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90" />
+                  class="h-9 w-full rounded-lg border border-gray-300 bg-transparent px-3 py-2 text-xs text-gray-800 placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90" />
               </div>
               <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Año</label>
+                <label class="form-label dark:text-white/70">Año</label>
                 <input
                   type="number"
                   v-model="formularioSalida.anioDocumento"
                   placeholder="2025"
-                  class="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-3 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90" />
+                  class="h-9 w-full rounded-lg border border-gray-300 bg-transparent px-3 py-2 text-xs text-gray-800 placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90" />
               </div>
             </div>
 
             <div>
-              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"> Fecha de Cierre <span class="text-red-500">*</span> </label>
+              <label class="form-label dark:text-white/70"> Fecha de Cierre <span class="text-red-500">*</span> </label>
               <input
                 type="date"
                 v-model="formularioSalida.fecha"
                 required
-                class="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-3 py-2.5 text-sm text-gray-800 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90" />
+                class="h-9 w-full rounded-lg border border-gray-300 bg-transparent px-3 py-2 text-xs text-gray-800 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90" />
             </div>
 
             <div class="sm:col-span-2">
-              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"> Descripción <span class="text-red-500">*</span> </label>
+              <label class="form-label dark:text-white/70"> Descripción <span class="text-red-500">*</span> </label>
               <textarea
                 v-model="formularioSalida.descripcion"
                 rows="3"
                 required
                 placeholder="Motivo o detalle del cierre del evento..."
-                class="w-full rounded-lg border border-gray-300 bg-transparent px-3 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">
+                class="w-full rounded-lg border border-gray-300 bg-transparent px-3 py-2 text-xs text-gray-800 placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">
               </textarea>
             </div>
           </div>
@@ -130,11 +130,11 @@
           <div v-if="tipoEvento" class="space-y-4 border-t border-gray-100 dark:border-gray-800 pt-4">
             
             <div v-if="tipoEvento === 'rotacion'">
-              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"> Nueva Área <span class="text-red-500">*</span> </label>
+              <label class="form-label dark:text-white/70"> Nueva Área <span class="text-red-500">*</span> </label>
               <select
                 v-model="formulario.nuevaAreaId"
                 :disabled="cargandoAreas"
-                class="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-3 py-2.5 text-sm text-gray-800 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 disabled:opacity-60">
+                class="h-9 w-full rounded-lg border border-gray-300 bg-transparent px-3 py-2 text-xs text-gray-800 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 disabled:opacity-60">
                 <option :value="null">
                   {{ cargandoAreas ? 'Cargando áreas...' : 'Seleccionar área de destino' }}
                 </option>
@@ -148,11 +148,11 @@
 
               <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <div>
-                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tipo</label>
+                  <label class="form-label dark:text-white/70">Tipo</label>
                   <select
                     v-model="formulario.tipoDocumento"
                     :disabled="cargandoDocumentos"
-                    class="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-3 py-2.5 text-sm text-gray-800 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 disabled:opacity-60">
+                    class="h-9 w-full rounded-lg border border-gray-300 bg-transparent px-3 py-2 text-xs text-gray-800 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 disabled:opacity-60">
                     <option value="" disabled>{{ cargandoDocumentos ? 'Cargando...' : 'Seleccionar tipo' }}</option>
                     <option v-for="doc in documentos" :key="doc.id" :value="doc.id">{{ doc.sigla }} — {{ doc.nombre }}</option>
                   </select>
@@ -160,48 +160,48 @@
 
                 <div class="grid grid-cols-2 gap-2">
                   <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">N°</label>
+                    <label class="form-label dark:text-white/70">N°</label>
                     <input
                       type="number"
                       v-model="formulario.numeroDocumento"
                       placeholder="001"
-                      class="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-3 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90" />
+                      class="h-9 w-full rounded-lg border border-gray-300 bg-transparent px-3 py-2 text-xs text-gray-800 placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90" />
                   </div>
                   <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Año</label>
+                    <label class="form-label dark:text-white/70">Año</label>
                     <input
                       type="number"
                       v-model="formulario.anioDocumento"
                       placeholder="2025"
-                      class="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-3 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90" />
+                      class="h-9 w-full rounded-lg border border-gray-300 bg-transparent px-3 py-2 text-xs text-gray-800 placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90" />
                   </div>
                 </div>
 
                 <div>
-                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"> Fecha <span class="text-red-500">*</span> </label>
+                  <label class="form-label dark:text-white/70"> Fecha <span class="text-red-500">*</span> </label>
                   <input
                     type="date"
                     v-model="formulario.fecha"
                     required
-                    class="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-3 py-2.5 text-sm text-gray-800 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90" />
+                    class="h-9 w-full rounded-lg border border-gray-300 bg-transparent px-3 py-2 text-xs text-gray-800 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90" />
                 </div>
 
                 <div>
-                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Vigencia (opcional)</label>
+                  <label class="form-label dark:text-white/70">Vigencia (opcional)</label>
                   <input
                     type="date"
                     v-model="formulario.fechaVigencia"
-                    class="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-3 py-2.5 text-sm text-gray-800 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90" />
+                    class="h-9 w-full rounded-lg border border-gray-300 bg-transparent px-3 py-2 text-xs text-gray-800 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90" />
                 </div>
 
                 <div class="sm:col-span-2">
-                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"> Descripción <span class="text-red-500">*</span> </label>
+                  <label class="form-label dark:text-white/70"> Descripción <span class="text-red-500">*</span> </label>
                   <textarea
                     v-model="formulario.descripcion"
                     rows="3"
                     required
                     :placeholder="tipoEvento === 'abandono' ? 'Motivo o detalle del abandono...' : 'Motivo de la rotación hacia la nueva área...'"
-                    class="w-full rounded-lg border border-gray-300 bg-transparent px-3 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">
+                    class="w-full rounded-lg border border-gray-300 bg-transparent px-3 py-2 text-xs text-gray-800 placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">
                   </textarea>
                 </div>
               </div>
@@ -219,7 +219,7 @@
           type="button"
           @click="eliminar"
           :disabled="guardando"
-          class="inline-flex w-full justify-center items-center gap-2 rounded-lg border border-red-200 bg-white px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 transition sm:w-auto disabled:opacity-60 dark:border-red-800 dark:bg-transparent dark:text-red-400 dark:hover:bg-red-900/20">
+          class="inline-flex w-full justify-center items-center gap-2 rounded-lg border border-red-200 bg-white px-4 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50 transition sm:w-auto disabled:opacity-60 dark:border-red-800 dark:bg-transparent dark:text-red-400 dark:hover:bg-red-900/20">
           <Trash2 class="h-4 w-4" />
           Eliminar Evento
         </button>
@@ -232,7 +232,7 @@
             @click="guardar"
             :disabled="!puedeGuardar || guardando"
             :class="[
-              'inline-flex w-full justify-center items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium text-white shadow-sm transition sm:w-auto disabled:cursor-not-allowed disabled:opacity-60',
+              'inline-flex w-full justify-center items-center gap-2 rounded-lg px-4 py-1.5 text-xs font-medium text-white shadow-sm transition sm:w-auto disabled:cursor-not-allowed disabled:opacity-60',
               hayEventoActivo ? 'bg-slate-700 hover:bg-slate-800' : tipoEvento === 'abandono' ? 'bg-amber-500 hover:bg-amber-600' : 'bg-blue-600 hover:bg-blue-700',
             ]">
             <Loader2 v-if="guardando" class="h-4 w-4 animate-spin" />
@@ -243,7 +243,7 @@
             type="button"
             @click="cerrar"
             :disabled="guardando"
-            class="mt-0 inline-flex w-full justify-center rounded-lg bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 transition dark:bg-gray-800 dark:text-gray-300 dark:ring-gray-700 dark:hover:bg-gray-700 sm:w-auto">
+            class="mt-0 inline-flex w-full justify-center rounded-lg bg-white px-4 py-1.5 text-xs font-medium text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 transition dark:bg-gray-800 dark:text-gray-300 dark:ring-gray-700 dark:hover:bg-gray-700 sm:w-auto">
             Cancelar
           </button>
         </div>

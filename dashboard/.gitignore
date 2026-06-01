@@ -31,9 +31,11 @@ dist-ssr
 # Agent / Claude tooling
 .agents
 .claude
+.superpowers
 docs
 skills-lock.json
 Dockerfile
+.antigravitycli
 .env
 .agent/
 .agent

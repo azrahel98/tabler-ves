@@ -172,7 +172,7 @@ pub async fn guardar_avatar(
     let file_path = avatars_dir.join(format!("{}.png", dni));
     std::fs::write(&file_path, &bytes)
         .map_err(|e| ApiError::InternalError(format!("Error guardando imagen: {}", e)))?;
-    let avatar_url = format!("/avatars/{}.png", dni);
+    let avatar_url = format!("/personal/avatar/{}", dni);
     let rows = personal_repo::actualizar_avatar(db, dni, &avatar_url)
         .await
         .map_err(|e| {
