@@ -12,6 +12,7 @@ export interface Persona {
   nacimiento: string | null
   sexo: string | null
   estado?: string | null
+  avatar?: string | null
 }
 
 export interface Vinculo {

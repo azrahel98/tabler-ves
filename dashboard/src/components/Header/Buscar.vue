@@ -2,7 +2,7 @@
   import { ref } from 'vue'
   import { watchDebounced, onClickOutside } from '@vueuse/core'
   import Loading from '../ui/Loading.vue'
-  import api from '../../services/api'
+  import api, { baseURL } from '../../services/api'
 
   const searchContainerRef = ref<HTMLElement | null>(null)
   const searchQuery = ref('')
@@ -94,9 +94,16 @@
                   searchQuery = ''
                 }
               "
-              class="block px-4 py-3 rounded-lg hover:bg-primary/5 dark:hover:bg-white/5 transition-colors">
-              <p class="text-sm font-semibold text-gray-800 dark:text-white uppercase">{{ person.nombre }}</p>
-              <p class="text-xs text-gray-500 dark:text-gray-400 ">DNI: {{ person.dni }}</p>
+              class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-primary/5 dark:hover:bg-white/5 transition-colors">
+              <div class="w-8 h-8 shrink-0 overflow-hidden rounded-full border border-gray-100 dark:border-white/6">
+                <img v-if="person.avatar" :src="`${baseURL}/personal/avatar/${person.dni}`" alt="avatar" class="w-full h-full object-cover" />
+                <img v-else-if="person.sexo === 'M'" src="/M.svg" alt="avatar" class="w-full h-full" />
+                <img v-else src="/F.svg" alt="avatar" class="w-full h-full" />
+              </div>
+              <div>
+                <p class="text-sm font-semibold text-gray-800 dark:text-white uppercase">{{ person.nombre }}</p>
+                <p class="text-xs text-gray-500 dark:text-gray-400">DNI: {{ person.dni }}</p>
+              </div>
             </RouterLink>
           </template>
 

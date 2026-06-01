@@ -265,7 +265,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0.75rem 1rem;
+    padding: 0.5rem 0.75rem;
     border-bottom: 1px solid var(--color-gray-200);
   }
 
@@ -275,7 +275,7 @@
   }
 
   .popover-titulo {
-    font-size: var(--text-sm);
+    font-size: 0.75rem;
     font-weight: 600;
     color: var(--color-gray-800);
   }
@@ -310,7 +310,7 @@
 
   
   .popover-cuerpo {
-    padding: 0.75rem 1rem;
+    padding: 0.625rem 0.75rem;
   }
 
   .popover-cuerpo--sin-padding {

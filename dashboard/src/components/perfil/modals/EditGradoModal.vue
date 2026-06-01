@@ -3,7 +3,7 @@
     <form @submit.prevent="guardar" class="space-y-4">
       <div class="grid grid-cols-2 gap-4">
         <div class="col-span-2">
-          <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">Profesión</label>
+          <label class="form-label dark:text-white/70">Profesión</label>
           <input
             type="text"
             v-model="form.profesion"
@@ -14,7 +14,7 @@
         </div>
 
         <div class="col-span-2">
-          <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">Universidad</label>
+          <label class="form-label dark:text-white/70">Universidad</label>
           <input
             type="text"
             v-model="form.universidad"
@@ -23,7 +23,7 @@
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">Nivel Académico</label>
+          <label class="form-label dark:text-white/70">Nivel Académico</label>
           <select
             v-model="form.nivel_academico"
             class="mt-1 block w-full rounded-md border px-3 py-2 shadow-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary dark:bg-slate-800 dark:text-white"
@@ -39,7 +39,7 @@
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">Abreviatura</label>
+          <label class="form-label dark:text-white/70">Abreviatura</label>
           <input
             type="text"
             v-model="form.abrv"
@@ -50,7 +50,7 @@
         </div>
 
         <div class="col-span-2">
-          <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">Colegiatura</label>
+          <label class="form-label dark:text-white/70">Colegiatura</label>
           <input
             type="text"
             v-model="form.colegiatura"
@@ -64,14 +64,14 @@
       <button
         type="button"
         @click="close"
-        class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50 dark:bg-slate-800 dark:text-slate-100 dark:ring-slate-700 dark:hover:bg-slate-700 sm:mt-0 sm:w-auto"
+        class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-1.5 text-xs font-semibold text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50 dark:bg-slate-800 dark:text-slate-100 dark:ring-slate-700 dark:hover:bg-slate-700 sm:mt-0 sm:w-auto"
         :disabled="isSubmitting">
         Cancelar
       </button>
       <button
         type="button"
         @click="guardar"
-        class="inline-flex w-full justify-center items-center gap-2 rounded-md bg-primary px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-primary/90 sm:ml-3 sm:w-auto"
+        class="inline-flex w-full justify-center items-center gap-2 rounded-md bg-primary px-3 py-1.5 text-xs font-semibold text-white shadow-sm hover:bg-primary/90 sm:ml-3 sm:w-auto"
         :disabled="isSubmitting">
         <Loader2 v-if="isSubmitting" class="h-4 w-4 animate-spin" />
         {{ isEdit ? 'Guardar Cambios' : 'Agregar' }}

@@ -3,31 +3,31 @@
     <form @submit.prevent="guardar" class="space-y-5">
       <div class="grid grid-cols-1 gap-5">
         <div>
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nombre Completo</label>
+          <label class="form-label dark:text-white/70">Nombre Completo</label>
           <input
             type="text"
             v-model="form.nombre"
-            class="h-11 w-full rounded-lg border bg-transparent px-3 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
+            class="h-9 w-full rounded-lg border bg-transparent px-3 py-2 text-xs text-gray-800 placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
             :class="errores.nombre ? 'border-red-500' : 'border-gray-300'"
             placeholder="Juan Pérez" />
           <p v-if="errores.nombre" class="mt-1 text-xs text-red-500">{{ errores.nombre }}</p>
         </div>
         <div>
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Parentezco / Relación</label>
+          <label class="form-label dark:text-white/70">Parentezco / Relación</label>
           <input
             type="text"
             v-model="form.relacion"
-            class="h-11 w-full rounded-lg border bg-transparent px-3 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
+            class="h-9 w-full rounded-lg border bg-transparent px-3 py-2 text-xs text-gray-800 placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
             :class="errores.relacion ? 'border-red-500' : 'border-gray-300'"
             placeholder="Padre / Madre / Esposo(a)" />
           <p v-if="errores.relacion" class="mt-1 text-xs text-red-500">{{ errores.relacion }}</p>
         </div>
         <div>
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Teléfono</label>
+          <label class="form-label dark:text-white/70">Teléfono</label>
           <input
             type="text"
             v-model="form.telefono"
-            class="h-11 w-full rounded-lg border bg-transparent px-3 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
+            class="h-9 w-full rounded-lg border bg-transparent px-3 py-2 text-xs text-gray-800 placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
             :class="errores.telefono ? 'border-red-500' : 'border-gray-300'"
             placeholder="999999999" />
           <p v-if="errores.telefono" class="mt-1 text-xs text-red-500">{{ errores.telefono }}</p>
@@ -39,7 +39,7 @@
       <button
         type="button"
         @click="guardar"
-        class="inline-flex w-full justify-center items-center gap-2 rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-brand-700 transition sm:ml-3 sm:w-auto"
+        class="inline-flex w-full justify-center items-center gap-2 rounded-lg bg-brand-600 px-4 py-1.5 text-xs font-medium text-white shadow-sm hover:bg-brand-700 transition sm:ml-3 sm:w-auto"
         :disabled="isSubmitting">
         <Loader2 v-if="isSubmitting" class="h-4 w-4 animate-spin" />
         Guardar
@@ -47,7 +47,7 @@
       <button
         type="button"
         @click="close"
-        class="mt-3 inline-flex w-full justify-center rounded-lg bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 transition dark:bg-gray-800 dark:text-gray-300 dark:ring-gray-700 dark:hover:bg-gray-700 sm:mt-0 sm:w-auto"
+        class="mt-3 inline-flex w-full justify-center rounded-lg bg-white px-4 py-1.5 text-xs font-medium text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 transition dark:bg-gray-800 dark:text-gray-300 dark:ring-gray-700 dark:hover:bg-gray-700 sm:mt-0 sm:w-auto"
         :disabled="isSubmitting">
         Cancelar
       </button>

@@ -3,17 +3,13 @@
     <div class="p-4 pt-1 mx-auto max-w-(--breakpoint-2xl) md:p-6">
       <div class="mb-6 flex items-center justify-between">
         <div>
-          <h1 class="text-title-xl text-gray-900 dark:text-white">
-            Calidad de Datos
-          </h1>
-          <p class="mt-1 text-body-small">
-            Registros con información incompleta o faltante
-          </p>
+          <h1 class="text-title-sm font-semibold text-gray-800 dark:text-white/90">Calidad de Datos</h1>
+          <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">Registros con información incompleta o faltante</p>
         </div>
         <button
           @click="cargar"
           :disabled="cargando"
-          class="inline-flex items-center gap-2 rounded-xl border border-gray-100 bg-card px-3.5 py-2 text-body-normal font-medium text-gray-700 shadow-theme-xs hover:bg-primary/5 disabled:opacity-50 dark:border-white/6 dark:bg-white/5 dark:text-gray-300 dark:hover:bg-white/10 transition-colors">
+          class="inline-flex items-center gap-2 rounded-xl border border-gray-100 bg-card px-3 py-1.5 text-xs font-medium text-gray-700 shadow-theme-xs hover:bg-primary/5 disabled:opacity-50 dark:border-white/6 dark:bg-white/5 dark:text-gray-300 dark:hover:bg-white/10 transition-colors">
           <RefreshCw class="h-4 w-4" :class="cargando ? 'animate-spin' : ''" />
           Actualizar
         </button>
@@ -41,7 +37,7 @@
             v-for="tab in tabs"
             :key="tab.key"
             @click="tabActiva = tab.key"
-            class="inline-flex items-center gap-2 rounded-xl px-4 py-2 text-body-normal font-medium transition-all border"
+            class="inline-flex items-center gap-2 rounded-xl px-3.5 py-1.5 text-xs font-medium transition-all border"
             :class="tabActiva === tab.key
               ? 'bg-primary text-white border-primary shadow-sm'
               : 'bg-card text-gray-600 border-gray-100 hover:bg-primary/5 dark:bg-white/5 dark:text-gray-300 dark:border-white/6 dark:hover:bg-white/10'">
@@ -61,8 +57,8 @@
         <div v-if="tabActiva === 'sin_domicilio'">
           <div v-if="datos.sin_domicilio.length === 0" class="flex flex-col items-center justify-center py-20 text-center">
             <CheckCircle2 class="h-16 w-16 text-green-400 mb-4" />
-            <p class="text-title-sm text-gray-600 dark:text-gray-400">Sin problemas</p>
-            <p class="text-body-small mt-1">Todos los trabajadores activos tienen dirección y distrito registrados</p>
+            <p class="text-xs font-semibold text-gray-600 dark:text-gray-400">Sin problemas</p>
+            <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">Todos los trabajadores activos tienen dirección y distrito registrados</p>
           </div>
           <DataTable
             v-else
@@ -109,8 +105,8 @@
         <div v-else-if="tabActiva === 'sin_documento_salida'">
           <div v-if="datos.sin_documento_salida.length === 0" class="flex flex-col items-center justify-center py-20 text-center">
             <CheckCircle2 class="h-16 w-16 text-green-400 mb-4" />
-            <p class="text-title-sm text-gray-600 dark:text-gray-400">Sin problemas</p>
-            <p class="text-body-small mt-1">Todos los vínculos inactivos tienen documento de salida registrado</p>
+            <p class="text-xs font-semibold text-gray-600 dark:text-gray-400">Sin problemas</p>
+            <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">Todos los vínculos inactivos tienen documento de salida registrado</p>
           </div>
           <DataTable
             v-else
@@ -129,8 +125,8 @@
         <div v-else-if="tabActiva === 'sin_contacto'">
           <div v-if="datos.sin_contacto.length === 0" class="flex flex-col items-center justify-center py-20 text-center">
             <CheckCircle2 class="h-16 w-16 text-green-400 mb-4" />
-            <p class="text-title-sm text-gray-600 dark:text-gray-400">Sin problemas</p>
-            <p class="text-body-small mt-1">Todos los trabajadores activos tienen teléfono o correo registrado</p>
+            <p class="text-xs font-semibold text-gray-600 dark:text-gray-400">Sin problemas</p>
+            <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">Todos los trabajadores activos tienen teléfono o correo registrado</p>
           </div>
           <DataTable
             v-else

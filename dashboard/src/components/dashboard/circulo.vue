@@ -2,7 +2,7 @@
   <div :class="sinContenedor ? 'h-full flex flex-col' : 'rounded-2xl border border-gray-200 bg-card p-4 md:p-5 flex flex-col h-full'">
     <div class="mb-3 justify-between gap-4 sm:flex shrink-0">
       <div>
-        <h3 class="text-title-md font-semibold leading-snug text-gray-800 dark:text-white/90">Distribución por Régimen</h3>
+        <h3 class="text-xs font-bold uppercase tracking-wider text-gray-800 dark:text-white/90">Distribución por Régimen</h3>
       </div>
     </div>
 
@@ -18,7 +18,7 @@
     <div class="mt-auto flex flex-wrap gap-x-4 gap-y-2 justify-center pt-2 border-t border-gray-100 dark:border-gray-800/50">
       <div v-for="(regimen, index) in store.resumen?.por_regimen" :key="index" class="flex items-center gap-1.5">
         <span class="block h-2.5 w-2.5 rounded-full shrink-0" :style="{ backgroundColor: colorPara(regimen.nombre) }"></span>
-        <span class="text-xs font-semibold text-gray-700 dark:text-gray-300">
+        <span class="data-value text-gray-700 dark:text-gray-300">
           {{ regimen.nombre }}
         </span>
         <span class="text-xs font-bold text-gray-800 dark:text-white/90 ml-0.5">

@@ -1,7 +1,7 @@
 <template>
   <Modal :isOpen="isOpen" @close="close">
     <template #header>
-      <h3 class="text-title-md font-semibold leading-snug text-black dark:text-white flex items-center gap-2 m-0">
+      <h3 class="text-sm font-semibold leading-snug text-black dark:text-white flex items-center gap-2 m-0">
         <ShieldOff class="h-5 w-5 text-amber-500" />
         Desafiliar del Sindicato
       </h3>
@@ -15,11 +15,11 @@
 
       <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tipo Documento</label>
+          <label class="form-label dark:text-white/70">Tipo Documento</label>
           <select
             v-model="form.tipoDocumento"
             :disabled="cargandoDocumentos"
-            class="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-3 py-2.5 text-sm text-gray-800 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 disabled:opacity-60">
+            class="h-9 w-full rounded-lg border border-gray-300 bg-transparent px-3 py-2 text-xs text-gray-800 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 disabled:opacity-60">
             <option value="" disabled>{{ cargandoDocumentos ? 'Cargando...' : 'Seleccionar tipo' }}</option>
             <option v-for="doc in documentos" :key="doc.id" :value="doc.id">{{ doc.sigla }} — {{ doc.nombre }}</option>
           </select>
@@ -27,48 +27,48 @@
 
         <div class="grid grid-cols-2 gap-2">
           <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Número</label>
+            <label class="form-label dark:text-white/70">Número</label>
             <input
               type="number"
               v-model="form.numeroDocumento"
               placeholder="001"
-              class="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-3 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90" />
+              class="h-9 w-full rounded-lg border border-gray-300 bg-transparent px-3 py-2 text-xs text-gray-800 placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90" />
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Año</label>
+            <label class="form-label dark:text-white/70">Año</label>
             <input
               type="number"
               v-model="form.añoDocumento"
               placeholder="2024"
-              class="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-3 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90" />
+              class="h-9 w-full rounded-lg border border-gray-300 bg-transparent px-3 py-2 text-xs text-gray-800 placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90" />
           </div>
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Fecha <span class="text-red-500">*</span></label>
+          <label class="form-label dark:text-white/70">Fecha <span class="text-red-500">*</span></label>
           <input
             type="date"
             v-model="form.fecha"
             required
-            class="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-3 py-2.5 text-sm text-gray-800 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90" />
+            class="h-9 w-full rounded-lg border border-gray-300 bg-transparent px-3 py-2 text-xs text-gray-800 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90" />
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Fecha del Documento</label>
+          <label class="form-label dark:text-white/70">Fecha del Documento</label>
           <input
             type="date"
             v-model="form.fechaValida"
-            class="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-3 py-2.5 text-sm text-gray-800 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90" />
+            class="h-9 w-full rounded-lg border border-gray-300 bg-transparent px-3 py-2 text-xs text-gray-800 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90" />
         </div>
 
         <div class="sm:col-span-2">
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Descripción / Motivo <span class="text-red-500">*</span></label>
+          <label class="form-label dark:text-white/70">Descripción / Motivo <span class="text-red-500">*</span></label>
           <textarea
             v-model="form.descripcion"
             rows="3"
             required
             placeholder="Motivo de la desafiliación..."
-            class="w-full rounded-lg border border-gray-300 bg-transparent px-3 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"></textarea>
+            class="w-full rounded-lg border border-gray-300 bg-transparent px-3 py-2 text-xs text-gray-800 placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"></textarea>
         </div>
       </div>
     </form>
@@ -78,7 +78,7 @@
         type="button"
         @click="guardar"
         :disabled="isSubmitting || !puedeGuardar"
-        class="inline-flex w-full justify-center items-center gap-2 rounded-lg bg-amber-500 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-amber-600 transition disabled:opacity-50 disabled:cursor-not-allowed sm:ml-3 sm:w-auto">
+        class="inline-flex w-full justify-center items-center gap-2 rounded-lg bg-amber-500 px-4 py-1.5 text-xs font-medium text-white shadow-sm hover:bg-amber-600 transition disabled:opacity-50 disabled:cursor-not-allowed sm:ml-3 sm:w-auto">
         <Loader2 v-if="isSubmitting" class="h-4 w-4 animate-spin" />
         <ShieldOff v-else class="h-4 w-4" />
         Registrar Desafiliación
@@ -87,7 +87,7 @@
         type="button"
         @click="close"
         :disabled="isSubmitting"
-        class="mt-3 inline-flex w-full justify-center rounded-lg bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 transition dark:bg-gray-800 dark:text-gray-300 dark:ring-gray-700 dark:hover:bg-gray-700 sm:mt-0 sm:w-auto">
+        class="mt-3 inline-flex w-full justify-center rounded-lg bg-white px-4 py-1.5 text-xs font-medium text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 transition dark:bg-gray-800 dark:text-gray-300 dark:ring-gray-700 dark:hover:bg-gray-700 sm:mt-0 sm:w-auto">
         Cancelar
       </button>
     </template>

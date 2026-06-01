@@ -58,7 +58,7 @@
 
     <div class="w-full text-center px-1 mt-1">
       <p
-        class="text-xs font-semibold text-gray-700 dark:text-gray-200 line-clamp-2 break-words leading-snug tracking-tight group-hover:text-primary transition-colors"
+        class="text-xs font-medium text-gray-700 dark:text-gray-300 line-clamp-2 break-words leading-snug tracking-tight group-hover:text-primary transition-colors"
         :title="item.original_name">
         {{ nombreSinExtension }}
       </p>

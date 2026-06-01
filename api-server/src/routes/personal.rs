@@ -6,58 +6,40 @@ use actix_web::web::{self};
 pub fn init_routes(cfg: &mut web::ServiceConfig) {
     cfg.service(
         web::scope("/personal")
-            .wrap(JWT)
-            .route("/agregar_gradoa", web::post().to(upsert_gradoacademico))
-            .route(
-                "/agregar_infobancaria",
-                web::post().to(agregar_infobancaria),
-            )
-            .route("/agregar_sindicato", web::post().to(agregar_sindicato))
-            .route("/banco_por_dni", web::post().to(banco_por_dni))
-            .route("/buscar", web::post().to(buscar_por_nombre))
-            .route(
-                "/editar_infobancaria",
-                web::post().to(editar_datos_bancarios),
-            )
-            .route("/editar_por_dni", web::post().to(editar_perfil))
-            .route("/grado_por_dni", web::post().to(grado_por_dni))
-            .route("/por_dni", web::post().to(perfil_por_dni))
-            .route(
-                "/renuncia_por_vinculo",
-                web::post().to(renuncia_por_vinculo),
-            )
-            .route("/editar_documento", web::post().to(editar_documento))
-            .route("/vinculos_por_dni", web::post().to(vinculos_por_dni))
-            .route("/agregar_contacto", web::post().to(contacto_emergencia_add))
-            .route("/buscar_vacantes", web::post().to(buscar_vacantes))
-            .route("/buscar_por_plaza", web::post().to(buscar_por_plaza))
-            .route("/contacto_dni", web::post().to(conctaco_por_dni))
-            .route(
-                "/registrar_trabajador",
-                web::post().to(registrar_trabajador),
-            )
-            .route("/consultar_dni", web::post().to(consultar_dni_reniec))
-            .route("/eliminar_vinculo", web::post().to(eliminar_vinculo))
-            .route("/buscar_areas", web::post().to(buscar_areas))
-            .route("/buscar_cargos", web::post().to(buscar_cargos))
-            .route(
-                "/upsert_evento_vinculo",
-                web::post().to(upsert_evento_vinculo),
-            )
-            .route(
-                "/delete_evento_vinculo",
-                web::post().to(delete_evento_vinculo),
-            )
-            .route("/eliminar_contacto", web::post().to(eliminar_contacto))
-            .route("/eliminar_sindicato", web::post().to(eliminar_sindicato))
-            .route("/eliminar_gradoa", web::post().to(eliminar_gradoa))
-            .route(
-                "/activos_por_distrito",
-                web::post().to(activos_por_distrito),
-            )
-            .route("/cambio_area", web::post().to(registrar_cambio_area))
-            .route("/calidad_datos", web::post().to(calidad_datos))
-            .route("/avatar", web::post().to(subir_avatar))
-            .route("/avatar/{dni}", web::get().to(ver_avatar)),
+            .route("/avatar/{dni}", web::get().to(ver_avatar))
+            .service(
+                web::scope("")
+                    .wrap(JWT)
+                    .route("/agregar_gradoa", web::post().to(upsert_gradoacademico))
+                    .route("/agregar_infobancaria", web::post().to(agregar_infobancaria))
+                    .route("/agregar_sindicato", web::post().to(agregar_sindicato))
+                    .route("/banco_por_dni", web::post().to(banco_por_dni))
+                    .route("/buscar", web::post().to(buscar_por_nombre))
+                    .route("/editar_infobancaria", web::post().to(editar_datos_bancarios))
+                    .route("/editar_por_dni", web::post().to(editar_perfil))
+                    .route("/grado_por_dni", web::post().to(grado_por_dni))
+                    .route("/por_dni", web::post().to(perfil_por_dni))
+                    .route("/renuncia_por_vinculo", web::post().to(renuncia_por_vinculo))
+                    .route("/editar_documento", web::post().to(editar_documento))
+                    .route("/vinculos_por_dni", web::post().to(vinculos_por_dni))
+                    .route("/agregar_contacto", web::post().to(contacto_emergencia_add))
+                    .route("/buscar_vacantes", web::post().to(buscar_vacantes))
+                    .route("/buscar_por_plaza", web::post().to(buscar_por_plaza))
+                    .route("/contacto_dni", web::post().to(conctaco_por_dni))
+                    .route("/registrar_trabajador", web::post().to(registrar_trabajador))
+                    .route("/consultar_dni", web::post().to(consultar_dni_reniec))
+                    .route("/eliminar_vinculo", web::post().to(eliminar_vinculo))
+                    .route("/buscar_areas", web::post().to(buscar_areas))
+                    .route("/buscar_cargos", web::post().to(buscar_cargos))
+                    .route("/upsert_evento_vinculo", web::post().to(upsert_evento_vinculo))
+                    .route("/delete_evento_vinculo", web::post().to(delete_evento_vinculo))
+                    .route("/eliminar_contacto", web::post().to(eliminar_contacto))
+                    .route("/eliminar_sindicato", web::post().to(eliminar_sindicato))
+                    .route("/eliminar_gradoa", web::post().to(eliminar_gradoa))
+                    .route("/activos_por_distrito", web::post().to(activos_por_distrito))
+                    .route("/cambio_area", web::post().to(registrar_cambio_area))
+                    .route("/calidad_datos", web::post().to(calidad_datos))
+                    .route("/avatar", web::post().to(subir_avatar)),
+            ),
     );
 }

@@ -24,7 +24,7 @@
 
         <div class="min-w-0 flex-1">
           <div class="flex items-start justify-between gap-2">
-            <p class="text-xs font-semibold text-gray-800 dark:text-white/90 break-words flex-1 min-w-0 leading-snug">{{ grado.profesion }}</p>
+            <p class="data-value dark:text-white/90 break-words flex-1 min-w-0 leading-snug">{{ grado.profesion }}</p>
             <span
               :class="badgeNivel(grado.nivel_academico)"
               class="inline-flex items-center gap-1 rounded-full px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider ring-1 ring-inset shrink-0 mt-px">

@@ -1,10 +1,12 @@
 <template>
   <div ref="wrapperRef" class="mapa-wrapper">
     
-    <div v-if="cargando" class="mapa-estado">
-      <div class="spinner" />
-      <span>Cargando mapa...</span>
-    </div>
+    <Transition name="mapa-overlay">
+      <div v-if="cargando" class="mapa-estado">
+        <div class="spinner" />
+        <span>Cargando mapa...</span>
+      </div>
+    </Transition>
 
     <div ref="mapEl" class="mapa-leaflet" />
   </div>
@@ -84,9 +86,9 @@
 
     return `
     <div style="font-family:var(--font-inter);min-width:120px;padding:2px 0">
-      <div style="font-size:var(--text-title-sm);font-weight:600;color:var(--color-primary);line-height:1.3">${nombre}</div>
-      <div style="font-size:var(--text-sm);font-weight:600;color:var(--color-gray-800)">${trabajadores}</div>
-      <div style="font-size:var(--text-xs);color:var(--color-gray-400)">activos &mdash; ${pct(trabajadores)}% del total</div>
+      <div style="font-size:var(--text-xs);font-weight:500;color:var(--color-primary);line-height:1.3;text-transform:uppercase;letter-spacing:0.04em">${nombre}</div>
+      <div style="font-size:var(--text-sm);font-weight:700;color:var(--color-gray-800);margin-top:2px">${trabajadores}</div>
+      <div style="font-size:0.6875rem;color:var(--color-gray-400)">activos · ${pct(trabajadores)}% del total</div>
     </div>`
   }
 
@@ -259,7 +261,7 @@
     gap: 12px;
     font-size: var(--text-xs);
     color: var(--color-gray-500);
-    font-family: system-ui, sans-serif;
+    font-family: var(--font-inter);
   }
 
   .spinner {
@@ -271,23 +273,51 @@
     animation: spin 0.8s linear infinite;
   }
   @keyframes spin {
-    to {
-      transform: rotate(360deg);
-    }
+    to { transform: rotate(360deg); }
+  }
+
+  .mapa-overlay-leave-active {
+    transition: opacity 0.22s cubic-bezier(0.4, 0, 1, 1);
+  }
+  .mapa-overlay-leave-to {
+    opacity: 0;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .mapa-overlay-leave-active { transition-duration: 0.01ms !important; }
+    .spinner { animation-duration: 0.01ms !important; }
   }
 </style>
 
 <style>
   
+  .leaflet-interactive {
+    transition:
+      fill-opacity 0.18s cubic-bezier(0.16, 1, 0.3, 1),
+      stroke-width 0.16s cubic-bezier(0.16, 1, 0.3, 1),
+      stroke 0.16s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
   .tt-lima {
-    background: white !important;
+    background: var(--color-card) !important;
     border: 1px solid rgba(53, 37, 205, 0.15) !important;
     border-radius: 12px !important;
     padding: 12px 14px !important;
     box-shadow: 0 6px 24px rgba(16, 24, 40, 0.14) !important;
     max-width: 220px !important;
+    animation: tt-appear 0.14s cubic-bezier(0.16, 1, 0.3, 1);
   }
   .tt-lima.leaflet-tooltip-top::before {
     border-top-color: rgba(53, 37, 205, 0.15) !important;
+  }
+
+  @keyframes tt-appear {
+    from { opacity: 0; transform: translateY(4px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .leaflet-interactive { transition-duration: 0.01ms !important; }
+    .tt-lima { animation-duration: 0.01ms !important; }
   }
 </style>

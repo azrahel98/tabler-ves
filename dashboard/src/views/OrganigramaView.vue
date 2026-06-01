@@ -3,21 +3,21 @@
     <div class="p-4 pt-1 mx-auto max-w-(--breakpoint-2xl) md:p-6">
       <div class="mb-6 flex items-center justify-between">
         <div>
-          <h1 class="text-title-lg font-bold leading-tight text-gray-900 dark:text-white tracking-tight">Organigrama</h1>
+          <h1 class="text-title-sm font-semibold text-gray-800 dark:text-white/90">Organigrama</h1>
           <p class="mt-1 text-xs text-gray-500 dark:text-gray-400 font-medium">Estructura jerárquica de la organización</p>
         </div>
         <div class="flex items-center gap-2">
           <button
             v-if="!cargando"
             @click="expandirTodo = !expandirTodo"
-            class="inline-flex items-center gap-2 rounded-xl border border-gray-100 bg-card px-3.5 py-2 text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-primary/5 dark:border-white/6 dark:bg-white/5 dark:text-gray-300 dark:hover:bg-white/10 transition-colors">
+            class="inline-flex items-center gap-2 rounded-xl border border-gray-100 bg-card px-3 py-1.5 text-xs font-medium text-gray-700 shadow-theme-xs hover:bg-primary/5 dark:border-white/6 dark:bg-white/5 dark:text-gray-300 dark:hover:bg-white/10 transition-colors">
             <ChevronsUpDown class="h-4 w-4" />
             {{ expandirTodo ? 'Colapsar' : 'Expandir' }}
           </button>
           <button
             v-if="!cargando"
             @click="recargar"
-            class="inline-flex items-center gap-2 rounded-xl border border-gray-100 bg-card px-3.5 py-2 text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-primary/5 dark:border-white/6 dark:bg-white/5 dark:text-gray-300 dark:hover:bg-white/10 transition-colors">
+            class="inline-flex items-center gap-2 rounded-xl border border-gray-100 bg-card px-3 py-1.5 text-xs font-medium text-gray-700 shadow-theme-xs hover:bg-primary/5 dark:border-white/6 dark:bg-white/5 dark:text-gray-300 dark:hover:bg-white/10 transition-colors">
             <RefreshCw class="h-4 w-4" />
             Actualizar
           </button>
@@ -26,15 +26,15 @@
 
       <div v-if="cargando" class="flex flex-col items-center gap-3 py-20">
         <Loading size="md" />
-        <span class="text-sm text-gray-500 dark:text-gray-400">Cargando organigrama…</span>
+        <span class="text-xs text-gray-500 dark:text-gray-400">Cargando organigrama…</span>
       </div>
 
       <div v-else-if="organigrama.length === 0" class="flex flex-col items-center justify-center py-20 text-center">
         <div class="flex items-center justify-center w-16 h-16 rounded-2xl bg-surface dark:bg-white/5 mb-4">
           <Network class="h-8 w-8 text-gray-400 dark:text-gray-500" />
         </div>
-        <p class="text-base font-semibold text-gray-700 dark:text-gray-300">Sin datos de organigrama</p>
-        <p class="text-sm text-gray-400 dark:text-gray-500 mt-1 max-w-xs">No se encontró información jerárquica disponible</p>
+        <p class="text-xs font-semibold text-gray-700 dark:text-gray-300">Sin datos de organigrama</p>
+        <p class="text-xs text-gray-400 dark:text-gray-500 mt-1 max-w-xs">No se encontró información jerárquica disponible</p>
       </div>
 
       <template v-else>
@@ -50,7 +50,7 @@
         </div>
 
         <div class="hidden md:block rounded-2xl border border-gray-100 bg-card shadow-theme-xs dark:border-white/6 dark:bg-white/3 overflow-hidden">
-          <table class="w-full text-sm">
+          <table class="w-full text-xs">
             <thead>
               <tr class="border-b border-gray-100 dark:border-white/6 bg-surface dark:bg-white/3">
                 <th class="px-3 py-3.5 text-left text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500 w-10"></th>

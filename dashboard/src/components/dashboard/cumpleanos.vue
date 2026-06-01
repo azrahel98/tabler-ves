@@ -3,7 +3,7 @@
 
     
     <div class="flex items-center justify-between gap-3">
-      <h3 class="text-title-md font-semibold leading-snug text-gray-800 dark:text-white/90">Cumpleaños</h3>
+      <h3 class="text-xs font-bold uppercase tracking-wider text-gray-800 dark:text-white/90">Cumpleaños</h3>
 
       <div class="flex items-center gap-0.5">
         <button
@@ -12,7 +12,7 @@
           <ChevronLeft class="w-3.5 h-3.5" />
         </button>
         <span
-          class="text-sm font-medium text-gray-600 dark:text-gray-300 capitalize px-1"
+          class="text-xs font-medium text-gray-600 dark:text-gray-300 capitalize px-1"
           style="min-width: 6rem; text-align: center;">
           {{ format(viewDate, "MMM yyyy", { locale: es }) }}
         </span>
@@ -41,7 +41,7 @@
         
         <div class="min-w-0 flex-1">
           <div class="flex items-center gap-2 justify-between">
-            <p class="text-sm font-semibold text-gray-800 dark:text-white/90 leading-snug truncate">
+            <p class="text-xs font-medium text-gray-800 dark:text-white/90 leading-snug truncate">
               {{ item.nombre }}
             </p>
             <span
@@ -50,12 +50,12 @@
               {{ diasLabel(item.daysUntil) }}
             </span>
           </div>
-          <p class="text-xs text-gray-400 uppercase tracking-wide truncate">
+          <p class="data-label truncate mt-0.5">
             <template v-if="item.area">{{ item.area }}</template>
           </p>
-          <div class="flex items-center gap-1 mt-1.5">
-            <Calendar class="w-3 h-3 text-gray-400 shrink-0" />
-            <span class="text-xs text-gray-400">
+          <div class="flex items-center gap-1 mt-1">
+            <Calendar class="w-2.5 h-2.5 text-gray-400 shrink-0" />
+            <span class="text-[10px] text-gray-400">
               {{ format(item.fechaCumple, "MMM dd", { locale: es }) }} · {{ age(item.nacimiento) }} años
             </span>
           </div>
@@ -63,7 +63,7 @@
       </RouterLink>
 
       <div v-if="listaDelMes.length === 0" class="flex items-center justify-center py-10">
-        <p class="text-sm text-gray-400">Sin cumpleaños este mes</p>
+        <p class="text-xs text-gray-400">Sin cumpleaños este mes</p>
       </div>
     </div>
 

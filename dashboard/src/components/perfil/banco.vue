@@ -82,8 +82,10 @@
           @click="copiarCCI"
           class="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
           :title="copiado ? 'Copiado!' : 'Copiar CCI'">
-          <Check v-if="copiado" class="h-4 w-4 text-emerald-500" />
-          <Copy v-else class="h-3.5 w-3.5" />
+          <Transition name="icon-swap" mode="out-in">
+            <Check v-if="copiado" key="check" class="h-4 w-4 text-emerald-500" />
+            <Copy v-else key="copy" class="h-3.5 w-3.5" />
+          </Transition>
         </button>
       </div>
     </div>

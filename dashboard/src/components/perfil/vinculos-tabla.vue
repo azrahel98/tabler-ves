@@ -10,17 +10,17 @@
       </div>
     </div>
 
-    <div class="hidden md:block overflow-x-auto max-h-[25vh] lg:max-h-[50vh] xl:max-h-[60vh] overflow-y-auto">
-      <table class="w-full">
+    <div class="hidden md:block overflow-x-auto lg:overflow-x-visible max-h-[25vh] lg:max-h-[50vh] xl:max-h-[60vh] overflow-y-auto">
+      <table class="w-full lg:table-fixed">
         <thead class="sticky top-0 bg-white dark:bg-gray-900 z-10">
           <tr class="border-b border-gray-100 dark:border-gray-800">
-            <th class="py-2 text-center text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500"></th>
-            <th class="px-5 py-2.5 text-left text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500">Área / Cargo</th>
-            <th class="px-5 py-2.5 text-left text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500">Régimen</th>
-            <th class="px-5 py-2.5 text-left text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500">Período</th>
-            <th class="px-5 py-2.5 text-right text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500">Sueldo</th>
-            <th class="px-5 py-2.5 text-center text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500">Info</th>
-            <th v-if="esAdmin" class="px-5 py-2.5"></th>
+            <th class="py-2 w-6 text-center text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500"></th>
+            <th class="px-3 py-2.5 lg:w-[35%] text-left text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500">Área / Cargo</th>
+            <th class="px-3 py-2.5 lg:w-[14%] text-left text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500">Régimen</th>
+            <th class="px-3 py-2.5 lg:w-[24%] text-left text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500">Período</th>
+            <th class="px-3 py-2.5 lg:w-[14%] text-right text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500">Sueldo</th>
+            <th class="px-2 py-2.5 w-8 text-center text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500">Info</th>
+            <th v-if="esAdmin" class="px-2 py-2.5 w-8"></th>
           </tr>
         </thead>
         <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
@@ -29,7 +29,7 @@
               <span class="inline-block h-2 w-2 rounded-full" :class="v.estado === 'activo' ? 'bg-emerald-500' : 'bg-red-400'" :title="v.estado === 'activo' ? 'Activo' : 'Inactivo'"> </span>
             </td>
 
-            <td class="pl-2 py-3 max-w-[220px]">
+            <td class="pl-2 py-3 min-w-0 max-w-0">
               <p class="text-xs font-semibold text-gray-800 dark:text-white truncate" :title="v.cargo ?? undefined">{{ v.cargo }}</p>
               <p class="text-[10px] text-gray-400 dark:text-gray-500 truncate mt-0.5" :title="v.area ?? undefined">{{ v.area }}</p>
               <span
@@ -40,14 +40,14 @@
               </span>
             </td>
 
-            <td class="px-5 py-3">
+            <td class="px-3 py-3">
               <span
-                class="text-xs font-medium text-gray-600 dark:text-gray-300 bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5 rounded-lg px-2.5 py-1 inline-block whitespace-nowrap uppercase tracking-wider text-[9px]"
+                class="text-xs font-medium text-gray-600 dark:text-gray-300 bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5 rounded-lg px-2 py-1 inline-block whitespace-nowrap uppercase tracking-wider text-[9px]"
                 >{{ v.regimen }}</span
               >
             </td>
 
-            <td class="px-5 py-3 whitespace-nowrap">
+            <td class="px-3 py-3">
               <span class="text-xs font-mono text-gray-600 dark:text-gray-300 tracking-normal">{{ format(addDays(new Date(v.fecha_ingreso), 1), 'dd/MM/yyyy') }}</span>
               <span class="mx-1.5 text-gray-300 dark:text-gray-600">→</span>
               <span v-if="v.fecha_salida" class="text-xs font-mono text-gray-500 dark:text-gray-400 tracking-normal">
@@ -61,15 +61,15 @@
               </span>
             </td>
 
-            <td class="px-5 py-3 text-right whitespace-nowrap">
+            <td class="px-3 py-3 text-right">
               <div class="inline-flex items-center rounded-lg bg-gray-50/50 dark:bg-white/3 border border-gray-100 dark:border-white/5 px-2.5 py-0.5 shadow-theme-xs">
                 <span class="text-[10px] font-semibold text-gray-400 dark:text-gray-500 mr-1 select-none">S/</span>
                 <span class="text-xs font-bold font-mono text-gray-800 dark:text-white tracking-wide">{{ formatSueldo(v.sueldo) }}</span>
               </div>
             </td>
 
-            <td class="px-5 py-3.5 text-center">
-              <Popover posicion="abajo" alineacion="fin" ancho="320px" :mostrarFlecha="true" :mostrarCerrar="true" titulo="Información Adicional">
+            <td class="px-2 py-3.5 w-px text-center">
+              <Popover posicion="abajo" alineacion="fin" ancho="260px" :mostrarFlecha="true" :mostrarCerrar="true" titulo="Información Adicional">
                 <template #disparador>
                   <button
                     class="inline-flex items-center justify-center rounded-lg p-1.5 text-gray-400 hover:bg-primary/5 hover:text-gray-600 dark:hover:bg-white/5 dark:hover:text-gray-300 transition-colors"
@@ -77,7 +77,7 @@
                     <Info class="h-3.5 w-3.5" />
                   </button>
                 </template>
-                <div class="space-y-1">
+                <div class="space-y-1.5">
                   <div v-if="v.doc_ingreso" class="detalle-fila">
                     <span class="detalle-etiqueta">Doc. Ingreso</span>
                     <span class="detalle-valor">{{ v.doc_ingreso }} {{ v.numero_doc_ingreso }}</span>
@@ -113,7 +113,7 @@
                       <span class="detalle-etiqueta">Evento</span>
                       <span class="detalle-valor">
                         {{ v.tipo_evento }}
-                        <span v-if="v.estado_evento" class="text-gray-400"> · {{ v.estado_evento }}</span>
+                        <span v-if="v.estado_evento" class="detalle-secundario"> · {{ v.estado_evento }}</span>
                       </span>
                     </div>
                     <div v-if="v.doc_evento_tipo" class="detalle-fila">
@@ -129,7 +129,7 @@
               </Popover>
             </td>
 
-            <td class="px-3 py-3.5 text-center" v-if="esAdmin">
+            <td class="px-2 py-3.5 w-px text-center" v-if="esAdmin">
               <Popover posicion="abajo" alineacion="fin" ancho="170px" :mostrarCerrar="false" :mostrarFlecha="false" sinPadding>
                 <template #disparador>
                   <button
@@ -436,13 +436,13 @@
     display: flex;
     flex-direction: column;
     gap: 2px;
-    padding-bottom: 5.5px;
-    border-bottom: 1px solid var(--color-gray-50);
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--color-gray-100);
   }
 
   :root.dark .detalle-fila,
   .dark .detalle-fila {
-    border-bottom-color: rgba(255, 255, 255, 0.04);
+    border-bottom-color: rgba(255, 255, 255, 0.06);
   }
 
   .detalle-fila:last-child {
@@ -451,16 +451,17 @@
   }
 
   .detalle-etiqueta {
-    font-size: 10px;
-    font-weight: 700;
+    font-size: 0.625rem;
+    font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.06em;
     color: var(--color-gray-400);
+    line-height: 1;
   }
 
   .detalle-valor {
-    font-size: var(--text-sm);
-    font-weight: 500;
+    font-size: 0.75rem;
+    font-weight: 400;
     color: var(--color-gray-800);
     word-break: break-word;
     line-height: 1.4;
@@ -468,7 +469,17 @@
 
   :root.dark .detalle-valor,
   .dark .detalle-valor {
-    color: rgba(255, 255, 255, 0.9);
+    color: rgba(255, 255, 255, 0.88);
+  }
+
+  .detalle-secundario {
+    font-size: 0.6875rem;
+    color: var(--color-gray-400);
+  }
+
+  :root.dark .detalle-secundario,
+  .dark .detalle-secundario {
+    color: rgba(255, 255, 255, 0.4);
   }
 
   /* Anular el padding excesivo del cuerpo del popover para este menú de acciones */

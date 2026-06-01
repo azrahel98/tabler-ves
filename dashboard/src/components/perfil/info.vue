@@ -1,8 +1,8 @@
 <template>
-  <div class="rounded-2xl border border-gray-100 bg-card p-6 dark:border-white/6 dark:bg-white/3 flex flex-col">
-    <div class="flex items-center justify-between gap-1 text-xs font-bold uppercase tracking-wider text-gray-800 dark:text-white/90 mb-6">
+  <div class="rounded-2xl border border-gray-100 bg-card p-4 dark:border-white/6 dark:bg-white/3 flex flex-col">
+    <div class="flex items-center justify-between gap-1 text-xs font-bold uppercase tracking-wider text-gray-800 dark:text-white/90 mb-4">
       <div class="flex items-center gap-1">
-        <svg class="h-5 w-5 text-primary" fill="currentColor" viewBox="0 0 24 24">
+        <svg class="h-4 w-4 text-primary" fill="currentColor" viewBox="0 0 24 24">
           <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
         </svg>
         Informacion Personal
@@ -10,64 +10,62 @@
       <button
         v-if="esAdmin"
         @click="isEditModalOpen = true"
-        class="rounded-full p-1.5 text-gray-400 hover:bg-primary/10 hover:text-primary dark:hover:bg-primary/20 dark:hover:text-brand-300 transition-colors"
+        class="rounded-full p-1 text-gray-400 hover:bg-primary/10 hover:text-primary dark:hover:bg-primary/20 dark:hover:text-brand-300 transition-colors"
         title="Editar Información">
-        <Pencil class="h-4 w-4" />
+        <Pencil class="h-3.5 w-3.5" />
       </button>
     </div>
 
-    <div v-if="perfilActual" class="space-y-3 flex-grow flex flex-col justify-between">
+    <div v-if="perfilActual" class="space-y-2 flex-grow flex flex-col justify-between">
       <div>
-        <p class="text-2xs font-medium tracking-wider text-gray-400">Telefono Celular</p>
-        <p class="font-semibold text-xs font-mono text-gray-800 dark:text-white/90 tracking-wide">{{ formatPhone(perfilActual.telf) || 'No tiene registros' }}</p>
+        <p class="data-label">Telefono Celular</p>
+        <p class="data-value font-mono dark:text-white/90 tracking-wide">{{ formatPhone(perfilActual.telf) || 'No tiene registros' }}</p>
       </div>
       <div>
-        <p class="text-2xs font-medium tracking-wider text-gray-400">Correo electronico</p>
-        <p class="font-medium text-xs uppercase text-gray-800 dark:text-white/90">{{ perfilActual.email || 'No tiene registros' }}</p>
+        <p class="data-label">Correo electronico</p>
+        <p class="data-value uppercase dark:text-white/90">{{ perfilActual.email || 'No tiene registros' }}</p>
       </div>
       <div>
-        <p class="text-2xs font-medium tracking-wider text-gray-400">Direccion</p>
-        <p class="font-medium text-xs uppercase text-gray-800 dark:text-white/90">{{ perfilActual.direccion || 'No tiene registros' }}</p>
+        <p class="data-label">Direccion</p>
+        <p class="data-value uppercase dark:text-white/90">{{ perfilActual.direccion || 'No tiene registros' }}</p>
       </div>
-      <div class="grid grid-cols-2 gap-4">
+      <div class="grid grid-cols-2 gap-3">
         <div>
-          <p class="text-2xs font-medium tracking-wider text-gray-400">Region</p>
-          <p class="font-medium text-xs uppercase text-gray-800 dark:text-white/90">{{ perfilActual.region || 'No tiene registros' }}</p>
+          <p class="data-label">Region</p>
+          <p class="data-value uppercase dark:text-white/90">{{ perfilActual.region || 'No tiene registros' }}</p>
         </div>
         <div>
-          <p class="text-2xs font-medium tracking-wider text-gray-400">Distrito</p>
-          <p class="font-medium text-xs uppercase text-gray-800 dark:text-white/90">{{ perfilActual.distrito || 'No tiene registros' }}</p>
+          <p class="data-label">Distrito</p>
+          <p class="data-value uppercase dark:text-white/90">{{ perfilActual.distrito || 'No tiene registros' }}</p>
         </div>
       </div>
       <div>
-        <p class="text-2xs font-medium tracking-wider text-gray-400">DNI / RUC</p>
-        <p class="font-semibold text-xs font-mono text-gray-800 dark:text-white/90 tracking-wide">
+        <p class="data-label">DNI / RUC</p>
+        <p class="data-value font-mono dark:text-white/90 tracking-wide">
           {{ perfilActual.dni }} <span v-if="perfilActual.ruc" class="text-gray-400 font-sans">|</span> <span v-if="perfilActual.ruc" class="text-gray-500">{{ perfilActual.ruc }}</span>
         </p>
       </div>
-      <div class="grid grid-cols-2 gap-4">
+      <div class="grid grid-cols-2 gap-3">
         <div>
-          <p class="text-2xs font-medium tracking-wider text-gray-400">Fecha de Nacimiento</p>
-          <p class="font-medium text-xs text-gray-800 dark:text-white/90">{{ formatUTC(perfilActual.nacimiento) || 'No tiene registros' }}</p>
+          <p class="data-label">Fecha de Nacimiento</p>
+          <p class="data-value dark:text-white/90">{{ formatUTC(perfilActual.nacimiento) || 'No tiene registros' }}</p>
         </div>
         <div>
-          <p class="text-2xs font-medium tracking-wider text-gray-400">Sexo</p>
-          <p class="font-medium text-xs text-gray-800 dark:text-white/90">{{ perfilActual.sexo === 'M' ? 'Masculino' : perfilActual.sexo === 'F' ? 'Femenino' : '-' }}</p>
+          <p class="data-label">Sexo</p>
+          <p class="data-value dark:text-white/90">{{ perfilActual.sexo === 'M' ? 'Masculino' : perfilActual.sexo === 'F' ? 'Femenino' : '-' }}</p>
         </div>
       </div>
 
       <!-- Fila sutil de Contacto de Emergencia integrada -->
       <div>
-        <p class="text-2xs font-medium tracking-wider text-gray-400">Contacto de Emergencia</p>
+        <p class="data-label">Contacto de Emergencia</p>
         <div class="flex items-center justify-between gap-2 mt-0.5">
-          <p v-if="contactoEmergencia" class="font-medium text-xs uppercase text-gray-800 dark:text-white/90">
+          <p v-if="contactoEmergencia" class="data-value uppercase flex flex-col dark:text-white/90">
             {{ contactoEmergencia.nombre }}
             <span class="text-3xs text-gray-400 normal-case tracking-normal font-normal">({{ contactoEmergencia.relacion }})</span>
-            <span v-if="contactoEmergencia.telefono" class="text-gray-400 tracking-wide font-normal font-mono">
-              &nbsp;•&nbsp; {{ formatPhone(contactoEmergencia.telefono) }}
-            </span>
+            <span v-if="contactoEmergencia.telefono" class="text-gray-400 tracking-wide font-normal font-mono"> {{ formatPhone(contactoEmergencia.telefono) }} </span>
           </p>
-          <p v-else class="text-xs uppercase text-gray-400">Sin registros</p>
+          <p v-else class="data-label">Sin registros</p>
 
           <div class="flex items-center gap-1 shrink-0">
             <button
@@ -150,4 +148,5 @@
       eliminando.value = false
     }
   }
-</script>>
+</script>
+>
