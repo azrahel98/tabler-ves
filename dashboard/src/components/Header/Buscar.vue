@@ -77,9 +77,12 @@
           v-if="showDropdown"
           class="absolute left-0 top-full mt-2 w-full rounded-xl border border-gray-100 bg-card p-2 space-y-1 shadow-theme-lg dark:border-white/6 dark:bg-gray-950 z-50 max-h-[400px] overflow-y-auto">
           <template v-if="isLoading">
-            <div v-for="i in 3" :key="i" class="px-4 py-3 rounded-lg">
-              <div class="h-3 w-3/4 rounded bg-gray-100 dark:bg-white/10 animate-pulse mb-1.5"></div>
-              <div class="h-2.5 w-1/3 rounded bg-gray-50 dark:bg-white/5 animate-pulse"></div>
+            <div v-for="i in 3" :key="i" class="flex items-center gap-3 px-3 py-2.5 rounded-lg">
+              <div class="w-10 h-10 shrink-0 rounded-full bg-gray-100 dark:bg-white/10 animate-pulse"></div>
+              <div class="flex-1">
+                <div class="h-3 w-3/4 rounded bg-gray-100 dark:bg-white/10 animate-pulse mb-1.5"></div>
+                <div class="h-2.5 w-1/3 rounded bg-gray-50 dark:bg-white/5 animate-pulse"></div>
+              </div>
             </div>
           </template>
 
@@ -95,13 +98,23 @@
                 }
               "
               class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-primary/5 dark:hover:bg-white/5 transition-colors">
-              <div class="w-8 h-8 shrink-0 overflow-hidden rounded-full border border-gray-100 dark:border-white/6">
-                <img v-if="person.avatar" :src="`${baseURL}/personal/avatar/${person.dni}`" alt="avatar" class="w-full h-full object-cover" />
-                <img v-else-if="person.sexo === 'M'" src="/M.svg" alt="avatar" class="w-full h-full" />
-                <img v-else src="/F.svg" alt="avatar" class="w-full h-full" />
+              <div class="relative w-10 h-10 shrink-0">
+                <div class="w-10 h-10 overflow-hidden rounded-full border border-gray-100 dark:border-white/6">
+                  <img v-if="person.avatar" :src="`${baseURL}/personal/avatar/${person.dni}`" alt="avatar" class="w-full h-full object-cover" />
+                  <img v-else-if="person.sexo === 'M'" src="/M.svg" alt="avatar" class="w-full h-full" />
+                  <img v-else src="/F.svg" alt="avatar" class="w-full h-full" />
+                </div>
+                <span
+                  v-if="person.estado"
+                  :class="{
+                    'bg-green-400': person.estado === 'activo',
+                    'bg-red-400': person.estado === 'inactivo',
+                    'bg-amber-400': !['activo', 'inactivo'].includes(person.estado),
+                  }"
+                  class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full border-2 border-white dark:border-gray-950" />
               </div>
-              <div>
-                <p class="text-sm font-semibold text-gray-800 dark:text-white uppercase">{{ person.nombre }}</p>
+              <div class="min-w-0 flex-1">
+                <p class="text-sm font-semibold text-gray-800 dark:text-white uppercase truncate">{{ person.nombre }}</p>
                 <p class="text-xs text-gray-500 dark:text-gray-400">DNI: {{ person.dni }}</p>
               </div>
             </RouterLink>
