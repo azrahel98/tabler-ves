@@ -89,6 +89,7 @@ export interface Cumpleano {
   nombre: string
   nacimiento: string
   area: string
+  avatar?: string | null
 }
 
 export interface PersonalActivo {
@@ -99,6 +100,7 @@ export interface PersonalActivo {
   regimen: string | null
   sindicato: string | null
   ingreso: string | null
+  avatar?: string | null
 }
 
 export interface Renuncia {
@@ -159,6 +161,7 @@ export interface EventoVinculo {
   descripcion_inicio: string | null
   fecha_salida: string | null
   descripcion_salida: string | null
+  avatar?: string | null
 }
 
 export interface Area {

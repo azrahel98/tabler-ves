@@ -5,8 +5,8 @@
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\skills-lock.json": {
-    "mtime": 1779355003.666337,
-    "ast_hash": "3ab433c6a8d357f818ddc3c4a2648819",
+    "mtime": 1780978187.453892,
+    "ast_hash": "7de9947218a33b68737e6fa510c64ed3",
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\tsconfig.app.json": {
@@ -149,9 +149,24 @@
     "ast_hash": "59e1f8315c2083fb7997e5ff3edfcb57",
     "semantic_hash": ""
   },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.agents\\skills\\ui-ux-pro-max\\scripts\\core.py": {
+    "mtime": 1780978137.6465394,
+    "ast_hash": "f2438d23c79e31780fcb6742d68601a1",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.agents\\skills\\ui-ux-pro-max\\scripts\\design_system.py": {
+    "mtime": 1780978137.647548,
+    "ast_hash": "d39fb252f4adf5fed6359483dbe7d590",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.agents\\skills\\ui-ux-pro-max\\scripts\\search.py": {
+    "mtime": 1780978137.648054,
+    "ast_hash": "800e6cb41a93e4c8e918dcd1847252f8",
+    "semantic_hash": ""
+  },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.claude\\settings.local.json": {
-    "mtime": 1779035549.0738153,
-    "ast_hash": "a21973ef09b3d242e76bc38a612f698e",
+    "mtime": 1780233862.0045967,
+    "ast_hash": "3c77b96127f88ca1929bbb969399f66c",
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.claude\\skills\\impeccable\\scripts\\cleanup-deprecated.mjs": {
@@ -274,6 +289,21 @@
     "ast_hash": "59e1f8315c2083fb7997e5ff3edfcb57",
     "semantic_hash": ""
   },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.claude\\skills\\ui-ux-pro-max\\scripts\\core.py": {
+    "mtime": 1780978137.6465394,
+    "ast_hash": "f2438d23c79e31780fcb6742d68601a1",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.claude\\skills\\ui-ux-pro-max\\scripts\\design_system.py": {
+    "mtime": 1780978137.647548,
+    "ast_hash": "d39fb252f4adf5fed6359483dbe7d590",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.claude\\skills\\ui-ux-pro-max\\scripts\\search.py": {
+    "mtime": 1780978137.648054,
+    "ast_hash": "800e6cb41a93e4c8e918dcd1847252f8",
+    "semantic_hash": ""
+  },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.impeccable\\design.json": {
     "mtime": 1779355948.5428076,
     "ast_hash": "6f7c827bbf855155cdb2b0deae12a9aa",
@@ -284,13 +314,13 @@
     "ast_hash": "db3f47aa64932b4c922bce752e0e6e0c",
     "semantic_hash": ""
   },
-  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.impeccable\\live\\server.json": {
-    "mtime": 1779669012.4595459,
-    "ast_hash": "6b546fb464b707b82da67442c1221f1c",
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.impeccable\\live\\sessions\\6fad8807.snapshot.json": {
+    "mtime": 1780974757.1183262,
+    "ast_hash": "9fceffb4db61d4c70f2dee23023f0660",
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.impeccable\\live\\sessions\\c5212072.snapshot.json": {
-    "mtime": 1779669266.8822038,
+    "mtime": 1780974476.8383448,
     "ast_hash": "04ae84c7b0a2d9423edcfe2308fb17bc",
     "semantic_hash": ""
   },
@@ -315,33 +345,33 @@
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\components\\dashboard\\circulo.vue": {
-    "mtime": 1779683072.7393613,
-    "ast_hash": "21cd32d1370b4e4248b8cd2b5efbcb31",
+    "mtime": 1780249289.7629032,
+    "ast_hash": "85ea67606f5ad9cd8d85fe362b3b7436",
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\components\\dashboard\\cumpleanos.vue": {
-    "mtime": 1779668540.9838655,
-    "ast_hash": "367ded2c13aeb8fcd27d82dda995b169",
+    "mtime": 1780982444.0829723,
+    "ast_hash": "cb33137977a58f397e0e134164009db4",
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\components\\dashboard\\eventos-vinculo.vue": {
-    "mtime": 1777224089.7724023,
-    "ast_hash": "4d66c3f3df65e279539914aa8d303f4a",
+    "mtime": 1780982460.9534376,
+    "ast_hash": "0936acd928bc33beb2cc294e785465c8",
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\components\\dashboard\\grafico-antiguedad.vue": {
-    "mtime": 1779683093.5351171,
-    "ast_hash": "a81681853637d1c9f4cbbfa15085be58",
+    "mtime": 1780249382.7749794,
+    "ast_hash": "3975d35fd38c0d5655815d0c4a72a338",
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\components\\dashboard\\grafico-edad.vue": {
-    "mtime": 1779683088.6164393,
-    "ast_hash": "eaa64081c12b9fb7bb43a11182235d2d",
+    "mtime": 1780249379.7579732,
+    "ast_hash": "13a9aa323b2c46b6bb58496f66bdaf22",
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\components\\dashboard\\grafico-sexo.vue": {
-    "mtime": 1779683078.101936,
-    "ast_hash": "82f3902b99d4a078871c89f77ef28f60",
+    "mtime": 1780249293.0408554,
+    "ast_hash": "e39349c767103fc57644e303c50327a9",
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\components\\dashboard\\grafico-sindicato.vue": {
@@ -350,23 +380,23 @@
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\components\\dashboard\\mapa.vue": {
-    "mtime": 1777838458.1715176,
-    "ast_hash": "c88c69804ea988819e1419355cc82f8d",
+    "mtime": 1780260001.976613,
+    "ast_hash": "bbdbd0a9c87b2363b7dae917d08d5c15",
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\components\\dashboard\\metrica.vue": {
-    "mtime": 1777224059.116203,
-    "ast_hash": "c06d8ca063ccf1cd554be3869447e2b8",
+    "mtime": 1780661571.4109335,
+    "ast_hash": "a67c8cbe02fca26b6f3b53ae54a66cf7",
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\components\\dashboard\\movimientos.vue": {
-    "mtime": 1777224082.831106,
-    "ast_hash": "0a0a45c8c36d520e8b3b34e193c8a050",
+    "mtime": 1780982452.4600184,
+    "ast_hash": "9867c683bba81a86160e94bfb9fe6047",
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\components\\Header\\Buscar.vue": {
-    "mtime": 1777241744.4048593,
-    "ast_hash": "7fe455ad67b8eef4c94fedc15f76710f",
+    "mtime": 1780660132.38538,
+    "ast_hash": "472e043d73250b10cc5b00a962046429",
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\components\\Header\\Header.vue": {
@@ -375,13 +405,13 @@
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\components\\organigrama\\FilaOrganigrama.vue": {
-    "mtime": 1779640565.4601736,
-    "ast_hash": "cf6a54d08e17dc6be9f4a697d0c41393",
+    "mtime": 1780259558.9991035,
+    "ast_hash": "ab21d24de50fcacfb46bed19da67da9f",
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\components\\perfil\\banco.vue": {
-    "mtime": 1779639604.7138405,
-    "ast_hash": "ee18067566f1ac9d1f7bbf340da3966b",
+    "mtime": 1780248206.661768,
+    "ast_hash": "41be3110212b937c0947755500385453",
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\components\\perfil\\contacto.vue": {
@@ -390,13 +420,13 @@
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\components\\perfil\\grado.vue": {
-    "mtime": 1779633094.7245107,
-    "ast_hash": "095ed86d8042012d2dc0e97029b820d9",
+    "mtime": 1780241813.2706656,
+    "ast_hash": "33239da2ad89d3886d4237a918e0f708",
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\components\\perfil\\header.vue": {
-    "mtime": 1779669370.6156945,
-    "ast_hash": "cee2245a9b2051e0f32455d531a11d0c",
+    "mtime": 1780982134.6005769,
+    "ast_hash": "0dcddd5aa0506a8cea5f6f64bc9b2d5e",
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\components\\perfil\\historial.vue": {
@@ -405,8 +435,8 @@
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\components\\perfil\\info.vue": {
-    "mtime": 1779637180.8172698,
-    "ast_hash": "19d04042b1488e44c82c965db3c6357e",
+    "mtime": 1780983340.2931018,
+    "ast_hash": "2ddd01ca2badc543afbfd5a03c5b2179",
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\components\\perfil\\vinculo.vue": {
@@ -415,18 +445,18 @@
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\components\\perfil\\vinculos-tabla.vue": {
-    "mtime": 1779672775.4856918,
-    "ast_hash": "5518989241b36cbbe5f5f6a5180e08fa",
+    "mtime": 1780983448.0821152,
+    "ast_hash": "2e0e62d209d8d679c82e3d8ebe31372d",
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\components\\perfil\\legajo\\folder.vue": {
-    "mtime": 1779358895.8574092,
-    "ast_hash": "8b446f18ea5a15c336b31dcd0d505af1",
+    "mtime": 1780242046.9715018,
+    "ast_hash": "5dc304f8838cbf3301350a51c8993085",
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\components\\perfil\\legajo\\items.vue": {
-    "mtime": 1779048485.5881634,
-    "ast_hash": "c1136a780bf167876753d164a86fafd1",
+    "mtime": 1780242052.019833,
+    "ast_hash": "572fc08ea9d01638f880ccb0199dacdf",
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\components\\perfil\\legajo\\PreviewModal.vue": {
@@ -440,53 +470,53 @@
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\components\\perfil\\modals\\CambioAreaModal.vue": {
-    "mtime": 1777841157.951998,
-    "ast_hash": "7d0bdaedafb48bdf062d211a667cc9e8",
+    "mtime": 1780246686.617607,
+    "ast_hash": "0c8adf349b8cfb8850bfe30f65de368c",
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\components\\perfil\\modals\\ConfirmarEliminarGradoModal.vue": {
-    "mtime": 1777834758.2175777,
-    "ast_hash": "31beea4616cc6c47cfa66c5f5edb1c0b",
+    "mtime": 1780246698.6348956,
+    "ast_hash": "312ba55397dc28a972aa62459143fc80",
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\components\\perfil\\modals\\ConfirmarEliminarModal.vue": {
-    "mtime": 1777032854.6513672,
-    "ast_hash": "35da056f6b4f7575c24be79574cfc0a4",
+    "mtime": 1780246706.7832625,
+    "ast_hash": "92785e23aff2b6ce47d61614a2e2cc62",
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\components\\perfil\\modals\\DesafiliarModal.vue": {
-    "mtime": 1779050200.451781,
-    "ast_hash": "53aa021fc0bcfccab6c7126ee244f109",
+    "mtime": 1780246750.7667086,
+    "ast_hash": "e490705b765a39a2614ff2ae57ef7296",
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\components\\perfil\\modals\\EditBancoModal.vue": {
-    "mtime": 1777032854.6524272,
-    "ast_hash": "db8968af411c7cc4962253384f3a2e5a",
+    "mtime": 1780246772.4829197,
+    "ast_hash": "0061bb0cddc864d59fd9621d8c705be5",
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\components\\perfil\\modals\\EditContactoModal.vue": {
-    "mtime": 1777032854.6534767,
-    "ast_hash": "bc8a59b406a85e01dd85255d586d0067",
+    "mtime": 1780246798.718831,
+    "ast_hash": "faac2dfe6a4a8aa4c26971e5aed8e935",
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\components\\perfil\\modals\\EditGradoModal.vue": {
-    "mtime": 1777032854.6544824,
-    "ast_hash": "4321deb4b1acc346fbe58e2c3f77ccc1",
+    "mtime": 1780246824.6608686,
+    "ast_hash": "eaf6fb61ca42f4f3a128b1524c0fe134",
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\components\\perfil\\modals\\EditInfoModal.vue": {
-    "mtime": 1779635936.41286,
-    "ast_hash": "eb092df215dfab0c7de099aafb6f1d13",
+    "mtime": 1780246874.349502,
+    "ast_hash": "13b5c93aa24d3c78e27a422fb3056fd1",
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\components\\perfil\\modals\\EventoVinculoModal.vue": {
-    "mtime": 1777224740.7756355,
-    "ast_hash": "924108c1d0898367e00d50e2b6bd8810",
+    "mtime": 1780246952.5724654,
+    "ast_hash": "4ee8e719f5a9bde0347a9249db9e758d",
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\components\\perfil\\modals\\RenunciaModal.vue": {
-    "mtime": 1777032854.6586773,
-    "ast_hash": "fd06ef8cb57f47264d338c29bff22e46",
+    "mtime": 1780247003.1588285,
+    "ast_hash": "6721d8d6054bcd5477ccf0e3c0602f7e",
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\components\\reportes\\GraficoRegimen.vue": {
@@ -524,6 +554,11 @@
     "ast_hash": "84d65c7be767078214658461472a2a59",
     "semantic_hash": ""
   },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\components\\ui\\Avatar.vue": {
+    "mtime": 1780980034.1467624,
+    "ast_hash": "c8dd47688553742e3e6c3de3674ac9be",
+    "semantic_hash": ""
+  },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\components\\ui\\Badge.vue": {
     "mtime": 1779356167.153579,
     "ast_hash": "d1401c9c67dcde874ca3f3affde25e1d",
@@ -545,18 +580,18 @@
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\components\\ui\\Loading.vue": {
-    "mtime": 1779675779.39743,
-    "ast_hash": "668b34dd8258b101c3f45ef26255f87b",
+    "mtime": 1780233941.342863,
+    "ast_hash": "e83ab590fcc6205c7d3c0540d4a7ae0f",
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\components\\ui\\Modal.vue": {
-    "mtime": 1777838900.751779,
-    "ast_hash": "43eb8f57965e51187da9f16669c9b58f",
+    "mtime": 1780246613.9751768,
+    "ast_hash": "db3f03cf4c5432a138585571597c2b42",
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\components\\ui\\Popover.vue": {
-    "mtime": 1779638621.5077393,
-    "ast_hash": "0b2b6d51797e0c39068a1617e640eb16",
+    "mtime": 1780239435.3736444,
+    "ast_hash": "66a10f3d9c70a693b89986b42433f7e0",
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\components\\ui\\SearchableSelect.vue": {
@@ -620,8 +655,8 @@
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\services\\api.ts": {
-    "mtime": 1779680198.8948567,
-    "ast_hash": "65fc46a1d8d02451f91134a1817511bc",
+    "mtime": 1780982518.3224711,
+    "ast_hash": "42d5eed29f433117710ca9f662691c63",
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\stores\\auth.ts": {
@@ -635,8 +670,8 @@
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\stores\\dashboard.ts": {
-    "mtime": 1779680626.8698332,
-    "ast_hash": "1afb2fab72b02b3be02afbdc29833050",
+    "mtime": 1780982077.5206976,
+    "ast_hash": "4917fa7aaf7fe0f9609e749f41f386bb",
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\stores\\layout.ts": {
@@ -650,8 +685,8 @@
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\stores\\reportes.ts": {
-    "mtime": 1777032854.6923647,
-    "ast_hash": "6a70ce5c4b915b7de881df8234b8fe82",
+    "mtime": 1780982095.5768442,
+    "ast_hash": "6c102822ee880b8bf25c742c47c29a7f",
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\stores\\sindicato.ts": {
@@ -665,8 +700,8 @@
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\types\\index.ts": {
-    "mtime": 1777838458.1822445,
-    "ast_hash": "89363627c86bbd1d355315025e6802d6",
+    "mtime": 1780982369.5651727,
+    "ast_hash": "da19ee38a4420f4c34166a6cbb2a9f1d",
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\utils\\formatters.ts": {
@@ -675,8 +710,8 @@
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\views\\CalidadDatosView.vue": {
-    "mtime": 1779675803.4839294,
-    "ast_hash": "03af5db6ddbed8903611d0a2e41576ff",
+    "mtime": 1780259343.538687,
+    "ast_hash": "360c3f6b8ab61f96c874ec4b030165b6",
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\views\\CargaMasivaView.vue": {
@@ -695,8 +730,8 @@
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\views\\DashboardView.vue": {
-    "mtime": 1779683171.4575455,
-    "ast_hash": "0846e373522cdf63baf6f38242d22e1f",
+    "mtime": 1780315675.1868124,
+    "ast_hash": "2b41c193acf8da45e745c1003c1fbcce",
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\views\\LoginView.vue": {
@@ -710,8 +745,8 @@
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\views\\OrganigramaView.vue": {
-    "mtime": 1779640515.9620907,
-    "ast_hash": "997e7ff86400f2047e8a7f8d8d775d40",
+    "mtime": 1780258196.0458226,
+    "ast_hash": "b8c7239d710f8eb6f99b0cfeb790136f",
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\views\\SindicatoView.vue": {
@@ -725,8 +760,8 @@
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\views\\Personal\\PersonalProfile.vue": {
-    "mtime": 1779638217.0451462,
-    "ast_hash": "1b7308c88799f90552868707de1e6895",
+    "mtime": 1780248201.9895225,
+    "ast_hash": "b2a09ddf59830209437116c78e3aa3ff",
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\views\\Personal\\PersonalSearch.vue": {
@@ -735,13 +770,13 @@
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\views\\reporte\\AreaView.vue": {
-    "mtime": 1777224649.3699903,
-    "ast_hash": "7499d4e7e6c50bd07095bbde9245fffa",
+    "mtime": 1780982116.7676723,
+    "ast_hash": "c0f93475fdb05fc032729b945f5d61f0",
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\views\\reporte\\DistritoView.vue": {
-    "mtime": 1777839794.9320831,
-    "ast_hash": "07008578213e9e89579f4010e4bbcce2",
+    "mtime": 1780258045.9333274,
+    "ast_hash": "b7529500dfa3b4faa3b4a893b217beef",
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\src\\views\\reporte\\SindicatoPersonalView.vue": {
@@ -750,8 +785,13 @@
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\API.md": {
-    "mtime": 1777829306.4446175,
-    "ast_hash": "cc2fd88f932697b0682656c3791a7b73",
+    "mtime": 1780981699.409746,
+    "ast_hash": "55246719177f6b0e8ff5cf3053a74739",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\CLAUDE.md": {
+    "mtime": 1780233076.5027144,
+    "ast_hash": "e95b07065dc452c2e8ba78ac0e9ff085",
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\DESIGN.md": {
@@ -760,8 +800,8 @@
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\index.html": {
-    "mtime": 1779668989.8821955,
-    "ast_hash": "6789fda8b95fe14532422c0b45385202",
+    "mtime": 1780974773.6179962,
+    "ast_hash": "02d87f125e40aef8c59763be654f87a9",
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\PRODUCT.md": {
@@ -979,6 +1019,11 @@
     "ast_hash": "74e4aac960c114a7b8761210f80a8cc5",
     "semantic_hash": ""
   },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.agents\\skills\\ui-ux-pro-max\\SKILL.md": {
+    "mtime": 1780978137.628446,
+    "ast_hash": "ba787b9618efeec1f2e2d927ff91ad87",
+    "semantic_hash": ""
+  },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.agents\\workflows\\graphify.md": {
     "mtime": 1779668854.4655762,
     "ast_hash": "84de69efd46ab0b8430393bd4188f8f2",
@@ -1182,6 +1227,11 @@
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.claude\\skills\\impeccable\\reference\\ux-writing.md": {
     "mtime": 1779354929.3887165,
     "ast_hash": "74e4aac960c114a7b8761210f80a8cc5",
+    "semantic_hash": ""
+  },
+  "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.claude\\skills\\ui-ux-pro-max\\SKILL.md": {
+    "mtime": 1780978137.628446,
+    "ast_hash": "ba787b9618efeec1f2e2d927ff91ad87",
     "semantic_hash": ""
   },
   "C:\\Users\\Olaf\\Documents\\tabler-ves\\dashboard\\.superpowers\\brainstorm\\655-1779035550\\content\\direcciones-diseno.html": {

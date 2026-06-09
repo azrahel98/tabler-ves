@@ -1,5 +1,5 @@
 <template>
-  <div v-if="vinculos.length > 0" class="rounded-2xl border border-gray-100 bg-card dark:border-white/6 dark:bg-white/3">
+  <div v-if="vinculos.length > 0" class="rounded-2xl border border-gray-100 bg-card dark:border-white/6 dark:bg-white/3 pb-4">
     <div class="flex items-center justify-between px-5 py-4 border-b border-gray-100 dark:border-white/6">
       <div class="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-gray-800 dark:text-white/90">
         <Briefcase class="h-4 w-4 text-primary shrink-0" />
@@ -11,129 +11,180 @@
     </div>
 
     <div class="hidden md:block overflow-x-auto lg:overflow-x-visible max-h-[25vh] lg:max-h-[50vh] xl:max-h-[60vh] overflow-y-auto">
-      <table class="w-full lg:table-fixed">
+      <table class="w-full table-fixed">
         <thead class="sticky top-0 bg-white dark:bg-gray-900 z-10">
           <tr class="border-b border-gray-100 dark:border-gray-800">
-            <th class="py-2 w-6 text-center text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500"></th>
-            <th class="px-3 py-2.5 lg:w-[35%] text-left text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500">Área / Cargo</th>
-            <th class="px-3 py-2.5 lg:w-[14%] text-left text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500">Régimen</th>
-            <th class="px-3 py-2.5 lg:w-[24%] text-left text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500">Período</th>
-            <th class="px-3 py-2.5 lg:w-[14%] text-right text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500">Sueldo</th>
-            <th class="px-2 py-2.5 w-8 text-center text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500">Info</th>
-            <th v-if="esAdmin" class="px-2 py-2.5 w-8"></th>
+            <th class="px-3 py-2.5 w-[30%] text-left text-3xs font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500">Área / Cargo</th>
+            <th class="px-3 py-2.5 w-[15%] text-left text-3xs font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500">Régimen</th>
+            <th class="px-3 py-2.5 w-[30%] text-left text-3xs font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500">Período</th>
+            <th class="px-3 py-2.5 w-[15%] text-right text-3xs font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500">Sueldo</th>
+            <th class="px-2 py-2.5 w-10 text-center text-3xs font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500">Info</th>
+            <th v-if="esAdmin" class="px-2 py-2.5 w-10"></th>
           </tr>
         </thead>
         <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
-          <tr v-for="v in vinculos" v-memo="[v.id, v.estado]" :key="v.id" class="hover:bg-gray-50 dark:hover:bg-white/3 transition-colors">
-            <td class="pl-4 middle text-start">
-              <span class="inline-block h-2 w-2 rounded-full" :class="v.estado === 'activo' ? 'bg-emerald-500' : 'bg-red-400'" :title="v.estado === 'activo' ? 'Activo' : 'Inactivo'"> </span>
+          <tr
+            v-for="v in vinculos"
+            v-memo="[v.id, v.estado]"
+            :key="v.id"
+            class="transition-all duration-200 ease-out"
+            :class="[
+              v.fecha_salida
+                ? 'opacity-60 hover:opacity-100 hover:bg-gray-50/50 dark:hover:bg-white/2'
+                : 'bg-emerald-50/10 dark:bg-emerald-500/3 hover:bg-emerald-50/20 dark:hover:bg-emerald-500/5',
+            ]">
+            <td class="px-3 py-3 min-w-0 max-w-0">
+              <div class="flex items-start gap-2.5">
+                <!-- Dot indicador de estado -->
+                <span
+                  class="mt-1.5 w-1.5 h-1.5 rounded-full shrink-0"
+                  :class="[v.fecha_salida ? 'bg-gray-300 dark:bg-gray-600' : 'bg-emerald-500 shadow-xs shadow-emerald-500/30']"
+                  :title="v.fecha_salida ? 'Vínculo histórico' : 'Vínculo activo'" />
+                <div class="flex-1 min-w-0">
+                  <div class="flex flex-col gap-0.5">
+                    <p
+                      class="text-xs truncate"
+                      :class="v.fecha_salida ? 'font-medium text-gray-500 dark:text-gray-400' : 'font-semibold text-gray-800 dark:text-white'"
+                      :title="v.cargo ?? undefined">
+                      {{ v.cargo }}
+                    </p>
+                    <p class="text-3xs text-gray-400 dark:text-gray-500 truncate" :title="v.area ?? undefined">{{ v.area }}</p>
+                  </div>
+                  <div v-if="v.sindicato" class="mt-1.5">
+                    <span
+                      class="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2 py-0.5 text-3xs font-bold uppercase tracking-wider text-amber-700 ring-1 ring-amber-200/50 dark:bg-amber-500/10 dark:text-amber-400 dark:ring-amber-500/20">
+                      <Shield class="h-2.5 w-2.5 shrink-0" />
+                      {{ v.sindicato }}
+                    </span>
+                  </div>
+                </div>
+              </div>
             </td>
 
-            <td class="pl-2 py-3 min-w-0 max-w-0">
-              <p class="text-xs font-semibold text-gray-800 dark:text-white truncate" :title="v.cargo ?? undefined">{{ v.cargo }}</p>
-              <p class="text-[10px] text-gray-400 dark:text-gray-500 truncate mt-0.5" :title="v.area ?? undefined">{{ v.area }}</p>
+            <td class="px-3 py-3 min-w-0">
               <span
-                v-if="v.sindicato"
-                class="mt-1.5 inline-flex items-center gap-1 rounded-full bg-amber-50 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-amber-700 ring-1 ring-amber-200/50 dark:bg-amber-500/10 dark:text-amber-400 dark:ring-amber-500/20">
-                <Shield class="h-2.5 w-2.5 shrink-0" />
-                {{ v.sindicato }}
-              </span>
-            </td>
-
-            <td class="px-3 py-3">
-              <span
-                class="text-xs font-medium text-gray-600 dark:text-gray-300 bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5 rounded-lg px-2 py-1 inline-block whitespace-nowrap uppercase tracking-wider text-[9px]"
+                class="font-medium text-gray-600 dark:text-gray-300 bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5 rounded-lg px-2 py-1 inline-block max-w-full truncate uppercase tracking-wider text-3xs align-middle"
+                :title="v.regimen!"
                 >{{ v.regimen }}</span
               >
             </td>
 
-            <td class="px-3 py-3">
-              <span class="text-xs font-mono text-gray-600 dark:text-gray-300 tracking-normal">{{ format(addDays(new Date(v.fecha_ingreso), 1), 'dd/MM/yyyy') }}</span>
-              <span class="mx-1.5 text-gray-300 dark:text-gray-600">→</span>
-              <span v-if="v.fecha_salida" class="text-xs font-mono text-gray-500 dark:text-gray-400 tracking-normal">
-                {{ format(addDays(new Date(v.fecha_salida), 1), 'dd/MM/yyyy') }}
-              </span>
-              <span
-                v-else-if="v.estado == 'activo'"
-                class="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-emerald-700 ring-1 ring-inset ring-emerald-600/10 dark:bg-emerald-500/10 dark:text-emerald-400 dark:ring-emerald-500/20">
-                <span class="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                Activo
-              </span>
-            </td>
-
-            <td class="px-3 py-3 text-right">
-              <div class="inline-flex items-center rounded-lg bg-gray-50/50 dark:bg-white/3 border border-gray-100 dark:border-white/5 px-2.5 py-0.5 shadow-theme-xs">
-                <span class="text-[10px] font-semibold text-gray-400 dark:text-gray-500 mr-1 select-none">S/</span>
-                <span class="text-xs font-bold font-mono text-gray-800 dark:text-white tracking-wide">{{ formatSueldo(v.sueldo) }}</span>
+            <td class="px-3 py-3 min-w-0">
+              <div
+                class="flex items-center gap-1 text-[11px] font-mono whitespace-nowrap tracking-tighter"
+                :class="v.fecha_salida ? 'text-gray-400/80 dark:text-gray-500/80' : 'text-gray-600 dark:text-gray-300'">
+                <span>{{ format(addDays(new Date(v.fecha_ingreso), 1), 'dd/MM/yyyy') }}</span>
+                <span class="text-gray-300 dark:text-gray-700 font-sans opacity-50 select-none">→</span>
+                <span v-if="v.fecha_salida" class="text-gray-400 dark:text-gray-500">
+                  {{ format(addDays(new Date(v.fecha_salida), 1), 'dd/MM/yyyy') }}
+                </span>
+                <span
+                  v-else-if="v.estado == 'activo'"
+                  class="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-emerald-700 ring-1 ring-inset ring-emerald-600/10 dark:bg-emerald-500/10 dark:text-emerald-400 dark:ring-emerald-500/20 font-sans">
+                  <span class="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                  Activo
+                </span>
               </div>
             </td>
 
-            <td class="px-2 py-3.5 w-px text-center">
-              <Popover posicion="abajo" alineacion="fin" ancho="260px" :mostrarFlecha="true" :mostrarCerrar="true" titulo="Información Adicional">
+            <td class="px-3 py-3 text-right">
+              <div class="inline-flex items-baseline rounded-lg bg-gray-50/50 dark:bg-white/3 border border-gray-100 dark:border-white/5 px-2 py-0.5 shadow-theme-xs">
+                <span class="text-3xs font-semibold mr-0.5 select-none" :class="v.fecha_salida ? 'text-gray-400/60 dark:text-gray-500/60' : 'text-gray-400 dark:text-gray-500'"> S/ </span>
+                <span class="text-xs font-mono tracking-wide" :class="v.fecha_salida ? 'font-medium text-gray-500 dark:text-gray-400' : 'font-bold text-gray-800 dark:text-white'">
+                  {{ formatSueldo(v.sueldo) }}
+                </span>
+              </div>
+            </td>
+
+            <td class="px-2 py-3 text-center">
+              <Popover posicion="abajo" alineacion="fin" ancho="280px" :mostrarFlecha="true" :mostrarCerrar="true" titulo="Información Adicional">
                 <template #disparador>
                   <button
-                    class="inline-flex items-center justify-center rounded-lg p-1.5 text-gray-400 hover:bg-primary/5 hover:text-gray-600 dark:hover:bg-white/5 dark:hover:text-gray-300 transition-colors"
+                    class="inline-flex items-center justify-center rounded-lg p-1.5 text-gray-400 hover:bg-primary/5 hover:text-primary dark:hover:bg-primary/10 dark:hover:text-primary-300 transition-colors"
                     title="Ver detalles">
                     <Info class="h-3.5 w-3.5" />
                   </button>
                 </template>
-                <div class="space-y-1.5">
-                  <div v-if="v.doc_ingreso" class="detalle-fila">
-                    <span class="detalle-etiqueta">Doc. Ingreso</span>
-                    <span class="detalle-valor">{{ v.doc_ingreso }} {{ v.numero_doc_ingreso }}</span>
-                  </div>
-                  <div v-if="v.descrip_ingreso" class="detalle-fila">
-                    <span class="detalle-etiqueta">Descripción Ingreso</span>
-                    <span class="detalle-valor">{{ v.descrip_ingreso }}</span>
-                  </div>
-                  <div v-if="v.cargo_estructural" class="detalle-fila">
-                    <span class="detalle-etiqueta">Cargo Estructural</span>
-                    <span class="detalle-valor">{{ v.cargo_estructural }}</span>
-                  </div>
-                  <div v-if="v.grupo_ocupacional" class="detalle-fila">
-                    <span class="detalle-etiqueta">Grupo Ocupacional</span>
-                    <span class="detalle-valor">{{ v.grupo_ocupacional }}</span>
-                  </div>
-                  <div v-if="v.codigo" class="detalle-fila">
-                    <span class="detalle-etiqueta">Código Plaza</span>
-                    <span class="detalle-valor">{{ v.codigo }}</span>
-                  </div>
-                  <template v-if="v.fecha_salida">
-                    <div v-if="v.doc_salida" class="detalle-fila">
-                      <span class="detalle-etiqueta">Doc. Salida</span>
-                      <span class="detalle-valor">{{ v.doc_salida }} {{ v.numero_doc_salida }}</span>
+                <div class="space-y-3">
+                  <!-- Grupo: Ingreso y Puesto -->
+                  <div class="space-y-1.5">
+                    <div class="text-3xs font-bold uppercase tracking-wider text-primary dark:text-brand-300">Detalles de Ingreso</div>
+                    <div class="grid grid-cols-2 gap-2 bg-gray-50/50 dark:bg-white/3 rounded-lg p-2 border border-gray-100 dark:border-white/5">
+                      <div v-if="v.doc_ingreso" class="col-span-2 flex flex-col gap-0.5">
+                        <span class="detalle-etiqueta">Doc. Ingreso</span>
+                        <span class="detalle-valor">{{ v.doc_ingreso }} {{ v.numero_doc_ingreso }}</span>
+                      </div>
+                      <div v-if="v.descrip_ingreso" class="col-span-2 flex flex-col gap-0.5 border-t border-gray-100 dark:border-white/5 pt-1.5 mt-0.5">
+                        <span class="detalle-etiqueta">Descripción Ingreso</span>
+                        <span class="detalle-valor">{{ v.descrip_ingreso }}</span>
+                      </div>
                     </div>
-                    <div v-if="v.descrip_salida" class="detalle-fila">
-                      <span class="detalle-etiqueta">Descripción Salida</span>
-                      <span class="detalle-valor">{{ v.descrip_salida }}</span>
+                  </div>
+
+                  <!-- Grupo: Estructural -->
+                  <div v-if="v.cargo_estructural || v.grupo_ocupacional || v.codigo" class="space-y-1.5">
+                    <div class="text-3xs font-bold uppercase tracking-wider text-primary dark:text-brand-300">Clasificación</div>
+                    <div class="grid grid-cols-2 gap-2 bg-gray-50/50 dark:bg-white/3 rounded-lg p-2 border border-gray-100 dark:border-white/5">
+                      <div v-if="v.cargo_estructural" class="col-span-2 flex flex-col gap-0.5">
+                        <span class="detalle-etiqueta">Cargo Estructural</span>
+                        <span class="detalle-valor">{{ v.cargo_estructural }}</span>
+                      </div>
+                      <div v-if="v.grupo_ocupacional" class="flex flex-col gap-0.5 border-t border-gray-100 dark:border-white/5 pt-1.5 mt-0.5">
+                        <span class="detalle-etiqueta">Grupo Ocupacional</span>
+                        <span class="detalle-valor">{{ v.grupo_ocupacional }}</span>
+                      </div>
+                      <div v-if="v.codigo" class="flex flex-col gap-0.5 border-t border-gray-100 dark:border-white/5 pt-1.5 mt-0.5">
+                        <span class="detalle-etiqueta">Código Plaza</span>
+                        <span class="detalle-valor font-mono">{{ v.codigo }}</span>
+                      </div>
                     </div>
-                  </template>
-                  <template v-if="v.tipo_evento">
-                    <div class="detalle-fila">
-                      <span class="detalle-etiqueta">Evento</span>
-                      <span class="detalle-valor">
-                        {{ v.tipo_evento }}
-                        <span v-if="v.estado_evento" class="detalle-secundario"> · {{ v.estado_evento }}</span>
-                      </span>
+                  </div>
+
+                  <!-- Grupo: Salida (si tiene fecha_salida) -->
+                  <div v-if="v.fecha_salida && (v.doc_salida || v.descrip_salida)" class="space-y-1.5">
+                    <div class="text-3xs font-bold uppercase tracking-wider text-red-600 dark:text-red-400">Detalles de Salida</div>
+                    <div class="grid grid-cols-2 gap-2 bg-red-50/20 dark:bg-red-500/5 rounded-lg p-2 border border-red-100/50 dark:border-red-500/10">
+                      <div v-if="v.doc_salida" class="col-span-2 flex flex-col gap-0.5">
+                        <span class="detalle-etiqueta text-red-500/80 dark:text-red-400/80">Doc. Salida</span>
+                        <span class="detalle-valor">{{ v.doc_salida }} {{ v.numero_doc_salida }}</span>
+                      </div>
+                      <div v-if="v.descrip_salida" class="col-span-2 flex flex-col gap-0.5 border-t border-red-100/30 dark:border-red-500/10 pt-1.5 mt-0.5">
+                        <span class="detalle-etiqueta text-red-500/80 dark:text-red-400/80">Motivo / Descripción</span>
+                        <span class="detalle-valor">{{ v.descrip_salida }}</span>
+                      </div>
                     </div>
-                    <div v-if="v.doc_evento_tipo" class="detalle-fila">
-                      <span class="detalle-etiqueta">Doc. Evento</span>
-                      <span class="detalle-valor">{{ v.doc_evento_tipo }} N° {{ v.numero_doc_evento }}</span>
+                  </div>
+
+                  <!-- Grupo: Evento / Movimiento -->
+                  <div v-if="v.tipo_evento" class="space-y-1.5">
+                    <div class="text-3xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">Último Evento</div>
+                    <div class="grid grid-cols-2 gap-2 bg-emerald-50/20 dark:bg-emerald-500/5 rounded-lg p-2 border border-emerald-100/50 dark:border-emerald-500/10">
+                      <div class="col-span-2 flex flex-col gap-0.5">
+                        <span class="detalle-etiqueta text-emerald-600/80 dark:text-emerald-400/80">Evento</span>
+                        <span class="detalle-valor font-medium">
+                          {{ v.tipo_evento }}
+                          <span v-if="v.estado_evento" class="text-3xs text-gray-400 dark:text-gray-500"> · {{ v.estado_evento }}</span>
+                        </span>
+                      </div>
+                      <div v-if="v.doc_evento_tipo" class="flex flex-col gap-0.5 border-t border-emerald-100/30 dark:border-emerald-500/10 pt-1.5 mt-0.5">
+                        <span class="detalle-etiqueta text-emerald-600/80 dark:text-emerald-400/80">Doc. Evento</span>
+                        <span class="detalle-valor">{{ v.doc_evento_tipo }} N° {{ v.numero_doc_evento }}</span>
+                      </div>
+                      <div v-if="v.fecha_evento" class="flex flex-col gap-0.5 border-t border-emerald-100/30 dark:border-emerald-500/10 pt-1.5 mt-0.5">
+                        <span class="detalle-etiqueta text-emerald-600/80 dark:text-emerald-400/80">Fecha</span>
+                        <span class="detalle-valor font-mono">{{ v.fecha_evento }}</span>
+                      </div>
                     </div>
-                    <div v-if="v.fecha_evento" class="detalle-fila">
-                      <span class="detalle-etiqueta">Fecha Evento</span>
-                      <span class="detalle-valor">{{ v.fecha_evento }}</span>
-                    </div>
-                  </template>
+                  </div>
                 </div>
               </Popover>
             </td>
 
-            <td class="px-2 py-3.5 w-px text-center" v-if="esAdmin">
+            <td class="px-2 py-3 text-center" v-if="esAdmin">
               <Popover posicion="abajo" alineacion="fin" ancho="170px" :mostrarCerrar="false" :mostrarFlecha="false" sinPadding>
                 <template #disparador>
                   <button
-                    class="inline-flex items-center justify-center rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-white/5 dark:hover:text-gray-300 transition-colors"
+                    class="inline-flex items-center justify-center rounded-lg p-1.5 text-gray-400 hover:bg-primary/5 hover:text-primary dark:hover:bg-primary/10 dark:hover:text-primary-300 transition-colors"
                     title="Acciones de Vínculo">
                     <MoreHorizontal class="h-3.5 w-3.5" />
                   </button>
@@ -174,14 +225,20 @@
     </div>
 
     <div class="md:hidden divide-y divide-gray-100 dark:divide-gray-800">
-      <div v-for="v in vinculos" :key="v.id" class="px-5 py-4 space-y-3">
+      <div
+        v-for="v in vinculos"
+        :key="v.id"
+        class="px-5 py-4 space-y-3 transition-all duration-200"
+        :class="[v.fecha_salida ? 'opacity-60 hover:opacity-100' : 'bg-emerald-50/5 dark:bg-emerald-500/2']">
         <div class="flex items-start justify-between gap-3">
           <div class="min-w-0">
-            <p class="text-sm font-semibold text-gray-800 dark:text-white truncate">{{ v.cargo }}</p>
+            <p class="text-sm truncate" :class="v.fecha_salida ? 'font-medium text-gray-500 dark:text-gray-400' : 'font-semibold text-gray-800 dark:text-white'">
+              {{ v.cargo }}
+            </p>
             <p class="text-xs text-gray-400 dark:text-gray-500 truncate mt-0.5">{{ v.area }}</p>
             <span
               v-if="v.sindicato"
-              class="mt-1.5 inline-flex items-center gap-1 rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-semibold text-amber-700 ring-1 ring-amber-200/70 dark:bg-amber-500/10 dark:text-amber-400 dark:ring-amber-500/20">
+              class="mt-1.5 inline-flex items-center gap-1 rounded-full bg-amber-50 px-2 py-0.5 text-3xs font-semibold text-amber-700 ring-1 ring-amber-200/70 dark:bg-amber-500/10 dark:text-amber-400 dark:ring-amber-500/20">
               <Shield class="h-2.5 w-2.5 shrink-0" />
               {{ v.sindicato }}
             </span>
@@ -197,57 +254,81 @@
             <Popover posicion="abajo" alineacion="fin" ancho="280px" :mostrarFlecha="true" :mostrarCerrar="true" titulo="Información Adicional">
               <template #disparador>
                 <button
-                  class="inline-flex items-center justify-center rounded-lg p-1.5 text-gray-400 hover:bg-primary/5 hover:text-gray-600 dark:hover:bg-white/5 dark:hover:text-gray-300 transition-colors">
+                  class="inline-flex items-center justify-center rounded-lg p-1.5 text-gray-400 hover:bg-primary/5 hover:text-primary dark:hover:bg-primary/10 dark:hover:text-primary-300 transition-colors">
                   <Info class="h-3.5 w-3.5" />
                 </button>
               </template>
-              <div class="space-y-2.5">
-                <div v-if="v.doc_ingreso" class="detalle-fila">
-                  <span class="detalle-etiqueta">Doc. Ingreso</span>
-                  <span class="detalle-valor">{{ v.doc_ingreso }} {{ v.numero_doc_ingreso }}</span>
-                </div>
-                <div v-if="v.descrip_ingreso" class="detalle-fila">
-                  <span class="detalle-etiqueta">Descripción</span>
-                  <span class="detalle-valor">{{ v.descrip_ingreso }}</span>
-                </div>
-                <div v-if="v.cargo_estructural" class="detalle-fila">
-                  <span class="detalle-etiqueta">Cargo Estructural</span>
-                  <span class="detalle-valor">{{ v.cargo_estructural }}</span>
-                </div>
-                <div v-if="v.grupo_ocupacional" class="detalle-fila">
-                  <span class="detalle-etiqueta">Grupo Ocupacional</span>
-                  <span class="detalle-valor">{{ v.grupo_ocupacional }}</span>
-                </div>
-                <div v-if="v.codigo" class="detalle-fila">
-                  <span class="detalle-etiqueta">Código Plaza</span>
-                  <span class="detalle-valor">{{ v.codigo }}</span>
-                </div>
-                <div v-if="v.sindicato" class="detalle-fila">
-                  <span class="detalle-etiqueta">Sindicato</span>
-                  <span class="detalle-valor">{{ v.sindicato }}</span>
-                </div>
-                <template v-if="v.fecha_salida">
-                  <div class="border-t border-gray-100 dark:border-gray-800 my-1"></div>
-                  <div v-if="v.doc_salida" class="detalle-fila">
-                    <span class="detalle-etiqueta">Doc. Salida</span>
-                    <span class="detalle-valor">{{ v.doc_salida }} {{ v.numero_doc_salida }}</span>
+              <div class="space-y-3">
+                <!-- Grupo: Ingreso y Puesto -->
+                <div class="space-y-1.5">
+                  <div class="text-3xs font-bold uppercase tracking-wider text-primary dark:text-brand-300">Detalles de Ingreso</div>
+                  <div class="grid grid-cols-2 gap-2 bg-gray-50/50 dark:bg-white/3 rounded-lg p-2 border border-gray-100 dark:border-white/5">
+                    <div v-if="v.doc_ingreso" class="col-span-2 flex flex-col gap-0.5">
+                      <span class="detalle-etiqueta">Doc. Ingreso</span>
+                      <span class="detalle-valor">{{ v.doc_ingreso }} {{ v.numero_doc_ingreso }}</span>
+                    </div>
+                    <div v-if="v.descrip_ingreso" class="col-span-2 flex flex-col gap-0.5 border-t border-gray-100 dark:border-white/5 pt-1.5 mt-0.5">
+                      <span class="detalle-etiqueta">Descripción Ingreso</span>
+                      <span class="detalle-valor">{{ v.descrip_ingreso }}</span>
+                    </div>
                   </div>
-                  <div v-if="v.descrip_salida" class="detalle-fila">
-                    <span class="detalle-etiqueta">Descripción Salida</span>
-                    <span class="detalle-valor">{{ v.descrip_salida }}</span>
+                </div>
+
+                <!-- Grupo: Estructural -->
+                <div v-if="v.cargo_estructural || v.grupo_ocupacional || v.codigo" class="space-y-1.5">
+                  <div class="text-3xs font-bold uppercase tracking-wider text-primary dark:text-brand-300">Clasificación</div>
+                  <div class="grid grid-cols-2 gap-2 bg-gray-50/50 dark:bg-white/3 rounded-lg p-2 border border-gray-100 dark:border-white/5">
+                    <div v-if="v.cargo_estructural" class="col-span-2 flex flex-col gap-0.5">
+                      <span class="detalle-etiqueta">Cargo Estructural</span>
+                      <span class="detalle-valor">{{ v.cargo_estructural }}</span>
+                    </div>
+                    <div v-if="v.grupo_ocupacional" class="flex flex-col gap-0.5 border-t border-gray-100 dark:border-white/5 pt-1.5 mt-0.5">
+                      <span class="detalle-etiqueta">Grupo Ocupacional</span>
+                      <span class="detalle-valor">{{ v.grupo_ocupacional }}</span>
+                    </div>
+                    <div v-if="v.codigo" class="flex flex-col gap-0.5 border-t border-gray-100 dark:border-white/5 pt-1.5 mt-0.5">
+                      <span class="detalle-etiqueta">Código Plaza</span>
+                      <span class="detalle-valor font-mono">{{ v.codigo }}</span>
+                    </div>
                   </div>
-                </template>
-                <template v-if="v.tipo_evento">
-                  <div class="border-t border-gray-100 dark:border-gray-800 my-1"></div>
-                  <div class="detalle-fila">
-                    <span class="detalle-etiqueta">Evento</span>
-                    <span class="detalle-valor">{{ v.tipo_evento }}</span>
+                </div>
+
+                <!-- Grupo: Salida (si tiene fecha_salida) -->
+                <div v-if="v.fecha_salida && (v.doc_salida || v.descrip_salida)" class="space-y-1.5">
+                  <div class="text-3xs font-bold uppercase tracking-wider text-red-600 dark:text-red-400">Detalles de Salida</div>
+                  <div class="grid grid-cols-2 gap-2 bg-red-50/20 dark:bg-red-500/5 rounded-lg p-2 border border-red-100/50 dark:border-red-500/10">
+                    <div v-if="v.doc_salida" class="col-span-2 flex flex-col gap-0.5">
+                      <span class="detalle-etiqueta text-red-500/80 dark:text-red-400/80">Doc. Salida</span>
+                      <span class="detalle-valor">{{ v.doc_salida }} {{ v.numero_doc_salida }}</span>
+                    </div>
+                    <div v-if="v.descrip_salida" class="col-span-2 flex flex-col gap-0.5 border-t border-red-100/30 dark:border-red-500/10 pt-1.5 mt-0.5">
+                      <span class="detalle-etiqueta text-red-500/80 dark:text-red-400/80">Motivo / Descripción</span>
+                      <span class="detalle-valor">{{ v.descrip_salida }}</span>
+                    </div>
                   </div>
-                  <div v-if="v.fecha_evento" class="detalle-fila">
-                    <span class="detalle-etiqueta">Fecha Evento</span>
-                    <span class="detalle-valor">{{ v.fecha_evento }}</span>
+                </div>
+
+                <!-- Grupo: Evento / Movimiento -->
+                <div v-if="v.tipo_evento" class="space-y-1.5">
+                  <div class="text-3xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">Último Evento</div>
+                  <div class="grid grid-cols-2 gap-2 bg-emerald-50/20 dark:bg-emerald-500/5 rounded-lg p-2 border border-emerald-100/50 dark:border-emerald-500/10">
+                    <div class="col-span-2 flex flex-col gap-0.5">
+                      <span class="detalle-etiqueta text-emerald-600/80 dark:text-emerald-400/80">Evento</span>
+                      <span class="detalle-valor font-medium">
+                        {{ v.tipo_evento }}
+                        <span v-if="v.estado_evento" class="text-3xs text-gray-400 dark:text-gray-500"> · {{ v.estado_evento }}</span>
+                      </span>
+                    </div>
+                    <div v-if="v.doc_evento_tipo" class="flex flex-col gap-0.5 border-t border-emerald-100/30 dark:border-emerald-500/10 pt-1.5 mt-0.5">
+                      <span class="detalle-etiqueta text-emerald-600/80 dark:text-emerald-400/80">Doc. Evento</span>
+                      <span class="detalle-valor">{{ v.doc_evento_tipo }} N° {{ v.numero_doc_evento }}</span>
+                    </div>
+                    <div v-if="v.fecha_evento" class="flex flex-col gap-0.5 border-t border-emerald-100/30 dark:border-emerald-500/10 pt-1.5 mt-0.5">
+                      <span class="detalle-etiqueta text-emerald-600/80 dark:text-emerald-400/80">Fecha</span>
+                      <span class="detalle-valor font-mono">{{ v.fecha_evento }}</span>
+                    </div>
                   </div>
-                </template>
+                </div>
               </div>
             </Popover>
 

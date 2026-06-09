@@ -46,6 +46,11 @@ export const useTableroStore = defineStore('tablero', () => {
     personalActivo.value = res.data
   }
 
+  async function obtenerPersonalActivoPorArea(areaId: number): Promise<PersonalActivo[]> {
+    const res = await api.post('/dash/personal_activo_area', { area_id: areaId })
+    return res.data
+  }
+
   async function obtenerHistorial(dni?: string) {
     const res = await api.post('/dash/reporte_historia', { dni })
     historial.value = res.data
@@ -178,6 +183,7 @@ export const useTableroStore = defineStore('tablero', () => {
     obtenerCumpleanos,
     obtenerReporteAreas,
     obtenerPersonalActivo,
+    obtenerPersonalActivoPorArea,
     obtenerHistorial,
     obtenerOrganigrama,
     obtenerListaRenuncias,

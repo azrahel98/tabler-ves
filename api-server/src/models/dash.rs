@@ -8,6 +8,7 @@ pub struct Cumpleaños {
     pub nombre: Option<String>,
     pub nacimiento: NaiveDate,
     pub edad: Option<i64>,
+    pub avatar: Option<String>,
 }
 #[derive(Serialize)]
 pub struct ResumenResponse {
@@ -53,4 +54,5 @@ pub struct ReporteRenuncias {
     pub cargo: String,
     pub area: String,
     pub codigo: String,
+    pub avatar: Option<String>,
 }
