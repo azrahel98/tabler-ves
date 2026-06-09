@@ -20,6 +20,21 @@ export const useReportesStore = defineStore('reportes', () => {
     }
   }
 
+  const trabajadoresArea = ref<PersonalActivo[]>([])
+
+  async function cargarTrabajadoresPorArea(areaId: number) {
+    cargando.value = true
+    try {
+      if (organigrama.value.length === 0) {
+        await tablero.obtenerOrganigrama()
+      }
+      const res = await tablero.obtenerPersonalActivoPorArea(areaId)
+      trabajadoresArea.value = res
+    } finally {
+      cargando.value = false
+    }
+  }
+
   function obtenerNombreArea(id: number): string | null {
     function buscarEnNodos(nodos: NodoOrganigrama[]): string | null {
       for (const nodo of nodos) {
@@ -49,6 +64,8 @@ export const useReportesStore = defineStore('reportes', () => {
     organigrama,
     cargando,
     cargarDatos,
+    trabajadoresArea,
+    cargarTrabajadoresPorArea,
     obtenerNombreArea,
     trabajadoresPorArea,
     trabajadoresPorSindicato,

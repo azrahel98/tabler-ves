@@ -31,12 +31,15 @@
         :key="item.dni"
         :id="'cumple-' + item.dni"
         :to="{ name: 'personal-profile', params: { dni: item.dni } }"
-        class="flex gap-2 items-start py-1 first:pt-0 last:pb-0 hover:opacity-80 transition-opacity group">
+        class="flex gap-3 items-center py-2.5 first:pt-0 last:pb-0 hover:opacity-80 transition-opacity group">
 
-        
-        <span
-          class="mt-1.5 h-2 w-2 shrink-0 rounded-full"
-          :class="dotColor(item.daysUntil)" />
+        <Avatar
+          :dni="item.dni"
+          :avatar="item.avatar"
+          sexo="M"
+          :nombre="item.nombre"
+          size="sm"
+        />
 
         
         <div class="min-w-0 flex-1">
@@ -81,12 +84,14 @@
   } from 'date-fns'
   import { es } from 'date-fns/locale'
   import { ChevronLeft, ChevronRight, Calendar } from 'lucide-vue-next'
+  import Avatar from '../ui/Avatar.vue'
 
   interface ItemCumple {
     dni: string
     nombre: string
     nacimiento: string
     area?: string | null
+    avatar?: string | null
     fechaCumple: Date
     daysUntil: number
   }
@@ -124,6 +129,7 @@
         nombre:     b.nombre,
         nacimiento: b.nacimiento,
         area:       b.area ?? null,
+        avatar:     b.avatar ?? null,
         fechaCumple,
         daysUntil:  differenceInCalendarDays(fechaCumple, today),
       })
@@ -132,12 +138,7 @@
     return result.sort((a, b) => a.fechaCumple.getDate() - b.fechaCumple.getDate())
   })
 
-  function dotColor(daysUntil: number): string {
-    if (daysUntil === 0) return 'bg-primary'
-    if (daysUntil > 0 && daysUntil <= 7) return 'bg-warning-400'
-    if (daysUntil < 0) return 'bg-gray-300 dark:bg-gray-600'
-    return 'bg-gray-400 dark:bg-gray-500'
-  }
+
 
   function diasBadgeClass(daysUntil: number): string {
     if (daysUntil === 0)

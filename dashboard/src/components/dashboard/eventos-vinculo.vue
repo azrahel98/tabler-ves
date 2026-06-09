@@ -13,12 +13,15 @@
         v-for="item in eventosVinculo"
         :key="item.id"
         :to="{ name: 'personal-profile', params: { dni: item.dni } }"
-        class="flex gap-2 items-start py-1 first:pt-0 last:pb-0 hover:opacity-80 transition-opacity group">
+        class="flex gap-3 items-center py-2.5 first:pt-0 last:pb-0 hover:opacity-80 transition-opacity group">
 
-        
-        <span
-          class="mt-1.5 h-2 w-2 shrink-0 rounded-full"
-          :class="dotColor(item.tipo_evento)" />
+        <Avatar
+          :dni="item.dni"
+          :avatar="item.avatar"
+          sexo="M"
+          :nombre="item.nombre"
+          size="sm"
+        />
 
         
         <div class="min-w-0 flex-1">
@@ -65,17 +68,11 @@
   import { format, parseISO, isValid } from 'date-fns'
   import { es } from 'date-fns/locale'
   import { Calendar } from 'lucide-vue-next'
+  import Avatar from '../ui/Avatar.vue'
 
   const { eventosVinculo } = storeToRefs(useTableroStore())
 
-  function dotColor(tipo: string): string {
-    return ({
-      rotacion:    'bg-primary',
-      destaque:    'bg-warning-400',
-      encargatura: 'bg-theme-purple-500',
-      designacion: 'bg-success-500',
-    } as Record<string, string>)[tipo?.toLowerCase()] ?? 'bg-gray-400'
-  }
+
 
   function tipoBadge(tipo: string): string {
     return ({

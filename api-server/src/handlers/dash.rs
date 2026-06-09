@@ -1,12 +1,13 @@
 use crate::{
     AppState,
     handlers::personal::PerfilDni,
-    middleware::error::ApiError,
+    middleware::error::{ApiError, validar},
     models::dash::{
         BancosReport, Cumpleaños, DataResumen, DbOrgani, Organigrama, ReporteRenuncias,
         ResumenResponse,
     },
 };
+use validator::Validate;
 use actix_web::{
     HttpResponse, Responder,
     web::{self},
@@ -23,7 +24,8 @@ pub async fn cumpleaños(data: web::Data<AppState>) -> Result<impl Responder, Ap
             p.dni,
             CONCAT_WS(' ', p.apaterno, p.amaterno, p.nombre) AS nombre,
             p.fecha_nacimiento nacimiento,
-            TIMESTAMPDIFF(YEAR, p.fecha_nacimiento, CURRENT_DATE) AS edad
+            TIMESTAMPDIFF(YEAR, p.fecha_nacimiento, CURRENT_DATE) AS edad,
+            p.avatar
             FROM
             persona p
             INNER JOIN vinculo v ON p.dni = v.dni
@@ -53,7 +55,8 @@ pub async fn cumpleaños(data: web::Data<AppState>) -> Result<impl Responder, Ap
             p.dni,
             nombre,
             p.fecha_nacimiento,
-            edad
+            edad,
+            p.avatar
             ORDER BY
             MONTH(p.fecha_nacimiento),
             DAY(p.fecha_nacimiento);
@@ -263,6 +266,70 @@ where
         .collect();
     Ok(HttpResponse::Ok().json(result))
 }
+#[derive(Deserialize, Validate)]
+pub struct PersonalActivoAreaBody {
+    #[validate(range(min = 1, message = "ID de área inválido"))]
+    pub area_id: i32,
+}
+pub async fn personal_activo_area(
+    data: web::Data<AppState>,
+    body: web::Json<PersonalActivoAreaBody>,
+) -> Result<impl Responder, ApiError> {
+    validar(&body.0)?;
+    let data_rows = sqlx::query(
+        r#"
+select
+  cast(p.dni as char) dni,
+  concat(p.apaterno, ' ', p.amaterno, ' ', p.nombre) nombre,
+  dc.fecha ingreso,
+  dcs.fecha renuncia,
+  ar.nombre area,
+  cr.nombre cargo,
+  s.nombre sindicato,
+  rg.nombre regimen,
+  p.avatar as avatar
+from
+  vinculo v
+  inner join persona p on v.dni = p.dni
+  inner join cargo cr on v.cargo_id = cr.id
+  inner join area ar on v.area_id = ar.id
+  inner join documento dc on v.doc_ingreso_id = dc.id
+  inner join regimen rg on v.regimen = rg.id
+  left join documento dcs on v.doc_salida_id = dcs.id
+  left join vinculo_sindicato vs on vs.vinculo_id = v.id
+  left join sindicato s on vs.sindicato_id = s.id
+where
+  v.estado = 'activo'
+  and v.area_id = ?
+        "#,
+    )
+    .bind(body.area_id)
+    .fetch_all(&data.db)
+    .await
+    .map_err(|e| {
+        eprintln!("Database error: {:?}", e);
+        ApiError::InternalError("Database consulta malformada".into())
+    })?;
+    let result: Vec<Value> = data_rows
+        .iter()
+        .map(|row| {
+            let ingreso: NaiveDate = row.get("ingreso");
+            let renuncia: Option<NaiveDate> = row.try_get("renuncia").ok(); 
+            json!({
+                "dni": row.get::<String, _>("dni"),
+                "nombre": row.get::<String, _>("nombre"),
+                "ingreso": ingreso.to_string(),
+                "renuncia": renuncia.map(|d| d.to_string()),
+                "area": row.get::<String, _>("area"),
+                "cargo": row.get::<String, _>("cargo"),
+                "sindicato": row.try_get::<Option<String>, _>("sindicato").unwrap_or(None),
+                "regimen": row.get::<String, _>("regimen"),
+                "avatar": row.try_get::<Option<String>, _>("avatar").unwrap_or(None),
+            })
+        })
+        .collect();
+    Ok(HttpResponse::Ok().json(result))
+}
 pub async fn reporte_historial(
     data: web::Data<AppState>,
     dni: web::Json<PerfilDni>,
@@ -385,7 +452,8 @@ pub async fn report_renuncias(data: web::Data<AppState>) -> Result<impl Responde
             d.fecha,
             ar.nombre AS area,
             cr.nombre AS cargo,
-            pl.codigo
+            pl.codigo,
+            pe.avatar
         FROM
             vinculo AS v
             INNER JOIN documento AS d ON v.doc_salida_id = d.id
@@ -664,7 +732,8 @@ pub async fn nuevos_trabajadores(data: web::Data<AppState>) -> Result<impl Respo
             cr.nombre AS cargo,
             r.decreto AS regimen,
             v.sueldo,
-            pl.codigo AS plaza
+            pl.codigo AS plaza,
+            p.avatar
         FROM vinculo v
         INNER JOIN persona p ON v.dni = p.dni
         INNER JOIN documento d ON v.doc_ingreso_id = d.id
@@ -699,6 +768,7 @@ pub async fn nuevos_trabajadores(data: web::Data<AppState>) -> Result<impl Respo
                 "regimen": fila.get::<String, _>("regimen"),
                 "sueldo": fila.try_get::<Option<f64>, _>("sueldo").unwrap_or(None),
                 "plaza": fila.try_get::<Option<String>, _>("plaza").unwrap_or(None),
+                "avatar": fila.try_get::<Option<String>, _>("avatar").unwrap_or(None),
             })
         })
         .collect();
@@ -774,7 +844,8 @@ pub async fn reporte_eventos(data: web::Data<AppState>) -> Result<impl Responder
             di.fecha AS fecha_inicio,
             di.descripcion AS descripcion_inicio,
             ds.fecha AS fecha_salida,
-            ds.descripcion AS descripcion_salida
+            ds.descripcion AS descripcion_salida,
+            p.avatar
         FROM eventovinculo ev
         INNER JOIN vinculo v ON ev.vinculo_id = v.id
         INNER JOIN persona p ON v.dni = p.dni
@@ -810,6 +881,7 @@ pub async fn reporte_eventos(data: web::Data<AppState>) -> Result<impl Responder
                 "descripcion_inicio": fila.try_get::<Option<String>, _>("descripcion_inicio").unwrap_or(None),
                 "fecha_salida": fecha_salida.map(|d| d.to_string()),
                 "descripcion_salida": fila.try_get::<Option<String>, _>("descripcion_salida").unwrap_or(None),
+                "avatar": fila.try_get::<Option<String>, _>("avatar").unwrap_or(None),
             })
         })
         .collect();

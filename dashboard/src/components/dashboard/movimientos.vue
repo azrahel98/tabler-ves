@@ -13,12 +13,15 @@
         v-for="item in listaUnificada"
         :key="item.dni + item.tipo + item.daysAgo"
         :to="{ name: 'personal-profile', params: { dni: item.dni } }"
-        class="flex gap-2 items-start  py-1 first:pt-0 last:pb-0 hover:opacity-80 transition-opacity group">
+        class="flex gap-3 items-center py-2.5 first:pt-0 last:pb-0 hover:opacity-80 transition-opacity group">
 
-        
-        <span
-          class="mt-1.5 h-2 w-2 shrink-0 rounded-full"
-          :class="dotColor(item.tipo)" />
+        <Avatar
+          :dni="item.dni"
+          :avatar="item.avatar"
+          sexo="M"
+          :nombre="item.nombre"
+          size="sm"
+        />
 
         
         <div class="min-w-0 flex-1">
@@ -57,6 +60,7 @@
   import { storeToRefs } from 'pinia'
   import { differenceInDays, startOfDay, parseISO, isValid, format } from 'date-fns'
   import { Calendar } from 'lucide-vue-next'
+  import Avatar from '../ui/Avatar.vue'
 
   type TipoMovimiento = 'ingreso' | 'renuncia' | 'rotacion' | 'abandono'
 
@@ -66,6 +70,7 @@
     cargo: string
     area: string | null
     area_destino?: string | null
+    avatar?: string | null
     daysAgo: number
     fechaFormateada: string
     tipo: TipoMovimiento
@@ -88,25 +93,18 @@
   const listaUnificada = computed<ItemMovimiento[]>(() => {
     const ingresos: ItemMovimiento[] = (nuevosTrabajadores.value ?? []).map((item: any) => {
       const { daysAgo, fechaFormateada } = parsearItem(item.ingreso ?? null)
-      return { dni: item.dni, nombre: item.nombre, cargo: item.cargo ?? '', area: item.area ?? null, daysAgo, fechaFormateada, tipo: 'ingreso' as const }
+      return { dni: item.dni, nombre: item.nombre, cargo: item.cargo ?? '', area: item.area ?? null, avatar: item.avatar ?? null, daysAgo, fechaFormateada, tipo: 'ingreso' as const }
     })
 
     const renuncias: ItemMovimiento[] = (listaRenuncias.value ?? []).map((item: any) => {
       const { daysAgo, fechaFormateada } = parsearItem(item.fecha ?? null)
-      return { dni: item.dni, nombre: item.nombre, cargo: '', area: item.area ?? null, daysAgo, fechaFormateada, tipo: 'renuncia' as const }
+      return { dni: item.dni, nombre: item.nombre, cargo: '', area: item.area ?? null, avatar: item.avatar ?? null, daysAgo, fechaFormateada, tipo: 'renuncia' as const }
     })
 
     return [...ingresos, ...renuncias].sort((a, b) => a.daysAgo - b.daysAgo)
   })
 
-  function dotColor(tipo: TipoMovimiento): string {
-    return {
-      ingreso:  'bg-primary',
-      renuncia: 'bg-error-500',
-      rotacion: 'bg-accent',
-      abandono: 'bg-warning-400',
-    }[tipo]
-  }
+
 
   function tipoBadge(tipo: TipoMovimiento): string {
     return {

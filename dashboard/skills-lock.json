@@ -12,6 +12,12 @@
       "sourceType": "github",
       "skillPath": "skill/SKILL.md",
       "computedHash": "e08cc9be673b6b5e66eb55cf77eb50a940fc603245b2f75d8370a2043aa926aa"
+    },
+    "ui-ux-pro-max": {
+      "source": "sickn33/antigravity-awesome-skills",
+      "sourceType": "github",
+      "skillPath": "skills/ui-ux-pro-max/SKILL.md",
+      "computedHash": "a4e96a589717c76181df4c5994de6fb9269afd7e3b82745d80a8aba292c598c1"
     }
   }
 }

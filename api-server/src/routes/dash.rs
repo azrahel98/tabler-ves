@@ -9,6 +9,7 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
             .route("/renuncias", web::post().to(renuncias_año))
             .route("/banco_report", web::post().to(bancos_report))
             .route("/personal_activo", web::post().to(reporte_personal_activo))
+            .route("/personal_activo_area", web::post().to(personal_activo_area))
             .route("/reporte_historia", web::post().to(reporte_historial))
             .route("/info", web::post().to(info))
             .route("/reporte_renuncias", web::post().to(report_renuncias))

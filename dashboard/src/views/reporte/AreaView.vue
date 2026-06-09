@@ -57,7 +57,14 @@
               placeholder-busqueda="Buscar por nombre, DNI o cargo..."
               @click-fila="(t) => router.push({ name: 'personal-profile', params: { dni: t.dni } })">
               <template #celda-nombre="{ fila }">
-                <div class="flex items-center">
+                <div class="flex items-center gap-3">
+                  <Avatar
+                    :dni="fila.dni"
+                    :avatar="fila.avatar"
+                    sexo="M"
+                    :nombre="fila.nombre"
+                    size="sm"
+                  />
                   <span class="font-medium text-gray-700 text-xs dark:text-white">{{ fila.nombre }}</span>
                 </div>
               </template>
@@ -82,7 +89,7 @@
 </template>
 
 <script setup lang="ts">
-  import { computed, onMounted } from 'vue'
+  import { computed, watch } from 'vue'
   import { useRoute, useRouter } from 'vue-router'
   import { storeToRefs } from 'pinia'
   import { Building2, Users, UserX, RefreshCw } from 'lucide-vue-next'
@@ -91,6 +98,7 @@
   import GraficoSindicato from '../../components/reportes/GraficoSindicato.vue'
   import DataTable from '../../components/ui/DataTable.vue'
   import Loading from '../../components/ui/Loading.vue'
+  import Avatar from '../../components/ui/Avatar.vue'
 
   const route = useRoute()
   const router = useRouter()
@@ -100,7 +108,7 @@
   const { cargando } = storeToRefs(reportesStore)
 
   const nombreDelArea = computed(() => reportesStore.obtenerNombreArea(idArea.value))
-  const listaCompleta = computed(() => reportesStore.trabajadoresPorArea(idArea.value))
+  const listaCompleta = computed(() => reportesStore.trabajadoresArea)
 
   const columnas = [
     { clave: 'nombre', titulo: 'Trabajador', ancho: 'min-w-[200px]' },
@@ -112,12 +120,12 @@
   ]
 
   async function recargar() {
-    await reportesStore.cargarDatos()
+    await reportesStore.cargarTrabajadoresPorArea(idArea.value)
   }
 
-  onMounted(async () => {
-    if (reportesStore.personalActivo.length === 0) {
-      await recargar()
+  watch(idArea, async (newId) => {
+    if (newId) {
+      await reportesStore.cargarTrabajadoresPorArea(newId)
     }
-  })
+  }, { immediate: true })
 </script>

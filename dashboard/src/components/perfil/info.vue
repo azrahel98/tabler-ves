@@ -1,99 +1,139 @@
 <template>
-  <div class="rounded-2xl border border-gray-100 bg-card p-4 dark:border-white/6 dark:bg-white/3 flex flex-col">
-    <div class="flex items-center justify-between gap-1 text-xs font-bold uppercase tracking-wider text-gray-800 dark:text-white/90 mb-4">
-      <div class="flex items-center gap-1">
-        <svg class="h-4 w-4 text-primary" fill="currentColor" viewBox="0 0 24 24">
+  <div class="rounded-xl border border-gray-100 bg-card p-5 lg:p-6 dark:border-white/6 dark:bg-white/3 shadow-theme-xs flex flex-col">
+    <!-- Encabezado de la Tarjeta -->
+    <div class="flex items-center justify-between gap-2 border-b border-gray-100 dark:border-white/5 pb-3 mb-4">
+      <div class="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-gray-800 dark:text-white/90">
+        <svg class="h-4 w-4 text-primary shrink-0" fill="currentColor" viewBox="0 0 24 24">
           <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
         </svg>
-        Informacion Personal
+        Información Personal
       </div>
       <button
         v-if="esAdmin"
         @click="isEditModalOpen = true"
-        class="rounded-full p-1 text-gray-400 hover:bg-primary/10 hover:text-primary dark:hover:bg-primary/20 dark:hover:text-brand-300 transition-colors"
+        class="rounded-full p-1.5 text-gray-400 hover:bg-primary/5 hover:text-primary dark:hover:bg-primary/10 dark:hover:text-brand-300 transition-colors"
         title="Editar Información">
         <Pencil class="h-3.5 w-3.5" />
       </button>
     </div>
 
-    <div v-if="perfilActual" class="space-y-2 flex-grow flex flex-col justify-between">
-      <div>
-        <p class="data-label">Telefono Celular</p>
-        <p class="data-value font-mono dark:text-white/90 tracking-wide">{{ formatPhone(perfilActual.telf) || 'No tiene registros' }}</p>
-      </div>
-      <div>
-        <p class="data-label">Correo electronico</p>
-        <p class="data-value uppercase dark:text-white/90">{{ perfilActual.email || 'No tiene registros' }}</p>
-      </div>
-      <div>
-        <p class="data-label">Direccion</p>
-        <p class="data-value uppercase dark:text-white/90">{{ perfilActual.direccion || 'No tiene registros' }}</p>
-      </div>
-      <div class="grid grid-cols-2 gap-3">
+    <!-- Cuerpo de Datos Organizados -->
+    <div v-if="perfilActual" class="space-y-2">
+      <!-- Sección 1: Identidad -->
+      <div class="space-y-1">
         <div>
-          <p class="data-label">Region</p>
-          <p class="data-value uppercase dark:text-white/90">{{ perfilActual.region || 'No tiene registros' }}</p>
-        </div>
-        <div>
-          <p class="data-label">Distrito</p>
-          <p class="data-value uppercase dark:text-white/90">{{ perfilActual.distrito || 'No tiene registros' }}</p>
-        </div>
-      </div>
-      <div>
-        <p class="data-label">DNI / RUC</p>
-        <p class="data-value font-mono dark:text-white/90 tracking-wide">
-          {{ perfilActual.dni }} <span v-if="perfilActual.ruc" class="text-gray-400 font-sans">|</span> <span v-if="perfilActual.ruc" class="text-gray-500">{{ perfilActual.ruc }}</span>
-        </p>
-      </div>
-      <div class="grid grid-cols-2 gap-3">
-        <div>
-          <p class="data-label">Fecha de Nacimiento</p>
-          <p class="data-value dark:text-white/90">{{ formatUTC(perfilActual.nacimiento) || 'No tiene registros' }}</p>
-        </div>
-        <div>
-          <p class="data-label">Sexo</p>
-          <p class="data-value dark:text-white/90">{{ perfilActual.sexo === 'M' ? 'Masculino' : perfilActual.sexo === 'F' ? 'Femenino' : '-' }}</p>
-        </div>
-      </div>
-
-      <!-- Fila sutil de Contacto de Emergencia integrada -->
-      <div>
-        <p class="data-label">Contacto de Emergencia</p>
-        <div class="flex items-center justify-between gap-2 mt-0.5">
-          <p v-if="contactoEmergencia" class="data-value uppercase flex flex-col dark:text-white/90">
-            {{ contactoEmergencia.nombre }}
-            <span class="text-3xs text-gray-400 normal-case tracking-normal font-normal">({{ contactoEmergencia.relacion }})</span>
-            <span v-if="contactoEmergencia.telefono" class="text-gray-400 tracking-wide font-normal font-mono"> {{ formatPhone(contactoEmergencia.telefono) }} </span>
+          <p class="data-label mb-1">DNI / RUC</p>
+          <p class="data-value font-mono font-semibold tracking-wide">
+            {{ perfilActual.dni }}
+            <span v-if="perfilActual.ruc" class="text-gray-300 dark:text-gray-700 font-sans mx-2">|</span>
+            <span v-if="perfilActual.ruc" class="text-xs font-sans font-normal text-gray-500 dark:text-gray-400">RUC {{ perfilActual.ruc }}</span>
           </p>
-          <p v-else class="data-label">Sin registros</p>
+        </div>
 
-          <div class="flex items-center gap-1 shrink-0">
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <p class="data-label mb-1">Fecha de Nacimiento</p>
+            <p class="data-value font-medium">
+              {{ formatUTC(perfilActual.nacimiento) || 'No tiene registros' }}
+            </p>
+          </div>
+          <div>
+            <p class="data-label mb-1">Sexo</p>
+            <p class="data-value font-medium">
+              {{ perfilActual.sexo === 'M' ? 'Masculino' : perfilActual.sexo === 'F' ? 'Femenino' : '—' }}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sección 2: Contacto (Separador Sutil) -->
+      <div class="border-t border-gray-100 dark:border-white/5 pt-3.5 space-y-1">
+        <div>
+          <p class="data-label mb-1">Teléfono Celular</p>
+          <p class="data-value font-mono font-medium tracking-wide">
+            {{ formatPhone(perfilActual.telf) || 'No tiene registros' }}
+          </p>
+        </div>
+
+        <div>
+          <p class="data-label mb-1">Correo Electrónico</p>
+          <p class="data-value font-medium break-all">
+            {{ perfilActual.email || 'No tiene registros' }}
+          </p>
+        </div>
+      </div>
+
+      <!-- Sección 3: Residencia -->
+      <div class="border-t border-gray-100 dark:border-white/5 pt-3.5 space-y-1">
+        <div>
+          <p class="data-label mb-1">Dirección</p>
+          <p class="data-value font-medium uppercase">
+            {{ perfilActual.direccion || '' }}
+          </p>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <p class="data-label mb-1">Región</p>
+            <p class="data-value font-medium uppercase">
+              {{ perfilActual.region || '' }}
+            </p>
+          </div>
+          <div>
+            <p class="data-label mb-1">Distrito</p>
+            <p class="data-value font-medium uppercase">
+              {{ perfilActual.distrito || '' }}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sección 4: Emergencia -->
+      <div class="border-t border-gray-100 dark:border-white/5 pt-3.5 space-y-1">
+        <div class="flex items-center justify-between gap-2">
+          <p class="data-label">Contacto de Emergencia</p>
+
+          <div class="flex items-center gap-1.5 shrink-0">
             <button
               v-if="!contactoEmergencia && esAdmin"
               @click="isEditContactoModalOpen = true"
-              class="text-3xs font-medium text-primary hover:text-brand-500 hover:underline transition-colors px-1 py-0.5">
+              class="text-3xs font-bold uppercase tracking-wider text-primary hover:text-brand-700 hover:underline transition-colors px-1 py-0.5">
               + Registrar
             </button>
             <template v-if="contactoEmergencia && esAdmin">
               <button
                 @click="isEditContactoModalOpen = true"
-                class="rounded p-0.5 text-gray-400 hover:bg-primary/10 hover:text-primary dark:hover:bg-primary/20 dark:hover:text-brand-300 transition-colors"
+                class="rounded p-0.5 text-gray-400 hover:bg-primary/5 hover:text-primary dark:hover:bg-primary/10 transition-colors"
                 title="Editar Contacto">
                 <Pencil class="h-3.5 w-3.5" />
               </button>
               <button
                 @click="confirmarEliminar"
                 :disabled="eliminando"
-                class="rounded p-0.5 text-gray-400 hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-900/20 dark:hover:text-red-400 transition-colors disabled:opacity-50"
+                class="rounded p-0.5 text-gray-400 hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-950/30 dark:hover:text-red-400 transition-colors disabled:opacity-50"
                 title="Eliminar Contacto">
                 <Trash2 class="h-3.5 w-3.5" />
               </button>
             </template>
           </div>
         </div>
+
+        <div v-if="contactoEmergencia" class="bg-gray-50/50 dark:bg-white/3 border border-gray-100 dark:border-white/5 rounded-xl p-3 space-y-1.5 mt-1">
+          <p class="data-value font-semibold uppercase">
+            {{ contactoEmergencia.nombre }}
+          </p>
+          <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-gray-500 dark:text-gray-400">
+            <span class="inline-flex items-center rounded-full bg-gray-100 dark:bg-white/5 px-2 py-0.5 text-3xs font-semibold uppercase tracking-wider text-gray-600 dark:text-gray-300">
+              {{ contactoEmergencia.relacion }}
+            </span>
+            <span v-if="contactoEmergencia.telefono" class="data-value font-mono font-medium tracking-wide">{{ formatPhone(contactoEmergencia.telefono) }}</span>
+          </div>
+        </div>
+        <p v-else class="text-xs text-gray-400 dark:text-gray-500 italic font-normal mt-1">Sin registros asignados</p>
       </div>
     </div>
 
+    <!-- Modales -->
     <EditInfoModal v-if="esAdmin" :isOpen="isEditModalOpen" :perfil="perfilActual" @close="isEditModalOpen = false" @save="handleSave" />
     <EditContactoModal v-if="esAdmin" :isOpen="isEditContactoModalOpen" :contacto="contactoEmergencia" @close="isEditContactoModalOpen = false" />
   </div>
@@ -149,4 +189,28 @@
     }
   }
 </script>
->
+
+<style scoped>
+  .data-label {
+    font-size: 0.6875rem !important; /* 11px */
+    font-weight: 600 !important; /* Más definido */
+    text-transform: uppercase !important;
+    letter-spacing: 0.05em !important;
+    color: var(--color-gray-400) !important;
+    line-height: 1.2 !important;
+  }
+  :root.dark .data-label,
+  .dark .data-label {
+    color: rgba(255, 255, 255, 0.4) !important;
+  }
+
+  .data-value {
+    font-size: 0.8125rem !important; /* text-sm / 13px */
+    color: var(--color-gray-800) !important;
+    line-height: 1.5 !important;
+  }
+  :root.dark .data-value,
+  .dark .data-value {
+    color: rgba(255, 255, 255, 0.9) !important;
+  }
+</style>
