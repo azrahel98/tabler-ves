@@ -21,19 +21,13 @@
       <div v-for="trabajador in trabajadoresAgregados" :key="trabajador.dni" class="px-5 py-4">
         <div class="flex items-center justify-between mb-3">
           <div class="flex items-center gap-3">
-            <div class="flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800">
-              <img
-                :src="
-                  trabajador.sexo === 'M'
-                    ? '/M.svg'
-                    : trabajador.sexo === 'F'
-                      ? '/F.svg'
-                      : `https://ui-avatars.com/api/?name=${encodeURIComponent(trabajador.nombre || '')}&background=random&color=fff&size=200`
-                "
-                :alt="trabajador.nombre ?? undefined"
-                class="h-full w-full rounded-full object-cover"
-                :class="trabajador.estado === 'activo' ? 'bg-green-200' : 'bg-red-100'" />
-            </div>
+            <Avatar
+              :dni="trabajador.dni"
+              :avatar="trabajador.avatar"
+              :nombre="trabajador.nombre"
+              :sexo="trabajador.sexo"
+              size="sm"
+            />
             <div>
               <p class="text-sm font-medium text-gray-800 dark:text-white/90">{{ trabajador.nombre }}</p>
               <p class="text-xs text-gray-500 dark:text-gray-400">DNI: {{ trabajador.dni }}</p>
@@ -94,6 +88,7 @@
   import { useSindicatoStore } from '../../stores/sindicato'
   import { storeToRefs } from 'pinia'
   import { X, UserPlus } from 'lucide-vue-next'
+  import Avatar from '../ui/Avatar.vue'
 
   const store = useSindicatoStore()
   const { trabajadoresAgregados } = storeToRefs(store)

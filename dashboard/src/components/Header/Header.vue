@@ -32,8 +32,8 @@
         </button>
 
         <a href="index.html" class="lg:hidden">
-          <img class="dark:hidden" src="/logo-icon.svg" alt="Logo" />
-          <img class="hidden dark:block" src="/logo-icon.svg" alt="Logo" />
+          <img class="dark:hidden" src="/logo-icon.svg" alt="Logo" loading="lazy" />
+          <img class="hidden dark:block" src="/logo-icon.svg" alt="Logo" loading="lazy" />
         </a>
 
         <button

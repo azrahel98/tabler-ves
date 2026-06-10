@@ -1,6 +1,7 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 import * as pdfjsLib from 'pdfjs-dist'
 import pdfjsWorker from 'pdfjs-dist/build/pdf.worker.min.mjs?url'
+import api from '../services/api'
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorker
 
@@ -19,7 +20,9 @@ export function usePdfThumbnail(url: string | null, containerRef: () => HTMLElem
     error.value = false
 
     try {
-      const loadingTask = pdfjsLib.getDocument({ url, cMapPacked: true })
+      const response = await api.get(url, { responseType: 'arraybuffer' })
+      const data = new Uint8Array(response.data)
+      const loadingTask = pdfjsLib.getDocument({ data, cMapPacked: true })
       const pdf = await loadingTask.promise
       const page = await pdf.getPage(1)
 

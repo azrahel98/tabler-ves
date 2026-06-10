@@ -100,9 +100,9 @@
               class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-primary/5 dark:hover:bg-white/5 transition-colors">
               <div class="relative w-10 h-10 shrink-0">
                 <div class="w-10 h-10 overflow-hidden rounded-full border border-gray-100 dark:border-white/6">
-                  <img v-if="person.avatar" :src="`${baseURL}/personal/avatar/${person.dni}`" alt="avatar" class="w-full h-full object-cover" />
-                  <img v-else-if="person.sexo === 'M'" src="/M.svg" alt="avatar" class="w-full h-full" />
-                  <img v-else src="/F.svg" alt="avatar" class="w-full h-full" />
+                  <img v-if="person.avatar" :src="`${baseURL}/personal/avatar/${person.dni}`" alt="avatar" class="w-full h-full object-cover" loading="lazy" />
+                  <img v-else-if="person.sexo === 'M'" src="/M.svg" alt="avatar" class="w-full h-full" loading="lazy" />
+                  <img v-else src="/F.svg" alt="avatar" class="w-full h-full" loading="lazy" />
                 </div>
                 <span
                   v-if="person.estado"

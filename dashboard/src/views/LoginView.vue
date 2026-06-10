@@ -76,7 +76,7 @@ const handleLogin = async () => {
       
       <div class="flex flex-col items-center mb-8">
         <div class="flex items-center justify-center w-12 h-12 rounded-2xl bg-primary mb-4">
-          <img src="/logo-icon.svg" alt="Logo" class="w-7 h-7" />
+          <img src="/logo-icon.svg" alt="Logo" class="w-7 h-7" loading="lazy" />
         </div>
         <h1 class="text-title-lg font-bold leading-tight text-gray-800 tracking-tight dark:text-white/90">
           Tabler VES

@@ -22,7 +22,7 @@
       <div
         v-if="thumbnailUrl"
         class="w-full h-full rounded-lg overflow-hidden border border-stroke dark:border-strokedark shadow-sm group-hover:shadow-md transition-shadow bg-white dark:bg-boxdark">
-        <img :src="thumbnailUrl" class="w-full h-full object-cover object-top" alt="preview" />
+        <img :src="thumbnailUrl" class="w-full h-full object-cover object-top" alt="preview" loading="lazy" />
       </div>
 
 
@@ -58,7 +58,7 @@
 
     <div class="w-full text-center px-1 mt-1">
       <p
-        class="text-xs font-medium text-gray-700 dark:text-gray-300 line-clamp-2 break-words leading-snug tracking-tight group-hover:text-primary transition-colors"
+        class="text-xs font-medium text-gray-700 dark:text-gray-300 line-clamp-2 break-normal leading-snug tracking-tight group-hover:text-primary transition-colors"
         :title="item.original_name">
         {{ nombreSinExtension }}
       </p>

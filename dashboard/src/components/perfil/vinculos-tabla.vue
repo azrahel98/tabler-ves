@@ -1,14 +1,13 @@
 <template>
-  <div v-if="vinculos.length > 0" class="rounded-2xl border border-gray-100 bg-card dark:border-white/6 dark:bg-white/3 pb-4">
-    <div class="flex items-center justify-between px-5 py-4 border-b border-gray-100 dark:border-white/6">
-      <div class="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-gray-800 dark:text-white/90">
-        <Briefcase class="h-4 w-4 text-primary shrink-0" />
-        Historial de Vínculos
-        <span class="inline-flex items-center rounded-full bg-primary/10 px-2 py-0.5 text-xs font-semibold text-primary dark:bg-primary/20 dark:text-brand-300 normal-case tracking-normal">
-          {{ vinculos.length }}
-        </span>
-      </div>
-    </div>
+  <Card v-if="vinculos.length > 0" title="Historial de Vínculos" class="pb-4">
+    <template #icon>
+      <Briefcase class="h-4 w-4 text-primary shrink-0" />
+    </template>
+    <template #action>
+      <span class="inline-flex items-center rounded-full bg-primary/10 px-2 py-0.5 text-xs font-semibold text-primary dark:bg-primary/20 dark:text-brand-300 normal-case tracking-normal">
+        {{ vinculos.length }}
+      </span>
+    </template>
 
     <div class="hidden md:block overflow-x-auto lg:overflow-x-visible max-h-[25vh] lg:max-h-[50vh] xl:max-h-[60vh] overflow-y-auto">
       <table class="w-full table-fixed">
@@ -30,7 +29,7 @@
             class="transition-all duration-200 ease-out"
             :class="[
               v.fecha_salida
-                ? 'opacity-60 hover:opacity-100 hover:bg-gray-50/50 dark:hover:bg-white/2'
+                ? 'hover:bg-gray-50/50 dark:hover:bg-white/2'
                 : 'bg-emerald-50/10 dark:bg-emerald-500/3 hover:bg-emerald-50/20 dark:hover:bg-emerald-500/5',
             ]">
             <td class="px-3 py-3 min-w-0 max-w-0">
@@ -43,8 +42,8 @@
                 <div class="flex-1 min-w-0">
                   <div class="flex flex-col gap-0.5">
                     <p
-                      class="text-xs truncate"
-                      :class="v.fecha_salida ? 'font-medium text-gray-500 dark:text-gray-400' : 'font-semibold text-gray-800 dark:text-white'"
+                      class="text-xs truncate text-gray-800 dark:text-white"
+                      :class="v.fecha_salida ? 'font-medium' : 'font-semibold'"
                       :title="v.cargo ?? undefined">
                       {{ v.cargo }}
                     </p>
@@ -71,8 +70,7 @@
 
             <td class="px-3 py-3 min-w-0">
               <div
-                class="flex items-center gap-1 text-[11px] font-mono whitespace-nowrap tracking-tighter"
-                :class="v.fecha_salida ? 'text-gray-400/80 dark:text-gray-500/80' : 'text-gray-600 dark:text-gray-300'">
+                class="flex items-center gap-1 text-[11px] font-mono whitespace-nowrap tracking-tighter text-gray-600 dark:text-gray-300">
                 <span>{{ format(addDays(new Date(v.fecha_ingreso), 1), 'dd/MM/yyyy') }}</span>
                 <span class="text-gray-300 dark:text-gray-700 font-sans opacity-50 select-none">→</span>
                 <span v-if="v.fecha_salida" class="text-gray-400 dark:text-gray-500">
@@ -89,8 +87,8 @@
 
             <td class="px-3 py-3 text-right">
               <div class="inline-flex items-baseline rounded-lg bg-gray-50/50 dark:bg-white/3 border border-gray-100 dark:border-white/5 px-2 py-0.5 shadow-theme-xs">
-                <span class="text-3xs font-semibold mr-0.5 select-none" :class="v.fecha_salida ? 'text-gray-400/60 dark:text-gray-500/60' : 'text-gray-400 dark:text-gray-500'"> S/ </span>
-                <span class="text-xs font-mono tracking-wide" :class="v.fecha_salida ? 'font-medium text-gray-500 dark:text-gray-400' : 'font-bold text-gray-800 dark:text-white'">
+                <span class="text-3xs font-semibold mr-0.5 select-none text-gray-400 dark:text-gray-500"> S/ </span>
+                <span class="text-xs font-mono tracking-wide text-gray-800 dark:text-white" :class="v.fecha_salida ? 'font-medium' : 'font-bold'">
                   {{ formatSueldo(v.sueldo) }}
                 </span>
               </div>
@@ -229,10 +227,10 @@
         v-for="v in vinculos"
         :key="v.id"
         class="px-5 py-4 space-y-3 transition-all duration-200"
-        :class="[v.fecha_salida ? 'opacity-60 hover:opacity-100' : 'bg-emerald-50/5 dark:bg-emerald-500/2']">
+        :class="[v.fecha_salida ? '' : 'bg-emerald-50/5 dark:bg-emerald-500/2']">
         <div class="flex items-start justify-between gap-3">
           <div class="min-w-0">
-            <p class="text-sm truncate" :class="v.fecha_salida ? 'font-medium text-gray-500 dark:text-gray-400' : 'font-semibold text-gray-800 dark:text-white'">
+            <p class="text-sm truncate text-gray-800 dark:text-white" :class="v.fecha_salida ? 'font-medium' : 'font-semibold'">
               {{ v.cargo }}
             </p>
             <p class="text-xs text-gray-400 dark:text-gray-500 truncate mt-0.5">{{ v.area }}</p>
@@ -410,11 +408,12 @@
       @close="isEventoOpen = false"
       @guardado="handleEventoGuardado" />
     <CambioAreaModal v-if="esAdmin" :isOpen="isCambioAreaOpen" :vinculo="vinculoSeleccionado" @close="isCambioAreaOpen = false" @guardado="handleCambioAreaGuardado" />
-  </div>
+  </Card>
 </template>
 
 <script setup lang="ts">
   import { ref } from 'vue'
+  import Card from '../ui/card.vue'
   import { storeToRefs } from 'pinia'
   import { usePersonalStore } from '../../stores/personal'
   import { UserMinus, Info, Trash2, MoreHorizontal, Briefcase, Shield, Activity, ArrowRightLeft } from 'lucide-vue-next'

@@ -3,24 +3,22 @@
     <Transition name="profile" appear>
       <div v-if="perfilActual" class="space-y-6">
         <header-perfil />
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:items-start">
-        <info />
-        <div class="md:col-span-2 md:max-h-[380px] md:overflow-y-auto overflow-x-hidden">
-          <vinculos-tabla />
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:items-start">
+          <info />
+          <div class="md:col-span-2 md:max-h-[380px] md:overflow-y-auto overflow-x-hidden">
+            <vinculos-tabla />
+          </div>
         </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-[1fr_260px] lg:grid-cols-[1fr_300px] gap-6 items-start">
+          <grado />
+          <banco />
+        </div>
+
+        <legajo-folder />
+
+        <historial />
       </div>
-
-      <div class="grid grid-cols-1 sm:grid-cols-[1fr_260px] lg:grid-cols-[1fr_300px] gap-6 items-start">
-        <grado />
-        <banco />
-      </div>
-
-      <!-- Sección de Legajo Digital (Archivos y Carpetas) -->
-      <legajo-folder />
-
-      <!-- Sección Final: Historial de Cambios / Auditoría (Al final de todo) -->
-      <historial />
-    </div>
     </Transition>
   </div>
 </template>

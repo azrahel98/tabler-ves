@@ -3,14 +3,14 @@
     <div class="p-4 pt-1 mx-auto max-w-(--breakpoint-2xl) md:p-6">
       <div class="mb-6 flex items-center justify-between">
         <div>
-          <h1 class="text-title-sm font-semibold text-gray-800 dark:text-white/90">{{ nombreDistrito }}</h1>
-          <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">Trabajadores activos que residen en este distrito</p>
+          <h1 class="text-title-xl font-bold leading-tight text-gray-900 dark:text-white tracking-tight">{{ nombreDistrito }}</h1>
+          <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Trabajadores activos que residen en este distrito</p>
         </div>
 
         <div class="flex items-center gap-2">
           <div v-if="!cargando" class="flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1.5 dark:bg-primary/15">
-            <Users class="h-4 w-4 text-primary dark:text-brand-300" />
-            <span class="text-xs font-semibold text-primary dark:text-brand-300">
+            <Users class="h-3.5 w-3.5 text-primary dark:text-brand-300" />
+            <span class="text-xs font-bold uppercase tracking-wider text-primary dark:text-brand-300">
               {{ trabajadores.length }}
               {{ trabajadores.length === 1 ? 'trabajador' : 'trabajadores' }}
             </span>
@@ -18,7 +18,7 @@
           <button
             @click="recargar"
             :disabled="cargando"
-            class="inline-flex items-center gap-2 rounded-xl border border-gray-100 bg-card px-3 py-1.5 text-xs font-medium text-gray-700 shadow-theme-xs hover:bg-primary/5 disabled:opacity-50 dark:border-white/6 dark:bg-white/5 dark:text-gray-300 dark:hover:bg-white/10 transition-colors">
+            class="inline-flex items-center gap-2 rounded-xl border border-gray-100 bg-card px-3.5 py-2 text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-primary/5 disabled:opacity-50 dark:border-white/6 dark:bg-white/5 dark:text-gray-300 dark:hover:bg-white/10 transition-colors">
             <RefreshCw class="h-4 w-4" :class="cargando ? 'animate-spin' : ''" />
             Actualizar
           </button>
@@ -27,39 +27,60 @@
 
       <div v-if="cargando" class="flex flex-col items-center gap-3 py-20">
         <Loading size="md" />
-        <span class="text-xs text-gray-500 dark:text-gray-400">Cargando trabajadores del distrito…</span>
+        <span class="text-sm text-gray-500 dark:text-gray-400">Cargando personal del distrito…</span>
       </div>
 
       <div v-else-if="trabajadores.length === 0" class="flex flex-col items-center justify-center py-20 text-center">
         <UserX class="h-16 w-16 text-gray-300 dark:text-gray-600 mb-4" />
-        <p class="text-xs font-semibold text-gray-600 dark:text-gray-400">Sin personal activo</p>
-        <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">
+        <p class="text-base font-semibold text-gray-600 dark:text-gray-400">Sin personal activo</p>
+        <p class="text-sm text-gray-400 dark:text-gray-500 mt-1">
           No hay trabajadores activos registrados en <span class="font-semibold">{{ nombreDistrito }}</span>
         </p>
       </div>
 
       <template v-else>
-        <div class="min-w-0 flex-1">
-          <DataTable
-            :columnas="columnas"
-            :filas="trabajadores"
-            titulo="Personal del distrito"
-            subtitulo="Haga clic en una fila para ver el perfil completo"
-            placeholder-busqueda="Buscar por nombre, DNI o cargo..."
-            @click-fila="(t: any) => router.push({ name: 'personal-profile', params: { dni: t.dni } })">
-            <template #celda-nombre="{ fila }">
-              <div class="flex items-center">
-                <span class="font-medium text-gray-700 text-xs dark:text-white">{{ fila.nombre }}</span>
-              </div>
-            </template>
+        <div class="flex flex-col gap-4 lg:flex-row lg:items-start">
+          <div class="min-w-0 flex-1">
+            <DataTable
+              :columnas="columnas"
+              :filas="trabajadores"
+              titulo="Personal del distrito"
+              subtitulo="Haga clic en una fila para ver el perfil completo"
+              placeholder-busqueda="Buscar por nombre, DNI o cargo..."
+              @click-fila="(t: any) => router.push({ name: 'personal-profile', params: { dni: t.dni } })">
+              <template #celda-nombre="{ fila }">
+                <div class="flex items-center gap-3">
+                  <Avatar
+                    :dni="fila.dni"
+                    :avatar="fila.avatar"
+                    :nombre="fila.nombre"
+                    size="sm"
+                  />
+                  <span class="font-semibold text-gray-800 text-sm dark:text-white">{{ fila.nombre }}</span>
+                </div>
+              </template>
 
-            <template #celda-sindicato="{ valor }">
-              <span v-if="valor" class="inline-flex items-center rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary dark:bg-primary/15 dark:text-brand-300">
-                {{ valor }}
-              </span>
-              <span v-else class="text-gray-300 dark:text-gray-600">—</span>
-            </template>
-          </DataTable>
+              <template #celda-dni="{ valor }">
+                <span class="font-mono tabular-nums text-gray-600 dark:text-gray-400 text-xs">{{ valor }}</span>
+              </template>
+
+              <template #celda-ingreso="{ valor }">
+                <span class="tabular-nums text-gray-500 dark:text-gray-400 text-xs">{{ valor }}</span>
+              </template>
+
+              <template #celda-sindicato="{ valor }">
+                <span v-if="valor" class="inline-flex items-center rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-primary dark:bg-primary/15 dark:text-brand-300">
+                  {{ valor }}
+                </span>
+                <span v-else class="text-gray-300 dark:text-gray-600">—</span>
+              </template>
+            </DataTable>
+          </div>
+
+          <div class="flex flex-col gap-4 lg:w-80 lg:shrink-0">
+            <GraficoRegimen :trabajadores="trabajadores" />
+            <GraficoSindicato :trabajadores="trabajadores" />
+          </div>
         </div>
       </template>
     </div>
@@ -73,6 +94,9 @@
   import { useTableroStore } from '../../stores/dashboard'
   import DataTable from '../../components/ui/DataTable.vue'
   import Loading from '../../components/ui/Loading.vue'
+  import Avatar from '../../components/ui/Avatar.vue'
+  import GraficoRegimen from '../../components/reportes/GraficoRegimen.vue'
+  import GraficoSindicato from '../../components/reportes/GraficoSindicato.vue'
   import type { TrabajadorPorDistrito } from '../../types'
 
   const route = useRoute()

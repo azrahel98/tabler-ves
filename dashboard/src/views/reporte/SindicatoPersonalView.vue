@@ -66,10 +66,13 @@
           
           <template #celda-nombre="{ fila }">
             <div class="flex items-center gap-3">
-              <img
-                :src="fila.sexo === 'M' ? '/M.svg' : fila.sexo === 'F' ? '/F.svg' : `https://ui-avatars.com/api/?name=${encodeURIComponent(fila.nombre)}&background=random&color=fff&size=80`"
-                :alt="fila.nombre"
-                class="h-7 w-7 rounded-full object-cover shrink-0" />
+              <Avatar
+                :dni="fila.dni"
+                :avatar="fila.avatar"
+                :nombre="fila.nombre"
+                :sexo="fila.sexo"
+                size="sm"
+              />
               <span class="font-medium text-gray-800 dark:text-white">{{ fila.nombre }}</span>
             </div>
           </template>
@@ -105,6 +108,7 @@
   import Loading from '../../components/ui/Loading.vue'
   import Button from '../../components/ui/Button.vue'
   import Badge from '../../components/ui/Badge.vue'
+  import Avatar from '../../components/ui/Avatar.vue'
 
   const route = useRoute()
   const router = useRouter()

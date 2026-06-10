@@ -9,10 +9,10 @@
       <button
         v-if="esAdmin"
         @click="openModal(null)"
-        class="rounded-full flex items-center gap-1 px-2 py-1 text-gray-500 hover:bg-gray-100 hover:text-brand-500 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-brand-400 transition-colors"
+        class="rounded-lg flex items-center gap-1.5 px-2.5 py-0.5 text-gray-505 border border-gray-200/60 dark:border-white/10 hover:bg-gray-100 hover:text-brand-500 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-brand-400 transition-colors"
         title="Agregar Grado">
         <Plus class="h-3 w-3" />
-        <span class="text-2xs font-medium">Agregar</span>
+        <span class="text-[9px] font-bold uppercase tracking-wider">Agregar</span>
       </button>
     </template>
 
@@ -24,18 +24,18 @@
 
         <div class="min-w-0 flex-1">
           <div class="flex items-start justify-between gap-2">
-            <p class="data-value dark:text-white/90 break-words flex-1 min-w-0 leading-snug">{{ grado.profesion }}</p>
+            <p class="text-body-small font-semibold text-gray-800 dark:text-white/90 break-words flex-1 min-w-0 leading-snug">{{ grado.profesion }}</p>
             <span
               :class="badgeNivel(grado.nivel_academico)"
-              class="inline-flex items-center gap-1 rounded-full px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider ring-1 ring-inset shrink-0 mt-px">
+              class="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-body-tiny font-bold uppercase tracking-wider ring-1 ring-inset shrink-0 mt-px">
               <component :is="getNivelIcon(grado.nivel_academico)" class="h-2.5 w-2.5 shrink-0" />
               {{ grado.nivel_academico }}
             </span>
           </div>
-          <div class="flex items-start gap-1 mt-1 text-[10px] text-gray-500 dark:text-gray-400 flex-wrap leading-tight">
-            <Building2 v-if="grado.universidad" class="h-2.5 w-2.5 shrink-0 mt-[1.5px]" />
+          <div class="flex items-center gap-1 mt-1 text-body-tiny text-gray-500 dark:text-gray-400 flex-wrap leading-tight">
+            <Building2 v-if="grado.universidad" class="h-2.5 w-2.5 shrink-0" />
             <span v-if="grado.universidad" class="break-words">{{ grado.universidad }}</span>
-            <span v-if="grado.universidad && grado.colegiatura" class="text-gray-300 dark:text-gray-600 mx-0.5 font-black">·</span>
+            <span v-if="grado.universidad && grado.colegiatura" class="text-gray-300 dark:text-gray-600 mx-1 font-black">·</span>
             <span v-if="grado.colegiatura" class="break-words font-semibold text-gray-600 dark:text-gray-300">C.P: {{ grado.colegiatura }}</span>
           </div>
         </div>
@@ -63,11 +63,11 @@
           <GraduationCap class="h-4 w-4 text-gray-300 dark:text-gray-600" />
         </div>
         <div class="text-left">
-          <p class="text-xs font-semibold text-gray-500 dark:text-gray-400">Sin grados académicos</p>
-          <p class="text-2xs text-gray-400 dark:text-gray-500 mt-0.5">No hay formación registrada.</p>
+          <p class="text-body-small font-bold text-gray-500 dark:text-gray-400">Sin grados académicos</p>
+          <p class="text-body-tiny text-gray-400 dark:text-gray-500 mt-0.5">No hay formación registrada.</p>
         </div>
       </div>
-      <button v-if="esAdmin" @click="openModal(null)" class="shrink-0 text-2xs font-medium text-primary hover:text-brand-500 flex items-center gap-1 transition-colors bg-primary/5 hover:bg-primary/10 px-2.5 py-1.5 rounded-lg">
+      <button v-if="esAdmin" @click="openModal(null)" class="shrink-0 text-body-tiny font-bold uppercase tracking-wider text-primary hover:text-brand-500 flex items-center gap-1 transition-colors bg-primary/5 hover:bg-primary/10 px-2.5 py-1 rounded-lg">
         <Plus class="h-3 w-3" /> Añadir
       </button>
     </div>
@@ -147,6 +147,7 @@
   }
 
   const abrirEliminar = (grado: GradoAcademico) => {
+    gradoAEliminar.value = null
     gradoAEliminar.value = grado
     isEliminarOpen.value = true
   }

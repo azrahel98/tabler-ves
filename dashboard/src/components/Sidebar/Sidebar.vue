@@ -5,10 +5,10 @@
     <div :class="sidebarToggle ? 'justify-center' : 'justify-start px-4'" class="flex items-center gap-2 pt-8 sidebar-header pb-7">
       <router-link to="/">
         <span class="logo flex items-center gap-2">
-          <img class="dark:hidden" :class="sidebarToggle ? 'hidden' : 'block'" src="/logo-icon.svg" alt="Logossdfads" />
-          <img class="hidden dark:block" :class="sidebarToggle ? 'hidden' : 'block'" src="/logo-icon.svg" alt="Logo" />
+          <img class="dark:hidden" :class="sidebarToggle ? 'hidden' : 'block'" src="/logo-icon.svg" alt="Logossdfads" loading="lazy" />
+          <img class="hidden dark:block" :class="sidebarToggle ? 'hidden' : 'block'" src="/logo-icon.svg" alt="Logo" loading="lazy" />
 
-          <img class="logo-icon w-8 h-8" :class="sidebarToggle ? 'block' : 'hidden'" src="/logo-icon.svg" alt="Logo" />
+          <img class="logo-icon w-8 h-8" :class="sidebarToggle ? 'block' : 'hidden'" src="/logo-icon.svg" alt="Logo" loading="lazy" />
         </span>
       </router-link>
     </div>

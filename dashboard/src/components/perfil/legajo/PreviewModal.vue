@@ -10,72 +10,75 @@
     <div class="relative w-full bg-gray-100 dark:bg-gray-900 rounded-xl overflow-hidden flex flex-col" style="height: 75vh">
 
       <div class="flex items-center justify-between px-4 py-2 bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-white/5 shrink-0">
+        <!-- Controles de Página -->
         <div class="flex items-center gap-1">
-          <button
-            @click="paginaAnterior"
-            :disabled="paginaActual <= 1 || cargandoPdf"
-            class="inline-flex items-center justify-center h-7 w-7 rounded-md border border-gray-200 dark:border-white/10 text-gray-500 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed dark:border-strokedark dark:text-gray-400 dark:hover:bg-white/5 transition-colors">
-            <ChevronLeft class="h-3.5 w-3.5" />
-          </button>
-          <span class="text-2xs font-semibold tracking-wider text-gray-400 dark:text-gray-500 uppercase px-2 tabular-nums">
-            Pág. {{ paginaActual }} / {{ totalPaginas || '—' }}
+          <template v-if="!usarVisorNativo">
+            <button
+              @click="paginaAnterior"
+              :disabled="paginaActual <= 1 || cargandoPdf"
+              class="inline-flex items-center justify-center h-7 w-7 rounded-md border border-gray-200 dark:border-white/10 text-gray-500 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed dark:border-strokedark dark:text-gray-400 dark:hover:bg-white/5 transition-colors">
+              <ChevronLeft class="h-3.5 w-3.5" />
+            </button>
+            <span class="text-2xs font-semibold tracking-wider text-gray-400 dark:text-gray-500 uppercase px-2 tabular-nums">
+              Pág. {{ paginaActual }} / {{ totalPaginas || '—' }}
+            </span>
+            <button
+              @click="paginaSiguiente"
+              :disabled="paginaActual >= totalPaginas || cargandoPdf"
+              class="inline-flex items-center justify-center h-7 w-7 rounded-md border border-gray-200 dark:border-white/10 text-gray-500 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed dark:border-strokedark dark:text-gray-400 dark:hover:bg-white/5 transition-colors">
+              <ChevronRight class="h-3.5 w-3.5" />
+            </button>
+          </template>
+          <span v-else class="text-xs font-semibold text-gray-500 dark:text-gray-400 flex items-center gap-1.5 py-1">
+            <span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+            Visor Nativo del Navegador
           </span>
-          <button
-            @click="paginaSiguiente"
-            :disabled="paginaActual >= totalPaginas || cargandoPdf"
-            class="inline-flex items-center justify-center h-7 w-7 rounded-md border border-gray-200 dark:border-white/10 text-gray-500 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed dark:border-strokedark dark:text-gray-400 dark:hover:bg-white/5 transition-colors">
-            <ChevronRight class="h-3.5 w-3.5" />
-          </button>
         </div>
 
+        <!-- Controles de Zoom / Alternador -->
         <div class="flex items-center gap-1">
+          <template v-if="!usarVisorNativo">
+            <button
+              @click="ajustarZoom(-0.25)"
+              :disabled="escala <= 0.5"
+              class="inline-flex items-center justify-center h-7 w-7 rounded-md border border-gray-200 dark:border-white/10 text-gray-500 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed dark:text-gray-400 dark:hover:bg-white/5 transition-colors">
+              <Minus class="h-3.5 w-3.5" />
+            </button>
+            <span class="text-2xs font-semibold tracking-wider text-gray-400 dark:text-gray-500 w-12 text-center tabular-nums">
+              {{ Math.round(escala * 100) }}%
+            </span>
+            <button
+              @click="ajustarZoom(0.25)"
+              :disabled="escala >= 3"
+              class="inline-flex items-center justify-center h-7 w-7 rounded-md border border-gray-200 dark:border-white/10 text-gray-500 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed dark:text-gray-400 dark:hover:bg-white/5 transition-colors">
+              <Plus class="h-3.5 w-3.5" />
+            </button>
+            <button
+              @click="resetZoom"
+              class="ml-1 inline-flex items-center justify-center h-7 px-2.5 rounded-md border border-gray-200 dark:border-white/10 text-2xs font-semibold uppercase tracking-wider text-gray-500 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
+              Ajustar
+            </button>
+          </template>
+
           <button
-            @click="ajustarZoom(-0.25)"
-            :disabled="escala <= 0.5"
-            class="inline-flex items-center justify-center h-7 w-7 rounded-md border border-gray-200 dark:border-white/10 text-gray-500 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed dark:text-gray-400 dark:hover:bg-white/5 transition-colors">
-            <Minus class="h-3.5 w-3.5" />
-          </button>
-          <span class="text-2xs font-semibold tracking-wider text-gray-400 dark:text-gray-500 w-12 text-center tabular-nums">
-            {{ Math.round(escala * 100) }}%
-          </span>
-          <button
-            @click="ajustarZoom(0.25)"
-            :disabled="escala >= 3"
-            class="inline-flex items-center justify-center h-7 w-7 rounded-md border border-gray-200 dark:border-white/10 text-gray-500 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed dark:text-gray-400 dark:hover:bg-white/5 transition-colors">
-            <Plus class="h-3.5 w-3.5" />
-          </button>
-          <button
-            @click="resetZoom"
-            class="ml-1 inline-flex items-center justify-center h-7 px-2.5 rounded-md border border-gray-200 dark:border-white/10 text-2xs font-semibold uppercase tracking-wider text-gray-500 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
-            Ajustar
+            @click="usarVisorNativo = !usarVisorNativo"
+            class="ml-1.5 inline-flex items-center justify-center h-7 px-2.5 rounded-md border border-gray-200 dark:border-white/10 text-2xs font-bold uppercase tracking-wider text-primary hover:bg-primary/5 dark:text-brand-300 dark:hover:bg-white/5 transition-colors">
+            {{ usarVisorNativo ? 'Usar Visor Pro' : 'Usar Visor Navegador' }}
           </button>
         </div>
       </div>
 
       <div ref="contenedorRef" class="flex-1 overflow-auto flex items-start justify-center p-4">
-        <canvas ref="canvasRef" class="shadow-lg rounded max-w-none"></canvas>
+        <canvas v-show="!usarVisorNativo" ref="canvasRef" class="shadow-lg rounded max-w-none"></canvas>
+        <iframe v-if="usarVisorNativo && urlPrevia" :src="urlPrevia" class="w-full h-full border-none bg-white rounded-lg"></iframe>
       </div>
 
       <Transition name="fade">
-        <div v-if="cargandoPdf" class="absolute inset-0 flex flex-col items-center justify-center bg-white/80 dark:bg-gray-900/80 z-10">
+        <div v-if="cargandoPdf && !usarVisorNativo" class="absolute inset-0 flex flex-col items-center justify-center bg-white/80 dark:bg-gray-900/80 z-10">
           <Loader2 class="h-8 w-8 animate-spin text-primary mb-3" />
           <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Cargando PDF...</p>
         </div>
       </Transition>
-
-      <div v-if="errorPdf && !cargandoPdf" class="absolute inset-0 flex flex-col items-center justify-center z-10 p-6 text-center">
-        <AlertCircle class="h-10 w-10 text-red-400 mb-3" />
-        <p class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">No se pudo cargar el PDF</p>
-        <p class="text-xs text-gray-500 dark:text-gray-400 mb-4">{{ errorPdf }}</p>
-        <a
-          v-if="urlPrevia"
-          :href="urlPrevia"
-          target="_blank"
-          class="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-opacity-90 transition-all">
-          <ExternalLink class="h-4 w-4" />
-          Abrir en pestaña nueva
-        </a>
-      </div>
     </div>
 
     <template #footer>
@@ -138,7 +141,7 @@
 
 <script setup lang="ts">
   import Modal from '../../ui/Modal.vue'
-  import { Loader2, Download, FileText, Save, ChevronLeft, ChevronRight, Minus, Plus, AlertCircle, ExternalLink } from 'lucide-vue-next'
+  import { Loader2, Download, FileText, Save, ChevronLeft, ChevronRight, Minus, Plus, ExternalLink } from 'lucide-vue-next'
   import { ref, watch, onUnmounted } from 'vue'
   import * as pdfjsLib from 'pdfjs-dist'
   import pdfjsWorker from 'pdfjs-dist/build/pdf.worker.min.mjs?url'
@@ -168,6 +171,7 @@
   const escala = ref(1.0)
   const cargandoPdf = ref(false)
   const errorPdf = ref('')
+  const usarVisorNativo = ref(false)
 
   const documentoLocal = ref<number | null>(null)
   const documentosDisponibles = ref<any[]>([])
@@ -211,20 +215,20 @@
     }
 
     try {
+      const response = await api.get(url, { responseType: 'arraybuffer' })
+      const data = new Uint8Array(response.data)
       const tarea = pdfjsLib.getDocument({
-        url,
+        data,
         cMapPacked: true,
-        withCredentials: false,
       })
       pdfDoc = await tarea.promise
       totalPaginas.value = pdfDoc.numPages
 
       await renderPagina(1)
-
-      // escala.value = calcularEscalaAjustada()
       await renderPagina(1)
     } catch (e: any) {
-      errorPdf.value = e?.message || 'Error desconocido'
+      errorPdf.value = e?.message || 'Error al procesar el documento en Canvas'
+      usarVisorNativo.value = true
     } finally {
       cargandoPdf.value = false
     }
@@ -295,6 +299,7 @@
     () => props.isOpen,
     async (abierto) => {
       if (abierto) {
+        usarVisorNativo.value = false
         documentoLocal.value = props.documentoActual?.documento_id ?? null
         mensajeAsociacion.value = ''
         errorAsociacion.value = false
