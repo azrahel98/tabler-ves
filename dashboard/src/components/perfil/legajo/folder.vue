@@ -1,7 +1,6 @@
 <template>
   <Card>
   
- 
     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between border-b border-stroke pt-0 px-3 pb-3 dark:border-strokedark gap-4">
       <div class="flex items-center gap-2.5">
         <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary dark:bg-white/5 dark:text-brand-300">

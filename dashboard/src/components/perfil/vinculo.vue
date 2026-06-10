@@ -1,10 +1,10 @@
 <template>
-  <div class="rounded-2xl border border-gray-100 bg-card p-6 dark:border-white/6 dark:bg-white/3 h-min">
-    <div class="flex flex-wrap items-center justify-between gap-2 text-xs font-bold uppercase text-gray-800 dark:text-white/90 mb-6">
-      <div class="flex items-center gap-2 text-sm">
-        <BriefcaseBusinessIcon class="h-5 w-5 text-primary" />
-        Vínculo Laboral
-      </div>
+  <Card title="Vínculo Laboral">
+    <template #icon>
+      <BriefcaseBusinessIcon class="h-4 w-4 text-primary shrink-0" />
+    </template>
+    
+    <template #action>
       <div class="flex items-center gap-1">
         <Popover v-if="vinculoActual && vinculoActual.codigo" posicion="abajo" alineacion="fin" ancho="300px" :mostrarFlecha="true" :mostrarCerrar="true" titulo="Detalle del Vínculo">
           <template #disparador>
@@ -13,7 +13,7 @@
             </button>
           </template>
 
-          <div class="space-y-2.5 text-sm">
+          <div class="space-y-2.5">
             <div v-if="vinculoActual.cargo_estructural" class="detalle-fila">
               <span class="detalle-etiqueta">Cargo Estructural</span>
               <span class="detalle-valor">{{ vinculoActual.cargo_estructural }}</span>
@@ -24,7 +24,7 @@
             </div>
             <div v-if="vinculoActual.codigo" class="detalle-fila">
               <span class="detalle-etiqueta">Código Plaza</span>
-              <span class="detalle-valor">{{ vinculoActual.codigo }}</span>
+              <span class="detalle-valor font-mono">{{ vinculoActual.codigo }}</span>
             </div>
 
             <RouterLink :to="{ name: 'sindicato-personal', params: { nombre: vinculoActual.sindicato } }" v-if="vinculoActual.sindicato" class="detalle-fila">
@@ -45,7 +45,7 @@
               </div>
               <div v-if="vinculoActual.fecha_evento" class="detalle-fila">
                 <span class="detalle-etiqueta">Fecha Evento</span>
-                <span class="detalle-valor">{{ vinculoActual.fecha_evento }}</span>
+                <span class="detalle-valor font-mono">{{ vinculoActual.fecha_evento }}</span>
               </div>
             </template>
           </div>
@@ -54,11 +54,11 @@
         <div v-if="vinculoActual && esAdmin" class="relative" ref="menuAcciones">
           <button
             @click="accionesAbiertas = !accionesAbiertas"
-            class="rounded-full flex items-center gap-1 px-2 py-1 hover:bg-primary/10 dark:hover:bg-primary/20 transition-colors"
+            class="rounded-lg flex items-center gap-1.5 px-2.5 py-0.5 text-gray-505 border border-gray-200/60 dark:border-white/10 hover:bg-primary/5 hover:text-primary dark:text-gray-400 dark:hover:bg-primary/10 dark:hover:text-brand-300 transition-colors"
             :class="tieneRenuncia ? 'text-error-500' : 'text-gray-500 dark:text-gray-400'"
             title="Acciones">
             <ChevronDown class="h-3.5 w-3.5" :class="tieneRenuncia ? 'text-error-500' : 'text-gray-400'" />
-            <span class="text-xs font-medium">Acciones</span>
+            <span class="text-[9px] font-bold uppercase tracking-wider">Acciones</span>
           </button>
 
           <Transition
@@ -91,32 +91,34 @@
           </Transition>
         </div>
       </div>
-    </div>
+    </template>
 
-    <div v-if="vinculoActual" class="space-y-4">
-      <div class="grid grid-cols-2 gap-x-2 gap-y-1">
-        <div class="col-span-2">
-          <p class="text-2xs font-medium uppercase tracking-wider text-gray-400">Área</p>
-          <p class="mt-0.5 font-medium text-sm text-gray-800 dark:text-white/90">{{ vinculoActual.area }}</p>
+    <!-- Contenido de Datos -->
+    <div v-if="vinculoActual" class="space-y-3.5">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-5 gap-y-3.5 py-1">
+        <div class="sm:col-span-2">
+          <p class="text-body-tiny text-gray-500 dark:text-gray-400 uppercase font-semibold tracking-wider">Área</p>
+          <p class="mt-0.5 text-body-small font-semibold text-gray-800 dark:text-white/90 uppercase">{{ vinculoActual.area }}</p>
         </div>
         <div>
-          <p class="text-2xs font-medium uppercase tracking-wider text-gray-400">Cargo</p>
-          <p class="mt-0.5 font-medium text-sm text-gray-800 dark:text-white/90">{{ vinculoActual.cargo }}</p>
+          <p class="text-body-tiny text-gray-500 dark:text-gray-400 uppercase font-semibold tracking-wider">Cargo</p>
+          <p class="mt-0.5 text-body-small font-semibold text-gray-800 dark:text-white/90 uppercase">{{ vinculoActual.cargo }}</p>
         </div>
         <div>
-          <p class="text-2xs font-medium uppercase tracking-wider text-gray-400">Régimen</p>
-          <div class="mt-0.5 font-medium text-sm text-gray-800 dark:text-white/90">{{ vinculoActual.regimen }}</div>
+          <p class="text-body-tiny text-gray-500 dark:text-gray-400 uppercase font-semibold tracking-wider">Régimen</p>
+          <div class="mt-0.5 text-body-small font-semibold text-gray-800 dark:text-white/90 uppercase">{{ vinculoActual.regimen }}</div>
         </div>
         <div>
-          <p class="text-2xs font-medium uppercase tracking-wider text-gray-400">Sueldo</p>
-          <p class="mt-0.5 text-sm font-semibold text-success-600 dark:text-success-400">
+          <p class="text-body-tiny text-gray-500 dark:text-gray-400 uppercase font-semibold tracking-wider">Sueldo</p>
+          <p class="mt-0.5 text-body-small font-mono font-semibold text-success-600 dark:text-success-400">
             S/ {{ vinculoActual.sueldo }}
-            <span v-if="vinculoActual.codigo" class="text-gray-400 font-normal text-xs">· {{ vinculoActual.codigo }}</span>
+            <span v-if="vinculoActual.codigo" class="text-gray-400 font-normal text-body-tiny font-sans mx-1">·</span>
+            <span v-if="vinculoActual.codigo" class="text-gray-500 font-mono font-normal text-body-tiny">{{ vinculoActual.codigo }}</span>
           </p>
         </div>
         <div>
-          <p class="text-2xs font-medium uppercase tracking-wider text-gray-400">Estado</p>
-          <span class="mt-0.5 inline-flex items-center rounded-full px-2 py-0.5 text-2xs font-medium ring-1 ring-inset uppercase"
+          <p class="text-body-tiny text-gray-500 dark:text-gray-400 uppercase font-semibold tracking-wider">Estado</p>
+          <span class="mt-1 inline-flex items-center rounded px-1.5 py-0.5 text-body-tiny font-bold ring-1 ring-inset uppercase tracking-wider"
             :class="tieneRenuncia ? 'bg-red-50 text-red-700 ring-red-600/20 dark:bg-red-500/10 dark:text-red-400 dark:ring-red-500/20' : 
                    vinculoActual.tipo_evento ? 'bg-amber-50 text-amber-700 ring-amber-600/20 dark:bg-amber-500/10 dark:text-amber-400 dark:ring-amber-500/20' : 
                    'bg-green-50 text-green-700 ring-green-600/20 dark:bg-green-500/10 dark:text-green-400 dark:ring-green-500/20'">
@@ -124,22 +126,22 @@
           </span>
         </div>
         <div v-if="vinculoActual.numero_doc_ingreso">
-          <p class="text-2xs font-medium uppercase tracking-wider text-gray-400">Doc. Ingreso</p>
-          <p class="mt-0.5 font-medium text-sm text-gray-800 dark:text-white/90 uppercase">{{ vinculoActual.doc_ingreso }} N° {{ vinculoActual.numero_doc_ingreso }}</p>
+          <p class="text-body-tiny text-gray-500 dark:text-gray-400 uppercase font-semibold tracking-wider">Doc. Ingreso</p>
+          <p class="mt-0.5 text-body-small font-mono font-semibold text-gray-800 dark:text-white/90 uppercase">{{ vinculoActual.doc_ingreso }} N° {{ vinculoActual.numero_doc_ingreso }}</p>
         </div>
         <div>
-          <p class="text-2xs font-medium uppercase tracking-wider text-gray-400">Fecha Ingreso</p>
-          <p class="mt-0.5 font-medium text-sm text-gray-800 dark:text-white/90">{{ formatInTimeZone(vinculoActual.fecha_ingreso, 'America/Lima', 'dd/MM/yyyy') }}</p>
+          <p class="text-body-tiny text-gray-500 dark:text-gray-400 uppercase font-semibold tracking-wider">Fecha Ingreso</p>
+          <p class="mt-0.5 text-body-small font-mono font-semibold text-gray-800 dark:text-white/90">{{ formatInTimeZone(vinculoActual.fecha_ingreso, 'America/Lima', 'dd/MM/yyyy') }}</p>
         </div>
       </div>
 
       <div v-if="vinculoActual.descrip_ingreso">
-        <p class="text-2xs font-medium uppercase tracking-wider text-gray-400">Descripción Ingreso</p>
-        <p class="mt-0.5 font-medium text-sm text-gray-800 dark:text-white/90 leading-relaxed uppercase">{{ vinculoActual.descrip_ingreso }}</p>
+        <p class="text-body-tiny text-gray-500 dark:text-gray-400 uppercase font-semibold tracking-wider">Descripción Ingreso</p>
+        <p class="mt-0.5 text-body-small font-medium text-gray-800 dark:text-white/90 leading-relaxed uppercase">{{ vinculoActual.descrip_ingreso }}</p>
       </div>
     </div>
 
-    <div v-else class="text-sm text-gray-500 text-center py-4">No hay vínculo laboral activo.</div>
+    <div v-else class="text-body-small text-gray-500 text-center py-4">No hay vínculo laboral activo.</div>
 
     <RenunciaModal v-if="esAdmin" :isOpen="isRenunciaModalOpen" @close="isRenunciaModalOpen = false" @save="handleRenuncia" />
     <ConfirmarEliminarModal v-if="esAdmin" :isOpen="isEliminarModalOpen" :vinculo="vinculoActual" @close="isEliminarModalOpen = false" @confirm="handleEliminar" />
@@ -150,11 +152,12 @@
       :eventoActual="vinculoActual"
       @close="isEventoModalOpen = false"
       @guardado="handleEventoGuardado" />
-  </div>
+  </Card>
 </template>
 
 <script setup lang="ts">
   import { ref, computed, onMounted, onUnmounted } from 'vue'
+  import Card from '../ui/card.vue'
   import { storeToRefs } from 'pinia'
   import { defineAsyncComponent } from 'vue'
   import { usePersonalStore } from '../../stores/personal'
@@ -236,7 +239,7 @@
   }
 
   .detalle-etiqueta {
-    font-size: var(--text-2xs);
+    font-size: var(--text-tiny);
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.05em;
@@ -244,7 +247,8 @@
   }
 
   .detalle-valor {
-    font-weight: 500;
+    font-size: var(--text-small);
+    font-weight: 600;
     color: var(--color-gray-800);
     word-break: break-word;
   }
@@ -260,7 +264,7 @@
     gap: 8px;
     width: 100%;
     padding: 7px 14px;
-    font-size: var(--text-xs);
+    font-size: var(--text-small);
     font-weight: 500;
     color: var(--color-gray-500);
     transition:

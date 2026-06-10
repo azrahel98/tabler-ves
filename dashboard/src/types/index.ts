@@ -199,6 +199,7 @@ export interface TrabajadorPorDistrito {
   sindicato: string | null
   regimen: string | null
   distrito: string
+  avatar?: string | null
 }
 
 export interface RegistrarUrlPayload {

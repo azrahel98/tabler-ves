@@ -364,55 +364,10 @@
       "norm_label": "skills"
     },
     {
-      "label": "frontend-design",
-      "file_type": "code",
-      "source_file": "skills-lock.json",
-      "source_location": "L4",
-      "id": "dashboard_skills_lock_skills_frontend_design",
-      "community": 18,
-      "norm_label": "frontend-design"
-    },
-    {
-      "label": "source",
-      "file_type": "code",
-      "source_file": "skills-lock.json",
-      "source_location": "L5",
-      "id": "dashboard_skills_lock_frontend_design_source",
-      "community": 18,
-      "norm_label": "source"
-    },
-    {
-      "label": "sourceType",
-      "file_type": "code",
-      "source_file": "skills-lock.json",
-      "source_location": "L6",
-      "id": "dashboard_skills_lock_frontend_design_sourcetype",
-      "community": 18,
-      "norm_label": "sourcetype"
-    },
-    {
-      "label": "skillPath",
-      "file_type": "code",
-      "source_file": "skills-lock.json",
-      "source_location": "L7",
-      "id": "dashboard_skills_lock_frontend_design_skillpath",
-      "community": 18,
-      "norm_label": "skillpath"
-    },
-    {
-      "label": "computedHash",
-      "file_type": "code",
-      "source_file": "skills-lock.json",
-      "source_location": "L8",
-      "id": "dashboard_skills_lock_frontend_design_computedhash",
-      "community": 18,
-      "norm_label": "computedhash"
-    },
-    {
       "label": "impeccable",
       "file_type": "code",
       "source_file": "skills-lock.json",
-      "source_location": "L10",
+      "source_location": "L5",
       "id": "dashboard_skills_lock_skills_impeccable",
       "community": 18,
       "norm_label": "impeccable"
@@ -421,7 +376,7 @@
       "label": "source",
       "file_type": "code",
       "source_file": "skills-lock.json",
-      "source_location": "L11",
+      "source_location": "L6",
       "id": "dashboard_skills_lock_impeccable_source",
       "community": 18,
       "norm_label": "source"
@@ -430,7 +385,7 @@
       "label": "sourceType",
       "file_type": "code",
       "source_file": "skills-lock.json",
-      "source_location": "L12",
+      "source_location": "L7",
       "id": "dashboard_skills_lock_impeccable_sourcetype",
       "community": 18,
       "norm_label": "sourcetype"
@@ -439,7 +394,7 @@
       "label": "skillPath",
       "file_type": "code",
       "source_file": "skills-lock.json",
-      "source_location": "L13",
+      "source_location": "L8",
       "id": "dashboard_skills_lock_impeccable_skillpath",
       "community": 18,
       "norm_label": "skillpath"
@@ -448,7 +403,7 @@
       "label": "computedHash",
       "file_type": "code",
       "source_file": "skills-lock.json",
-      "source_location": "L14",
+      "source_location": "L9",
       "id": "dashboard_skills_lock_impeccable_computedhash",
       "community": 18,
       "norm_label": "computedhash"
@@ -457,7 +412,7 @@
       "label": "ui-ux-pro-max",
       "file_type": "code",
       "source_file": "skills-lock.json",
-      "source_location": "L16",
+      "source_location": "L11",
       "id": "dashboard_skills_lock_skills_ui_ux_pro_max",
       "community": 18,
       "norm_label": "ui-ux-pro-max"
@@ -466,7 +421,7 @@
       "label": "source",
       "file_type": "code",
       "source_file": "skills-lock.json",
-      "source_location": "L17",
+      "source_location": "L12",
       "id": "dashboard_skills_lock_ui_ux_pro_max_source",
       "community": 18,
       "norm_label": "source"
@@ -475,7 +430,7 @@
       "label": "sourceType",
       "file_type": "code",
       "source_file": "skills-lock.json",
-      "source_location": "L18",
+      "source_location": "L13",
       "id": "dashboard_skills_lock_ui_ux_pro_max_sourcetype",
       "community": 18,
       "norm_label": "sourcetype"
@@ -484,7 +439,7 @@
       "label": "skillPath",
       "file_type": "code",
       "source_file": "skills-lock.json",
-      "source_location": "L19",
+      "source_location": "L14",
       "id": "dashboard_skills_lock_ui_ux_pro_max_skillpath",
       "community": 18,
       "norm_label": "skillpath"
@@ -493,7 +448,7 @@
       "label": "computedHash",
       "file_type": "code",
       "source_file": "skills-lock.json",
-      "source_location": "L20",
+      "source_location": "L15",
       "id": "dashboard_skills_lock_ui_ux_pro_max_computedhash",
       "community": 18,
       "norm_label": "computedhash"
@@ -936,7 +891,7 @@
       "source_file": ".agents/skills/impeccable/scripts/command-metadata.json",
       "source_location": "L1",
       "id": "agents_skills_impeccable_scripts_command_metadata_json",
-      "community": 150,
+      "community": 157,
       "norm_label": "command-metadata.json"
     },
     {
@@ -2943,7 +2898,7 @@
       "source_file": ".claude/skills/impeccable/scripts/live-browser.js",
       "source_location": "L911",
       "id": "scripts_live_browser_updatebarcontent",
-      "community": 69,
+      "community": 33,
       "norm_label": "updatebarcontent()"
     },
     {
@@ -2952,7 +2907,7 @@
       "source_file": ".claude/skills/impeccable/scripts/live-browser.js",
       "source_location": "L930",
       "id": "scripts_live_browser_buildconfigurerow",
-      "community": 69,
+      "community": 33,
       "norm_label": "buildconfigurerow()"
     },
     {
@@ -2961,7 +2916,7 @@
       "source_file": ".claude/skills/impeccable/scripts/live-browser.js",
       "source_location": "L1037",
       "id": "scripts_live_browser_buildgeneratingrow",
-      "community": 69,
+      "community": 33,
       "norm_label": "buildgeneratingrow()"
     },
     {
@@ -2970,7 +2925,7 @@
       "source_file": ".claude/skills/impeccable/scripts/live-browser.js",
       "source_location": "L1073",
       "id": "scripts_live_browser_buildcyclingrow",
-      "community": 69,
+      "community": 33,
       "norm_label": "buildcyclingrow()"
     },
     {
@@ -2979,7 +2934,7 @@
       "source_file": ".claude/skills/impeccable/scripts/live-browser.js",
       "source_location": "L1188",
       "id": "scripts_live_browser_buildsavingrow",
-      "community": 69,
+      "community": 33,
       "norm_label": "buildsavingrow()"
     },
     {
@@ -2988,7 +2943,7 @@
       "source_file": ".claude/skills/impeccable/scripts/live-browser.js",
       "source_location": "L1219",
       "id": "scripts_live_browser_buildconfirmedrow",
-      "community": 69,
+      "community": 33,
       "norm_label": "buildconfirmedrow()"
     },
     {
@@ -2997,7 +2952,7 @@
       "source_file": ".claude/skills/impeccable/scripts/live-browser.js",
       "source_location": "L1240",
       "id": "scripts_live_browser_builddots",
-      "community": 69,
+      "community": 33,
       "norm_label": "builddots()"
     },
     {
@@ -3006,7 +2961,7 @@
       "source_file": ".claude/skills/impeccable/scripts/live-browser.js",
       "source_location": "L1283",
       "id": "scripts_live_browser_navbtn",
-      "community": 69,
+      "community": 33,
       "norm_label": "navbtn()"
     },
     {
@@ -3015,7 +2970,7 @@
       "source_file": ".claude/skills/impeccable/scripts/live-browser.js",
       "source_location": "L1298",
       "id": "scripts_live_browser_actionlabel",
-      "community": 69,
+      "community": 33,
       "norm_label": "actionlabel()"
     },
     {
@@ -3024,7 +2979,7 @@
       "source_file": ".claude/skills/impeccable/scripts/live-browser.js",
       "source_location": "L1303",
       "id": "scripts_live_browser_el",
-      "community": 69,
+      "community": 33,
       "norm_label": "el()"
     },
     {
@@ -3087,7 +3042,7 @@
       "source_file": ".claude/skills/impeccable/scripts/live-browser.js",
       "source_location": "L1506",
       "id": "scripts_live_browser_parsevariantparams",
-      "community": 69,
+      "community": 33,
       "norm_label": "parsevariantparams()"
     },
     {
@@ -3393,7 +3348,7 @@
       "source_file": ".claude/skills/impeccable/scripts/live-browser.js",
       "source_location": "L2393",
       "id": "scripts_live_browser_maybewarnconditionalancestor",
-      "community": 69,
+      "community": 33,
       "norm_label": "maybewarnconditionalancestor()"
     },
     {
@@ -3645,7 +3600,7 @@
       "source_file": ".claude/skills/impeccable/scripts/live-browser.js",
       "source_location": "L3157",
       "id": "scripts_live_browser_showtoast",
-      "community": 69,
+      "community": 33,
       "norm_label": "showtoast()"
     },
     {
@@ -4131,7 +4086,7 @@
       "source_file": ".claude/skills/impeccable/scripts/live-browser.js",
       "source_location": "L4809",
       "id": "scripts_live_browser_copytoclipboard",
-      "community": 69,
+      "community": 33,
       "norm_label": "copytoclipboard()"
     },
     {
@@ -4428,7 +4383,7 @@
       "source_file": ".agents/skills/impeccable/scripts/live-resume.mjs",
       "source_location": "L1",
       "id": "agents_skills_impeccable_scripts_live_resume_mjs",
-      "community": 41,
+      "community": 65,
       "norm_label": "live-resume.mjs"
     },
     {
@@ -4437,7 +4392,7 @@
       "source_file": ".agents/skills/impeccable/scripts/live-resume.mjs",
       "source_location": "L8",
       "id": "scripts_live_resume_parseargs",
-      "community": 41,
+      "community": 65,
       "norm_label": "parseargs()"
     },
     {
@@ -4446,7 +4401,7 @@
       "source_file": ".agents/skills/impeccable/scripts/live-resume.mjs",
       "source_location": "L19",
       "id": "scripts_live_resume_resumecli",
-      "community": 41,
+      "community": 65,
       "norm_label": "resumecli()"
     },
     {
@@ -4797,7 +4752,7 @@
       "source_file": ".agents/skills/impeccable/scripts/live-session-store.mjs",
       "source_location": "L7",
       "id": "scripts_live_session_store_createlivesessionstore",
-      "community": 41,
+      "community": 65,
       "norm_label": "createlivesessionstore()"
     },
     {
@@ -4896,7 +4851,7 @@
       "source_file": ".agents/skills/impeccable/scripts/live-status.mjs",
       "source_location": "L1",
       "id": "agents_skills_impeccable_scripts_live_status_mjs",
-      "community": 41,
+      "community": 65,
       "norm_label": "live-status.mjs"
     },
     {
@@ -4905,7 +4860,7 @@
       "source_file": ".agents/skills/impeccable/scripts/live-status.mjs",
       "source_location": "L9",
       "id": "scripts_live_status_readserverinfo",
-      "community": 41,
+      "community": 65,
       "norm_label": "readserverinfo()"
     },
     {
@@ -4914,7 +4869,7 @@
       "source_file": ".agents/skills/impeccable/scripts/live-status.mjs",
       "source_location": "L13",
       "id": "scripts_live_status_fetchserverstatus",
-      "community": 41,
+      "community": 65,
       "norm_label": "fetchserverstatus()"
     },
     {
@@ -4923,7 +4878,7 @@
       "source_file": ".agents/skills/impeccable/scripts/live-status.mjs",
       "source_location": "L24",
       "id": "scripts_live_status_statuscli",
-      "community": 41,
+      "community": 65,
       "norm_label": "statuscli()"
     },
     {
@@ -7128,7 +7083,7 @@
       "source_file": "src/App.vue",
       "source_location": "L1",
       "id": "src_app_vue",
-      "community": 7,
+      "community": 139,
       "norm_label": "app.vue"
     },
     {
@@ -7137,7 +7092,7 @@
       "source_file": "src/main.ts",
       "source_location": "L1",
       "id": "src_main_ts",
-      "community": 7,
+      "community": 139,
       "norm_label": "main.ts"
     },
     {
@@ -7146,7 +7101,7 @@
       "source_file": "src/main.ts",
       "source_location": "L7",
       "id": "src_main_app",
-      "community": 7,
+      "community": 139,
       "norm_label": "app"
     },
     {
@@ -7164,7 +7119,7 @@
       "source_file": "src/components/dashboard/circulo.vue",
       "source_location": "L1",
       "id": "src_components_dashboard_circulo_vue",
-      "community": 39,
+      "community": 41,
       "norm_label": "circulo.vue"
     },
     {
@@ -7173,7 +7128,7 @@
       "source_file": "src/components/dashboard/circulo.vue",
       "source_location": "L45",
       "id": "dashboard_circulo_store",
-      "community": 39,
+      "community": 41,
       "norm_label": "store"
     },
     {
@@ -7182,7 +7137,7 @@
       "source_file": "src/components/dashboard/circulo.vue",
       "source_location": "L49",
       "id": "dashboard_circulo_string",
-      "community": 39,
+      "community": 41,
       "norm_label": "string"
     },
     {
@@ -7191,7 +7146,7 @@
       "source_file": "src/components/dashboard/circulo.vue",
       "source_location": "L59",
       "id": "dashboard_circulo_chartdata",
-      "community": 39,
+      "community": 41,
       "norm_label": "chartdata"
     },
     {
@@ -7200,7 +7155,7 @@
       "source_file": "src/components/dashboard/circulo.vue",
       "source_location": "L79",
       "id": "dashboard_circulo_colorpara",
-      "community": 39,
+      "community": 41,
       "norm_label": "colorpara()"
     },
     {
@@ -7209,7 +7164,7 @@
       "source_file": "src/components/dashboard/circulo.vue",
       "source_location": "L83",
       "id": "dashboard_circulo_totalregimen",
-      "community": 39,
+      "community": 41,
       "norm_label": "totalregimen"
     },
     {
@@ -7218,7 +7173,7 @@
       "source_file": "src/components/dashboard/circulo.vue",
       "source_location": "L87",
       "id": "dashboard_circulo_calcularporcentaje",
-      "community": 39,
+      "community": 41,
       "norm_label": "calcularporcentaje()"
     },
     {
@@ -7227,7 +7182,7 @@
       "source_file": "src/components/dashboard/cumpleanos.vue",
       "source_location": "L1",
       "id": "src_components_dashboard_cumpleanos_vue",
-      "community": 31,
+      "community": 41,
       "norm_label": "cumpleanos.vue"
     },
     {
@@ -7236,7 +7191,7 @@
       "source_file": "src/components/dashboard/eventos-vinculo.vue",
       "source_location": "L1",
       "id": "src_components_dashboard_eventos_vinculo_vue",
-      "community": 31,
+      "community": 41,
       "norm_label": "eventos-vinculo.vue"
     },
     {
@@ -7326,7 +7281,7 @@
       "source_file": "src/components/dashboard/grafico-edad.vue",
       "source_location": "L1",
       "id": "src_components_dashboard_grafico_edad_vue",
-      "community": 185,
+      "community": 137,
       "norm_label": "grafico-edad.vue"
     },
     {
@@ -7335,7 +7290,7 @@
       "source_file": "src/components/dashboard/grafico-edad.vue",
       "source_location": "L44",
       "id": "dashboard_grafico_edad_store",
-      "community": 185,
+      "community": 137,
       "norm_label": "store"
     },
     {
@@ -7344,7 +7299,7 @@
       "source_file": "src/components/dashboard/grafico-edad.vue",
       "source_location": "L47",
       "id": "dashboard_grafico_edad_coloresfondo",
-      "community": 185,
+      "community": 137,
       "norm_label": "coloresfondo"
     },
     {
@@ -7353,7 +7308,7 @@
       "source_file": "src/components/dashboard/grafico-edad.vue",
       "source_location": "L55",
       "id": "dashboard_grafico_edad_coloresborde",
-      "community": 185,
+      "community": 137,
       "norm_label": "coloresborde"
     },
     {
@@ -7362,7 +7317,7 @@
       "source_file": "src/components/dashboard/grafico-edad.vue",
       "source_location": "L63",
       "id": "dashboard_grafico_edad_colorfondopara",
-      "community": 185,
+      "community": 137,
       "norm_label": "colorfondopara()"
     },
     {
@@ -7371,7 +7326,7 @@
       "source_file": "src/components/dashboard/grafico-edad.vue",
       "source_location": "L67",
       "id": "dashboard_grafico_edad_colorbordepara",
-      "community": 185,
+      "community": 137,
       "norm_label": "colorbordepara()"
     },
     {
@@ -7380,7 +7335,7 @@
       "source_file": "src/components/dashboard/grafico-edad.vue",
       "source_location": "L71",
       "id": "dashboard_grafico_edad_chartdata",
-      "community": 185,
+      "community": 137,
       "norm_label": "chartdata"
     },
     {
@@ -7389,7 +7344,7 @@
       "source_file": "src/components/dashboard/grafico-edad.vue",
       "source_location": "L92",
       "id": "dashboard_grafico_edad_totaledad",
-      "community": 185,
+      "community": 137,
       "norm_label": "totaledad"
     },
     {
@@ -7398,7 +7353,7 @@
       "source_file": "src/components/dashboard/grafico-edad.vue",
       "source_location": "L96",
       "id": "dashboard_grafico_edad_calcularporcentaje",
-      "community": 185,
+      "community": 137,
       "norm_label": "calcularporcentaje()"
     },
     {
@@ -7623,7 +7578,7 @@
       "source_file": "src/components/dashboard/metrica.vue",
       "source_location": "L1",
       "id": "src_components_dashboard_metrica_vue",
-      "community": 31,
+      "community": 41,
       "norm_label": "metrica.vue"
     },
     {
@@ -7632,7 +7587,7 @@
       "source_file": "src/components/dashboard/movimientos.vue",
       "source_location": "L1",
       "id": "src_components_dashboard_movimientos_vue",
-      "community": 31,
+      "community": 41,
       "norm_label": "movimientos.vue"
     },
     {
@@ -7641,7 +7596,7 @@
       "source_file": "src/components/dashboard/movimientos.vue",
       "source_location": "L95",
       "id": "dashboard_movimientos_daysago_fechaformateada",
-      "community": 31,
+      "community": 41,
       "norm_label": "{ daysago, fechaformateada }"
     },
     {
@@ -7679,114 +7634,6 @@
       "id": "src_components_perfil_banco_vue",
       "community": 47,
       "norm_label": "banco.vue"
-    },
-    {
-      "label": "contacto.vue",
-      "file_type": "code",
-      "source_file": "src/components/perfil/contacto.vue",
-      "source_location": "L1",
-      "id": "src_components_perfil_contacto_vue",
-      "community": 15,
-      "norm_label": "contacto.vue"
-    },
-    {
-      "label": "{ contactoEmergencia, perfilActual }",
-      "file_type": "code",
-      "source_file": "src/components/perfil/contacto.vue",
-      "source_location": "L96",
-      "id": "perfil_contacto_contactoemergencia_perfilactual",
-      "community": 15,
-      "norm_label": "{ contactoemergencia, perfilactual }"
-    },
-    {
-      "label": "{ esAdmin }",
-      "file_type": "code",
-      "source_file": "src/components/perfil/contacto.vue",
-      "source_location": "L97",
-      "id": "perfil_contacto_esadmin",
-      "community": 15,
-      "norm_label": "{ esadmin }"
-    },
-    {
-      "label": "isEditModalOpen",
-      "file_type": "code",
-      "source_file": "src/components/perfil/contacto.vue",
-      "source_location": "L99",
-      "id": "perfil_contacto_iseditmodalopen",
-      "community": 15,
-      "norm_label": "iseditmodalopen"
-    },
-    {
-      "label": "eliminando",
-      "file_type": "code",
-      "source_file": "src/components/perfil/contacto.vue",
-      "source_location": "L100",
-      "id": "perfil_contacto_eliminando",
-      "community": 15,
-      "norm_label": "eliminando"
-    },
-    {
-      "label": "copiado",
-      "file_type": "code",
-      "source_file": "src/components/perfil/contacto.vue",
-      "source_location": "L101",
-      "id": "perfil_contacto_copiado",
-      "community": 15,
-      "norm_label": "copiado"
-    },
-    {
-      "label": "RELACION_CONFIG",
-      "file_type": "code",
-      "source_file": "src/components/perfil/contacto.vue",
-      "source_location": "L103",
-      "id": "perfil_contacto_relacion_config",
-      "community": 15,
-      "norm_label": "relacion_config"
-    },
-    {
-      "label": "getRelacionConfig()",
-      "file_type": "code",
-      "source_file": "src/components/perfil/contacto.vue",
-      "source_location": "L131",
-      "id": "perfil_contacto_getrelacionconfig",
-      "community": 15,
-      "norm_label": "getrelacionconfig()"
-    },
-    {
-      "label": "badgeRelacion()",
-      "file_type": "code",
-      "source_file": "src/components/perfil/contacto.vue",
-      "source_location": "L138",
-      "id": "perfil_contacto_badgerelacion",
-      "community": 15,
-      "norm_label": "badgerelacion()"
-    },
-    {
-      "label": "getRelacionIcon()",
-      "file_type": "code",
-      "source_file": "src/components/perfil/contacto.vue",
-      "source_location": "L139",
-      "id": "perfil_contacto_getrelacionicon",
-      "community": 15,
-      "norm_label": "getrelacionicon()"
-    },
-    {
-      "label": "copiarTelefono()",
-      "file_type": "code",
-      "source_file": "src/components/perfil/contacto.vue",
-      "source_location": "L141",
-      "id": "perfil_contacto_copiartelefono",
-      "community": 15,
-      "norm_label": "copiartelefono()"
-    },
-    {
-      "label": "confirmarEliminar()",
-      "file_type": "code",
-      "source_file": "src/components/perfil/contacto.vue",
-      "source_location": "L150",
-      "id": "perfil_contacto_confirmareliminar",
-      "community": 15,
-      "norm_label": "confirmareliminar()"
     },
     {
       "label": "grado.vue",
@@ -7828,7 +7675,7 @@
       "label": "personalStore",
       "file_type": "code",
       "source_file": "src/components/perfil/info.vue",
-      "source_location": "L156",
+      "source_location": "L194",
       "id": "perfil_info_personalstore",
       "community": 20,
       "norm_label": "personalstore"
@@ -7837,7 +7684,7 @@
       "label": "{ perfilActual, contactoEmergencia }",
       "file_type": "code",
       "source_file": "src/components/perfil/info.vue",
-      "source_location": "L157",
+      "source_location": "L195",
       "id": "perfil_info_perfilactual_contactoemergencia",
       "community": 20,
       "norm_label": "{ perfilactual, contactoemergencia }"
@@ -7846,7 +7693,7 @@
       "label": "{ esAdmin }",
       "file_type": "code",
       "source_file": "src/components/perfil/info.vue",
-      "source_location": "L158",
+      "source_location": "L196",
       "id": "perfil_info_esadmin",
       "community": 20,
       "norm_label": "{ esadmin }"
@@ -7855,7 +7702,7 @@
       "label": "isEditModalOpen",
       "file_type": "code",
       "source_file": "src/components/perfil/info.vue",
-      "source_location": "L160",
+      "source_location": "L198",
       "id": "perfil_info_iseditmodalopen",
       "community": 20,
       "norm_label": "iseditmodalopen"
@@ -7864,7 +7711,7 @@
       "label": "isEditContactoModalOpen",
       "file_type": "code",
       "source_file": "src/components/perfil/info.vue",
-      "source_location": "L161",
+      "source_location": "L199",
       "id": "perfil_info_iseditcontactomodalopen",
       "community": 20,
       "norm_label": "iseditcontactomodalopen"
@@ -7873,7 +7720,7 @@
       "label": "eliminando",
       "file_type": "code",
       "source_file": "src/components/perfil/info.vue",
-      "source_location": "L162",
+      "source_location": "L200",
       "id": "perfil_info_eliminando",
       "community": 20,
       "norm_label": "eliminando"
@@ -7882,7 +7729,7 @@
       "label": "date",
       "file_type": "code",
       "source_file": "src/components/perfil/info.vue",
-      "source_location": "L166",
+      "source_location": "L204",
       "id": "perfil_info_date",
       "community": 20,
       "norm_label": "date"
@@ -7891,7 +7738,7 @@
       "label": "dateCorrected",
       "file_type": "code",
       "source_file": "src/components/perfil/info.vue",
-      "source_location": "L167",
+      "source_location": "L205",
       "id": "perfil_info_datecorrected",
       "community": 20,
       "norm_label": "datecorrected"
@@ -7900,7 +7747,7 @@
       "label": "handleSave()",
       "file_type": "code",
       "source_file": "src/components/perfil/info.vue",
-      "source_location": "L171",
+      "source_location": "L211",
       "id": "perfil_info_handlesave",
       "community": 20,
       "norm_label": "handlesave()"
@@ -7909,7 +7756,7 @@
       "label": "confirmarEliminar()",
       "file_type": "code",
       "source_file": "src/components/perfil/info.vue",
-      "source_location": "L179",
+      "source_location": "L219",
       "id": "perfil_info_confirmareliminar",
       "community": 20,
       "norm_label": "confirmareliminar()"
@@ -7927,7 +7774,7 @@
       "label": "EventoVinculoModal",
       "file_type": "code",
       "source_file": "src/components/perfil/vinculo.vue",
-      "source_location": "L168",
+      "source_location": "L171",
       "id": "perfil_vinculo_eventovinculomodal",
       "community": 13,
       "norm_label": "eventovinculomodal"
@@ -7936,7 +7783,7 @@
       "label": "store",
       "file_type": "code",
       "source_file": "src/components/perfil/vinculo.vue",
-      "source_location": "L170",
+      "source_location": "L173",
       "id": "perfil_vinculo_store",
       "community": 13,
       "norm_label": "store"
@@ -7945,7 +7792,7 @@
       "label": "{ vinculos }",
       "file_type": "code",
       "source_file": "src/components/perfil/vinculo.vue",
-      "source_location": "L171",
+      "source_location": "L174",
       "id": "perfil_vinculo_vinculos",
       "community": 13,
       "norm_label": "{ vinculos }"
@@ -7954,7 +7801,7 @@
       "label": "{ esAdmin }",
       "file_type": "code",
       "source_file": "src/components/perfil/vinculo.vue",
-      "source_location": "L172",
+      "source_location": "L175",
       "id": "perfil_vinculo_esadmin",
       "community": 13,
       "norm_label": "{ esadmin }"
@@ -7963,7 +7810,7 @@
       "label": "isRenunciaModalOpen",
       "file_type": "code",
       "source_file": "src/components/perfil/vinculo.vue",
-      "source_location": "L174",
+      "source_location": "L177",
       "id": "perfil_vinculo_isrenunciamodalopen",
       "community": 13,
       "norm_label": "isrenunciamodalopen"
@@ -7972,7 +7819,7 @@
       "label": "isEliminarModalOpen",
       "file_type": "code",
       "source_file": "src/components/perfil/vinculo.vue",
-      "source_location": "L175",
+      "source_location": "L178",
       "id": "perfil_vinculo_iseliminarmodalopen",
       "community": 13,
       "norm_label": "iseliminarmodalopen"
@@ -7981,7 +7828,7 @@
       "label": "isEventoModalOpen",
       "file_type": "code",
       "source_file": "src/components/perfil/vinculo.vue",
-      "source_location": "L176",
+      "source_location": "L179",
       "id": "perfil_vinculo_iseventomodalopen",
       "community": 13,
       "norm_label": "iseventomodalopen"
@@ -7990,7 +7837,7 @@
       "label": "accionesAbiertas",
       "file_type": "code",
       "source_file": "src/components/perfil/vinculo.vue",
-      "source_location": "L177",
+      "source_location": "L180",
       "id": "perfil_vinculo_accionesabiertas",
       "community": 13,
       "norm_label": "accionesabiertas"
@@ -7999,7 +7846,7 @@
       "label": "manejarClickFuera()",
       "file_type": "code",
       "source_file": "src/components/perfil/vinculo.vue",
-      "source_location": "L187",
+      "source_location": "L190",
       "id": "perfil_vinculo_manejarclickfuera",
       "community": 13,
       "norm_label": "manejarclickfuera()"
@@ -8008,7 +7855,7 @@
       "label": "vinculoActual",
       "file_type": "code",
       "source_file": "src/components/perfil/vinculo.vue",
-      "source_location": "L196",
+      "source_location": "L199",
       "id": "perfil_vinculo_vinculoactual",
       "community": 13,
       "norm_label": "vinculoactual"
@@ -8017,7 +7864,7 @@
       "label": "tieneRenuncia",
       "file_type": "code",
       "source_file": "src/components/perfil/vinculo.vue",
-      "source_location": "L200",
+      "source_location": "L203",
       "id": "perfil_vinculo_tienerenuncia",
       "community": 13,
       "norm_label": "tienerenuncia"
@@ -8026,7 +7873,7 @@
       "label": "handleRenuncia()",
       "file_type": "code",
       "source_file": "src/components/perfil/vinculo.vue",
-      "source_location": "L204",
+      "source_location": "L207",
       "id": "perfil_vinculo_handlerenuncia",
       "community": 13,
       "norm_label": "handlerenuncia()"
@@ -8035,7 +7882,7 @@
       "label": "handleEliminar()",
       "file_type": "code",
       "source_file": "src/components/perfil/vinculo.vue",
-      "source_location": "L214",
+      "source_location": "L217",
       "id": "perfil_vinculo_handleeliminar",
       "community": 13,
       "norm_label": "handleeliminar()"
@@ -8062,7 +7909,7 @@
       "label": "RegistrarUrlModal",
       "file_type": "code",
       "source_file": "src/components/perfil/legajo/folder.vue",
-      "source_location": "L196",
+      "source_location": "L195",
       "id": "legajo_folder_registrarurlmodal",
       "community": 8,
       "norm_label": "registrarurlmodal"
@@ -8071,7 +7918,7 @@
       "label": "errorArchivo",
       "file_type": "code",
       "source_file": "src/components/perfil/legajo/folder.vue",
-      "source_location": "L199",
+      "source_location": "L198",
       "id": "legajo_folder_errorarchivo",
       "community": 8,
       "norm_label": "errorarchivo"
@@ -8080,7 +7927,7 @@
       "label": "cargando",
       "file_type": "code",
       "source_file": "src/components/perfil/legajo/folder.vue",
-      "source_location": "L200",
+      "source_location": "L199",
       "id": "legajo_folder_cargando",
       "community": 8,
       "norm_label": "cargando"
@@ -8089,7 +7936,7 @@
       "label": "cargandoLista",
       "file_type": "code",
       "source_file": "src/components/perfil/legajo/folder.vue",
-      "source_location": "L201",
+      "source_location": "L200",
       "id": "legajo_folder_cargandolista",
       "community": 8,
       "norm_label": "cargandolista"
@@ -8098,7 +7945,7 @@
       "label": "mensajeExito",
       "file_type": "code",
       "source_file": "src/components/perfil/legajo/folder.vue",
-      "source_location": "L202",
+      "source_location": "L201",
       "id": "legajo_folder_mensajeexito",
       "community": 8,
       "norm_label": "mensajeexito"
@@ -8107,7 +7954,7 @@
       "label": "mostrarModal",
       "file_type": "code",
       "source_file": "src/components/perfil/legajo/folder.vue",
-      "source_location": "L206",
+      "source_location": "L205",
       "id": "legajo_folder_mostrarmodal",
       "community": 8,
       "norm_label": "mostrarmodal"
@@ -8116,7 +7963,7 @@
       "label": "nombreArchivoOpcional",
       "file_type": "code",
       "source_file": "src/components/perfil/legajo/folder.vue",
-      "source_location": "L207",
+      "source_location": "L206",
       "id": "legajo_folder_nombrearchivoopcional",
       "community": 8,
       "norm_label": "nombrearchivoopcional"
@@ -8125,7 +7972,7 @@
       "label": "mostrarVistaPrevia",
       "file_type": "code",
       "source_file": "src/components/perfil/legajo/folder.vue",
-      "source_location": "L211",
+      "source_location": "L210",
       "id": "legajo_folder_mostrarvistaprevia",
       "community": 8,
       "norm_label": "mostrarvistaprevia"
@@ -8134,7 +7981,7 @@
       "label": "mostrarModalUrl",
       "file_type": "code",
       "source_file": "src/components/perfil/legajo/folder.vue",
-      "source_location": "L215",
+      "source_location": "L214",
       "id": "legajo_folder_mostrarmodalurl",
       "community": 8,
       "norm_label": "mostrarmodalurl"
@@ -8143,7 +7990,7 @@
       "label": "mostrarModalRenombrar",
       "file_type": "code",
       "source_file": "src/components/perfil/legajo/folder.vue",
-      "source_location": "L217",
+      "source_location": "L216",
       "id": "legajo_folder_mostrarmodalrenombrar",
       "community": 8,
       "norm_label": "mostrarmodalrenombrar"
@@ -8152,7 +7999,7 @@
       "label": "nuevoNombreArchivo",
       "file_type": "code",
       "source_file": "src/components/perfil/legajo/folder.vue",
-      "source_location": "L219",
+      "source_location": "L218",
       "id": "legajo_folder_nuevonombrearchivo",
       "community": 8,
       "norm_label": "nuevonombrearchivo"
@@ -8161,7 +8008,7 @@
       "label": "errorRenombrar",
       "file_type": "code",
       "source_file": "src/components/perfil/legajo/folder.vue",
-      "source_location": "L220",
+      "source_location": "L219",
       "id": "legajo_folder_errorrenombrar",
       "community": 8,
       "norm_label": "errorrenombrar"
@@ -8170,7 +8017,7 @@
       "label": "cargandoRenombrar",
       "file_type": "code",
       "source_file": "src/components/perfil/legajo/folder.vue",
-      "source_location": "L221",
+      "source_location": "L220",
       "id": "legajo_folder_cargandorenombrar",
       "community": 8,
       "norm_label": "cargandorenombrar"
@@ -8179,7 +8026,7 @@
       "label": "cargarDocumentos()",
       "file_type": "code",
       "source_file": "src/components/perfil/legajo/folder.vue",
-      "source_location": "L227",
+      "source_location": "L226",
       "id": "legajo_folder_cargardocumentos",
       "community": 8,
       "norm_label": "cargardocumentos()"
@@ -8188,7 +8035,7 @@
       "label": "abrirModal()",
       "file_type": "code",
       "source_file": "src/components/perfil/legajo/folder.vue",
-      "source_location": "L238",
+      "source_location": "L237",
       "id": "legajo_folder_abrirmodal",
       "community": 8,
       "norm_label": "abrirmodal()"
@@ -8197,7 +8044,7 @@
       "label": "cerrarModal()",
       "file_type": "code",
       "source_file": "src/components/perfil/legajo/folder.vue",
-      "source_location": "L249",
+      "source_location": "L248",
       "id": "legajo_folder_cerrarmodal",
       "community": 8,
       "norm_label": "cerrarmodal()"
@@ -8206,7 +8053,7 @@
       "label": "abrirModalRenombrar()",
       "file_type": "code",
       "source_file": "src/components/perfil/legajo/folder.vue",
-      "source_location": "L253",
+      "source_location": "L252",
       "id": "legajo_folder_abrirmodalrenombrar",
       "community": 8,
       "norm_label": "abrirmodalrenombrar()"
@@ -8215,7 +8062,7 @@
       "label": "cerrarModalRenombrar()",
       "file_type": "code",
       "source_file": "src/components/perfil/legajo/folder.vue",
-      "source_location": "L262",
+      "source_location": "L261",
       "id": "legajo_folder_cerrarmodalrenombrar",
       "community": 8,
       "norm_label": "cerrarmodalrenombrar()"
@@ -8224,7 +8071,7 @@
       "label": "renombrarArchivo()",
       "file_type": "code",
       "source_file": "src/components/perfil/legajo/folder.vue",
-      "source_location": "L269",
+      "source_location": "L268",
       "id": "legajo_folder_renombrararchivo",
       "community": 8,
       "norm_label": "renombrararchivo()"
@@ -8233,7 +8080,7 @@
       "label": "abrirModalUrl()",
       "file_type": "code",
       "source_file": "src/components/perfil/legajo/folder.vue",
-      "source_location": "L294",
+      "source_location": "L293",
       "id": "legajo_folder_abrirmodalurl",
       "community": 8,
       "norm_label": "abrirmodalurl()"
@@ -8242,7 +8089,7 @@
       "label": "onUrlRegistrada()",
       "file_type": "code",
       "source_file": "src/components/perfil/legajo/folder.vue",
-      "source_location": "L299",
+      "source_location": "L298",
       "id": "legajo_folder_onurlregistrada",
       "community": 8,
       "norm_label": "onurlregistrada()"
@@ -8251,7 +8098,7 @@
       "label": "abrirVistaPrevia()",
       "file_type": "code",
       "source_file": "src/components/perfil/legajo/folder.vue",
-      "source_location": "L307",
+      "source_location": "L306",
       "id": "legajo_folder_abrirvistaprevia",
       "community": 8,
       "norm_label": "abrirvistaprevia()"
@@ -8260,7 +8107,7 @@
       "label": "cerrarVistaPrevia()",
       "file_type": "code",
       "source_file": "src/components/perfil/legajo/folder.vue",
-      "source_location": "L326",
+      "source_location": "L325",
       "id": "legajo_folder_cerrarvistaprevia",
       "community": 8,
       "norm_label": "cerrarvistaprevia()"
@@ -8269,7 +8116,7 @@
       "label": "archivo",
       "file_type": "code",
       "source_file": "src/components/perfil/legajo/folder.vue",
-      "source_location": "L333",
+      "source_location": "L332",
       "id": "legajo_folder_archivo",
       "community": 8,
       "norm_label": "archivo"
@@ -8278,7 +8125,7 @@
       "label": "buscarDocumentos()",
       "file_type": "code",
       "source_file": "src/components/perfil/legajo/folder.vue",
-      "source_location": "L339",
+      "source_location": "L338",
       "id": "legajo_folder_buscardocumentos",
       "community": 8,
       "norm_label": "buscardocumentos()"
@@ -8287,7 +8134,7 @@
       "label": "eliminarDocumento()",
       "file_type": "code",
       "source_file": "src/components/perfil/legajo/folder.vue",
-      "source_location": "L354",
+      "source_location": "L353",
       "id": "legajo_folder_eliminardocumento",
       "community": 8,
       "norm_label": "eliminardocumento()"
@@ -8296,7 +8143,7 @@
       "label": "manejarArchivo()",
       "file_type": "code",
       "source_file": "src/components/perfil/legajo/folder.vue",
-      "source_location": "L378",
+      "source_location": "L377",
       "id": "legajo_folder_manejararchivo",
       "community": 8,
       "norm_label": "manejararchivo()"
@@ -8305,7 +8152,7 @@
       "label": "formData",
       "file_type": "code",
       "source_file": "src/components/perfil/legajo/folder.vue",
-      "source_location": "L422",
+      "source_location": "L421",
       "id": "legajo_folder_formdata",
       "community": 8,
       "norm_label": "formdata"
@@ -8314,7 +8161,7 @@
       "label": "extension",
       "file_type": "code",
       "source_file": "src/components/perfil/legajo/folder.vue",
-      "source_location": "L426",
+      "source_location": "L425",
       "id": "legajo_folder_extension",
       "community": 8,
       "norm_label": "extension"
@@ -8323,7 +8170,7 @@
       "label": "nuevoNombre",
       "file_type": "code",
       "source_file": "src/components/perfil/legajo/folder.vue",
-      "source_location": "L427",
+      "source_location": "L426",
       "id": "legajo_folder_nuevonombre",
       "community": 8,
       "norm_label": "nuevonombre"
@@ -8356,10 +8203,19 @@
       "norm_label": "previewmodal.vue"
     },
     {
+      "label": "data",
+      "file_type": "code",
+      "source_file": "src/components/perfil/legajo/PreviewModal.vue",
+      "source_location": "L219",
+      "id": "legajo_previewmodal_data",
+      "community": 51,
+      "norm_label": "data"
+    },
+    {
       "label": "tarea",
       "file_type": "code",
       "source_file": "src/components/perfil/legajo/PreviewModal.vue",
-      "source_location": "L214",
+      "source_location": "L220",
       "id": "legajo_previewmodal_tarea",
       "community": 51,
       "norm_label": "tarea"
@@ -8368,7 +8224,7 @@
       "label": "calcularEscalaAjustada()",
       "file_type": "code",
       "source_file": "src/components/perfil/legajo/PreviewModal.vue",
-      "source_location": "L233",
+      "source_location": "L237",
       "id": "legajo_previewmodal_calcularescalaajustada",
       "community": 51,
       "norm_label": "calcularescalaajustada()"
@@ -8377,7 +8233,7 @@
       "label": "paginaAnterior()",
       "file_type": "code",
       "source_file": "src/components/perfil/legajo/PreviewModal.vue",
-      "source_location": "L241",
+      "source_location": "L245",
       "id": "legajo_previewmodal_paginaanterior",
       "community": 51,
       "norm_label": "paginaanterior()"
@@ -8386,7 +8242,7 @@
       "label": "paginaSiguiente()",
       "file_type": "code",
       "source_file": "src/components/perfil/legajo/PreviewModal.vue",
-      "source_location": "L247",
+      "source_location": "L251",
       "id": "legajo_previewmodal_paginasiguiente",
       "community": 51,
       "norm_label": "paginasiguiente()"
@@ -8395,7 +8251,7 @@
       "label": "ajustarZoom()",
       "file_type": "code",
       "source_file": "src/components/perfil/legajo/PreviewModal.vue",
-      "source_location": "L253",
+      "source_location": "L257",
       "id": "legajo_previewmodal_ajustarzoom",
       "community": 51,
       "norm_label": "ajustarzoom()"
@@ -8404,7 +8260,7 @@
       "label": "resetZoom()",
       "file_type": "code",
       "source_file": "src/components/perfil/legajo/PreviewModal.vue",
-      "source_location": "L259",
+      "source_location": "L263",
       "id": "legajo_previewmodal_resetzoom",
       "community": 51,
       "norm_label": "resetzoom()"
@@ -8413,7 +8269,7 @@
       "label": "cargarDocumentos()",
       "file_type": "code",
       "source_file": "src/components/perfil/legajo/PreviewModal.vue",
-      "source_location": "L264",
+      "source_location": "L268",
       "id": "legajo_previewmodal_cargardocumentos",
       "community": 51,
       "norm_label": "cargardocumentos()"
@@ -8422,7 +8278,7 @@
       "label": "guardarAsociacion()",
       "file_type": "code",
       "source_file": "src/components/perfil/legajo/PreviewModal.vue",
-      "source_location": "L273",
+      "source_location": "L277",
       "id": "legajo_previewmodal_guardarasociacion",
       "community": 51,
       "norm_label": "guardarasociacion()"
@@ -8431,7 +8287,7 @@
       "label": "close()",
       "file_type": "code",
       "source_file": "src/components/perfil/legajo/PreviewModal.vue",
-      "source_location": "L322",
+      "source_location": "L327",
       "id": "legajo_previewmodal_close",
       "community": 51,
       "norm_label": "close()"
@@ -8568,7 +8424,7 @@
       "source_file": "src/components/perfil/modals/ConfirmarEliminarGradoModal.vue",
       "source_location": "L1",
       "id": "src_components_perfil_modals_confirmareliminargradomodal_vue",
-      "community": 139,
+      "community": 12,
       "norm_label": "confirmareliminargradomodal.vue"
     },
     {
@@ -8577,7 +8433,7 @@
       "source_file": "src/components/perfil/modals/ConfirmarEliminarGradoModal.vue",
       "source_location": "L72",
       "id": "modals_confirmareliminargradomodal_close",
-      "community": 139,
+      "community": 12,
       "norm_label": "close()"
     },
     {
@@ -8989,7 +8845,7 @@
       "label": "store",
       "file_type": "code",
       "source_file": "src/components/sindicato/BuscadorPersonal.vue",
-      "source_location": "L81",
+      "source_location": "L76",
       "id": "sindicato_buscadorpersonal_store",
       "community": 11,
       "norm_label": "store"
@@ -8998,7 +8854,7 @@
       "label": "{ resultados, cargando, trabajadoresAgregados }",
       "file_type": "code",
       "source_file": "src/components/sindicato/BuscadorPersonal.vue",
-      "source_location": "L82",
+      "source_location": "L77",
       "id": "sindicato_buscadorpersonal_resultados_cargando_trabajadoresagregados",
       "community": 11,
       "norm_label": "{ resultados, cargando, trabajadoresagregados }"
@@ -9007,7 +8863,7 @@
       "label": "consulta",
       "file_type": "code",
       "source_file": "src/components/sindicato/BuscadorPersonal.vue",
-      "source_location": "L84",
+      "source_location": "L79",
       "id": "sindicato_buscadorpersonal_consulta",
       "community": 11,
       "norm_label": "consulta"
@@ -9016,7 +8872,7 @@
       "label": "busquedaRealizada",
       "file_type": "code",
       "source_file": "src/components/sindicato/BuscadorPersonal.vue",
-      "source_location": "L85",
+      "source_location": "L80",
       "id": "sindicato_buscadorpersonal_busquedarealizada",
       "community": 11,
       "norm_label": "busquedarealizada"
@@ -9025,7 +8881,7 @@
       "label": "yaAgregado()",
       "file_type": "code",
       "source_file": "src/components/sindicato/BuscadorPersonal.vue",
-      "source_location": "L87",
+      "source_location": "L82",
       "id": "sindicato_buscadorpersonal_yaagregado",
       "community": 11,
       "norm_label": "yaagregado()"
@@ -9034,7 +8890,7 @@
       "label": "buscar()",
       "file_type": "code",
       "source_file": "src/components/sindicato/BuscadorPersonal.vue",
-      "source_location": "L91",
+      "source_location": "L86",
       "id": "sindicato_buscadorpersonal_buscar",
       "community": 11,
       "norm_label": "buscar()"
@@ -9061,7 +8917,7 @@
       "label": "for()",
       "file_type": "code",
       "source_file": "src/components/sindicato/ListaVinculos.vue",
-      "source_location": "L104",
+      "source_location": "L99",
       "id": "sindicato_listavinculos_for",
       "community": 32,
       "norm_label": "for()"
@@ -9072,8 +8928,62 @@
       "source_file": "src/components/ui/Avatar.vue",
       "source_location": "L1",
       "id": "src_components_ui_avatar_vue",
-      "community": 201,
+      "community": 11,
       "norm_label": "avatar.vue"
+    },
+    {
+      "label": "'bg-blue-50/80 dark:bg-blue-950/20 text-blue-400 dark:text-blue-500'()",
+      "file_type": "code",
+      "source_file": "src/components/ui/Avatar.vue",
+      "source_location": "L246",
+      "id": "ui_avatar_bg_blue_50_80_dark_bg_blue_950_20_text_blue_400_dark_text_blue_500",
+      "community": 11,
+      "norm_label": "'bg-blue-50/80 dark:bg-blue-950/20 text-blue-400 dark:text-blue-500'()"
+    },
+    {
+      "label": "reader",
+      "file_type": "code",
+      "source_file": "src/components/ui/Avatar.vue",
+      "source_location": "L295",
+      "id": "ui_avatar_reader",
+      "community": 11,
+      "norm_label": "reader"
+    },
+    {
+      "label": "ctx",
+      "file_type": "code",
+      "source_file": "src/components/ui/Avatar.vue",
+      "source_location": "L314",
+      "id": "ui_avatar_ctx",
+      "community": 11,
+      "norm_label": "ctx"
+    },
+    {
+      "label": "rect",
+      "file_type": "code",
+      "source_file": "src/components/ui/Avatar.vue",
+      "source_location": "L317",
+      "id": "ui_avatar_rect",
+      "community": 11,
+      "norm_label": "rect"
+    },
+    {
+      "label": "animate()",
+      "file_type": "code",
+      "source_file": "src/components/ui/Avatar.vue",
+      "source_location": "L396",
+      "id": "ui_avatar_animate",
+      "community": 11,
+      "norm_label": "animate()"
+    },
+    {
+      "label": "canvasInfo",
+      "file_type": "code",
+      "source_file": "src/components/ui/Avatar.vue",
+      "source_location": "L427",
+      "id": "ui_avatar_canvasinfo",
+      "community": 11,
+      "norm_label": "canvasinfo"
     },
     {
       "label": "Badge.vue",
@@ -9207,7 +9117,7 @@
       "source_file": "src/components/ui/Modal.vue",
       "source_location": "L1",
       "id": "src_components_ui_modal_vue",
-      "community": 139,
+      "community": 12,
       "norm_label": "modal.vue"
     },
     {
@@ -9216,7 +9126,7 @@
       "source_file": "src/components/ui/Modal.vue",
       "source_location": "L47",
       "id": "ui_modal_props",
-      "community": 139,
+      "community": 12,
       "norm_label": "props"
     },
     {
@@ -9396,16 +9306,16 @@
       "source_file": "src/composables/usePdfThumbnail.ts",
       "source_location": "L1",
       "id": "src_composables_usepdfthumbnail_ts",
-      "community": 33,
+      "community": 40,
       "norm_label": "usepdfthumbnail.ts"
     },
     {
       "label": "usePdfThumbnail()",
       "file_type": "code",
       "source_file": "src/composables/usePdfThumbnail.ts",
-      "source_location": "L7",
+      "source_location": "L8",
       "id": "composables_usepdfthumbnail_usepdfthumbnail",
-      "community": 33,
+      "community": 40,
       "norm_label": "usepdfthumbnail()"
     },
     {
@@ -9576,7 +9486,7 @@
       "source_file": "src/stores/layout.ts",
       "source_location": "L1",
       "id": "src_stores_layout_ts",
-      "community": 40,
+      "community": 47,
       "norm_label": "layout.ts"
     },
     {
@@ -9585,7 +9495,7 @@
       "source_file": "src/stores/layout.ts",
       "source_location": "L4",
       "id": "stores_layout_useconfiguracionstore",
-      "community": 40,
+      "community": 47,
       "norm_label": "useconfiguracionstore"
     },
     {
@@ -9594,7 +9504,7 @@
       "source_file": "src/stores/personal.ts",
       "source_location": "L1",
       "id": "src_stores_personal_ts",
-      "community": 40,
+      "community": 47,
       "norm_label": "personal.ts"
     },
     {
@@ -9630,7 +9540,7 @@
       "source_file": "src/stores/sindicato.ts",
       "source_location": "L1",
       "id": "src_stores_sindicato_ts",
-      "community": 11,
+      "community": 40,
       "norm_label": "sindicato.ts"
     },
     {
@@ -9639,7 +9549,7 @@
       "source_file": "src/stores/sindicato.ts",
       "source_location": "L6",
       "id": "stores_sindicato_trabajadorconvinculos",
-      "community": 11,
+      "community": 40,
       "norm_label": "trabajadorconvinculos"
     },
     {
@@ -9648,7 +9558,7 @@
       "source_file": "src/stores/sindicato.ts",
       "source_location": "L10",
       "id": "stores_sindicato_usesindicatostore",
-      "community": 11,
+      "community": 40,
       "norm_label": "usesindicatostore"
     },
     {
@@ -9711,7 +9621,7 @@
       "source_file": "src/types/index.ts",
       "source_location": "L18",
       "id": "types_index_vinculo",
-      "community": 11,
+      "community": 40,
       "norm_label": "vinculo"
     },
     {
@@ -9720,7 +9630,7 @@
       "source_file": "src/types/index.ts",
       "source_location": "L48",
       "id": "types_index_infobancaria",
-      "community": 40,
+      "community": 47,
       "norm_label": "infobancaria"
     },
     {
@@ -9729,7 +9639,7 @@
       "source_file": "src/types/index.ts",
       "source_location": "L57",
       "id": "types_index_gradoacademico",
-      "community": 139,
+      "community": 12,
       "norm_label": "gradoacademico"
     },
     {
@@ -9819,7 +9729,7 @@
       "source_file": "src/types/index.ts",
       "source_location": "L132",
       "id": "types_index_legajo",
-      "community": 40,
+      "community": 47,
       "norm_label": "legajo"
     },
     {
@@ -9873,7 +9783,7 @@
       "source_file": "src/types/index.ts",
       "source_location": "L185",
       "id": "types_index_cambioareapayload",
-      "community": 40,
+      "community": 47,
       "norm_label": "cambioareapayload"
     },
     {
@@ -9889,7 +9799,7 @@
       "label": "RegistrarUrlPayload",
       "file_type": "code",
       "source_file": "src/types/index.ts",
-      "source_location": "L204",
+      "source_location": "L205",
       "id": "types_index_registrarurlpayload",
       "community": 0,
       "norm_label": "registrarurlpayload"
@@ -9963,7 +9873,7 @@
       "source_file": "src/views/ChangePassword.vue",
       "source_location": "L1",
       "id": "src_views_changepassword_vue",
-      "community": 65,
+      "community": 69,
       "norm_label": "changepassword.vue"
     },
     {
@@ -9972,7 +9882,7 @@
       "source_file": "src/views/ChangePassword.vue",
       "source_location": "L67",
       "id": "views_changepassword_authstore",
-      "community": 65,
+      "community": 69,
       "norm_label": "authstore"
     },
     {
@@ -9981,7 +9891,7 @@
       "source_file": "src/views/ChangePassword.vue",
       "source_location": "L69",
       "id": "views_changepassword_oldpassword",
-      "community": 65,
+      "community": 69,
       "norm_label": "oldpassword"
     },
     {
@@ -9990,7 +9900,7 @@
       "source_file": "src/views/ChangePassword.vue",
       "source_location": "L70",
       "id": "views_changepassword_newpassword",
-      "community": 65,
+      "community": 69,
       "norm_label": "newpassword"
     },
     {
@@ -9999,7 +9909,7 @@
       "source_file": "src/views/ChangePassword.vue",
       "source_location": "L71",
       "id": "views_changepassword_confirmpassword",
-      "community": 65,
+      "community": 69,
       "norm_label": "confirmpassword"
     },
     {
@@ -10008,7 +9918,7 @@
       "source_file": "src/views/ChangePassword.vue",
       "source_location": "L72",
       "id": "views_changepassword_message",
-      "community": 65,
+      "community": 69,
       "norm_label": "message"
     },
     {
@@ -10017,7 +9927,7 @@
       "source_file": "src/views/ChangePassword.vue",
       "source_location": "L73",
       "id": "views_changepassword_iserror",
-      "community": 65,
+      "community": 69,
       "norm_label": "iserror"
     },
     {
@@ -10026,7 +9936,7 @@
       "source_file": "src/views/ChangePassword.vue",
       "source_location": "L74",
       "id": "views_changepassword_issubmitting",
-      "community": 65,
+      "community": 69,
       "norm_label": "issubmitting"
     },
     {
@@ -10035,7 +9945,7 @@
       "source_file": "src/views/ChangePassword.vue",
       "source_location": "L76",
       "id": "views_changepassword_handlechangepassword",
-      "community": 65,
+      "community": 69,
       "norm_label": "handlechangepassword()"
     },
     {
@@ -10044,7 +9954,7 @@
       "source_file": "src/views/ComparacionMefView.vue",
       "source_location": "L1",
       "id": "src_views_comparacionmefview_vue",
-      "community": 196,
+      "community": 119,
       "norm_label": "comparacionmefview.vue"
     },
     {
@@ -10053,7 +9963,7 @@
       "source_file": "src/views/ComparacionMefView.vue",
       "source_location": "L342",
       "id": "views_comparacionmefview_regimenes",
-      "community": 196,
+      "community": 119,
       "norm_label": "regimenes"
     },
     {
@@ -10062,7 +9972,7 @@
       "source_file": "src/views/ComparacionMefView.vue",
       "source_location": "L343",
       "id": "views_comparacionmefview_opciones",
-      "community": 196,
+      "community": 119,
       "norm_label": "opciones"
     },
     {
@@ -10071,7 +9981,7 @@
       "source_file": "src/views/ComparacionMefView.vue",
       "source_location": "L344",
       "id": "views_comparacionmefview_string",
-      "community": 196,
+      "community": 119,
       "norm_label": "string"
     },
     {
@@ -10089,7 +9999,7 @@
       "source_file": "src/views/ComparacionMefView.vue",
       "source_location": "L390",
       "id": "views_comparacionmefview_q",
-      "community": 196,
+      "community": 119,
       "norm_label": "q"
     },
     {
@@ -10098,7 +10008,7 @@
       "source_file": "src/views/DashboardView.vue",
       "source_location": "L1",
       "id": "src_views_dashboardview_vue",
-      "community": 31,
+      "community": 41,
       "norm_label": "dashboardview.vue"
     },
     {
@@ -10107,7 +10017,7 @@
       "source_file": "src/views/DashboardView.vue",
       "source_location": "L40",
       "id": "views_dashboardview_mapa",
-      "community": 31,
+      "community": 41,
       "norm_label": "mapa"
     },
     {
@@ -10116,7 +10026,7 @@
       "source_file": "src/views/DashboardView.vue",
       "source_location": "L42",
       "id": "views_dashboardview_tablerostore",
-      "community": 31,
+      "community": 41,
       "norm_label": "tablerostore"
     },
     {
@@ -10183,33 +10093,6 @@
       "norm_label": "personalprofile.vue"
     },
     {
-      "label": "route",
-      "file_type": "code",
-      "source_file": "src/views/Personal/PersonalProfile.vue",
-      "source_location": "L41",
-      "id": "personal_personalprofile_route",
-      "community": 47,
-      "norm_label": "route"
-    },
-    {
-      "label": "personalStore",
-      "file_type": "code",
-      "source_file": "src/views/Personal/PersonalProfile.vue",
-      "source_location": "L42",
-      "id": "personal_personalprofile_personalstore",
-      "community": 47,
-      "norm_label": "personalstore"
-    },
-    {
-      "label": "{ perfilActual }",
-      "file_type": "code",
-      "source_file": "src/views/Personal/PersonalProfile.vue",
-      "source_location": "L43",
-      "id": "personal_personalprofile_perfilactual",
-      "community": 47,
-      "norm_label": "{ perfilactual }"
-    },
-    {
       "label": "PersonalSearch.vue",
       "file_type": "code",
       "source_file": "src/views/Personal/PersonalSearch.vue",
@@ -10251,7 +10134,7 @@
       "source_file": "API.md",
       "source_location": "L1",
       "id": "api_md",
-      "community": 132,
+      "community": 138,
       "norm_label": "api.md"
     },
     {
@@ -10260,7 +10143,7 @@
       "source_file": "API.md",
       "source_location": "L1",
       "id": "dashboard_api_api_endpoints",
-      "community": 132,
+      "community": 138,
       "norm_label": "api endpoints"
     },
     {
@@ -10269,7 +10152,7 @@
       "source_file": "API.md",
       "source_location": "L7",
       "id": "dashboard_api_errores",
-      "community": 132,
+      "community": 138,
       "norm_label": "errores"
     },
     {
@@ -10278,7 +10161,7 @@
       "source_file": "API.md",
       "source_location": "L11",
       "id": "dashboard_api_codeblock_1",
-      "community": 132,
+      "community": 138,
       "norm_label": "code:json ({ \"code\": 400 | 401 | 404 | 500, \"error\": \"mensaje descripti)"
     },
     {
@@ -10575,7 +10458,7 @@
       "source_file": "API.md",
       "source_location": "L285",
       "id": "dashboard_api_codeblock_16",
-      "community": 115,
+      "community": 6,
       "norm_label": "code:json ([{ \"id\": 1, \"dni\": \"12345678\", \"nombre\": \"apellido nombre\", )"
     },
     {
@@ -10584,7 +10467,7 @@
       "source_file": "API.md",
       "source_location": "L291",
       "id": "dashboard_api_post_dash_reporte_eventos",
-      "community": 115,
+      "community": 6,
       "norm_label": "`post /dash/reporte_eventos`"
     },
     {
@@ -10656,7 +10539,7 @@
       "source_file": "API.md",
       "source_location": "L393",
       "id": "dashboard_api_codeblock_20",
-      "community": 1,
+      "community": 115,
       "norm_label": "code:json (\"rows affected: 1\")"
     },
     {
@@ -10665,7 +10548,7 @@
       "source_file": "API.md",
       "source_location": "L399",
       "id": "dashboard_api_post_personal_vinculos_por_dni",
-      "community": 1,
+      "community": 115,
       "norm_label": "`post /personal/vinculos_por_dni`"
     },
     {
@@ -10674,7 +10557,7 @@
       "source_file": "API.md",
       "source_location": "L411",
       "id": "dashboard_api_codeblock_21",
-      "community": 1,
+      "community": 115,
       "norm_label": "code:json ([)"
     },
     {
@@ -10683,7 +10566,7 @@
       "source_file": "API.md",
       "source_location": "L434",
       "id": "dashboard_api_post_personal_renuncia_por_vinculo",
-      "community": 1,
+      "community": 115,
       "norm_label": "`post /personal/renuncia_por_vinculo`"
     },
     {
@@ -10692,7 +10575,7 @@
       "source_file": "API.md",
       "source_location": "L451",
       "id": "dashboard_api_codeblock_22",
-      "community": 1,
+      "community": 39,
       "norm_label": "code:json ({ \"dni\": \"12345678\", \"estado\": \"inactivo\" })"
     },
     {
@@ -10701,7 +10584,7 @@
       "source_file": "API.md",
       "source_location": "L457",
       "id": "dashboard_api_post_personal_eliminar_vinculo",
-      "community": 1,
+      "community": 39,
       "norm_label": "`post /personal/eliminar_vinculo`"
     },
     {
@@ -10710,7 +10593,7 @@
       "source_file": "API.md",
       "source_location": "L469",
       "id": "dashboard_api_codeblock_23",
-      "community": 1,
+      "community": 39,
       "norm_label": "code:json (\"vinculo eliminado correctamente\")"
     },
     {
@@ -10719,7 +10602,7 @@
       "source_file": "API.md",
       "source_location": "L475",
       "id": "dashboard_api_post_personal_banco_por_dni",
-      "community": 1,
+      "community": 39,
       "norm_label": "`post /personal/banco_por_dni`"
     },
     {
@@ -10728,7 +10611,7 @@
       "source_file": "API.md",
       "source_location": "L487",
       "id": "dashboard_api_codeblock_24",
-      "community": 1,
+      "community": 39,
       "norm_label": "code:json ({ \"id\": 1, \"numero_cuenta\": \"123456789\", \"tipo_cuenta\": \"aho)"
     },
     {
@@ -10755,7 +10638,7 @@
       "source_file": "API.md",
       "source_location": "L532",
       "id": "dashboard_api_post_personal_grado_por_dni",
-      "community": 1,
+      "community": 39,
       "norm_label": "`post /personal/grado_por_dni`"
     },
     {
@@ -10764,7 +10647,7 @@
       "source_file": "API.md",
       "source_location": "L544",
       "id": "dashboard_api_codeblock_25",
-      "community": 1,
+      "community": 39,
       "norm_label": "code:json ([{ \"id\": 1, \"profesion\": \"abogado\", \"universidad\": \"univ.\", )"
     },
     {
@@ -10800,7 +10683,7 @@
       "source_file": "API.md",
       "source_location": "L603",
       "id": "dashboard_api_post_personal_contacto_dni",
-      "community": 1,
+      "community": 39,
       "norm_label": "`post /personal/contacto_dni`"
     },
     {
@@ -10809,7 +10692,7 @@
       "source_file": "API.md",
       "source_location": "L615",
       "id": "dashboard_api_codeblock_26",
-      "community": 1,
+      "community": 39,
       "norm_label": "code:json ({ \"persona_dni\": \"12345678\", \"nombre\": \"maria\", \"relacion\": )"
     },
     {
@@ -10854,7 +10737,7 @@
       "source_file": "API.md",
       "source_location": "L686",
       "id": "dashboard_api_codeblock_27",
-      "community": 178,
+      "community": 1,
       "norm_label": "code:json ([{ \"id\": 1, \"persona\": \"juan perez\", \"dni\": \"12345678\", \"fec)"
     },
     {
@@ -10872,7 +10755,7 @@
       "source_file": "API.md",
       "source_location": "L713",
       "id": "dashboard_api_post_personal_asistencia",
-      "community": 178,
+      "community": 1,
       "norm_label": "`post /personal/asistencia`"
     },
     {
@@ -10881,7 +10764,7 @@
       "source_file": "API.md",
       "source_location": "L727",
       "id": "dashboard_api_codeblock_28",
-      "community": 178,
+      "community": 1,
       "norm_label": "code:json ([{ \"dni\": \"12345678\", \"hora\": \"08:00\", \"fecha\": \"2024-01-15\")"
     },
     {
@@ -10890,7 +10773,7 @@
       "source_file": "API.md",
       "source_location": "L733",
       "id": "dashboard_api_post_personal_buscar_vacantes",
-      "community": 178,
+      "community": 1,
       "norm_label": "`post /personal/buscar_vacantes`"
     },
     {
@@ -10944,7 +10827,7 @@
       "source_file": "API.md",
       "source_location": "L797",
       "id": "dashboard_api_codeblock_31",
-      "community": 187,
+      "community": 178,
       "norm_label": "code:json ({ \"dni\": \"12345678\", \"apaterno\": \"garcia\", \"amaterno\": \"lope)"
     },
     {
@@ -10953,7 +10836,7 @@
       "source_file": "API.md",
       "source_location": "L803",
       "id": "dashboard_api_post_personal_buscar_areas",
-      "community": 187,
+      "community": 178,
       "norm_label": "`post /personal/buscar_areas`"
     },
     {
@@ -10962,7 +10845,7 @@
       "source_file": "API.md",
       "source_location": "L811",
       "id": "dashboard_api_codeblock_32",
-      "community": 187,
+      "community": 178,
       "norm_label": "code:json ([{ \"id\": 1, \"nombre\": \"gerencia municipal\" }])"
     },
     {
@@ -10971,7 +10854,7 @@
       "source_file": "API.md",
       "source_location": "L817",
       "id": "dashboard_api_post_personal_buscar_cargos",
-      "community": 187,
+      "community": 178,
       "norm_label": "`post /personal/buscar_cargos`"
     },
     {
@@ -10980,7 +10863,7 @@
       "source_file": "API.md",
       "source_location": "L825",
       "id": "dashboard_api_codeblock_33",
-      "community": 187,
+      "community": 178,
       "norm_label": "code:json ([{ \"id\": 1, \"nombre\": \"analista\" }])"
     },
     {
@@ -11016,7 +10899,7 @@
       "source_file": "API.md",
       "source_location": "L904",
       "id": "dashboard_api_post_personal_activos_por_distrito",
-      "community": 187,
+      "community": 178,
       "norm_label": "`post /personal/activos_por_distrito`"
     },
     {
@@ -11151,7 +11034,7 @@
       "source_file": "API.md",
       "source_location": "L1091",
       "id": "dashboard_api_codeblock_39",
-      "community": 137,
+      "community": 138,
       "norm_label": "code:json ([{ \"id\": 1, \"file_hash\": \"uuid...\", \"original_name\": \"doc.pd)"
     },
     {
@@ -11160,7 +11043,7 @@
       "source_file": "API.md",
       "source_location": "L1097",
       "id": "dashboard_api_usuarios_usuarios_solo_administradores",
-      "community": 137,
+      "community": 138,
       "norm_label": "usuarios `/usuarios` \ud83d\udd12 (solo administradores)"
     },
     {
@@ -11169,7 +11052,7 @@
       "source_file": "API.md",
       "source_location": "L1101",
       "id": "dashboard_api_post_usuarios_listar",
-      "community": 137,
+      "community": 138,
       "norm_label": "`post /usuarios/listar`"
     },
     {
@@ -11178,7 +11061,7 @@
       "source_file": "API.md",
       "source_location": "L1109",
       "id": "dashboard_api_codeblock_40",
-      "community": 137,
+      "community": 138,
       "norm_label": "code:json ([{ \"id\": 1, \"nombre\": \"administrador\", \"nickname\": \"admin\", )"
     },
     {
@@ -11187,7 +11070,7 @@
       "source_file": "API.md",
       "source_location": "L1115",
       "id": "dashboard_api_post_usuarios_crear",
-      "community": 137,
+      "community": 138,
       "norm_label": "`post /usuarios/crear`"
     },
     {
@@ -11196,7 +11079,7 @@
       "source_file": "API.md",
       "source_location": "L1132",
       "id": "dashboard_api_post_usuarios_editar",
-      "community": 137,
+      "community": 138,
       "norm_label": "`post /usuarios/editar`"
     },
     {
@@ -11205,7 +11088,7 @@
       "source_file": "API.md",
       "source_location": "L1149",
       "id": "dashboard_api_post_usuarios_eliminar",
-      "community": 137,
+      "community": 138,
       "norm_label": "`post /usuarios/eliminar`"
     },
     {
@@ -11214,7 +11097,7 @@
       "source_file": "API.md",
       "source_location": "L1163",
       "id": "dashboard_api_post_usuarios_reset_pass",
-      "community": 137,
+      "community": 138,
       "norm_label": "`post /usuarios/reset_pass`"
     },
     {
@@ -11549,33 +11432,6 @@
       "id": "rules_graphify_graphify",
       "community": 172,
       "norm_label": "graphify"
-    },
-    {
-      "label": "SKILL.md",
-      "file_type": "document",
-      "source_file": ".agents/skills/frontend-design/SKILL.md",
-      "source_location": "L1",
-      "id": "agents_skills_frontend_design_skill_md",
-      "community": 23,
-      "norm_label": "skill.md"
-    },
-    {
-      "label": "Design Thinking",
-      "file_type": "document",
-      "source_file": ".claude/skills/frontend-design/SKILL.md",
-      "source_location": "L11",
-      "id": "frontend_design_skill_design_thinking",
-      "community": 23,
-      "norm_label": "design thinking"
-    },
-    {
-      "label": "Frontend Aesthetics Guidelines",
-      "file_type": "document",
-      "source_file": ".claude/skills/frontend-design/SKILL.md",
-      "source_location": "L27",
-      "id": "frontend_design_skill_frontend_aesthetics_guidelines",
-      "community": 23,
-      "norm_label": "frontend aesthetics guidelines"
     },
     {
       "label": "SKILL.md",
@@ -18157,15 +18013,6 @@
       "norm_label": "workflow: graphify"
     },
     {
-      "label": "SKILL.md",
-      "file_type": "document",
-      "source_file": ".claude/skills/frontend-design/SKILL.md",
-      "source_location": "L1",
-      "id": "claude_skills_frontend_design_skill_md",
-      "community": 23,
-      "norm_label": "skill.md"
-    },
-    {
       "label": "2026-04-26-tipografia-responsive.md",
       "file_type": "document",
       "source_file": "docs/superpowers/plans/2026-04-26-tipografia-responsive.md",
@@ -18733,6 +18580,231 @@
       "norm_label": "aceptacion"
     },
     {
+      "label": "getIniciales()",
+      "file_type": "code",
+      "source_file": "src/components/perfil/info.vue",
+      "source_location": "L209",
+      "community": 20,
+      "norm_label": "getiniciales()",
+      "id": "perfil_info_getiniciales"
+    },
+    {
+      "label": "contacto.vue",
+      "file_type": "code",
+      "source_file": "src/components/perfil/contacto.vue",
+      "source_location": "L1",
+      "community": 15,
+      "norm_label": "contacto.vue",
+      "id": "src_components_perfil_contacto_vue"
+    },
+    {
+      "label": "{ contactoEmergencia, perfilActual }",
+      "file_type": "code",
+      "source_file": "src/components/perfil/contacto.vue",
+      "source_location": "L96",
+      "community": 15,
+      "norm_label": "{ contactoemergencia, perfilactual }",
+      "id": "perfil_contacto_contactoemergencia_perfilactual"
+    },
+    {
+      "label": "{ esAdmin }",
+      "file_type": "code",
+      "source_file": "src/components/perfil/contacto.vue",
+      "source_location": "L97",
+      "community": 15,
+      "norm_label": "{ esadmin }",
+      "id": "perfil_contacto_esadmin"
+    },
+    {
+      "label": "isEditModalOpen",
+      "file_type": "code",
+      "source_file": "src/components/perfil/contacto.vue",
+      "source_location": "L99",
+      "community": 15,
+      "norm_label": "iseditmodalopen",
+      "id": "perfil_contacto_iseditmodalopen"
+    },
+    {
+      "label": "eliminando",
+      "file_type": "code",
+      "source_file": "src/components/perfil/contacto.vue",
+      "source_location": "L100",
+      "community": 15,
+      "norm_label": "eliminando",
+      "id": "perfil_contacto_eliminando"
+    },
+    {
+      "label": "copiado",
+      "file_type": "code",
+      "source_file": "src/components/perfil/contacto.vue",
+      "source_location": "L101",
+      "community": 15,
+      "norm_label": "copiado",
+      "id": "perfil_contacto_copiado"
+    },
+    {
+      "label": "RELACION_CONFIG",
+      "file_type": "code",
+      "source_file": "src/components/perfil/contacto.vue",
+      "source_location": "L103",
+      "community": 15,
+      "norm_label": "relacion_config",
+      "id": "perfil_contacto_relacion_config"
+    },
+    {
+      "label": "getRelacionConfig()",
+      "file_type": "code",
+      "source_file": "src/components/perfil/contacto.vue",
+      "source_location": "L131",
+      "community": 15,
+      "norm_label": "getrelacionconfig()",
+      "id": "perfil_contacto_getrelacionconfig"
+    },
+    {
+      "label": "badgeRelacion()",
+      "file_type": "code",
+      "source_file": "src/components/perfil/contacto.vue",
+      "source_location": "L138",
+      "community": 15,
+      "norm_label": "badgerelacion()",
+      "id": "perfil_contacto_badgerelacion"
+    },
+    {
+      "label": "getRelacionIcon()",
+      "file_type": "code",
+      "source_file": "src/components/perfil/contacto.vue",
+      "source_location": "L139",
+      "community": 15,
+      "norm_label": "getrelacionicon()",
+      "id": "perfil_contacto_getrelacionicon"
+    },
+    {
+      "label": "copiarTelefono()",
+      "file_type": "code",
+      "source_file": "src/components/perfil/contacto.vue",
+      "source_location": "L141",
+      "community": 15,
+      "norm_label": "copiartelefono()",
+      "id": "perfil_contacto_copiartelefono"
+    },
+    {
+      "label": "confirmarEliminar()",
+      "file_type": "code",
+      "source_file": "src/components/perfil/contacto.vue",
+      "source_location": "L150",
+      "community": 15,
+      "norm_label": "confirmareliminar()",
+      "id": "perfil_contacto_confirmareliminar"
+    },
+    {
+      "label": "route",
+      "file_type": "code",
+      "source_file": "src/views/Personal/PersonalProfile.vue",
+      "source_location": "L41",
+      "community": 47,
+      "norm_label": "route",
+      "id": "personal_personalprofile_route"
+    },
+    {
+      "label": "personalStore",
+      "file_type": "code",
+      "source_file": "src/views/Personal/PersonalProfile.vue",
+      "source_location": "L42",
+      "community": 47,
+      "norm_label": "personalstore",
+      "id": "personal_personalprofile_personalstore"
+    },
+    {
+      "label": "{ perfilActual }",
+      "file_type": "code",
+      "source_file": "src/views/Personal/PersonalProfile.vue",
+      "source_location": "L43",
+      "community": 47,
+      "norm_label": "{ perfilactual }",
+      "id": "personal_personalprofile_perfilactual"
+    },
+    {
+      "label": "frontend-design",
+      "file_type": "code",
+      "source_file": "skills-lock.json",
+      "source_location": "L4",
+      "community": 18,
+      "norm_label": "frontend-design",
+      "id": "dashboard_skills_lock_skills_frontend_design"
+    },
+    {
+      "label": "source",
+      "file_type": "code",
+      "source_file": "skills-lock.json",
+      "source_location": "L5",
+      "community": 18,
+      "norm_label": "source",
+      "id": "dashboard_skills_lock_frontend_design_source"
+    },
+    {
+      "label": "sourceType",
+      "file_type": "code",
+      "source_file": "skills-lock.json",
+      "source_location": "L6",
+      "community": 18,
+      "norm_label": "sourcetype",
+      "id": "dashboard_skills_lock_frontend_design_sourcetype"
+    },
+    {
+      "label": "skillPath",
+      "file_type": "code",
+      "source_file": "skills-lock.json",
+      "source_location": "L7",
+      "community": 18,
+      "norm_label": "skillpath",
+      "id": "dashboard_skills_lock_frontend_design_skillpath"
+    },
+    {
+      "label": "computedHash",
+      "file_type": "code",
+      "source_file": "skills-lock.json",
+      "source_location": "L8",
+      "community": 18,
+      "norm_label": "computedhash",
+      "id": "dashboard_skills_lock_frontend_design_computedhash"
+    },
+    {
+      "label": "SKILL.md",
+      "file_type": "document",
+      "source_file": ".agents/skills/frontend-design/SKILL.md",
+      "source_location": "L1",
+      "community": 23,
+      "norm_label": "skill.md",
+      "id": "agents_skills_frontend_design_skill_md"
+    },
+    {
+      "label": "Design Thinking",
+      "file_type": "document",
+      "source_file": ".claude/skills/frontend-design/SKILL.md",
+      "source_location": "L11",
+      "community": 23,
+      "norm_label": "design thinking",
+      "id": "frontend_design_skill_design_thinking"
+    },
+    {
+      "label": "Frontend Aesthetics Guidelines",
+      "file_type": "document",
+      "source_file": ".claude/skills/frontend-design/SKILL.md",
+      "source_location": "L27",
+      "community": 23,
+      "norm_label": "frontend aesthetics guidelines",
+      "id": "frontend_design_skill_frontend_aesthetics_guidelines"
+    },
+    {
+      "label": "SKILL.md",
+      "file_type": "document",
+      "source_file": ".claude/skills/frontend-design/SKILL.md",
+      "source_location": "L1",
+      "community": 23,
+      "norm_label": "skill.md",
+      "id": "claude_skills_frontend_design_skill_md"
+    },
+    {
       "label": "core.py",
       "file_type": "code",
       "source_file": ".agents/skills/ui-ux-pro-max/scripts/core.py",
@@ -18845,7 +18917,7 @@
       "file_type": "code",
       "source_file": "src/components/dashboard/analisis-personal.vue",
       "source_location": "L1",
-      "community": 31,
+      "community": 41,
       "norm_label": "analisis-personal.vue",
       "id": "src_components_dashboard_analisis_personal_vue"
     },
@@ -19478,16 +19550,6 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "skills-lock.json",
-      "source_location": "L4",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "dashboard_skills_lock_skills",
-      "target": "dashboard_skills_lock_skills_frontend_design"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "skills-lock.json",
       "source_location": "L10",
       "weight": 1.0,
       "confidence_score": 1.0,
@@ -19508,41 +19570,11 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "skills-lock.json",
-      "source_location": "L5",
+      "source_location": "L4",
       "weight": 1.0,
       "confidence_score": 1.0,
-      "source": "dashboard_skills_lock_skills_frontend_design",
-      "target": "dashboard_skills_lock_frontend_design_source"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "skills-lock.json",
-      "source_location": "L6",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "dashboard_skills_lock_skills_frontend_design",
-      "target": "dashboard_skills_lock_frontend_design_sourcetype"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "skills-lock.json",
-      "source_location": "L7",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "dashboard_skills_lock_skills_frontend_design",
-      "target": "dashboard_skills_lock_frontend_design_skillpath"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "skills-lock.json",
-      "source_location": "L8",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "dashboard_skills_lock_skills_frontend_design",
-      "target": "dashboard_skills_lock_frontend_design_computedhash"
+      "source": "dashboard_skills_lock_skills",
+      "target": "dashboard_skills_lock_skills_frontend_design"
     },
     {
       "relation": "contains",
@@ -36950,138 +36982,6 @@
       "target": "src_components_perfil_banco_vue"
     },
     {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src/components/perfil/contacto.vue",
-      "source_location": "L96",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_components_perfil_contacto_vue",
-      "target": "perfil_contacto_contactoemergencia_perfilactual"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src/components/perfil/contacto.vue",
-      "source_location": "L97",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_components_perfil_contacto_vue",
-      "target": "perfil_contacto_esadmin"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src/components/perfil/contacto.vue",
-      "source_location": "L99",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_components_perfil_contacto_vue",
-      "target": "perfil_contacto_iseditmodalopen"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src/components/perfil/contacto.vue",
-      "source_location": "L100",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_components_perfil_contacto_vue",
-      "target": "perfil_contacto_eliminando"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src/components/perfil/contacto.vue",
-      "source_location": "L101",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_components_perfil_contacto_vue",
-      "target": "perfil_contacto_copiado"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src/components/perfil/contacto.vue",
-      "source_location": "L103",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_components_perfil_contacto_vue",
-      "target": "perfil_contacto_relacion_config"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src/components/perfil/contacto.vue",
-      "source_location": "L131",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_components_perfil_contacto_vue",
-      "target": "perfil_contacto_getrelacionconfig"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src/components/perfil/contacto.vue",
-      "source_location": "L138",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_components_perfil_contacto_vue",
-      "target": "perfil_contacto_badgerelacion"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src/components/perfil/contacto.vue",
-      "source_location": "L139",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_components_perfil_contacto_vue",
-      "target": "perfil_contacto_getrelacionicon"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src/components/perfil/contacto.vue",
-      "source_location": "L141",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_components_perfil_contacto_vue",
-      "target": "perfil_contacto_copiartelefono"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src/components/perfil/contacto.vue",
-      "source_location": "L150",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_components_perfil_contacto_vue",
-      "target": "perfil_contacto_confirmareliminar"
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "src/components/perfil/contacto.vue",
-      "source_location": "L138",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "perfil_contacto_badgerelacion",
-      "target": "perfil_contacto_getrelacionconfig"
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "src/components/perfil/contacto.vue",
-      "source_location": "L139",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "perfil_contacto_getrelacionicon",
-      "target": "perfil_contacto_getrelacionconfig"
-    },
-    {
       "relation": "imports_from",
       "context": "import",
       "confidence": "EXTRACTED",
@@ -37253,6 +37153,16 @@
       "confidence_score": 1.0,
       "source": "src_components_perfil_info_vue",
       "target": "perfil_info_confirmareliminar"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/perfil/info.vue",
+      "source_location": "L213",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_components_perfil_info_vue",
+      "target": "perfil_info_getiniciales"
     },
     {
       "relation": "imports_from",
@@ -38050,6 +37960,16 @@
       "confidence_score": 1.0,
       "source": "src_components_perfil_legajo_items_vue",
       "target": "legajo_items_thumbnailurl_cargando"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/perfil/legajo/PreviewModal.vue",
+      "source_location": "L219",
+      "weight": 1.0,
+      "source": "src_components_perfil_legajo_previewmodal_vue",
+      "target": "legajo_previewmodal_data",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -38903,6 +38823,17 @@
       "target": "src_components_ui_loading_vue"
     },
     {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/sindicato/BuscadorPersonal.vue",
+      "source_location": "L74",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_components_sindicato_buscadorpersonal_vue",
+      "target": "src_components_ui_avatar_vue"
+    },
+    {
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/components/sindicato/BuscadorPersonal.vue",
@@ -38971,6 +38902,66 @@
       "confidence_score": 1.0,
       "source": "src_components_sindicato_listavinculos_vue",
       "target": "sindicato_listavinculos_for"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/ui/Avatar.vue",
+      "source_location": "L246",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_components_ui_avatar_vue",
+      "target": "ui_avatar_bg_blue_50_80_dark_bg_blue_950_20_text_blue_400_dark_text_blue_500"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/ui/Avatar.vue",
+      "source_location": "L295",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_components_ui_avatar_vue",
+      "target": "ui_avatar_reader"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/ui/Avatar.vue",
+      "source_location": "L314",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_components_ui_avatar_vue",
+      "target": "ui_avatar_ctx"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/ui/Avatar.vue",
+      "source_location": "L317",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_components_ui_avatar_vue",
+      "target": "ui_avatar_rect"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/ui/Avatar.vue",
+      "source_location": "L396",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_components_ui_avatar_vue",
+      "target": "ui_avatar_animate"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/ui/Avatar.vue",
+      "source_location": "L427",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_components_ui_avatar_vue",
+      "target": "ui_avatar_canvasinfo"
     },
     {
       "relation": "imports_from",
@@ -39226,6 +39217,17 @@
       "confidence_score": 1.0,
       "source": "src_components_vinculo_pasobuscarplaza_vue",
       "target": "vinculo_pasobuscarplaza_seleccionar"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/composables/usePdfThumbnail.ts",
+      "source_location": "L4",
+      "weight": 1.0,
+      "source": "src_composables_usepdfthumbnail_ts",
+      "target": "src_services_api_ts",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -42270,46 +42272,6 @@
       "confidence_score": 1.0,
       "source": "agents_rules_graphify_md",
       "target": "rules_graphify_graphify"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": ".agents/skills/frontend-design/SKILL.md",
-      "source_location": "L11",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "agents_skills_frontend_design_skill_md",
-      "target": "frontend_design_skill_design_thinking"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": ".agents/skills/frontend-design/SKILL.md",
-      "source_location": "L27",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "agents_skills_frontend_design_skill_md",
-      "target": "frontend_design_skill_frontend_aesthetics_guidelines"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": ".claude/skills/frontend-design/SKILL.md",
-      "source_location": "L11",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "claude_skills_frontend_design_skill_md",
-      "target": "frontend_design_skill_design_thinking"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": ".claude/skills/frontend-design/SKILL.md",
-      "source_location": "L27",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "claude_skills_frontend_design_skill_md",
-      "target": "frontend_design_skill_frontend_aesthetics_guidelines"
     },
     {
       "relation": "contains",
@@ -49834,6 +49796,218 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
+      "source_file": "src/components/perfil/contacto.vue",
+      "source_location": "L96",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_components_perfil_contacto_vue",
+      "target": "perfil_contacto_contactoemergencia_perfilactual"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/perfil/contacto.vue",
+      "source_location": "L97",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_components_perfil_contacto_vue",
+      "target": "perfil_contacto_esadmin"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/perfil/contacto.vue",
+      "source_location": "L99",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_components_perfil_contacto_vue",
+      "target": "perfil_contacto_iseditmodalopen"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/perfil/contacto.vue",
+      "source_location": "L100",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_components_perfil_contacto_vue",
+      "target": "perfil_contacto_eliminando"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/perfil/contacto.vue",
+      "source_location": "L101",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_components_perfil_contacto_vue",
+      "target": "perfil_contacto_copiado"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/perfil/contacto.vue",
+      "source_location": "L103",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_components_perfil_contacto_vue",
+      "target": "perfil_contacto_relacion_config"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/perfil/contacto.vue",
+      "source_location": "L131",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_components_perfil_contacto_vue",
+      "target": "perfil_contacto_getrelacionconfig"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/perfil/contacto.vue",
+      "source_location": "L138",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_components_perfil_contacto_vue",
+      "target": "perfil_contacto_badgerelacion"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/perfil/contacto.vue",
+      "source_location": "L139",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_components_perfil_contacto_vue",
+      "target": "perfil_contacto_getrelacionicon"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/perfil/contacto.vue",
+      "source_location": "L141",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_components_perfil_contacto_vue",
+      "target": "perfil_contacto_copiartelefono"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/perfil/contacto.vue",
+      "source_location": "L150",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_components_perfil_contacto_vue",
+      "target": "perfil_contacto_confirmareliminar"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/perfil/contacto.vue",
+      "source_location": "L138",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "perfil_contacto_badgerelacion",
+      "target": "perfil_contacto_getrelacionconfig"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/perfil/contacto.vue",
+      "source_location": "L139",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "perfil_contacto_getrelacionicon",
+      "target": "perfil_contacto_getrelacionconfig"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "skills-lock.json",
+      "source_location": "L5",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "dashboard_skills_lock_skills_frontend_design",
+      "target": "dashboard_skills_lock_frontend_design_source"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "skills-lock.json",
+      "source_location": "L6",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "dashboard_skills_lock_skills_frontend_design",
+      "target": "dashboard_skills_lock_frontend_design_sourcetype"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "skills-lock.json",
+      "source_location": "L7",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "dashboard_skills_lock_skills_frontend_design",
+      "target": "dashboard_skills_lock_frontend_design_skillpath"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "skills-lock.json",
+      "source_location": "L8",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "dashboard_skills_lock_skills_frontend_design",
+      "target": "dashboard_skills_lock_frontend_design_computedhash"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agents/skills/frontend-design/SKILL.md",
+      "source_location": "L11",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "agents_skills_frontend_design_skill_md",
+      "target": "frontend_design_skill_design_thinking"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agents/skills/frontend-design/SKILL.md",
+      "source_location": "L27",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "agents_skills_frontend_design_skill_md",
+      "target": "frontend_design_skill_frontend_aesthetics_guidelines"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".claude/skills/frontend-design/SKILL.md",
+      "source_location": "L11",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "claude_skills_frontend_design_skill_md",
+      "target": "frontend_design_skill_design_thinking"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".claude/skills/frontend-design/SKILL.md",
+      "source_location": "L27",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "claude_skills_frontend_design_skill_md",
+      "target": "frontend_design_skill_frontend_aesthetics_guidelines"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
       "source_file": ".impeccable/live/server.json",
       "source_location": "L1",
       "weight": 1.0,
@@ -49874,5 +50048,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "7157bee1767fdbb13a2ec27e8d11d3049194e480"
+  "built_at_commit": "9cdf2828b1d5bf06b40a563e271bbd497efe51dd"
 }

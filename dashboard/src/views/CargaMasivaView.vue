@@ -159,9 +159,13 @@
               @click="agregarTrabajador(p)"
               :disabled="estaSeleccionado(p.dni)"
               class="flex items-center gap-3 rounded-lg border border-gray-100 p-2 text-left hover:bg-gray-50 dark:border-gray-800 dark:hover:bg-white/5 disabled:opacity-50">
-              <div class="h-8 w-8 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center overflow-hidden">
-                <img :src="p.sexo === 'M' ? '/M.svg' : '/F.svg'" class="h-6 w-6" />
-              </div>
+              <Avatar
+                :dni="p.dni"
+                :avatar="p.avatar"
+                :nombre="p.nombre"
+                :sexo="p.sexo"
+                size="sm"
+              />
               <div class="flex-1 min-w-0">
                 <p class="text-sm font-medium truncate dark:text-white/90">{{ p.nombre }}</p>
                 <p class="text-xs text-gray-500">DNI: {{ p.dni }}</p>
@@ -195,9 +199,13 @@
             v-for="t in trabajadoresSeleccionados"
             :key="t.dni"
             class="group flex items-center gap-3 rounded-lg border border-gray-100 p-3 dark:border-gray-800 hover:border-red-200 dark:hover:border-red-900/30 transition">
-            <div class="h-10 w-10 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
-              <img :src="t.sexo === 'M' ? '/M.svg' : '/F.svg'" class="h-8 w-8" />
-            </div>
+            <Avatar
+              :dni="t.dni"
+              :avatar="t.avatar"
+              :nombre="t.nombre"
+              :sexo="t.sexo"
+              size="md"
+            />
             <div class="flex-1 min-w-0">
               <p class="text-sm font-semibold text-gray-800 dark:text-white/90 truncate">{{ t.nombre }}</p>
               <p class="text-xs text-gray-500">DNI: {{ t.dni }}</p>
@@ -219,6 +227,7 @@
   import { useCargaMasivaStore } from '../stores/cargaMasiva'
   import Button from '../components/ui/Button.vue'
   import Badge from '../components/ui/Badge.vue'
+  import Avatar from '../components/ui/Avatar.vue'
 
   const store = useCargaMasivaStore()
   const { documentos, enviando, resultadosBusqueda, trabajadoresSeleccionados, cargandoBusqueda } = storeToRefs(store)

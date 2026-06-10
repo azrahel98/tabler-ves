@@ -39,19 +39,13 @@
             @click="seleccionar(persona)"
             :disabled="yaAgregado(persona.dni)"
             class="group flex items-center gap-3 rounded-lg border border-gray-200 p-3 text-left transition hover:border-brand-300 hover:bg-brand-50/50 dark:border-gray-700 dark:hover:border-brand-700 dark:hover:bg-brand-500/5 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:border-gray-200 disabled:hover:bg-transparent">
-            <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800">
-              <img
-                :src="
-                  persona.sexo === 'M'
-                    ? '/M.svg'
-                    : persona.sexo === 'F'
-                      ? '/F.svg'
-                      : `https://ui-avatars.com/api/?name=${encodeURIComponent(persona.nombre || '')}&background=random&color=fff&size=200`
-                "
-                :alt="persona.nombre ?? undefined"
-                class="h-full w-full rounded-full object-cover"
-                :class="persona.estado === 'activo' ? 'bg-green-200' : 'bg-red-100'" />
-            </div>
+            <Avatar
+              :dni="persona.dni"
+              :avatar="persona.avatar"
+              :nombre="persona.nombre"
+              :sexo="persona.sexo"
+              size="sm"
+            />
             <div class="min-w-0 flex-1">
               <p class="truncate text-sm font-medium text-gray-800 dark:text-white/90">{{ persona.nombre }}</p>
               <p class="text-xs text-gray-500 dark:text-gray-400">DNI: {{ persona.dni }}</p>
@@ -77,6 +71,7 @@
   import { storeToRefs } from 'pinia'
   import { Search, Plus, Check } from 'lucide-vue-next'
   import Loading from '../ui/Loading.vue'
+  import Avatar from '../ui/Avatar.vue'
 
   const store = useSindicatoStore()
   const { resultados, cargando, trabajadoresAgregados } = storeToRefs(store)

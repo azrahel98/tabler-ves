@@ -1,5 +1,5 @@
 <template>
-  <div class="rounded-2xl border border-gray-100 bg-card p-5 dark:border-white/6 dark:bg-white/3 lg:p-6">
+  <Card class="lg:p-6">
     <div v-if="store.perfilActual" class="flex justify-center items-center">
       <div class="flex flex-row items-center gap-6">
         <!-- Avatar Reutilizable -->
@@ -42,11 +42,12 @@
         </div>
       </div>
     </div>
-  </div>
+  </Card>
 </template>
 
 <script setup lang="ts">
   import { computed, ref } from 'vue'
+  import Card from '../ui/card.vue'
   import { parseISO, format, differenceInYears } from 'date-fns'
   import { usePersonalStore } from '../../stores/personal'
   import { useAutenticacionStore } from '../../stores/auth'

@@ -1,16 +1,16 @@
-# Graph Report - dashboard  (2026-06-09)
+# Graph Report - dashboard  (2026-06-10)
 
 ## Corpus Check
-- 247 files · ~290,599 words
+- 244 files · ~287,111 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 2121 nodes · 3000 edges · 192 communities (179 shown, 13 thin omitted)
+- 2129 nodes · 3010 edges · 189 communities (176 shown, 13 thin omitted)
 - Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS · INFERRED: 14 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `7157bee1`
+- Built from commit: `9cdf2828`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -47,6 +47,7 @@
 - [[_COMMUNITY_Community 29|Community 29]]
 - [[_COMMUNITY_Community 30|Community 30]]
 - [[_COMMUNITY_Community 31|Community 31]]
+- [[_COMMUNITY_Community 33|Community 33]]
 - [[_COMMUNITY_Community 36|Community 36]]
 - [[_COMMUNITY_Community 39|Community 39]]
 - [[_COMMUNITY_Community 40|Community 40]]
@@ -125,6 +126,7 @@
 - [[_COMMUNITY_Community 135|Community 135]]
 - [[_COMMUNITY_Community 136|Community 136]]
 - [[_COMMUNITY_Community 137|Community 137]]
+- [[_COMMUNITY_Community 138|Community 138]]
 - [[_COMMUNITY_Community 139|Community 139]]
 - [[_COMMUNITY_Community 140|Community 140]]
 - [[_COMMUNITY_Community 141|Community 141]]
@@ -164,14 +166,11 @@
 - [[_COMMUNITY_Community 176|Community 176]]
 - [[_COMMUNITY_Community 178|Community 178]]
 - [[_COMMUNITY_Community 181|Community 181]]
-- [[_COMMUNITY_Community 185|Community 185]]
-- [[_COMMUNITY_Community 187|Community 187]]
 - [[_COMMUNITY_Community 191|Community 191]]
 - [[_COMMUNITY_Community 192|Community 192]]
 - [[_COMMUNITY_Community 193|Community 193]]
 - [[_COMMUNITY_Community 194|Community 194]]
 - [[_COMMUNITY_Community 195|Community 195]]
-- [[_COMMUNITY_Community 196|Community 196]]
 - [[_COMMUNITY_Community 197|Community 197]]
 - [[_COMMUNITY_Community 198|Community 198]]
 - [[_COMMUNITY_Community 199|Community 199]]
@@ -201,15 +200,15 @@
 - `main()` --calls--> `number`  [INFERRED]
   .agents/skills/impeccable/scripts/critique-storage.mjs → src/views/ComparacionMefView.vue
 
-## Communities (192 total, 13 thin omitted)
+## Communities (189 total, 13 thin omitted)
 
 ### Community 0 - "Community 0"
 Cohesion: 0.21
 Nodes (15): useTableroStore, useReportesStore, Banco, Cumpleano, Documento, DocumentoRespaldo, EventoVinculo, NodoOrganigrama (+7 more)
 
 ### Community 1 - "Community 1"
-Cohesion: 0.09
-Nodes (28): code:json ("Rows affected: 1"), code:json ([), code:json ({ "dni": "12345678", "estado": "inactivo" }), code:json ("Vínculo eliminado correctamente"), code:json ({ "id": 1, "numero_cuenta": "123456789", "tipo_cuenta": "AHO), code:json ([{ "id": 1, "profesion": "ABOGADO", "universidad": "UNIV.", ), code:json ({ "persona_dni": "12345678", "nombre": "María", "relacion": ), Personal `/personal` 🔒 (+20 more)
+Cohesion: 0.12
+Nodes (19): code:json ([{ "id": 1, "persona": "Juan Pérez", "dni": "12345678", "fec), code:json ([{ "dni": "12345678", "hora": "08:00", "fecha": "2024-01-15"), Personal `/personal` 🔒, `POST /personal/agregar_contacto`, `POST /personal/agregar_gradoa`, `POST /personal/agregar_infobancaria`, `POST /personal/agregar_sindicato`, `POST /personal/asistencia` (+11 more)
 
 ### Community 2 - "Community 2"
 Cohesion: 0.05
@@ -229,11 +228,11 @@ Nodes (7): { esAdmin }, isCambioAreaOpen, isEliminarOpen, isEventoOpen, isRenunc
 
 ### Community 6 - "Community 6"
 Cohesion: 0.09
-Nodes (27): code:json ([), code:json ([{ "operacion": "editar", "detalle": "...", "fecha": "2024-0), code:json ([{ "id": 1, "area": "Gerencia Municipal", "jefe": "Apellido ), code:json ([{ "id": 1, "dni": "12345678", "nombre": "Apellido Nombre", ), code:json ([{ "id": 1, "nombre": "Resolución", "sigla": "RA" }]), code:json ([{ "distrito": "PIURA", "cantidad": 45 }, { "distrito": "SIN), code:json ({), code:json ([{ "dni": "12345678", "nombre": "Apellido Nombre", "nacimien) (+19 more)
+Nodes (29): code:json ([), code:json ([{ "operacion": "editar", "detalle": "...", "fecha": "2024-0), code:json ([{ "id": 1, "area": "Gerencia Municipal", "jefe": "Apellido ), code:json ([{ "id": 1, "dni": "12345678", "nombre": "Apellido Nombre", ), code:json ([{ "id": 1, "nombre": "Resolución", "sigla": "RA" }]), code:json ([{ "distrito": "PIURA", "cantidad": 45 }, { "distrito": "SIN), code:json ([{ "id": 1, "dni": "12345678", "nombre": "Apellido Nombre", ), code:json ({) (+21 more)
 
 ### Community 7 - "Community 7"
-Cohesion: 0.21
-Nodes (6): middleware(), router, app, decodificar(), JwtPayload, useAutenticacionStore
+Cohesion: 0.29
+Nodes (5): middleware(), router, decodificar(), JwtPayload, useAutenticacionStore
 
 ### Community 8 - "Community 8"
 Cohesion: 0.08
@@ -248,12 +247,12 @@ Cohesion: 0.12
 Nodes (15): 1. Cambio definitivo de área (`cambio_area`), 2. Drill-down por distrito (`activos_por_distrito` versión lista), 3. Registrar PDF externo (`registrar_url`), 4. Eliminar grado académico (`eliminar_gradoa`), Aceptación, code:ts (// Documento de respaldo. Si ya existe un tipo equivalente e), code:ts ({), Contexto (+7 more)
 
 ### Community 11 - "Community 11"
-Cohesion: 0.12
-Nodes (10): click(), pLeaflet, buscar(), busquedaRealizada, consulta, { resultados, cargando, trabajadoresAgregados }, store, TrabajadorConVinculos (+2 more)
+Cohesion: 0.1
+Nodes (11): click(), pLeaflet, buscar(), busquedaRealizada, consulta, { resultados, cargando, trabajadoresAgregados }, store, canvasInfo (+3 more)
 
 ### Community 12 - "Community 12"
-Cohesion: 0.15
-Nodes (10): campo, close(), DISTRITOS, form, isSubmitting, limpiarErrores(), payload, resultado (+2 more)
+Cohesion: 0.11
+Nodes (12): campo, close(), DISTRITOS, form, isSubmitting, limpiarErrores(), payload, resultado (+4 more)
 
 ### Community 13 - "Community 13"
 Cohesion: 0.14
@@ -284,7 +283,7 @@ Cohesion: 0.22
 Nodes (4): chartData, colorPorDefecto, store, totalSexo
 
 ### Community 20 - "Community 20"
-Cohesion: 0.17
+Cohesion: 0.15
 Nodes (9): date, dateCorrected, eliminando, { esAdmin }, isEditContactoModalOpen, isEditModalOpen, { perfilActual }, { perfilActual, contactoEmergencia } (+1 more)
 
 ### Community 21 - "Community 21"
@@ -300,20 +299,24 @@ Cohesion: 0.15
 Nodes (12): campo, close(), contactoSchema, form, isSubmitting, limpiarErrores(), { perfilActual }, resultado (+4 more)
 
 ### Community 31 - "Community 31"
-Cohesion: 0.11
-Nodes (8): chartData, coloresBorde, coloresFondo, store, totalAntiguedad, { daysAgo, fechaFormateada }, Mapa, tableroStore
+Cohesion: 0.22
+Nodes (5): chartData, coloresBorde, coloresFondo, store, totalAntiguedad
+
+### Community 33 - "Community 33"
+Cohesion: 0.23
+Nodes (14): actionLabel(), buildConfigureRow(), buildConfirmedRow(), buildCyclingRow(), buildDots(), buildGeneratingRow(), buildSavingRow(), copyToClipboard() (+6 more)
 
 ### Community 39 - "Community 39"
-Cohesion: 0.29
-Nodes (4): chartData, store, string, totalRegimen
+Cohesion: 0.22
+Nodes (9): code:json ({ "dni": "12345678", "estado": "inactivo" }), code:json ("Vínculo eliminado correctamente"), code:json ({ "id": 1, "numero_cuenta": "123456789", "tipo_cuenta": "AHO), code:json ([{ "id": 1, "profesion": "ABOGADO", "universidad": "UNIV.", ), code:json ({ "persona_dni": "12345678", "nombre": "María", "relacion": ), `POST /personal/banco_por_dni`, `POST /personal/contacto_dni`, `POST /personal/eliminar_vinculo` (+1 more)
 
 ### Community 40 - "Community 40"
-Cohesion: 0.18
-Nodes (9): api, authStore, valido, useCargaMasivaStore, useConfiguracionStore, CambioAreaPayload, InfoBancaria, Legajo (+1 more)
+Cohesion: 0.17
+Nodes (8): api, authStore, valido, useCargaMasivaStore, TrabajadorConVinculos, useSindicatoStore, Persona, Vinculo
 
 ### Community 41 - "Community 41"
-Cohesion: 0.36
-Nodes (6): parseArgs(), resumeCli(), createLiveSessionStore(), fetchServerStatus(), readServerInfo(), statusCli()
+Cohesion: 0.12
+Nodes (7): chartData, store, string, totalRegimen, { daysAgo, fechaFormateada }, Mapa, tableroStore
 
 ### Community 42 - "Community 42"
 Cohesion: 0.22
@@ -324,8 +327,8 @@ Cohesion: 0.11
 Nodes (18): activeOwner, annotationArtifacts, arrivedVariants, checkpointRevision, deliveryLease, diagnostics, expectedVariants, fallbackMode (+10 more)
 
 ### Community 47 - "Community 47"
-Cohesion: 0.15
-Nodes (7): edad, reader, subiendo, { perfilActual }, personalStore, route, usePersonalStore
+Cohesion: 0.12
+Nodes (11): edad, reader, subiendo, { perfilActual }, personalStore, route, useConfiguracionStore, usePersonalStore (+3 more)
 
 ### Community 48 - "Community 48"
 Cohesion: 0.12
@@ -340,20 +343,20 @@ Cohesion: 0.16
 Nodes (15): BM25, detect_domain(), _load_csv(), BM25 ranking algorithm for text search, Lowercase, split, remove punctuation, filter short words, Build BM25 index from documents, Score all documents against query, Load CSV and return list of dicts (+7 more)
 
 ### Community 51 - "Community 51"
-Cohesion: 0.22
-Nodes (3): calcularEscalaAjustada(), resetZoom(), tarea
+Cohesion: 0.2
+Nodes (4): calcularEscalaAjustada(), data, resetZoom(), tarea
 
 ### Community 59 - "Community 59"
 Cohesion: 0.14
 Nodes (9): Plaza, useVinculoStore, Vacante, Area, Cargo, cargandoPlaza, puedeAvanzar, store (+1 more)
 
 ### Community 65 - "Community 65"
-Cohesion: 0.22
-Nodes (7): authStore, confirmPassword, isError, isSubmitting, message, newPassword, oldPassword
+Cohesion: 0.36
+Nodes (6): parseArgs(), resumeCli(), createLiveSessionStore(), fetchServerStatus(), readServerInfo(), statusCli()
 
 ### Community 69 - "Community 69"
-Cohesion: 0.23
-Nodes (14): actionLabel(), buildConfigureRow(), buildConfirmedRow(), buildCyclingRow(), buildDots(), buildGeneratingRow(), buildSavingRow(), copyToClipboard() (+6 more)
+Cohesion: 0.22
+Nodes (7): authStore, confirmPassword, isError, isSubmitting, message, newPassword, oldPassword
 
 ### Community 74 - "Community 74"
 Cohesion: 0.11
@@ -520,8 +523,8 @@ Cohesion: 0.13
 Nodes (14): 10. Help and Documentation, 1. Visibility of System Status, 2. Match Between System and Real World, 3. User Control and Freedom, 4. Consistency and Standards, 5. Error Prevention, 6. Recognition Rather Than Recall, 7. Flexibility and Efficiency of Use (+6 more)
 
 ### Community 115 - "Community 115"
-Cohesion: 0.25
-Nodes (8): code:json ([{ "id": 1, "dni": "12345678", "nombre": "Apellido Nombre", ), code:json ([), code:json ([{ "nombre": "Nombre Apellido", "dni": "12345678", "estado":), code:json ({), `POST /dash/reporte_eventos`, `POST /personal/buscar`, `POST /personal/editar_por_dni`, `POST /personal/por_dni`
+Cohesion: 0.2
+Nodes (10): code:json ([), code:json ([{ "nombre": "Nombre Apellido", "dni": "12345678", "estado":), code:json ({), code:json ("Rows affected: 1"), code:json ([), `POST /personal/buscar`, `POST /personal/editar_por_dni`, `POST /personal/por_dni` (+2 more)
 
 ### Community 116 - "Community 116"
 Cohesion: 0.21
@@ -536,8 +539,8 @@ Cohesion: 0.27
 Nodes (12): buildTargetNames(), cleanSkillsLock(), cleanup(), DEPRECATED_NAMES, findProjectRoot(), findSkillsDirs(), HARNESS_DIRS, isImpeccableSkill() (+4 more)
 
 ### Community 119 - "Community 119"
-Cohesion: 0.29
-Nodes (11): kebab(), listSnapshotsForSlug(), main(), nowFilenameStamp(), parseFrontmatter(), readLatestSnapshot(), readTrend(), serializeFrontmatter() (+3 more)
+Cohesion: 0.18
+Nodes (15): kebab(), listSnapshotsForSlug(), main(), nowFilenameStamp(), parseFrontmatter(), readLatestSnapshot(), readTrend(), serializeFrontmatter() (+7 more)
 
 ### Community 120 - "Community 120"
 Cohesion: 0.23
@@ -588,8 +591,8 @@ Cohesion: 0.2
 Nodes (9): Color, Components, Layout, Motion, Product bans (on top of the shared absolute bans), Product permissions, Product register, The product slop test (+1 more)
 
 ### Community 132 - "Community 132"
-Cohesion: 0.22
-Nodes (8): API Endpoints, code:json ({ "code": 400 | 401 | 404 | 500, "error": "Mensaje descripti), code:json ({ "token": "eyJhbGciOi..." }), code:json ("Contraseña cambiada con éxito"), Errores, Login `/login`, `POST /login/`, `POST /login/changepass` 🔒
+Cohesion: 0.4
+Nodes (5): code:json ({ "token": "eyJhbGciOi..." }), code:json ("Contraseña cambiada con éxito"), Login `/login`, `POST /login/`, `POST /login/changepass` 🔒
 
 ### Community 133 - "Community 133"
 Cohesion: 0.22
@@ -608,8 +611,12 @@ Cohesion: 0.43
 Nodes (6): completionAckForAcceptResult(), completionTypeForAcceptResult(), buildPollReplyPayload(), pollCli(), postReply(), readServerInfo()
 
 ### Community 137 - "Community 137"
-Cohesion: 0.25
-Nodes (8): code:json ([{ "id": 1, "file_hash": "uuid...", "original_name": "doc.pd), code:json ([{ "id": 1, "nombre": "Administrador", "nickname": "admin", ), `POST /usuarios/crear`, `POST /usuarios/editar`, `POST /usuarios/eliminar`, `POST /usuarios/listar`, `POST /usuarios/reset_pass`, Usuarios `/usuarios` 🔒 (solo administradores)
+Cohesion: 0.22
+Nodes (5): chartData, coloresBorde, coloresFondo, store, totalEdad
+
+### Community 138 - "Community 138"
+Cohesion: 0.17
+Nodes (11): API Endpoints, code:json ({ "code": 400 | 401 | 404 | 500, "error": "Mensaje descripti), code:json ([{ "id": 1, "file_hash": "uuid...", "original_name": "doc.pd), code:json ([{ "id": 1, "nombre": "Administrador", "nickname": "admin", ), Errores, `POST /usuarios/crear`, `POST /usuarios/editar`, `POST /usuarios/eliminar` (+3 more)
 
 ### Community 140 - "Community 140"
 Cohesion: 0.29
@@ -652,7 +659,7 @@ Cohesion: 0.5
 Nodes (3): cargando, cargandoPersona, isEditModalOpen
 
 ### Community 150 - "Community 150"
-Cohesion: 0.5
+Cohesion: 0.67
 Nodes (3): adapt, argumentHint, description
 
 ### Community 151 - "Community 151"
@@ -680,7 +687,7 @@ Cohesion: 0.67
 Nodes (3): craft, argumentHint, description
 
 ### Community 157 - "Community 157"
-Cohesion: 0.67
+Cohesion: 0.5
 Nodes (3): critique, argumentHint, description
 
 ### Community 158 - "Community 158"
@@ -748,16 +755,8 @@ Cohesion: 0.5
 Nodes (3): pid, port, token
 
 ### Community 178 - "Community 178"
-Cohesion: 0.25
-Nodes (8): code:json ([{ "id": 1, "persona": "Juan Pérez", "dni": "12345678", "fec), code:json ([{ "dni": "12345678", "hora": "08:00", "fecha": "2024-01-15"), code:json ([{ "id": 1, "dni": null, "nombre": null, "fecha": "2024-06-1), code:json ({ "codigo": "P001", "cargo_estructural": "CE001", "cargo_des), `POST /personal/asistencia`, `POST /personal/buscar_por_plaza`, `POST /personal/buscar_vacantes`, `POST /personal/consultar_dni`
-
-### Community 185 - "Community 185"
-Cohesion: 0.22
-Nodes (5): chartData, coloresBorde, coloresFondo, store, totalEdad
-
-### Community 187 - "Community 187"
-Cohesion: 0.33
-Nodes (6): code:json ({ "dni": "12345678", "apaterno": "GARCIA", "amaterno": "LOPE), code:json ([{ "id": 1, "nombre": "Gerencia Municipal" }]), code:json ([{ "id": 1, "nombre": "Analista" }]), `POST /personal/activos_por_distrito`, `POST /personal/buscar_areas`, `POST /personal/buscar_cargos`
+Cohesion: 0.2
+Nodes (10): code:json ([{ "id": 1, "dni": null, "nombre": null, "fecha": "2024-06-1), code:json ({ "codigo": "P001", "cargo_estructural": "CE001", "cargo_des), code:json ({ "dni": "12345678", "apaterno": "GARCIA", "amaterno": "LOPE), code:json ([{ "id": 1, "nombre": "Gerencia Municipal" }]), code:json ([{ "id": 1, "nombre": "Analista" }]), `POST /personal/activos_por_distrito`, `POST /personal/buscar_areas`, `POST /personal/buscar_cargos` (+2 more)
 
 ### Community 191 - "Community 191"
 Cohesion: 0.2
@@ -779,10 +778,6 @@ Nodes (8): code:bash (# Get UX guidelines for animation and accessibility), code
 Cohesion: 0.29
 Nodes (7): Accessibility, Interaction, Layout, Light/Dark Mode, Pre-Delivery Checklist, Visual Quality, When to Use
 
-### Community 196 - "Community 196"
-Cohesion: 0.4
-Nodes (4): opciones, q, regimenes, string
-
 ### Community 197 - "Community 197"
 Cohesion: 0.4
 Nodes (5): code:bash (python3 --version || python --version), code:bash (brew install python3), code:bash (sudo apt update && sudo apt install python3), code:powershell (winget install Python.Python.3.12), Prerequisites
@@ -796,7 +791,7 @@ Cohesion: 0.67
 Nodes (3): Available Domains, Available Stacks, Search Reference
 
 ## Knowledge Gaps
-- **1035 isolated node(s):** `name`, `private`, `version`, `type`, `dev` (+1030 more)
+- **1040 isolated node(s):** `name`, `private`, `version`, `type`, `dev` (+1035 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **13 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
@@ -804,11 +799,11 @@ Nodes (3): Available Domains, Available Stacks, Search Reference
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `d` connect `Community 74` to `Community 11`?**
-  _High betweenness centrality (0.031) - this node is a cross-community bridge._
+  _High betweenness centrality (0.034) - this node is a cross-community bridge._
 - **What connects `name`, `private`, `version` to the rest of the system?**
-  _1056 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _1061 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Community 1` be split into smaller, more focused modules?**
-  _Cohesion score 0.09 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.12 - nodes in this community are weakly interconnected._
 - **Should `Community 2` be split into smaller, more focused modules?**
   _Cohesion score 0.05 - nodes in this community are weakly interconnected._
 - **Should `Community 3` be split into smaller, more focused modules?**

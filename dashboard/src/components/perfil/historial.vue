@@ -10,20 +10,20 @@
       <button
         v-if="!cargado"
         @click="cargar"
-        class="rounded-full flex items-center gap-1 px-2 py-1 text-gray-500 hover:bg-primary/10 hover:text-primary dark:text-gray-400 dark:hover:bg-primary/20 dark:hover:text-brand-300 transition-colors"
+        class="rounded-lg flex items-center gap-1.5 px-2.5 py-0.5 text-gray-550 border border-gray-200/60 dark:border-white/10 hover:bg-primary/5 hover:text-primary dark:text-gray-400 dark:hover:bg-primary/10 dark:hover:text-brand-300 transition-colors"
         title="Cargar historial">
         <RefreshCw class="h-3.5 w-3.5" :class="{ 'animate-spin': cargando }" />
-        <span class="text-2xs font-medium">Cargar</span>
+        <span class="text-[9px] font-bold uppercase tracking-wider">Cargar</span>
       </button>
     </template>
 
-    <div v-if="!cargado" class="text-sm text-gray-500 text-center py-4">Presiona "Cargar" para ver el historial de operaciones.</div>
+    <div v-if="!cargado" class="text-body-small text-gray-500 text-center py-4">Presiona "Cargar" para ver el historial de operaciones.</div>
 
     <div v-else-if="historialCambios.length === 0" class="flex flex-col items-center gap-2 py-6 text-center">
       <div class="h-10 w-10 rounded-xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
         <ClockIcon class="h-5 w-5 text-gray-400 dark:text-gray-500" />
       </div>
-      <p class="text-xs font-medium text-gray-400 dark:text-gray-500">Sin registros en el historial</p>
+      <p class="text-body-small font-medium text-gray-400 dark:text-gray-500">Sin registros en el historial</p>
     </div>
 
     <div v-else class="space-y-3 max-h-64 overflow-y-auto pr-1">
@@ -36,13 +36,13 @@
         </div>
         <div class="pb-4 min-w-0">
           <div class="flex items-center gap-2 flex-wrap">
-            <span class="text-2xs font-semibold uppercase px-1.5 py-0.5 rounded" :class="colorOperacion(item.operacion)">
+            <span class="text-body-tiny font-bold uppercase px-1.5 py-0.5 rounded tracking-wider" :class="colorOperacion(item.operacion)">
               {{ item.operacion }}
             </span>
-            <span class="text-2xs text-gray-400">{{ item.fecha }}</span>
+            <span class="text-body-tiny text-gray-400 font-medium">{{ item.fecha }}</span>
           </div>
-          <p class="text-sm text-gray-800 dark:text-white/90 mt-1 wrap-break-word">{{ item.detalle }}</p>
-          <p class="text-2xs text-gray-400 mt-0.5">por {{ item.nombre }}</p>
+          <p class="text-body-small font-medium text-gray-800 dark:text-white/90 mt-1 wrap-break-word">{{ item.detalle }}</p>
+          <p class="text-body-tiny text-gray-400 mt-0.5">por {{ item.nombre }}</p>
         </div>
       </div>
     </div>

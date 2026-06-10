@@ -6,13 +6,14 @@
     }"
     class="group relative flex cursor-pointer flex-col items-center overflow-hidden rounded-2xl border border-stroke bg-white p-6 shadow-default transition-all duration-300 hover:-translate-y-1 hover:shadow-xl dark:border-strokedark dark:bg-boxdark">
     <div class="absolute inset-x-0 top-0 h-24"></div>
-    <div class="relative z-10 mb-5 h-16 w-16 overflow-hidden rounded-full bg-white shadow-md dark:border-boxdark dark:bg-boxdark">
-      <img
-        :src="person.sexo === 'M' ? '/M.svg' : person.sexo === 'F' ? '/F.svg' : `https://ui-avatars.com/api/?name=${encodeURIComponent(person.nombre)}&background=random&color=fff&size=200`"
-        :alt="person.nombre"
-        class="h-full w-full object-cover"
-        :class="person.estado === 'activo' ? 'bg-green-200' : person.estado === 'inactivo' ? 'bg-red-100' : 'bg-purple-500'" />
-    </div>
+    <Avatar
+      :dni="person.dni"
+      :avatar="person.avatar"
+      :nombre="person.nombre"
+      :sexo="person.sexo"
+      size="xl"
+      class="mb-5 rounded-full shadow-md"
+    />
 
     <h4
       class="mb-1 w-full truncate text-center text-sm font-semibold text-black transition-colors group-hover:text-primary dark:text-white dark:group-hover:text-primary"
@@ -31,6 +32,7 @@
 
 <script setup lang="ts">
   import { IdCard } from 'lucide-vue-next'
+  import Avatar from '../ui/Avatar.vue'
   defineProps({
     person: {
       type: Object,
