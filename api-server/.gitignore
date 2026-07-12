@@ -1,22 +1,38 @@
+# Build
 /target
+api-server
+
+# Env / secrets
+.env
+
+# HTTP test files
 .http
 http
-api-server
-.http
-Dockerfile
-Dockerfile
-Dockerfile
-.env
-.agent/
-.agent
-.agents/
-.agents
-.claude/
-.claude
-.gemini/
-.gemini
-.antigravity/
-.antigravity
 
+# Docker
+Dockerfile
+
+# AI tool folders
+.agent/
+.agents/
+.claude/
+.commandcode/
+.gemini/
+.antigravity/
+
+# AI tool docs
+GEMINI.md
+CLAUDE.md
+AGENTS.md
+.cursorrules
+.cursorignore
+
+# Generated TypeScript bindings
+/bindings
+
+# AI-generated docs
+/docs
+
+# Graphify output (keep HTML)
 graphify-out/*
 !graphify-out/*.html

@@ -3,12 +3,9 @@ use actix_web::{App, HttpServer, middleware::Logger, web};
 use dotenv::from_filename;
 use sqlx::mysql::{MySqlPool, MySqlPoolOptions};
 use std::time::Duration;
-mod handlers;
-mod middleware;
-mod models;
-mod routes;
-mod repositories;
-mod services;
+mod domain;
+mod application;
+mod infrastructure;
 pub struct AppState {
     pub db: MySqlPool,
     pub cliente_http: reqwest::Client,
@@ -64,11 +61,11 @@ async fn main() -> std::io::Result<()> {
                 db: pool.clone(),
                 cliente_http: reqwest::Client::new(),
             }))
-            .configure(routes::login::init_routes)
-            .configure(routes::personal::init_routes)
-            .configure(routes::dash::init_routes)
-            .configure(routes::fileserver::init_routes)
-            .configure(routes::usuarios::init_routes)
+            .configure(crate::infrastructure::web::routes::login::init_routes)
+            .configure(crate::infrastructure::web::routes::personal::init_routes)
+            .configure(crate::infrastructure::web::routes::dash::init_routes)
+            .configure(crate::infrastructure::web::routes::fileserver::init_routes)
+            .configure(crate::infrastructure::web::routes::usuarios::init_routes)
             .wrap(Logger::default())
             .wrap(cors)
     })
