@@ -1,64 +1,69 @@
-use crate::infrastructure::web::middleware::error::ApiError;
 use crate::domain::entities::login::Usuario;
 use crate::infrastructure::db::repositories::usuario_repo;
+use crate::infrastructure::web::middleware::error::ApiError;
 use sqlx::MySqlPool;
+
 pub enum LoginResult {
     Success(Usuario),
-    InvalidPassword,
     UserNotFound,
+    PendingApproval,
+    AccountRejected,
 }
-pub async fn authenticate(
+
+pub async fn authenticate_google(
     db: &MySqlPool,
-    nickname: &str,
-    password: &str,
+    google_sub: &str,
+    email: &str,
 ) -> Result<LoginResult, ApiError> {
-    let user = usuario_repo::find_by_nickname(db, nickname)
-        .await
-        .map_err(|e| {
+    let user = match usuario_repo::find_by_google_sub(db, google_sub).await {
+        Ok(Some(u)) => Some(u),
+        Ok(None) => usuario_repo::find_by_email(db, email).await.map_err(|e| {
             eprintln!("Database error: {:?}", e);
-            ApiError::InternalError("Database consulta malformada".into())
-        })?;
-    match user {
-        Some(u) => {
-            if u.pass.as_deref() != Some(password) {
-                Ok(LoginResult::InvalidPassword)
-            } else {
-                Ok(LoginResult::Success(u))
-            }
-        }
-        None => Ok(LoginResult::UserNotFound),
-    }
-}
-pub async fn change_password(
-    db: &MySqlPool,
-    id: i32,
-    oldpass: &str,
-    newpass: &str,
-) -> Result<(), ApiError> {
-    let db_pass = usuario_repo::get_password_by_id(db, id)
-        .await
-        .map_err(|e| {
+            ApiError::InternalError("Error al consultar la base de datos".into())
+        })?,
+        Err(e) => {
             eprintln!("Database error: {:?}", e);
-            ApiError::InternalError("Database consulta malformada".into())
-        })?;
-    let db_pass = match db_pass {
-        Some(p) => p,
-        None => {
-            return Err(ApiError::Unauthorized(
-                "Usuario no encontrado o sin contraseña".into(),
+            return Err(ApiError::InternalError(
+                "Error al consultar la base de datos".into(),
             ));
         }
     };
-    if db_pass != oldpass {
-        return Err(ApiError::Unauthorized(
-            "La contraseña no es correcta".into(),
+
+    match user {
+        Some(u) => match u.status.to_uppercase().as_str() {
+            "APPROVED" => Ok(LoginResult::Success(u)),
+            "PENDING" => Ok(LoginResult::PendingApproval),
+            "REJECTED" => Ok(LoginResult::AccountRejected),
+            _ => Ok(LoginResult::PendingApproval),
+        },
+        None => Ok(LoginResult::UserNotFound),
+    }
+}
+
+pub async fn register_google(
+    db: &MySqlPool,
+    google_sub: &str,
+    email: &str,
+    full_name: &str,
+    picture_url: Option<&str>,
+) -> Result<u64, ApiError> {
+    if let Ok(Some(_)) = usuario_repo::find_by_google_sub(db, google_sub).await {
+        return Err(ApiError::BadRequest(
+            "El usuario ya se encuentra registrado".into(),
         ));
     }
-    usuario_repo::update_password(db, id, newpass)
+    if let Ok(Some(_)) = usuario_repo::find_by_email(db, email).await {
+        return Err(ApiError::BadRequest(
+            "El correo ya se encuentra registrado".into(),
+        ));
+    }
+
+    let user_id = usuario_repo::create_user(db, google_sub, email, full_name, picture_url)
         .await
         .map_err(|e| {
-            eprintln!("Database error: {:?}", e);
-            ApiError::InternalError("No se pudo actualizar la contraseña".into())
+            eprintln!("Database error al registrar usuario: {:?}", e);
+            ApiError::InternalError("No se pudo registrar el usuario".into())
         })?;
-    Ok(())
+
+    Ok(user_id)
 }

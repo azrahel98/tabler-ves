@@ -10,6 +10,7 @@ pub struct Cumpleaños {
     pub nacimiento: NaiveDate,
     pub edad: Option<i64>,
     pub avatar: Option<String>,
+    pub regimen: Option<String>,
 }
 #[derive(Serialize, Clone, ts_rs::TS)]
 #[ts(export)]
@@ -70,3 +71,25 @@ pub struct ReporteDocumento {
     pub nombre: Option<String>,
     pub sigla: Option<String>,
 }
+
+#[derive(Debug, Deserialize, Serialize, Clone, sqlx::FromRow, ts_rs::TS)]
+#[ts(export)]
+pub struct Alerta70Anos {
+    pub dni: String,
+    pub nombre: Option<String>,
+    pub nacimiento: NaiveDate,
+    pub edad_actual: i64,
+    pub fecha_70_anos: NaiveDate,
+    pub fecha_limite_mes: NaiveDate,
+    pub fecha_extension_fin_ano: NaiveDate,
+    pub dias_para_70: i64,
+    pub dias_para_cese_mes: i64,
+    pub dias_para_cese_extension: i64,
+    pub estado_alerta: String,
+    pub area: String,
+    pub cargo: String,
+    pub regimen: Option<String>,
+    pub plaza: Option<String>,
+    pub avatar: Option<String>,
+}
+

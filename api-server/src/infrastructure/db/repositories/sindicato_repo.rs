@@ -35,6 +35,7 @@ pub async fn insertar_vinculo_sindicato(
     .await?;
     Ok(result.rows_affected())
 }
+
 pub struct InfoSindicato {
     pub vinculo_id: Option<i32>,
     pub sindicato_id: Option<i32>,
@@ -84,7 +85,7 @@ pub async fn registrar_desafiliacion(
     .await?;
     let doc_id = doc_result.last_insert_id();
     let result = sqlx::query(
-        "UPDATE vinculo_sindicato SET documento_desafiliacion = ? WHERE vinculo_id = ?"
+        "UPDATE vinculo_sindicato SET documento_desafiliacion = ? WHERE vinculo_id = ?",
     )
     .bind(doc_id)
     .bind(vinculo_id)

@@ -10,7 +10,8 @@
       <button
         v-if="esAdmin"
         @click="openModal(infoBancaria ? true : false)"
-        class="rounded-lg flex items-center gap-1.5 px-2.5 py-0.5 text-gray-505 border border-gray-200/60 dark:border-white/10 hover:bg-primary/5 hover:text-primary dark:text-gray-400 dark:hover:bg-primary/10 dark:hover:text-brand-300 transition-colors"
+        class="rounded-lg flex items-center gap-1.5 px-2.5 py-0.5 text-gray-500 border border-gray-200/60 dark:border-white/10 hover:bg-primary/5 hover:text-primary dark:text-gray-400 dark:hover:bg-primary/10 dark:hover:text-brand-300 transition-colors touch-target-adapt"
+        :aria-label="infoBancaria ? 'Editar información bancaria' : 'Agregar información bancaria'"
         :title="infoBancaria ? 'Editar Información' : 'Agregar Información'">
         <Pencil v-if="infoBancaria" class="h-3 w-3" />
         <Plus v-else class="h-3 w-3" />
@@ -20,19 +21,19 @@
 
     <!-- Contenido -->
     <div v-if="infoBancaria">
-      <div class="relative rounded-xl p-4 overflow-hidden text-white shadow-lg" style="background: linear-gradient(135deg, #2563eb 0%, #3b82f6 50%, #60a5fa 100%);">
+      <div class="relative rounded-xl p-4 overflow-hidden text-white shadow-lg bg-gradient-to-br from-brand-600 to-brand-800">
         <!-- Decoración de tarjeta de crédito -->
         <div class="absolute -top-6 -right-6 h-28 w-28 rounded-full bg-white/10"></div>
         <div class="absolute -bottom-8 -right-2 h-36 w-36 rounded-full bg-white/[0.07]"></div>
 
         <div class="relative flex items-center justify-between mb-3.5">
           <!-- Chip simulado -->
-          <div class="h-7 w-10 rounded-md bg-gradient-to-br from-yellow-300 via-amber-400 to-yellow-500 grid grid-cols-3 grid-rows-3 gap-px p-1 shadow-inner opacity-90">
-            <div class="col-span-3 rounded-sm bg-yellow-200/60"></div>
-            <div class="rounded-sm bg-yellow-200/60"></div>
-            <div class="rounded-sm bg-yellow-400/80"></div>
-            <div class="rounded-sm bg-yellow-200/60"></div>
-            <div class="col-span-3 rounded-sm bg-yellow-200/60"></div>
+          <div class="h-7 w-10 rounded-md bg-gradient-to-br from-warning-300 via-warning-400 to-warning-500 grid grid-cols-3 grid-rows-3 gap-px p-1 shadow-inner opacity-90">
+            <div class="col-span-3 rounded-sm bg-warning-200/60"></div>
+            <div class="rounded-sm bg-warning-200/60"></div>
+            <div class="rounded-sm bg-warning-400/80"></div>
+            <div class="rounded-sm bg-warning-200/60"></div>
+            <div class="col-span-3 rounded-sm bg-warning-200/60"></div>
           </div>
           <span class="text-[9px] font-bold uppercase tracking-widest text-white/80 bg-white/10 px-2 py-0.5 rounded-md">
             {{ infoBancaria.tipo_cuenta }}
@@ -53,15 +54,15 @@
             <p class="text-body-small font-semibold text-white uppercase tracking-wider">{{ infoBancaria.banco }}</p>
           </div>
           <span
-            class="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[9px] font-bold uppercase tracking-widest bg-emerald-500/20 text-emerald-100 ring-1 ring-inset ring-emerald-400/30"
+            class="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[9px] font-bold uppercase tracking-widest bg-success-500/20 text-success-100 ring-1 ring-inset ring-success-400/30"
             v-if="infoBancaria.estado === 1">
-            <span class="h-1 w-1 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span class="h-1 w-1 rounded-full bg-success-400 animate-pulse"></span>
             Activa
           </span>
           <span
-            class="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[9px] font-bold uppercase tracking-widest bg-red-500/20 text-red-100 ring-1 ring-inset ring-red-400/30"
+            class="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[9px] font-bold uppercase tracking-widest bg-error-500/20 text-error-100 ring-1 ring-inset ring-error-400/30"
             v-else>
-            <span class="h-1 w-1 rounded-full bg-red-400"></span>
+            <span class="h-1 w-1 rounded-full bg-error-400"></span>
             Inactiva
           </span>
         </div>
@@ -75,10 +76,11 @@
         </div>
         <button
           @click="copiarCCI"
-          class="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
+          class="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5 hover:text-gray-700 dark:hover:text-gray-300 transition-colors touch-target-adapt"
+          :aria-label="copiado ? 'Número CCI copiado correctamente' : 'Copiar número CCI al portapapeles'"
           :title="copiado ? 'Copiado!' : 'Copiar CCI'">
           <Transition name="icon-swap" mode="out-in">
-            <Check v-if="copiado" key="check" class="h-4 w-4 text-emerald-500" />
+            <Check v-if="copiado" key="check" class="h-4 w-4 text-success-500" />
             <Copy v-else key="copy" class="h-3.5 w-3.5" />
           </Transition>
         </button>
@@ -148,3 +150,17 @@
     }
   }
 </script>
+
+<style scoped>
+  /* Ajuste de touch target premium para botones pequeños en pantallas táctiles */
+  @media (pointer: coarse) {
+    .touch-target-adapt {
+      min-width: 44px;
+      min-height: 44px;
+      padding: 10px !important;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+</style>

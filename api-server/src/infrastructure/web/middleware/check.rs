@@ -1,3 +1,5 @@
+use super::error::ApiError;
+use crate::infrastructure::web::middleware::jwt::Claims;
 use actix_web::{
     Error, HttpMessage, ResponseError,
     body::EitherBody,
@@ -11,8 +13,6 @@ use std::{
     future::{Ready, ready},
     rc::Rc,
 };
-use crate::infrastructure::web::middleware::jwt::Claims;
-use super::error::ApiError;
 pub struct JWT;
 impl<S, B> Transform<S, ServiceRequest> for JWT
 where
@@ -45,6 +45,7 @@ where
     type Future = LocalBoxFuture<'static, Result<Self::Response, Self::Error>>;
     actix_web::dev::forward_ready!(service);
     fn call(&self, request: ServiceRequest) -> Self::Future {
+        println!("Aqui esto");
         let headers = request.headers().clone();
         let token_header = headers.get("token");
         if token_header.is_none() {

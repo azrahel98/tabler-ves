@@ -3,9 +3,11 @@ use crate::infrastructure::web::middleware::{error::ApiError, jwt::Claims};
 use actix_files::NamedFile;
 use actix_multipart::Multipart;
 use actix_web::{Either, HttpMessage, HttpRequest, HttpResponse, Responder, web};
+use chrono::NaiveDate;
 use futures_util::TryStreamExt;
 use serde::Deserialize;
 use serde_json::json;
+use sqlx::Row;
 use std::io::Write;
 use std::path::PathBuf;
 use uuid::Uuid;
@@ -18,7 +20,7 @@ pub async fn upload_file(
     let mut dni_asociado: Option<String> = None;
     let claims = req.extensions().get::<Claims>().cloned();
     let usuario_subida = claims
-        .map(|c| c.nombre)
+        .map(|c| c.full_name.clone())
         .unwrap_or_else(|| "Desconocido".to_string());
     let mut saved_files = Vec::new();
     let upload_dir_str = std::env::var("UPLOAD_DIR").unwrap_or_else(|_| "./uploads".to_string());
@@ -256,47 +258,55 @@ pub async fn documentos_por_dni(
     path: web::Path<String>,
 ) -> Result<impl Responder, ApiError> {
     let dni = path.into_inner();
-    let records = sqlx::query!(
+    let records = sqlx::query(
         r#"
         SELECT
   d.id,
-  CONCAT(td.nombre, ' N° ', d.numero, '-', d.year, '-', td.sigla) AS descripcion_doc,
+  CONCAT(td.nombre, ' N° ', COALESCE(d.numero, ''), '-', COALESCE(d.year, ''), CASE WHEN COALESCE(da.sigla, va.sigla) IS NOT NULL THEN CONCAT('-', COALESCE(da.sigla, va.sigla)) ELSE '' END) AS descripcion_doc,
   d.fecha,
   d.descripcion
 FROM
   vinculo v
   LEFT JOIN documento d   ON d.id = v.doc_ingreso_id
-  LEFT JOIN tipodocumento td ON td.id = d.tipo_documento_id
+  LEFT JOIN tipo_documento td ON td.id = d.tipo_documento_id
+  LEFT JOIN area da ON da.id = d.area_id
+  LEFT JOIN area va ON va.id = v.area_id
 WHERE
   v.dni = ?
   AND d.id IS NOT NULL and d.numero is not null
 UNION ALL
 SELECT
   ds.id,
-  CONCAT(tds.nombre, ' N° ', ds.numero, '-', ds.year, '-', tds.sigla) AS descripcion_doc,
+  CONCAT(tds.nombre, ' N° ', COALESCE(ds.numero, ''), '-', COALESCE(ds.year, ''), CASE WHEN COALESCE(dsa.sigla, vsa.sigla) IS NOT NULL THEN CONCAT('-', COALESCE(dsa.sigla, vsa.sigla)) ELSE '' END) AS descripcion_doc,
   ds.fecha,
   ds.descripcion
 FROM
   vinculo v
   LEFT JOIN documento ds   ON ds.id = v.doc_salida_id
-  LEFT JOIN tipodocumento tds ON tds.id = ds.tipo_documento_id
+  LEFT JOIN tipo_documento tds ON tds.id = ds.tipo_documento_id
+  LEFT JOIN area dsa ON dsa.id = ds.area_id
+  LEFT JOIN area vsa ON vsa.id = v.area_id
 WHERE
   v.dni = ?
   AND ds.id IS NOT NULL and ds.numero is not null;
         "#,
-        dni,
-        dni,
     )
+    .bind(&dni)
+    .bind(&dni)
     .fetch_all(&state.db)
     .await
     .map_err(|e| ApiError::InternalError(format!("Database error: {}", e)))?;
     let mut results = Vec::new();
     for rec in records {
+        let id: i32 = rec.get("id");
+        let descripcion_doc: Option<String> = rec.try_get("descripcion_doc").ok();
+        let fecha: Option<NaiveDate> = rec.try_get("fecha").ok();
+        let descripcion: Option<String> = rec.try_get("descripcion").ok();
         results.push(json!({
-            "id": rec.id,
-            "sigla": rec.descripcion_doc,
-            "fecha": rec.fecha,
-            "descripcion": rec.descripcion,
+            "id": id,
+            "sigla": descripcion_doc,
+            "fecha": fecha,
+            "descripcion": descripcion,
         }));
     }
     Ok(HttpResponse::Ok().json(results))
@@ -307,6 +317,7 @@ pub async fn upload_batch(
     req: HttpRequest,
 ) -> Result<impl Responder, ApiError> {
     let mut tipo_documento_id: Option<i32> = None;
+    let mut area_id: Option<i32> = None;
     let mut numero: Option<String> = None;
     let mut year: Option<i32> = None;
     let mut fecha: Option<String> = None;
@@ -316,7 +327,7 @@ pub async fn upload_batch(
     let mut dnis: Vec<String> = Vec::new();
     let claims = req.extensions().get::<Claims>().cloned();
     let usuario_subida = claims
-        .map(|c| c.nombre)
+        .map(|c| c.full_name.clone())
         .unwrap_or_else(|| "Desconocido".to_string());
     let mut saved_file: Option<(String, String, String)> = None;
     let upload_dir_str = std::env::var("UPLOAD_DIR").unwrap_or_else(|_| "./uploads".to_string());
@@ -345,6 +356,11 @@ pub async fn upload_batch(
             "tipo_documento_id" => {
                 if let Ok(s) = String::from_utf8(val) {
                     tipo_documento_id = s.parse().ok();
+                }
+            },
+            "area_id" | "area" => {
+                if let Ok(s) = String::from_utf8(val) {
+                    area_id = s.parse().ok();
                 }
             },
             "numero" => {
@@ -422,18 +438,19 @@ pub async fn upload_batch(
         return Err(ApiError::InternalError("Debe proporcionar al menos un DNI".to_string()));
     }
     let mut tx = data.db.begin().await.map_err(|e| ApiError::InternalError(format!("Transaction error: {}", e)))?;
-    let doc_result = sqlx::query!(
+    let doc_result = sqlx::query(
         r#"
-        INSERT INTO documento (tipo_documento_id, numero, year, fecha, fecha_valida, descripcion)
-        VALUES (?, ?, ?, ?, ?, ?)
+        INSERT INTO documento (tipo_documento_id, area_id, numero, year, fecha, fecha_valida, descripcion)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
         "#,
-        tipo_documento_id,
-        numero,
-        year,
-        fecha,
-        fecha_valida,
-        descripcion
     )
+    .bind(tipo_documento_id)
+    .bind(area_id)
+    .bind(numero.as_deref().and_then(|n| n.parse::<i32>().ok()))
+    .bind(year)
+    .bind(&fecha)
+    .bind(&fecha_valida)
+    .bind(&descripcion)
     .execute(&mut *tx)
     .await
     .map_err(|e| ApiError::InternalError(format!("Database error creating documento: {}", e)))?;
@@ -574,7 +591,7 @@ pub async fn registrar_url(
     }
     let claims = req.extensions().get::<Claims>().cloned();
     let usuario_subida = claims
-        .map(|c| c.nombre)
+        .map(|c| c.full_name.clone())
         .unwrap_or_else(|| "Desconocido".to_string());
     let extension = "pdf";
     let result = sqlx::query!(

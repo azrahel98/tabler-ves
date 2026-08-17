@@ -229,6 +229,56 @@ pub async fn eliminar_sindicato(
     }
     Ok(HttpResponse::Ok().json("Afiliación sindical eliminada"))
 }
+
+pub async fn obtener_documento_por_id(
+    data: web::Data<AppState>,
+    path: web::Path<i32>,
+) -> Result<impl Responder, ApiError> {
+    let id = path.into_inner();
+    let doc_entity = documento_service::obtener_documento_por_id(&data.db, id).await?;
+    let doc_web: crate::infrastructure::web::models::personal::Documento = doc_entity.into();
+    Ok(HttpResponse::Ok().json(doc_web))
+}
+
+#[derive(Deserialize, Validate)]
+pub struct CrearDocumentoBody {
+    pub dni: Option<String>,
+    #[validate(nested)]
+    pub documento: Documento,
+}
+
+pub async fn crear_documento(
+    data: web::Data<AppState>,
+    body: web::Json<CrearDocumentoBody>,
+    req: HttpRequest,
+) -> Result<impl Responder, ApiError> {
+    validar(&body.0)?;
+    let doc_entity = body.documento.clone().into();
+    let new_id = documento_service::crear_documento(&data.db, &doc_entity).await?;
+    if let Some(ref dni) = body.dni {
+        let _ = registrar_historial(
+            &req,
+            &data.db,
+            "crear documento",
+            dni,
+            Some(serde_json::json!({
+                "id": new_id,
+                "tipo": body.documento.tipo,
+                "area_id": body.documento.area_id,
+                "numero": body.documento.numero,
+                "año": body.documento.año,
+                "fecha": body.documento.fecha,
+                "descripcion": body.documento.descripcion,
+            })),
+        )
+        .await;
+    }
+    Ok(HttpResponse::Created().json(serde_json::json!({
+        "message": "Documento creado correctamente",
+        "id": new_id
+    })))
+}
+
 #[derive(Deserialize, Validate)]
 pub struct EditarDocumentoBody {
     #[validate(custom(function = "crate::infrastructure::web::models::personal::es_dni_valido"))]
@@ -253,6 +303,31 @@ pub async fn editar_documento(
         let _ = registrar_historial(&req, &data.db, accion, &dni, Some(diff)).await;
     }
     Ok(HttpResponse::Ok().json("Documento actualizado"))
+}
+
+pub async fn eliminar_documento(
+    data: web::Data<AppState>,
+    path: web::Path<i32>,
+    req: HttpRequest,
+) -> Result<impl Responder, ApiError> {
+    let id = path.into_inner();
+    let doc_eliminado = documento_service::eliminar_documento(&data.db, id).await?;
+    let _ = registrar_historial(
+        &req,
+        &data.db,
+        "eliminar documento",
+        "00000000",
+        Some(serde_json::json!({
+            "id": id,
+            "tipo": doc_eliminado.tipo,
+            "area_id": doc_eliminado.area_id,
+            "numero": doc_eliminado.numero,
+            "año": doc_eliminado.año,
+            "descripcion": doc_eliminado.descripcion,
+        })),
+    )
+    .await;
+    Ok(HttpResponse::Ok().json("Documento eliminado correctamente"))
 }
 pub async fn registrar_trabajador(
     data: web::Data<AppState>,
@@ -300,11 +375,12 @@ pub async fn registrar_trabajador(
     .map_err(|e| ApiError::InternalError(format!("Upsert Persona error: {}", e)))?;
     let doc_result = sqlx::query(
         r#"
-        INSERT INTO documento (tipo_documento_id, numero, year, fecha, fecha_valida, descripcion)
-        VALUES (?, ?, ?, ?, ?, ?)
+        INSERT INTO documento (tipo_documento_id, area_id, numero, year, fecha, fecha_valida, descripcion)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
         "#,
     )
     .bind(&body.documento.tipo)
+    .bind(body.documento.area_id.unwrap_or(body.area))
     .bind(body.documento.numero)
     .bind(body.documento.año)
     .bind(&body.documento.fecha)
@@ -424,11 +500,12 @@ pub async fn renuncia_por_vinculo(
         .map_err(|e| ApiError::InternalError(format!("DB transaction begin error: {}", e)))?;
     let insert_result = sqlx::query(
         r#"
-        INSERT INTO documento (tipo_documento_id, numero, year, fecha, fecha_valida, descripcion)
-        VALUES (?, ?, ?, ?, ?, ?)
+        INSERT INTO documento (tipo_documento_id, area_id, numero, year, fecha, fecha_valida, descripcion)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
         "#,
     )
     .bind(&doc.tipo)
+    .bind(doc.area_id)
     .bind(doc.numero)
     .bind(doc.año)
     .bind(&doc.fecha)
@@ -531,11 +608,12 @@ pub async fn upsert_evento_vinculo(
     if let Some(ref doc_inicio) = payload.documento_inicio {
         let doc_id = sqlx::query(
             r#"
-            INSERT INTO documento (tipo_documento_id, numero, year, fecha, fecha_valida, descripcion)
-            VALUES (?, ?, ?, ?, ?, ?)
+            INSERT INTO documento (tipo_documento_id, area_id, numero, year, fecha, fecha_valida, descripcion)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
             "#,
         )
         .bind(&doc_inicio.tipo)
+        .bind(doc_inicio.area_id.or(payload.nueva_area_id))
         .bind(doc_inicio.numero)
         .bind(doc_inicio.año)
         .bind(&doc_inicio.fecha)
@@ -576,11 +654,12 @@ pub async fn upsert_evento_vinculo(
         })?;
         let doc_salida_id = sqlx::query(
             r#"
-            INSERT INTO documento (tipo_documento_id, numero, year, fecha, fecha_valida, descripcion)
-            VALUES (?, ?, ?, ?, ?, ?)
+            INSERT INTO documento (tipo_documento_id, area_id, numero, year, fecha, fecha_valida, descripcion)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
             "#,
         )
         .bind(&doc_salida.tipo)
+        .bind(doc_salida.area_id)
         .bind(doc_salida.numero)
         .bind(doc_salida.año)
         .bind(&doc_salida.fecha)
@@ -805,11 +884,12 @@ pub async fn registrar_cambio_area(
     }
     let documento_id = sqlx::query(
         r#"
-        INSERT INTO documento (tipo_documento_id, numero, year, fecha, fecha_valida, descripcion)
-        VALUES (?, ?, ?, ?, ?, ?)
+        INSERT INTO documento (tipo_documento_id, area_id, numero, year, fecha, fecha_valida, descripcion)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
         "#,
     )
     .bind(&payload.documento.tipo)
+    .bind(payload.documento.area_id.unwrap_or(payload.nueva_area_id))
     .bind(payload.documento.numero)
     .bind(payload.documento.año)
     .bind(&payload.documento.fecha)
@@ -967,7 +1047,7 @@ pub async fn buscar_por_plaza(
 }
 pub async fn buscar_areas(data: web::Data<AppState>) -> Result<impl Responder, ApiError> {
     let areas =
-        sqlx::query("SELECT id, nombre,activo,nivel FROM area where activo = true ORDER BY nombre")
+        sqlx::query("SELECT id, nombre, activo, nivel, sigla FROM area WHERE activo = 1 ORDER BY nombre")
             .fetch_all(&data.db)
             .await
             .map_err(|e| {
@@ -977,11 +1057,15 @@ pub async fn buscar_areas(data: web::Data<AppState>) -> Result<impl Responder, A
     let resultado: Vec<Value> = areas
         .iter()
         .map(|row| {
+            let activo = row
+                .try_get::<bool, _>("activo")
+                .unwrap_or_else(|_| row.try_get::<i8, _>("activo").map(|v| v != 0).unwrap_or(true));
             json!({
                 "id": row.get::<i32, _>("id"),
                 "nombre": row.get::<String, _>("nombre"),
-                "activo": row.get::<bool, _>("activo"),
-                "nivel": row.get::<Option<i32>, _>("nivel"),
+                "activo": activo,
+                "nivel": row.try_get::<Option<i32>, _>("nivel").unwrap_or_default(),
+                "sigla": row.try_get::<Option<String>, _>("sigla").unwrap_or_default(),
             })
         })
         .collect();
@@ -1021,16 +1105,20 @@ pub async fn activos_por_distrito(
     let key = crate::infrastructure::db::repositories::get_db_key();
     let distrito = query.distrito.trim();
     let sin_asignar = distrito.eq_ignore_ascii_case("SIN ASIGNAR");
-    let base_query = r#"
+
+    let base_personas_query = r#"
 SELECT
   CAST(p.dni AS CHAR)                                             AS dni,
   CONCAT(p.apaterno, ' ', p.amaterno, ' ', p.nombre)              AS nombre,
   dc.fecha                                                        AS ingreso,
-  cast(aes_decrypt(p.direccion,?) as char)  as direccion,
-  ar.nombre                                                       AS area,
-  cr.nombre                                                       AS cargo,
+  cast(aes_decrypt(p.direccion,?) as char)                        AS direccion,
+  ar.id                                                           AS area_id,
+  ar.nombre                                                       AS area_nombre,
+  cr.id                                                           AS cargo_id,
+  cr.nombre                                                       AS cargo_nombre,
   s.nombre                                                        AS sindicato,
-  rg.nombre                                                       AS regimen,
+  rg.id                                                           AS regimen_id,
+  rg.nombre                                                       AS regimen_nombre,
   COALESCE(NULLIF(p.distrito, ''), 'SIN ASIGNAR')                 AS distrito,
   p.avatar                                                        AS avatar
 FROM
@@ -1046,42 +1134,155 @@ FROM
 WHERE
   v.estado = 'activo'
 "#;
-    let filas = if sin_asignar {
+
+    let filas_personas = if sin_asignar {
         sqlx::query(&format!(
-            "{base_query} AND (p.distrito IS NULL OR p.distrito = '')"
+            "{base_personas_query} AND (p.distrito IS NULL OR p.distrito = '')"
         ))
         .bind(&key)
         .fetch_all(&data.db)
         .await
     } else {
-        sqlx::query(&format!("{base_query} AND UPPER(p.distrito) = UPPER(?)"))
-            .bind(&key)
-            .bind(distrito)
-            .fetch_all(&data.db)
-            .await
+        sqlx::query(&format!(
+            "{base_personas_query} AND UPPER(p.distrito) = UPPER(?)"
+        ))
+        .bind(&key)
+        .bind(distrito)
+        .fetch_all(&data.db)
+        .await
     }
     .map_err(|e| {
         eprintln!("Database error: {:?}", e);
         ApiError::InternalError("Error al obtener activos por distrito".into())
     })?;
-    let resultado: Vec<Value> = filas
+
+    let base_areas_query = r#"
+SELECT
+  ar.id                                                           AS id,
+  ar.nombre                                                       AS nombre,
+  COUNT(*)                                                        AS cantidad
+FROM
+  vinculo v
+  INNER JOIN persona p ON v.dni = p.dni
+  INNER JOIN area ar ON v.area_id = ar.id
+WHERE
+  v.estado = 'activo'
+"#;
+
+    let filas_areas = if sin_asignar {
+        sqlx::query(&format!(
+            "{base_areas_query} AND (p.distrito IS NULL OR p.distrito = '') GROUP BY ar.id, ar.nombre ORDER BY cantidad DESC, ar.nombre ASC"
+        ))
+        .fetch_all(&data.db)
+        .await
+    } else {
+        sqlx::query(&format!(
+            "{base_areas_query} AND UPPER(p.distrito) = UPPER(?) GROUP BY ar.id, ar.nombre ORDER BY cantidad DESC, ar.nombre ASC"
+        ))
+        .bind(distrito)
+        .fetch_all(&data.db)
+        .await
+    }
+    .map_err(|e| {
+        eprintln!("Database error al obtener áreas por distrito: {:?}", e);
+        ApiError::InternalError("Error al obtener áreas por distrito".into())
+    })?;
+
+    let base_edad_query = r#"
+SELECT
+  CASE
+    WHEN TIMESTAMPDIFF(YEAR, p.fecha_nacimiento, CURRENT_DATE) BETWEEN 18 AND 25 THEN '18-25'
+    WHEN TIMESTAMPDIFF(YEAR, p.fecha_nacimiento, CURRENT_DATE) BETWEEN 26 AND 35 THEN '26-35'
+    WHEN TIMESTAMPDIFF(YEAR, p.fecha_nacimiento, CURRENT_DATE) BETWEEN 36 AND 45 THEN '36-45'
+    WHEN TIMESTAMPDIFF(YEAR, p.fecha_nacimiento, CURRENT_DATE) BETWEEN 46 AND 55 THEN '46-55'
+    ELSE '55+'
+  END AS nombre,
+  COUNT(*) AS cantidad
+FROM
+  vinculo v
+  INNER JOIN persona p ON v.dni = p.dni
+WHERE
+  v.estado = 'activo'
+"#;
+
+    let filas_edad = if sin_asignar {
+        sqlx::query(&format!(
+            "{base_edad_query} AND (p.distrito IS NULL OR p.distrito = '') GROUP BY 1 ORDER BY MIN(TIMESTAMPDIFF(YEAR, p.fecha_nacimiento, CURRENT_DATE))"
+        ))
+        .fetch_all(&data.db)
+        .await
+    } else {
+        sqlx::query(&format!(
+            "{base_edad_query} AND UPPER(p.distrito) = UPPER(?) GROUP BY 1 ORDER BY MIN(TIMESTAMPDIFF(YEAR, p.fecha_nacimiento, CURRENT_DATE))"
+        ))
+        .bind(distrito)
+        .fetch_all(&data.db)
+        .await
+    }
+    .map_err(|e| {
+        eprintln!("Database error al obtener rangos de edad por distrito: {:?}", e);
+        ApiError::InternalError("Error al obtener rangos de edad por distrito".into())
+    })?;
+
+    let personas: Vec<Value> = filas_personas
         .iter()
         .map(|row| {
-            let ingreso: NaiveDate = row.get("ingreso");
+            let ingreso: Option<NaiveDate> = row.try_get("ingreso").ok();
             json!({
                 "dni": row.get::<String, _>("dni"),
                 "nombre": row.get::<String, _>("nombre"),
-                "ingreso": ingreso.to_string(),
+                "ingreso": ingreso.map(|d| d.to_string()),
                 "direccion": row.try_get::<Option<String>, _>("direccion").unwrap_or(None),
-                "area": row.get::<String, _>("area"),
-                "cargo": row.get::<String, _>("cargo"),
+                "area": {
+                    "id": row.get::<i32, _>("area_id"),
+                    "nombre": row.get::<String, _>("area_nombre"),
+                },
+                "cargo": {
+                    "id": row.get::<i32, _>("cargo_id"),
+                    "nombre": row.get::<String, _>("cargo_nombre"),
+                },
+                "regimen": {
+                    "id": row.get::<i32, _>("regimen_id"),
+                    "nombre": row.get::<String, _>("regimen_nombre"),
+                },
                 "sindicato": row.try_get::<Option<String>, _>("sindicato").unwrap_or(None),
-                "regimen": row.get::<String, _>("regimen"),
                 "distrito": row.get::<String, _>("distrito"),
                 "avatar": row.try_get::<Option<String>, _>("avatar").unwrap_or(None),
             })
         })
         .collect();
+
+    let areas: Vec<Value> = filas_areas
+        .iter()
+        .map(|row| {
+            json!({
+                "id": row.get::<i32, _>("id"),
+                "nombre": row.get::<String, _>("nombre"),
+                "cantidad": row.get::<i64, _>("cantidad"),
+            })
+        })
+        .collect();
+
+    let rangos_edad: Vec<Value> = filas_edad
+        .iter()
+        .map(|row| {
+            json!({
+                "nombre": row.get::<String, _>("nombre"),
+                "cantidad": row.get::<i64, _>("cantidad"),
+            })
+        })
+        .collect();
+
+    let total = personas.len();
+
+    let resultado = json!({
+        "distrito": if sin_asignar { "SIN ASIGNAR" } else { distrito },
+        "total": total,
+        "areas": areas,
+        "rangos_edad": rangos_edad,
+        "personas": personas,
+    });
+
     Ok(HttpResponse::Ok().json(resultado))
 }
 pub async fn calidad_datos(data: web::Data<AppState>) -> Result<impl Responder, ApiError> {

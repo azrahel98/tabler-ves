@@ -1,7 +1,7 @@
 <template>
   <Card>
   
-    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between border-b border-stroke pt-0 px-3 pb-3 dark:border-strokedark gap-4">
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between border-b border-gray-200 pt-0 px-3 pb-3 dark:border-white/10 gap-4">
       <div class="flex items-center gap-2.5">
         <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary dark:bg-white/5 dark:text-brand-300">
           <Files class="h-5 w-5" />
@@ -13,7 +13,7 @@
       </div>
       
       <div class="flex items-center gap-2 w-full sm:w-auto">
-        <button @click="abrirModalUrl" class="flex flex-1 sm:flex-none items-center justify-center gap-2 rounded-lg border border-stroke px-3 py-2 text-xs font-semibold text-gray-600 hover:bg-gray-50 dark:border-strokedark dark:text-gray-400 dark:hover:bg-white/5 transition-all">
+        <button @click="abrirModalUrl" class="flex flex-1 sm:flex-none items-center justify-center gap-2 rounded-lg border border-gray-200 px-3 py-2 text-xs font-semibold text-gray-600 hover:bg-gray-50 dark:border-white/10 dark:text-gray-400 dark:hover:bg-white/5 transition-all">
           <Link2 class="h-3.5 w-3.5" />
           Vincular URL
         </button>
@@ -70,30 +70,33 @@
 
       <div class="space-y-4">
         <div>
-          <label class="mb-1.5 block text-xs font-medium text-gray-700 dark:text-white/80">Archivo PDF (Máx 10MB) <span class="text-red-500">*</span></label>
+          <label for="subir-pdf-input" class="mb-1.5 block text-xs font-medium text-gray-700 dark:text-white/80">Archivo PDF (Máx 10MB) <span class="text-red-500">*</span></label>
           <input
+            id="subir-pdf-input"
             type="file"
             accept=".pdf"
             @change="manejarArchivo"
-            class="w-full cursor-pointer rounded-lg border-[1.5px] border-stroke bg-transparent font-medium outline-none transition file:mr-4 file:border-0 file:bg-primary file:py-2.5 file:px-4 file:text-sm file:font-semibold file:text-white hover:file:bg-opacity-90 focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:file:bg-primary dark:file:text-white dark:focus:border-primary"
+            class="w-full cursor-pointer rounded-lg border-[1.5px] border-gray-200 bg-transparent font-medium outline-none transition file:mr-4 file:border-0 file:bg-primary file:py-2.5 file:px-4 file:text-sm file:font-semibold file:text-white hover:file:bg-opacity-90 focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-white/10 dark:bg-form-input dark:file:bg-primary dark:file:text-white dark:focus:border-primary"
             ref="inputArchivo" />
         </div>
 
         <div>
-          <label class="mb-1.5 block text-xs font-medium text-gray-700 dark:text-white/80">Nombre del documento (Opcional)</label>
+          <label for="nombre-documento-input" class="mb-1.5 block text-xs font-medium text-gray-700 dark:text-white/80">Nombre del documento (Opcional)</label>
           <input
+            id="nombre-documento-input"
             v-model="nombreArchivoOpcional"
             type="text"
             placeholder="Ej: Contrato de Trabajo 2024"
-            class="w-full rounded-lg border-[1.5px] border-stroke bg-transparent px-4 py-2.5 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary" />
+            class="w-full rounded-lg border-[1.5px] border-gray-200 bg-transparent px-4 py-2.5 outline-none transition focus:border-primary active:border-primary dark:border-white/10 dark:bg-form-input dark:focus:border-primary" />
           <p class="mt-1 text-2xs text-gray-500">Si se deja en blanco, se usará el nombre original del archivo.</p>
         </div>
 
         <div>
-          <label class="mb-1.5 block text-xs font-medium text-gray-700 dark:text-white/80">Asociar a documento (Opcional)</label>
+          <label for="asociar-documento-select" class="mb-1.5 block text-xs font-medium text-gray-700 dark:text-white/80">Asociar a documento (Opcional)</label>
           <select
+            id="asociar-documento-select"
             v-model="documentoSeleccionado"
-            class="w-full rounded-lg border-[1.5px] border-stroke bg-transparent px-4 py-2.5 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary">
+            class="w-full rounded-lg border-[1.5px] border-gray-200 bg-transparent px-4 py-2.5 outline-none transition focus:border-primary active:border-primary dark:border-white/10 dark:bg-form-input dark:focus:border-primary">
             <option :value="null">Sin asociar</option>
             <option v-for="doc in documentosDisponibles" :key="doc.id" :value="doc.id">
               {{ doc.sigla }}
@@ -136,12 +139,13 @@
 
       <div class="space-y-4">
         <div>
-          <label class="mb-1.5 block text-xs font-medium text-gray-700 dark:text-white/80">Nuevo nombre <span class="text-red-500">*</span></label>
+          <label for="renombrar-documento-input" class="mb-1.5 block text-xs font-medium text-gray-700 dark:text-white/80">Nuevo nombre <span class="text-red-500">*</span></label>
           <input
+            id="renombrar-documento-input"
             v-model="nuevoNombreArchivo"
             type="text"
             placeholder="Ej: Contrato de Trabajo 2024"
-            class="w-full rounded-lg border-[1.5px] border-stroke bg-transparent px-4 py-2.5 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+            class="w-full rounded-lg border-[1.5px] border-gray-200 bg-transparent px-4 py-2.5 outline-none transition focus:border-primary active:border-primary dark:border-white/10 dark:bg-form-input dark:focus:border-primary"
             @keyup.enter="renombrarArchivo" />
           <p class="mt-1 text-2xs text-gray-500">La extensión .pdf se agrega automáticamente.</p>
         </div>
@@ -363,9 +367,9 @@
   }
 
   watch(
-    perfilActual,
-    () => {
-      if (perfilActual.value?.dni) {
+    () => perfilActual.value?.dni,
+    (nuevoDni) => {
+      if (nuevoDni) {
         buscarDocumentos()
       } else {
         archivosSubidos.value = []

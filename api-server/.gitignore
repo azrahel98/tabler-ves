@@ -18,8 +18,12 @@ Dockerfile
 .claude/
 .commandcode/
 .gemini/
+.cargo/
 .antigravity/
-
+fotos/
+graphify-out/
+test_actix.rs
+.vscode/
 # AI tool docs
 GEMINI.md
 CLAUDE.md
@@ -33,6 +37,4 @@ AGENTS.md
 # AI-generated docs
 /docs
 
-# Graphify output (keep HTML)
-graphify-out/*
-!graphify-out/*.html
+

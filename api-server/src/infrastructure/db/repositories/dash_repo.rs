@@ -1,11 +1,12 @@
-use sqlx::{MySqlPool, Row};
 use crate::infrastructure::web::middleware::error::ApiError;
-use crate::infrastructure::web::models::dash::{
-    BancosReport, Cumpleaños, DataResumen, DbOrgani, ReporteRenuncias,
-};
 use crate::infrastructure::web::models::dash::ReporteDocumento;
-use serde_json::{Value, json};
+use crate::infrastructure::web::models::dash::{
+    Alerta70Anos, BancosReport, Cumpleaños, DataResumen, DbOrgani, ReporteRenuncias,
+};
 use chrono::{NaiveDate, NaiveDateTime};
+use serde_json::{Value, json};
+use sqlx::{MySqlPool, Row};
+
 
 pub async fn get_cumpleanos(pool: &MySqlPool) -> Result<Vec<Cumpleaños>, ApiError> {
     sqlx::query_as!(
@@ -16,10 +17,12 @@ pub async fn get_cumpleanos(pool: &MySqlPool) -> Result<Vec<Cumpleaños>, ApiErr
             CONCAT_WS(' ', p.apaterno, p.amaterno, p.nombre) AS nombre,
             p.fecha_nacimiento nacimiento,
             TIMESTAMPDIFF(YEAR, p.fecha_nacimiento, CURRENT_DATE) AS edad,
-            p.avatar
+            p.avatar,
+            r.decreto AS regimen
             FROM
             persona p
             INNER JOIN vinculo v ON p.dni = v.dni
+            LEFT JOIN regimen r ON v.regimen = r.id
             WHERE
             v.estado = 'activo'
             AND (
@@ -47,7 +50,8 @@ pub async fn get_cumpleanos(pool: &MySqlPool) -> Result<Vec<Cumpleaños>, ApiErr
             nombre,
             p.fecha_nacimiento,
             edad,
-            p.avatar
+            p.avatar,
+            r.decreto
             ORDER BY
             MONTH(p.fecha_nacimiento),
             DAY(p.fecha_nacimiento);
@@ -242,7 +246,7 @@ where
         .iter()
         .map(|row| {
             let ingreso: NaiveDate = row.get("ingreso");
-            let renuncia: Option<NaiveDate> = row.try_get("renuncia").ok(); 
+            let renuncia: Option<NaiveDate> = row.try_get("renuncia").ok();
             json!({
                 "dni": row.get::<String, _>("dni"),
                 "nombre": row.get::<String, _>("nombre"),
@@ -258,7 +262,10 @@ where
     Ok(result)
 }
 
-pub async fn get_personal_activo_area(pool: &MySqlPool, area_id: i32) -> Result<Vec<Value>, ApiError> {
+pub async fn get_personal_activo_area(
+    pool: &MySqlPool,
+    area_id: i32,
+) -> Result<Vec<Value>, ApiError> {
     let data_rows = sqlx::query(
         r#"
 select
@@ -297,7 +304,7 @@ where
         .iter()
         .map(|row| {
             let ingreso: NaiveDate = row.get("ingreso");
-            let renuncia: Option<NaiveDate> = row.try_get("renuncia").ok(); 
+            let renuncia: Option<NaiveDate> = row.try_get("renuncia").ok();
             json!({
                 "dni": row.get::<String, _>("dni"),
                 "nombre": row.get::<String, _>("nombre"),
@@ -313,6 +320,170 @@ where
         .collect();
     Ok(result)
 }
+
+pub async fn get_personal_activo_sindicato(
+    pool: &MySqlPool,
+    sindicato_id: Option<i32>,
+    sindicato_nombre: Option<&str>,
+) -> Result<Vec<Value>, ApiError> {
+    let mut query = String::from(
+        r#"
+select
+  cast(p.dni as char) dni,
+  concat(p.apaterno, ' ', p.amaterno, ' ', p.nombre) nombre,
+  dc.fecha ingreso,
+  dcs.fecha renuncia,
+  ar.nombre area,
+  cr.nombre cargo,
+  s.nombre sindicato,
+  rg.nombre regimen,
+  p.avatar as avatar
+from
+  vinculo v
+  inner join persona p on v.dni = p.dni
+  inner join cargo cr on v.cargo_id = cr.id
+  inner join area ar on v.area_id = ar.id
+  inner join documento dc on v.doc_ingreso_id = dc.id
+  inner join regimen rg on v.regimen = rg.id
+  left join documento dcs on v.doc_salida_id = dcs.id
+  inner join vinculo_sindicato vs on vs.vinculo_id = v.id
+  inner join sindicato s on vs.sindicato_id = s.id
+where
+  v.estado = 'activo'
+"#,
+    );
+
+    let data_rows = if let Some(id) = sindicato_id {
+        query.push_str(" and (vs.sindicato_id = ? or s.id = ?)");
+        sqlx::query(&query)
+            .bind(id)
+            .bind(id)
+            .fetch_all(pool)
+            .await
+    } else if let Some(nombre) = sindicato_nombre {
+        query.push_str(" and (s.nombre = ? or lower(s.nombre) = lower(?))");
+        sqlx::query(&query)
+            .bind(nombre)
+            .bind(nombre)
+            .fetch_all(pool)
+            .await
+    } else {
+        return Err(ApiError::BadRequest(
+            "Se requiere parámetro sindicato o sindicato_id".into(),
+        ));
+    }
+    .map_err(|e| {
+        eprintln!("Database error: {:?}", e);
+        ApiError::InternalError("Database consulta malformada".into())
+    })?;
+
+    let result: Vec<Value> = data_rows
+        .iter()
+        .map(|row| {
+            let ingreso: NaiveDate = row.get("ingreso");
+            let renuncia: Option<NaiveDate> = row.try_get("renuncia").ok();
+            json!({
+                "dni": row.get::<String, _>("dni"),
+                "nombre": row.get::<String, _>("nombre"),
+                "ingreso": ingreso.to_string(),
+                "renuncia": renuncia.map(|d| d.to_string()),
+                "area": row.get::<String, _>("area"),
+                "cargo": row.get::<String, _>("cargo"),
+                "sindicato": row.try_get::<Option<String>, _>("sindicato").unwrap_or(None),
+                "regimen": row.get::<String, _>("regimen"),
+                "avatar": row.try_get::<Option<String>, _>("avatar").unwrap_or(None),
+            })
+        })
+        .collect();
+    Ok(result)
+}
+
+pub async fn get_personal_activo_regimen(
+    pool: &MySqlPool,
+    regimen_id: Option<i32>,
+    regimen_nombre: Option<&str>,
+) -> Result<Vec<Value>, ApiError> {
+    let mut query = String::from(
+        r#"
+select
+  cast(p.dni as char) dni,
+  concat(p.apaterno, ' ', p.amaterno, ' ', p.nombre) nombre,
+  dc.fecha ingreso,
+  dcs.fecha renuncia,
+  ar.nombre area,
+  cr.nombre cargo,
+  s.nombre sindicato,
+  rg.nombre regimen,
+  p.avatar as avatar
+from
+  vinculo v
+  inner join persona p on v.dni = p.dni
+  inner join cargo cr on v.cargo_id = cr.id
+  inner join area ar on v.area_id = ar.id
+  inner join documento dc on v.doc_ingreso_id = dc.id
+  inner join regimen rg on v.regimen = rg.id
+  left join documento dcs on v.doc_salida_id = dcs.id
+  left join vinculo_sindicato vs on vs.vinculo_id = v.id
+  left join sindicato s on vs.sindicato_id = s.id
+where
+  v.estado = 'activo'
+"#,
+    );
+
+    let data_rows = if let Some(id) = regimen_id {
+        query.push_str(" and (rg.id = ? or v.regimen = ?)");
+        sqlx::query(&query)
+            .bind(id)
+            .bind(id)
+            .fetch_all(pool)
+            .await
+    } else if let Some(nombre) = regimen_nombre {
+        query.push_str(
+            " and (rg.decreto = ? or lower(rg.decreto) = lower(?) or rg.nombre = ? or lower(rg.nombre) = lower(?) or rg.estructura = ? or lower(rg.estructura) = lower(?) or rg.decreto like concat(?, '%') or rg.nombre like concat('%', ?, '%'))",
+        );
+        sqlx::query(&query)
+            .bind(nombre)
+            .bind(nombre)
+            .bind(nombre)
+            .bind(nombre)
+            .bind(nombre)
+            .bind(nombre)
+            .bind(nombre)
+            .bind(nombre)
+            .fetch_all(pool)
+            .await
+    } else {
+        return Err(ApiError::BadRequest(
+            "Se requiere parámetro regimen o regimen_id".into(),
+        ));
+    }
+    .map_err(|e| {
+        eprintln!("Database error: {:?}", e);
+        ApiError::InternalError("Database consulta malformada".into())
+    })?;
+
+    let result: Vec<Value> = data_rows
+        .iter()
+        .map(|row| {
+            let ingreso: NaiveDate = row.get("ingreso");
+            let renuncia: Option<NaiveDate> = row.try_get("renuncia").ok();
+            json!({
+                "dni": row.get::<String, _>("dni"),
+                "nombre": row.get::<String, _>("nombre"),
+                "ingreso": ingreso.to_string(),
+                "renuncia": renuncia.map(|d| d.to_string()),
+                "area": row.get::<String, _>("area"),
+                "cargo": row.get::<String, _>("cargo"),
+                "sindicato": row.try_get::<Option<String>, _>("sindicato").unwrap_or(None),
+                "regimen": row.get::<String, _>("regimen"),
+                "avatar": row.try_get::<Option<String>, _>("avatar").unwrap_or(None),
+            })
+        })
+        .collect();
+    Ok(result)
+}
+
+
 
 pub async fn get_historial(pool: &MySqlPool, dni: &str, key: &str) -> Result<Vec<Value>, ApiError> {
     let data = sqlx::query(
@@ -414,11 +585,10 @@ pub async fn get_renuncias(pool: &MySqlPool) -> Result<Vec<ReporteRenuncias>, Ap
 }
 
 pub async fn get_documentos(pool: &MySqlPool) -> Result<Vec<ReporteDocumento>, ApiError> {
-    sqlx::query_as!(
-        ReporteDocumento,
+    sqlx::query_as::<_, ReporteDocumento>(
         r#"
-        SELECT id, nombre, sigla FROM tipodocumento
-        "#
+        SELECT id, nombre, CAST(NULL AS CHAR) AS sigla FROM tipo_documento ORDER BY nombre
+        "#,
     )
     .fetch_all(pool)
     .await
@@ -476,7 +646,9 @@ ORDER BY
     Ok(resultado)
 }
 
-pub async fn get_exportar_excel_data(pool: &MySqlPool) -> Result<Vec<sqlx::mysql::MySqlRow>, ApiError> {
+pub async fn get_exportar_excel_data(
+    pool: &MySqlPool,
+) -> Result<Vec<sqlx::mysql::MySqlRow>, ApiError> {
     sqlx::query(
         r#"
         SELECT
@@ -487,7 +659,7 @@ pub async fn get_exportar_excel_data(pool: &MySqlPool) -> Result<Vec<sqlx::mysql
   p.amaterno,
   p.sexo,
   p.fecha_nacimiento,
-  CONCAT(td.nombre, ' N° ', d.numero, '-', d.year, '-', td.sigla) AS documento,
+  CONCAT(td.nombre, ' N° ', COALESCE(d.numero, ''), '-', COALESCE(d.year, ''), CASE WHEN COALESCE(da.sigla, a.sigla) IS NOT NULL THEN CONCAT('-', COALESCE(da.sigla, a.sigla)) ELSE '' END) AS documento,
   d.fecha AS ingreso,
   c.nombre AS cargo,
   a.nombre AS area,
@@ -516,7 +688,8 @@ FROM
   INNER JOIN area a ON v.area_id = a.id
   INNER JOIN regimen r ON v.regimen = r.id
   INNER JOIN documento d ON v.doc_ingreso_id = d.id
-  INNER JOIN tipodocumento td ON d.tipo_documento_id = td.id
+  INNER JOIN tipo_documento td ON d.tipo_documento_id = td.id
+  LEFT JOIN area da ON d.area_id = da.id
   LEFT JOIN plaza pl ON v.plaza_id = pl.codigo
   LEFT JOIN cargoestructural ce ON pl.cargoestructural = ce.codigo
   LEFT JOIN gruposocupacionales go ON pl.grupoocupacional = go.codigo
@@ -545,7 +718,7 @@ pub async fn get_nuevos_trabajadores(pool: &MySqlPool) -> Result<Vec<Value>, Api
             p.dni,
             CONCAT_WS(' ', p.apaterno, p.amaterno, p.nombre) AS nombre,
             d.fecha AS ingreso,
-            CONCAT_WS('-', td.sigla, d.numero, d.year) AS documento,
+            CONCAT_WS('-', COALESCE(da.sigla, ar.sigla), d.numero, d.year) AS documento,
             ar.nombre AS area,
             cr.nombre AS cargo,
             r.decreto AS regimen,
@@ -555,8 +728,9 @@ pub async fn get_nuevos_trabajadores(pool: &MySqlPool) -> Result<Vec<Value>, Api
         FROM vinculo v
         INNER JOIN persona p ON v.dni = p.dni
         INNER JOIN documento d ON v.doc_ingreso_id = d.id
-        INNER JOIN tipodocumento td ON d.tipo_documento_id = td.id
+        INNER JOIN tipo_documento td ON d.tipo_documento_id = td.id
         INNER JOIN area ar ON v.area_id = ar.id
+        LEFT JOIN area da ON d.area_id = da.id
         INNER JOIN cargo cr ON v.cargo_id = cr.id
         INNER JOIN regimen r ON v.regimen = r.id
         LEFT JOIN plaza pl ON v.plaza_id = pl.codigo
@@ -707,7 +881,9 @@ pub async fn get_reporte_eventos(pool: &MySqlPool) -> Result<Vec<Value>, ApiErro
     Ok(resultado)
 }
 
-pub async fn get_comparar_mef_data(pool: &MySqlPool) -> Result<Vec<sqlx::mysql::MySqlRow>, ApiError> {
+pub async fn get_comparar_mef_data(
+    pool: &MySqlPool,
+) -> Result<Vec<sqlx::mysql::MySqlRow>, ApiError> {
     sqlx::query(
         r#"
         SELECT
@@ -749,3 +925,104 @@ pub async fn get_comparar_mef_data(pool: &MySqlPool) -> Result<Vec<sqlx::mysql::
         ApiError::InternalError("Error al consultar datos propios".into())
     })
 }
+
+pub async fn get_alerta_70_anos(
+    pool: &MySqlPool,
+    edad_min: Option<i32>,
+) -> Result<Vec<Alerta70Anos>, ApiError> {
+    let edad_filtro = edad_min.unwrap_or(69);
+    let filas = sqlx::query(
+        r#"
+        SELECT
+            p.dni,
+            CONCAT_WS(' ', p.apaterno, p.amaterno, p.nombre) AS nombre,
+            p.fecha_nacimiento AS nacimiento,
+            TIMESTAMPDIFF(YEAR, p.fecha_nacimiento, CURRENT_DATE) AS edad_actual,
+            DATE_ADD(p.fecha_nacimiento, INTERVAL 70 YEAR) AS fecha_70_anos,
+            LAST_DAY(DATE_ADD(p.fecha_nacimiento, INTERVAL 70 YEAR)) AS fecha_limite_mes,
+            LAST_DAY(STR_TO_DATE(CONCAT(YEAR(DATE_ADD(p.fecha_nacimiento, INTERVAL 70 YEAR)), '-12-01'), '%Y-%m-%d')) AS fecha_extension_fin_ano,
+            DATEDIFF(DATE_ADD(p.fecha_nacimiento, INTERVAL 70 YEAR), CURRENT_DATE) AS dias_para_70,
+            DATEDIFF(LAST_DAY(DATE_ADD(p.fecha_nacimiento, INTERVAL 70 YEAR)), CURRENT_DATE) AS dias_para_cese_mes,
+            DATEDIFF(LAST_DAY(STR_TO_DATE(CONCAT(YEAR(DATE_ADD(p.fecha_nacimiento, INTERVAL 70 YEAR)), '-12-01'), '%Y-%m-%d')), CURRENT_DATE) AS dias_para_cese_extension,
+            CASE
+                WHEN CURRENT_DATE < DATE_ADD(p.fecha_nacimiento, INTERVAL 70 YEAR) THEN 'PROXIMO_A_CUMPLIR'
+                WHEN YEAR(CURRENT_DATE) = YEAR(DATE_ADD(p.fecha_nacimiento, INTERVAL 70 YEAR)) 
+                     AND MONTH(CURRENT_DATE) = MONTH(DATE_ADD(p.fecha_nacimiento, INTERVAL 70 YEAR)) THEN 'CUMPLE_ESTE_MES'
+                WHEN CURRENT_DATE > LAST_DAY(DATE_ADD(p.fecha_nacimiento, INTERVAL 70 YEAR)) 
+                     AND CURRENT_DATE <= LAST_DAY(STR_TO_DATE(CONCAT(YEAR(DATE_ADD(p.fecha_nacimiento, INTERVAL 70 YEAR)), '-12-01'), '%Y-%m-%d')) THEN 'EN_PERIODO_EXTENSION'
+                ELSE 'LIMITE_SUPERADO'
+            END AS estado_alerta,
+            ar.nombre AS area,
+            cr.nombre AS cargo,
+            r.decreto AS regimen,
+            pl.codigo AS plaza,
+            p.avatar
+        FROM
+            persona p
+            INNER JOIN vinculo v ON p.dni = v.dni
+            INNER JOIN area ar ON v.area_id = ar.id
+            INNER JOIN cargo cr ON v.cargo_id = cr.id
+            LEFT JOIN regimen r ON v.regimen = r.id
+            LEFT JOIN plaza pl ON v.plaza_id = pl.codigo
+        WHERE
+            v.estado = 'activo'
+            AND TIMESTAMPDIFF(YEAR, p.fecha_nacimiento, CURRENT_DATE) >= ?
+        GROUP BY
+            p.dni,
+            p.apaterno,
+            p.amaterno,
+            p.nombre,
+            p.fecha_nacimiento,
+            ar.nombre,
+            cr.nombre,
+            r.decreto,
+            pl.codigo,
+            p.avatar
+        ORDER BY
+            fecha_70_anos ASC;
+        "#,
+    )
+    .bind(edad_filtro)
+    .fetch_all(pool)
+    .await
+    .map_err(|e| {
+        eprintln!("Database error alerta_70_anos: {:?}", e);
+        ApiError::InternalError("Error al consultar alerta de 70 años".into())
+    })?;
+
+    let resultado: Vec<Alerta70Anos> = filas
+        .into_iter()
+        .map(|fila| {
+            let nacimiento: NaiveDate = fila.get("nacimiento");
+            let fecha_70_anos: NaiveDate = fila.get("fecha_70_anos");
+            let fecha_limite_mes: NaiveDate = fila.get("fecha_limite_mes");
+            let fecha_extension_fin_ano: NaiveDate = fila.get("fecha_extension_fin_ano");
+            let edad_actual: i64 = fila.try_get("edad_actual").unwrap_or(0);
+            let dias_para_70: i64 = fila.try_get("dias_para_70").unwrap_or(0);
+            let dias_para_cese_mes: i64 = fila.try_get("dias_para_cese_mes").unwrap_or(0);
+            let dias_para_cese_extension: i64 = fila.try_get("dias_para_cese_extension").unwrap_or(0);
+
+            Alerta70Anos {
+                dni: fila.get("dni"),
+                nombre: fila.try_get("nombre").ok(),
+                nacimiento,
+                edad_actual,
+                fecha_70_anos,
+                fecha_limite_mes,
+                fecha_extension_fin_ano,
+                dias_para_70,
+                dias_para_cese_mes,
+                dias_para_cese_extension,
+                estado_alerta: fila.get("estado_alerta"),
+                area: fila.get("area"),
+                cargo: fila.get("cargo"),
+                regimen: fila.try_get("regimen").ok(),
+                plaza: fila.try_get("plaza").ok(),
+                avatar: fila.try_get("avatar").ok(),
+            }
+        })
+        .collect();
+
+    Ok(resultado)
+}
+

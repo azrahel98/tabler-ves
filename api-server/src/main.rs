@@ -18,7 +18,6 @@ async fn main() -> std::io::Result<()> {
     }
     env_logger::init();
     let database_url = std::env::var("DATABASE_URL").expect("DATABASE_URL must be set");
-    println!("{}", database_url);
     let port: u16 = std::env::var("PORT")
         .unwrap_or_else(|_| "4010".to_string())
         .parse()
@@ -40,8 +39,6 @@ async fn main() -> std::io::Result<()> {
         .await
     {
         Ok(pool) => {
-            println!("✅Connection to the database is successful!");
-            println!("✅ URI de base de datos: {}", database_url);
             println!("🚀 Server running on port {}", port);
             pool
         }
@@ -61,6 +58,7 @@ async fn main() -> std::io::Result<()> {
                 db: pool.clone(),
                 cliente_http: reqwest::Client::new(),
             }))
+            .app_data(web::Data::new(pool.clone()))
             .configure(crate::infrastructure::web::routes::login::init_routes)
             .configure(crate::infrastructure::web::routes::personal::init_routes)
             .configure(crate::infrastructure::web::routes::dash::init_routes)

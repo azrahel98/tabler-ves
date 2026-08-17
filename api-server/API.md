@@ -14,37 +14,62 @@ Todas las rutas devuelven errores con la misma estructura:
 
 ---
 
-## Login `/login`
+## Login y Registro `/login`
 
 ### `POST /login/`
 
-Autenticación de usuario.
+Autenticación con Google OAuth.
 
 **Body:**
 
 ```json
-{ "username": "admin", "password": "1234" }
+{ "google_sub": "1234567890", "email": "usuario@ejemplo.com" }
+```
+
+**Respuesta (Éxito):**
+
+```json
+{
+  "token": "eyJhbGciOi...",
+  "user": {
+    "id": 1,
+    "google_sub": "1234567890",
+    "email": "usuario@ejemplo.com",
+    "full_name": "Nombre Usuario",
+    "picture_url": "https://lh3.googleusercontent.com/a/...",
+    "role": "USER",
+    "status": "APPROVED",
+    "created_at": "2026-07-27T12:00:00",
+    "updated_at": "2026-07-27T12:00:00"
+  }
+}
+```
+
+---
+
+### `POST /login/register`
+
+Registro de nuevo usuario con datos de Google OAuth.
+
+**Body:**
+
+```json
+{
+  "google_sub": "1234567890",
+  "email": "usuario@ejemplo.com",
+  "full_name": "Nombre Usuario",
+  "picture_url": "https://lh3.googleusercontent.com/a/..."
+}
 ```
 
 **Respuesta:**
 
 ```json
-{ "token": "eyJhbGciOi..." }
+{
+  "id": 1,
+  "message": "Registro completado con éxito. Tu cuenta está pendiente de aprobación por un administrador."
+}
 ```
-
----
-
-### `POST /login/changepass` 🔒
-
-Cambiar contraseña propia.
-
-**Body:**
-
-```json
-{ "id": 1, "oldpass": "actual", "newpass": "nueva" }
-```
-
-**Respuesta:** `"Contraseña cambiada con éxito"`
 
 ---
 
@@ -59,7 +84,7 @@ Cumpleaños próximos (±5 días pasados / +30 días futuros).
 **Respuesta:**
 
 ```json
-[{ "dni": "12345678", "nombre": "Apellido Nombre", "nacimiento": "1990-01-15", "edad": 36, "avatar": "/personal/avatar/12345678" }]
+[{ "dni": "12345678", "nombre": "Apellido Nombre", "nacimiento": "1990-01-15", "edad": 36, "avatar": "/personal/avatar/12345678", "regimen": "D.L. 276" }]
 ```
 
 ---
@@ -141,15 +166,46 @@ Reporte de personal activo completo.
 
 ---
 
-### `GET /api/dash/activos/area?area_id=1`
+### `GET /api/dash/activos/area?area_id=1` o `GET /api/dash/activos/area?area=Nombre`
 
-Reporte de personal activo por ID de área.
+Reporte de personal activo por ID o nombre de área.
 
 **Query params:**
 
 | Campo     | Tipo   | Requerido |
 | --------- | ------ | --------- |
-| `area_id` | number | sí        |
+| `area_id` | number | opcional  |
+| `area`    | string | opcional  |
+
+**Respuesta:** Igual que `/activos` con campo extra `avatar`.
+
+---
+
+### `GET /api/dash/activos/regimen?regimen_id=1` o `GET /api/dash/activos/regimen?regimen=Nombre`
+
+Reporte de personal activo por ID o nombre de régimen laboral.
+
+**Query params:**
+
+| Campo        | Tipo   | Requerido |
+| ------------ | ------ | --------- |
+| `regimen_id` | number | opcional  |
+| `regimen`    | string | opcional  |
+
+**Respuesta:** Igual que `/activos` con campo extra `avatar`.
+
+---
+
+### `GET /api/dash/activos/sindicato?sindicato_id=1` o `GET /api/dash/activos/sindicato?sindicato=Nombre`
+
+Reporte de personal activo por ID o nombre de sindicato.
+
+**Query params:**
+
+| Campo          | Tipo   | Requerido |
+| -------------- | ------ | --------- |
+| `sindicato_id` | number | opcional  |
+| `sindicato`    | string | opcional  |
 
 **Respuesta:** Igual que `/activos` con campo extra `avatar`.
 
@@ -327,7 +383,45 @@ Genera un Excel de comparación MEF a partir de un JSON.
 
 ---
 
+### `GET /api/dash/alerta_70`
+
+Alerta de servidores activos que van a cumplir o han cumplido 70 años de edad (límite de cese legal laboral). Calcula fecha de cese regular (último día del mes de cumpleaños) y fecha de cese extendido (31 de diciembre del año en curso).
+
+**Query Params (Opcionales):**
+
+| Parámetro  | Tipo      | Requerido | Descripción                                              |
+| ---------- | --------- | --------- | -------------------------------------------------------- |
+| `edad_min` | `integer` | no        | Edad mínima a filtrar (por defecto `69` para preventivo) |
+
+**Respuesta:**
+
+```json
+[
+  {
+    "dni": "01234567",
+    "nombre": "PEREZ LOPEZ JUAN",
+    "nacimiento": "1956-08-20",
+    "edad_actual": 69,
+    "fecha_70_anos": "2026-08-20",
+    "fecha_limite_mes": "2026-08-31",
+    "fecha_extension_fin_ano": "2026-12-31",
+    "dias_para_70": 4,
+    "dias_para_cese_mes": 15,
+    "dias_para_cese_extension": 137,
+    "estado_alerta": "CUMPLE_ESTE_MES",
+    "area": "SUBGERENCIA DE RECURSOS HUMANOS",
+    "cargo": "ESPECIALISTA ADMINISTRATIVO",
+    "regimen": "D.L. 276",
+    "plaza": "P-045",
+    "avatar": "/personal/avatar/01234567"
+  }
+]
+```
+
+---
+
 ## Personal `/personal` 🔒
+
 
 Todas las rutas de `/personal` requieren JWT **excepto `GET /personal/avatar/{dni}`**.
 
@@ -900,7 +994,7 @@ Lista de cargos activos.
 
 ### `GET /personal/activos_por_distrito?distrito=PIURA`
 
-Lista de trabajadores **activos** que residen en un distrito específico. Coincidencia exacta y *case-insensitive*. Para listar quienes no tienen distrito asignado, usar `"SIN ASIGNAR"`.
+Detalle y estadísticas de trabajadores **activos** que residen en un distrito específico. Coincidencia exacta y *case-insensitive*. Para listar quienes no tienen distrito asignado, usar `"SIN ASIGNAR"`. Incluye conteo por áreas con su ID, rangos de edad, y la lista completa de personas con IDs de área, cargo y régimen.
 
 **Query params:**
 
@@ -911,20 +1005,46 @@ Lista de trabajadores **activos** que residen en un distrito específico. Coinci
 **Respuesta:**
 
 ```json
-[
-  {
-    "dni": "12345678",
-    "nombre": "García López Juan",
-    "ingreso": "2020-01-15",
-    "direccion": "Av. Ejemplo 123",
-    "area": "Gerencia",
-    "cargo": "Analista",
-    "sindicato": null,
-    "regimen": "D.L. 276",
-    "distrito": "PIURA",
-    "avatar": null
-  }
-]
+{
+  "distrito": "PIURA",
+  "total": 1,
+  "areas": [
+    {
+      "id": 1,
+      "nombre": "Gerencia",
+      "cantidad": 1
+    }
+  ],
+  "rangos_edad": [
+    {
+      "nombre": "26-35",
+      "cantidad": 1
+    }
+  ],
+  "personas": [
+    {
+      "dni": "12345678",
+      "nombre": "García López Juan",
+      "ingreso": "2020-01-15",
+      "direccion": "Av. Ejemplo 123",
+      "area": {
+        "id": 1,
+        "nombre": "Gerencia"
+      },
+      "cargo": {
+        "id": 5,
+        "nombre": "Analista"
+      },
+      "regimen": {
+        "id": 2,
+        "nombre": "D.L. 276"
+      },
+      "sindicato": null,
+      "distrito": "PIURA",
+      "avatar": null
+    }
+  ]
+}
 ```
 
 ---
@@ -1128,7 +1248,7 @@ Renombrar el `original_name` de un archivo.
 
 ## Usuarios `/usuarios` 🔒 (solo administradores)
 
-Todas las rutas requieren JWT con `nivel = 1`. Las demás devuelven `401`.
+Todas las rutas requieren JWT con `role = "ADMIN"`. Las demás devuelven `401`.
 
 ### `GET /usuarios/listar`
 
@@ -1137,22 +1257,37 @@ Lista todos los usuarios del sistema.
 **Respuesta:**
 
 ```json
-[{ "id": 1, "nombre": "Administrador", "nickname": "admin", "nivel": 1 }]
+[
+  {
+    "id": 1,
+    "google_sub": "1234567890",
+    "email": "admin@ejemplo.com",
+    "full_name": "Administrador",
+    "picture_url": null,
+    "role": "ADMIN",
+    "status": "APPROVED",
+    "created_at": "2026-07-27T12:00:00",
+    "updated_at": "2026-07-27T12:00:00"
+  }
+]
 ```
 
 ---
 
 ### `POST /usuarios/crear`
 
-Crear un nuevo usuario.
+Crear un nuevo usuario desde el panel administrativo.
 
 **Body:**
 
 ```json
-{ "nombre": "Usuario Nuevo", "nickname": "usuario1", "pass": "1234", "nivel": 2 }
+{
+  "google_sub": "1234567890",
+  "email": "usuario@ejemplo.com",
+  "full_name": "Nombre Usuario",
+  "picture_url": null
+}
 ```
-
-**Validaciones:** `nickname` mín. 3 caracteres, `pass` mín. 4 caracteres, `nivel` 1 (admin) o 2 (usuario).
 
 **Respuesta:** `"Usuario creado correctamente"`
 
@@ -1160,12 +1295,12 @@ Crear un nuevo usuario.
 
 ### `PUT /usuarios/editar`
 
-Editar nombre, nickname y nivel de un usuario (no cambia contraseña).
+Editar el rol (`ADMIN` / `USER`) y el estado (`PENDING` / `APPROVED` / `REJECTED`) de un usuario.
 
 **Body:**
 
 ```json
-{ "id": 1, "nombre": "Nuevo Nombre", "nickname": "nuevo_nick", "nivel": 2 }
+{ "id": 1, "role": "ADMIN", "status": "APPROVED" }
 ```
 
 **Respuesta:** `"Usuario actualizado correctamente"`
@@ -1182,16 +1317,98 @@ Eliminar un usuario. No se puede eliminar la propia cuenta.
 
 ---
 
-### `POST /usuarios/reset_pass`
+## Documentos `/personal`
 
-Restablecer la contraseña de un usuario (sin verificar la actual).
+### `GET /personal/documento/{id}` 🔒
+
+Obtener un documento por su ID.
+
+**Parámetros:**
+- `id` (path): ID del documento.
+
+**Respuesta (Éxito):**
+
+```json
+{
+  "id": 1,
+  "tipoDocumento": "1",
+  "areaId": 5,
+  "numeroDocumento": 123,
+  "añoDocumento": 2026,
+  "fecha": "2026-01-15",
+  "fechaValida": "2026-12-31",
+  "conv": null,
+  "descripcion": "Resolución de nombramiento",
+  "funcion": null
+}
+```
+
+---
+
+### `POST /personal/crear_documento` (o `POST /personal/documento`) 🔒
+
+Crear un nuevo documento.
 
 **Body:**
 
 ```json
-{ "id": 1, "nueva_pass": "nueva123" }
+{
+  "dni": "12345678",
+  "documento": {
+    "tipoDocumento": "1",
+    "areaId": 5,
+    "numeroDocumento": 123,
+    "añoDocumento": 2026,
+    "fecha": "2026-01-15",
+    "fechaValida": "2026-12-31",
+    "descripcion": "Resolución de nombramiento"
+  }
+}
 ```
 
-**Validaciones:** `nueva_pass` mín. 4 caracteres.
+**Respuesta (201 Created):**
 
-**Respuesta:** `"Contraseña restablecida correctamente"`
+```json
+{
+  "message": "Documento creado correctamente",
+  "id": 1
+}
+```
+
+---
+
+### `PUT /personal/editar_documento` 🔒
+
+Editar un documento existente.
+
+**Body:**
+
+```json
+{
+  "dni": "12345678",
+  "documento": {
+    "id": 1,
+    "tipoDocumento": "1",
+    "areaId": 5,
+    "numeroDocumento": 124,
+    "añoDocumento": 2026,
+    "fecha": "2026-01-15",
+    "fechaValida": "2026-12-31",
+    "descripcion": "Resolución corregida"
+  }
+}
+```
+
+**Respuesta:** `"Documento actualizado"`
+
+---
+
+### `DELETE /personal/eliminar_documento/{id}` (o `DELETE /personal/documento/{id}`) 🔒
+
+Eliminar un documento por su ID.
+
+**Parámetros:**
+- `id` (path): ID del documento a eliminar.
+
+**Respuesta:** `"Documento eliminado correctamente"`
+

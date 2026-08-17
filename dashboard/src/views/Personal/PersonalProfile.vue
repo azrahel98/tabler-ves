@@ -1,22 +1,27 @@
 <template>
   <div class="mx-auto w-full max-w-6xl p-4 md:p-6 lg:p-8 lg:pt-0">
     <Transition name="profile" appear>
-      <div v-if="perfilActual" class="space-y-6">
+      <div v-if="perfilActual" class="flex flex-col gap-8 md:gap-10">
+        <!-- Cabecera de Perfil -->
         <header-perfil />
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:items-start">
-          <info />
-          <div class="md:col-span-2 md:max-h-[380px] md:overflow-y-auto overflow-x-hidden">
-            <vinculos-tabla />
+
+        <!-- Ficha Principal de Datos (Estructura de 3 Columnas Alineadas) -->
+        <div class="flex flex-col gap-6">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
+            <info class="md:col-span-1" />
+            <vinculos-tabla class="md:col-span-2" />
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
+            <grado class="md:col-span-2" />
+            <banco class="md:col-span-1" />
           </div>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-[1fr_260px] lg:grid-cols-[1fr_300px] gap-6 items-start">
-          <grado />
-          <banco />
-        </div>
-
+        <!-- Carpeta de Legajo Digital -->
         <legajo-folder />
 
+        <!-- Bitácora de Historial de Cambios -->
         <historial />
       </div>
     </Transition>

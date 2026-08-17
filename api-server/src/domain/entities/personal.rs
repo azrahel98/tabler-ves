@@ -36,10 +36,11 @@ pub struct Perfil {
     pub distrito: Option<String>,
     pub avatar: Option<String>,
 }
-#[derive(Serialize, Deserialize, Clone)]
+#[derive(Serialize, Deserialize, FromRow, Clone)]
 pub struct Vinculos {
     pub id: i32,
     pub dni: String,
+    pub doc_ingreso_id: Option<i32>,
     pub doc_ingreso: Option<String>,
     pub numero_doc_ingreso: Option<String>,
     pub descrip_ingreso: Option<String>,
@@ -52,23 +53,27 @@ pub struct Vinculos {
     pub cargo_estructural: Option<String>,
     pub grupo_ocupacional: Option<String>,
     pub estado: String,
+    pub doc_salida_id: Option<i32>,
     pub doc_salida: Option<String>,
     pub descrip_salida: Option<String>,
     pub fecha_salida: Option<NaiveDate>,
     pub numero_doc_salida: Option<String>,
     pub sindicato: Option<String>,
+    pub id_evento: Option<i32>,
     pub tipo_evento: Option<String>,
     pub estado_evento: Option<String>,
+    pub doc_evento_id: Option<i32>,
     pub doc_evento_tipo: Option<String>,
-    pub numero_doc_evento: Option<i32>,
+    pub numero_doc_evento: Option<String>,
     pub fecha_evento: Option<NaiveDate>,
-    pub id_evento: Option<i32>,
 }
 #[derive(Debug, Serialize, Deserialize, FromRow, Validate, Clone)]
 pub struct Documento {
     pub id: Option<i32>,
     #[serde(rename = "tipoDocumento")]
     pub tipo: Option<String>,
+    #[serde(rename = "areaId")]
+    pub area_id: Option<i32>,
     #[serde(rename = "numeroDocumento")]
     pub numero: Option<i32>,
     #[serde(rename = "añoDocumento")]

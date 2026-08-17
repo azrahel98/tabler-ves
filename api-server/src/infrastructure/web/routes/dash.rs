@@ -12,6 +12,8 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
             .service(bancos_report)
             .service(reporte_personal_activo)
             .service(personal_activo_area)
+            .service(personal_activo_sindicato)
+            .service(personal_activo_regimen)
             .service(reporte_historial)
             .service(organigrama)
             .service(report_renuncias)
@@ -24,5 +26,6 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
             .service(reporte_eventos)
             .service(comparar_mef)
             .service(generar_mef)
+            .service(alerta_70_anos)
     );
 }

@@ -1,12 +1,10 @@
 use actix_multipart::Multipart;
-use actix_web::{get, post, web, HttpResponse};
+use actix_web::{HttpResponse, get, post, web};
 use futures_util::TryStreamExt;
 use sqlx::MySqlPool;
 
 use crate::{
-    application::usecases::dash_service,
-    infrastructure::web::middleware::error::ApiError,
-    infrastructure::web::models::dash::*,
+    application::usecases::dash_service, infrastructure::web::middleware::error::ApiError,
 };
 use serde::Deserialize;
 
@@ -20,6 +18,24 @@ pub struct HistorialQuery {
 pub struct AreaQuery {
     area_id: i32,
 }
+
+#[derive(Deserialize)]
+pub struct SindicatoQuery {
+    pub sindicato_id: Option<i32>,
+    pub sindicato: Option<String>,
+}
+
+#[derive(Deserialize)]
+pub struct RegimenQuery {
+    pub regimen_id: Option<i32>,
+    pub regimen: Option<String>,
+}
+
+#[derive(Deserialize)]
+pub struct Alerta70Query {
+    pub edad_min: Option<i32>,
+}
+
 
 #[get("/cumpleanos")]
 pub async fn cumpleanos(pool: web::Data<MySqlPool>) -> Result<HttpResponse, ApiError> {
@@ -65,6 +81,36 @@ pub async fn personal_activo_area(
     let result = dash_service::personal_activo_area(&pool, query.area_id).await?;
     Ok(HttpResponse::Ok().json(result))
 }
+
+#[get("/activos/sindicato")]
+pub async fn personal_activo_sindicato(
+    pool: web::Data<MySqlPool>,
+    query: web::Query<SindicatoQuery>,
+) -> Result<HttpResponse, ApiError> {
+    let result = dash_service::personal_activo_sindicato(
+        &pool,
+        query.sindicato_id,
+        query.sindicato.as_deref(),
+    )
+    .await?;
+    Ok(HttpResponse::Ok().json(result))
+}
+
+#[get("/activos/regimen")]
+pub async fn personal_activo_regimen(
+    pool: web::Data<MySqlPool>,
+    query: web::Query<RegimenQuery>,
+) -> Result<HttpResponse, ApiError> {
+    let result = dash_service::personal_activo_regimen(
+        &pool,
+        query.regimen_id,
+        query.regimen.as_deref(),
+    )
+    .await?;
+    Ok(HttpResponse::Ok().json(result))
+}
+
+
 
 #[get("/historial")]
 pub async fn reporte_historial(
@@ -113,6 +159,7 @@ pub async fn activos_por_distrito(pool: web::Data<MySqlPool>) -> Result<HttpResp
 
 #[get("/trabajadores_nuevos")]
 pub async fn nuevos_trabajadores(pool: web::Data<MySqlPool>) -> Result<HttpResponse, ApiError> {
+    println!("esto aquiiii!");
     let result = dash_service::nuevos_trabajadores(&pool).await?;
     Ok(HttpResponse::Ok().json(result))
 }
@@ -168,9 +215,7 @@ pub async fn comparar_mef(
 }
 
 #[post("/generar_mef")]
-pub async fn generar_mef(
-    payload: web::Json<serde_json::Value>,
-) -> Result<HttpResponse, ApiError> {
+pub async fn generar_mef(payload: web::Json<serde_json::Value>) -> Result<HttpResponse, ApiError> {
     let comparaciones = payload
         .get("comparaciones")
         .and_then(|v| v.as_array())
@@ -185,5 +230,14 @@ pub async fn generar_mef(
             "attachment; filename=\"comparacion_mef.xlsx\"",
         ))
         .body(buffer))
+}
+
+#[get("/alerta_70")]
+pub async fn alerta_70_anos(
+    pool: web::Data<MySqlPool>,
+    query: web::Query<Alerta70Query>,
+) -> Result<HttpResponse, ApiError> {
+    let result = dash_service::alerta_70_anos(&pool, query.edad_min).await?;
+    Ok(HttpResponse::Ok().json(result))
 }
 

@@ -27,7 +27,7 @@
 </template>
 
 <script setup lang="ts">
-  import { onMounted, onUnmounted, defineAsyncComponent } from 'vue'
+  import { onMounted, defineAsyncComponent } from 'vue'
   import Metrica from '../components/dashboard/metrica.vue'
   import Circulo from '../components/dashboard/circulo.vue'
   import GraficoSexo from '../components/dashboard/grafico-sexo.vue'
@@ -43,9 +43,5 @@
 
   onMounted(() => {
     tableroStore.obtenerTodo()
-  })
-
-  onUnmounted(() => {
-    tableroStore.limpiarDatos()
   })
 </script>

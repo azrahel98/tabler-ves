@@ -7,26 +7,16 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-*.env
-.http
-*.http
-
 node_modules
 dist
 dist-ssr
 *.local
-
-.claude/
-.claude
-.agents/
 .agents
-.agent/
-.agent
-.gemini/
-.gemini
-.antigravity/
-.antigravity
-
+.vscode
+docs
+skills-lock.json
+*.md
+.env
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
@@ -36,10 +26,4 @@ dist-ssr
 *.ntvs*
 *.njsproj
 *.sln
-.sw?
-/target
-.env
-
-# graphify
-graphify-out/*
-!graphify-out/*.html
+*.sw?

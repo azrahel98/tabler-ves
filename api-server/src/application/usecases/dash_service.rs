@@ -2,9 +2,10 @@ use sqlx::MySqlPool;
 use crate::infrastructure::web::middleware::error::ApiError;
 use crate::infrastructure::db::repositories::dash_repo;
 use crate::infrastructure::web::models::dash::{
-    BancosReport, Cumpleaños, DataResumen, Organigrama, ReporteRenuncias, ResumenResponse, ReporteDocumento
+    Alerta70Anos, BancosReport, Cumpleaños, DataResumen, Organigrama, ReporteRenuncias, ResumenResponse, ReporteDocumento
 };
 use serde_json::{Value, json};
+
 
 pub async fn cumpleaños(pool: &MySqlPool) -> Result<Vec<Cumpleaños>, ApiError> {
     dash_repo::get_cumpleanos(pool).await
@@ -44,6 +45,24 @@ pub async fn reporte_personal_activo(pool: &MySqlPool) -> Result<Vec<Value>, Api
 pub async fn personal_activo_area(pool: &MySqlPool, area_id: i32) -> Result<Vec<Value>, ApiError> {
     dash_repo::get_personal_activo_area(pool, area_id).await
 }
+
+pub async fn personal_activo_sindicato(
+    pool: &MySqlPool,
+    sindicato_id: Option<i32>,
+    sindicato_nombre: Option<&str>,
+) -> Result<Vec<Value>, ApiError> {
+    dash_repo::get_personal_activo_sindicato(pool, sindicato_id, sindicato_nombre).await
+}
+
+pub async fn personal_activo_regimen(
+    pool: &MySqlPool,
+    regimen_id: Option<i32>,
+    regimen_nombre: Option<&str>,
+) -> Result<Vec<Value>, ApiError> {
+    dash_repo::get_personal_activo_regimen(pool, regimen_id, regimen_nombre).await
+}
+
+
 
 pub async fn reporte_historial(pool: &MySqlPool, dni: &str, key: &str) -> Result<Vec<Value>, ApiError> {
     dash_repo::get_historial(pool, dni, key).await
@@ -744,3 +763,11 @@ pub fn exportar_comparacion_mef(comparaciones: &[Value]) -> Result<Vec<u8>, ApiE
         .save_to_buffer()
         .map_err(|e| ApiError::InternalError(format!("Error al generar Excel: {}", e)))
 }
+
+pub async fn alerta_70_anos(
+    pool: &MySqlPool,
+    edad_min: Option<i32>,
+) -> Result<Vec<Alerta70Anos>, ApiError> {
+    dash_repo::get_alerta_70_anos(pool, edad_min).await
+}
+

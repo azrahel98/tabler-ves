@@ -1,7 +1,7 @@
 <template>
   <main>
     <div class="p-4 pt-1 mx-auto max-w-(--breakpoint-2xl) md:p-6">
-      <div class="mb-6 flex items-center justify-between">
+      <div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 class="text-title-lg font-bold leading-tight text-gray-900 dark:text-white tracking-tight">{{ nombreDelArea || 'Área' }}</h1>
           <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Personal activo asignado a esta área</p>
@@ -61,19 +61,34 @@
                   <Avatar
                     :dni="fila.dni"
                     :avatar="fila.avatar"
-                    sexo="M"
+                    :sexo="fila.sexo"
                     :nombre="fila.nombre"
                     size="sm"
                   />
-                  <span class="font-medium text-gray-700 text-xs dark:text-white">{{ fila.nombre }}</span>
+                  <span class="font-semibold text-gray-800 text-xs sm:text-sm dark:text-white/90">{{ fila.nombre }}</span>
                 </div>
               </template>
 
-              <template #celda-sindicato="{ valor }">
-                <span v-if="valor" class="inline-flex items-center rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary dark:bg-primary/15 dark:text-brand-300">
+              <template #celda-dni="{ valor }">
+                <span class="font-mono tabular-nums text-gray-600 dark:text-gray-400 text-xs">{{ valor }}</span>
+              </template>
+
+              <template #celda-regimen="{ valor }">
+                <Badge v-if="valor" :variant="getRegimenVariant(valor)">
                   {{ valor }}
-                </span>
+                </Badge>
                 <span v-else class="text-gray-300 dark:text-gray-600">—</span>
+              </template>
+
+              <template #celda-sindicato="{ valor }">
+                <Badge v-if="valor" variant="brand">
+                  {{ valor }}
+                </Badge>
+                <span v-else class="text-gray-300 dark:text-gray-600">—</span>
+              </template>
+
+              <template #celda-ingreso="{ valor }">
+                <span class="tabular-nums text-gray-500 dark:text-gray-400 text-xs">{{ valor }}</span>
               </template>
             </DataTable>
           </div>
@@ -99,6 +114,7 @@
   import DataTable from '../../components/ui/DataTable.vue'
   import Loading from '../../components/ui/Loading.vue'
   import Avatar from '../../components/ui/Avatar.vue'
+  import Badge from '../../components/ui/Badge.vue'
 
   const route = useRoute()
   const router = useRouter()
@@ -118,6 +134,15 @@
     { clave: 'sindicato', titulo: 'Sindicato', ancho: 'min-w-[120px]' },
     { clave: 'ingreso', titulo: 'Ingreso', ancho: 'w-28' },
   ]
+
+  const getRegimenVariant = (regimen: string) => {
+    if (!regimen) return 'gray'
+    const r = regimen.toLowerCase()
+    if (r.includes('276')) return 'brand'
+    if (r.includes('728')) return 'success'
+    if (r.includes('1057') || r.includes('cas')) return 'info'
+    return 'gray'
+  }
 
   async function recargar() {
     await reportesStore.cargarTrabajadoresPorArea(idArea.value)

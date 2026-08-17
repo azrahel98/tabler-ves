@@ -8,7 +8,8 @@
       <button
         v-if="esAdmin"
         @click="isEditModalOpen = true"
-        class="rounded-full p-1 text-gray-400 hover:bg-primary/10 hover:text-primary dark:hover:bg-primary/20 dark:hover:text-brand-300 transition-colors"
+        class="rounded-full p-1 text-gray-400 hover:bg-primary/10 hover:text-primary dark:hover:bg-primary/20 dark:hover:text-brand-300 transition-colors touch-target-adapt"
+        aria-label="Editar información personal"
         title="Editar Información">
         <Pencil class="h-3.5 w-3.5" />
       </button>
@@ -115,14 +116,16 @@
           <div v-if="contactoEmergencia && esAdmin" class="flex items-center gap-1 shrink-0">
             <button
               @click="isEditContactoModalOpen = true"
-              class="rounded-md p-1 text-gray-400 hover:bg-gray-200/60 dark:hover:bg-white/5 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
+              class="rounded-md p-1 text-gray-400 hover:bg-gray-200/60 dark:hover:bg-white/5 hover:text-gray-700 dark:hover:text-gray-300 transition-colors touch-target-adapt"
+              aria-label="Editar contacto de emergencia"
               title="Editar Contacto">
               <Pencil class="h-3 w-3" />
             </button>
             <button
               @click="confirmarEliminar"
               :disabled="eliminando"
-              class="rounded-md p-1 text-gray-400 hover:bg-red-50 dark:hover:bg-red-950/20 hover:text-red-500 dark:hover:text-red-400 transition-colors disabled:opacity-50"
+              class="rounded-md p-1 text-gray-400 hover:bg-error-50 dark:hover:bg-error-950/20 hover:text-error-500 dark:hover:text-error-400 transition-colors disabled:opacity-50 touch-target-adapt"
+              aria-label="Eliminar contacto de emergencia"
               title="Eliminar Contacto">
               <Trash2 class="h-3 w-3" />
             </button>
@@ -147,6 +150,7 @@
             <a 
               :href="`tel:${contactoEmergencia.telefono}`"
               class="mt-0.5 inline-flex items-center gap-1.5 font-mono data-value text-gray-800 dark:text-white/90 tracking-wide hover:text-primary dark:hover:text-brand-300 transition-colors"
+              aria-label="Llamar al contacto de emergencia"
               title="Llamar contacto">
               <Phone class="h-3 w-3 text-gray-400 dark:text-gray-500 shrink-0" />
               {{ formatPhone(contactoEmergencia.telefono) }}
@@ -162,7 +166,8 @@
           <button
             v-if="esAdmin"
             @click="isEditContactoModalOpen = true"
-            class="rounded-md flex items-center gap-1.5 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-primary hover:bg-primary/5 dark:text-brand-400 dark:hover:bg-brand-500/10 transition-colors border border-primary/10 dark:border-brand-500/10">
+            aria-label="Registrar contacto de emergencia"
+            class="rounded-md flex items-center gap-1.5 px-2.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-primary hover:bg-primary/5 dark:text-brand-400 dark:hover:bg-brand-500/10 transition-colors border border-primary/10 dark:border-brand-500/10">
             <Plus class="h-3 w-3" />
             <span>Registrar</span>
           </button>
@@ -229,3 +234,17 @@
     }
   }
 </script>
+
+<style scoped>
+  /* Ajuste de touch target premium para botones pequeños en pantallas táctiles */
+  @media (pointer: coarse) {
+    .touch-target-adapt {
+      min-width: 44px;
+      min-height: 44px;
+      padding: 10px !important;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+</style>

@@ -16,8 +16,9 @@
             <button
               @click="paginaAnterior"
               :disabled="paginaActual <= 1 || cargandoPdf"
-              class="inline-flex items-center justify-center h-7 w-7 rounded-md border border-gray-200 dark:border-white/10 text-gray-500 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed dark:border-strokedark dark:text-gray-400 dark:hover:bg-white/5 transition-colors">
-              <ChevronLeft class="h-3.5 w-3.5" />
+              aria-label="Página anterior"
+              class="inline-flex items-center justify-center h-9 w-9 rounded-md border border-gray-200 dark:border-white/10 text-gray-500 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed dark:text-gray-400 dark:hover:bg-white/5 transition-colors">
+              <ChevronLeft class="h-4 w-4" />
             </button>
             <span class="text-2xs font-semibold tracking-wider text-gray-400 dark:text-gray-500 uppercase px-2 tabular-nums">
               Pág. {{ paginaActual }} / {{ totalPaginas || '—' }}
@@ -25,8 +26,9 @@
             <button
               @click="paginaSiguiente"
               :disabled="paginaActual >= totalPaginas || cargandoPdf"
-              class="inline-flex items-center justify-center h-7 w-7 rounded-md border border-gray-200 dark:border-white/10 text-gray-500 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed dark:border-strokedark dark:text-gray-400 dark:hover:bg-white/5 transition-colors">
-              <ChevronRight class="h-3.5 w-3.5" />
+              aria-label="Página siguiente"
+              class="inline-flex items-center justify-center h-9 w-9 rounded-md border border-gray-200 dark:border-white/10 text-gray-500 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed dark:text-gray-400 dark:hover:bg-white/5 transition-colors">
+              <ChevronRight class="h-4 w-4" />
             </button>
           </template>
           <span v-else class="text-xs font-semibold text-gray-500 dark:text-gray-400 flex items-center gap-1.5 py-1">
@@ -41,8 +43,9 @@
             <button
               @click="ajustarZoom(-0.25)"
               :disabled="escala <= 0.5"
-              class="inline-flex items-center justify-center h-7 w-7 rounded-md border border-gray-200 dark:border-white/10 text-gray-500 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed dark:text-gray-400 dark:hover:bg-white/5 transition-colors">
-              <Minus class="h-3.5 w-3.5" />
+              aria-label="Disminuir zoom"
+              class="inline-flex items-center justify-center h-9 w-9 rounded-md border border-gray-200 dark:border-white/10 text-gray-500 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed dark:text-gray-400 dark:hover:bg-white/5 transition-colors">
+              <Minus class="h-4 w-4" />
             </button>
             <span class="text-2xs font-semibold tracking-wider text-gray-400 dark:text-gray-500 w-12 text-center tabular-nums">
               {{ Math.round(escala * 100) }}%
@@ -50,8 +53,9 @@
             <button
               @click="ajustarZoom(0.25)"
               :disabled="escala >= 3"
-              class="inline-flex items-center justify-center h-7 w-7 rounded-md border border-gray-200 dark:border-white/10 text-gray-500 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed dark:text-gray-400 dark:hover:bg-white/5 transition-colors">
-              <Plus class="h-3.5 w-3.5" />
+              aria-label="Aumentar zoom"
+              class="inline-flex items-center justify-center h-9 w-9 rounded-md border border-gray-200 dark:border-white/10 text-gray-500 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed dark:text-gray-400 dark:hover:bg-white/5 transition-colors">
+              <Plus class="h-4 w-4" />
             </button>
             <button
               @click="resetZoom"
@@ -70,7 +74,7 @@
 
       <div ref="contenedorRef" class="flex-1 overflow-auto flex items-start justify-center p-4">
         <canvas v-show="!usarVisorNativo" ref="canvasRef" class="shadow-lg rounded max-w-none"></canvas>
-        <iframe v-if="usarVisorNativo && urlPrevia" :src="urlPrevia" class="w-full h-full border-none bg-white rounded-lg"></iframe>
+        <iframe v-if="usarVisorNativo && urlPrevia" :src="urlPrevia" title="Visor nativo de documento PDF" class="w-full h-full border-none bg-white rounded-lg"></iframe>
       </div>
 
       <Transition name="fade">
@@ -86,9 +90,10 @@
         <!-- Izquierda: Documento Asociado -->
         <div class="flex-1 min-w-0 max-w-md w-full relative">
           <div class="flex items-center gap-2">
-            <span class="text-2xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500 whitespace-nowrap">Asociar:</span>
+            <label for="asociar-documento-select" class="text-2xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500 whitespace-nowrap">Asociar:</label>
             <div class="relative flex-1 flex gap-1.5 items-center">
               <select
+                id="asociar-documento-select"
                 v-model="documentoLocal"
                 class="w-full text-xs rounded-lg border border-gray-200 dark:border-white/10 bg-transparent px-3 py-1.5 outline-none transition focus:border-primary active:border-primary dark:bg-white/5 dark:text-white/80">
                 <option :value="null">Sin asociar</option>
@@ -224,7 +229,6 @@
       pdfDoc = await tarea.promise
       totalPaginas.value = pdfDoc.numPages
 
-      await renderPagina(1)
       await renderPagina(1)
     } catch (e: any) {
       errorPdf.value = e?.message || 'Error al procesar el documento en Canvas'

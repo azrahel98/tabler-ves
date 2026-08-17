@@ -9,7 +9,8 @@
       <button
         v-if="esAdmin"
         @click="openModal(null)"
-        class="rounded-lg flex items-center gap-1.5 px-2.5 py-0.5 text-gray-505 border border-gray-200/60 dark:border-white/10 hover:bg-gray-100 hover:text-brand-500 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-brand-400 transition-colors"
+        class="rounded-lg flex items-center gap-1.5 px-2.5 py-0.5 text-gray-500 border border-gray-200/60 dark:border-white/10 hover:bg-gray-100 hover:text-brand-500 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-brand-400 transition-colors"
+        aria-label="Agregar grado académico"
         title="Agregar Grado">
         <Plus class="h-3 w-3" />
         <span class="text-[9px] font-bold uppercase tracking-wider">Agregar</span>
@@ -43,13 +44,15 @@
         <div v-if="esAdmin" class="opacity-0 group-hover:opacity-100 shrink-0 flex items-center gap-1 transition-all">
           <button
             @click="openModal(grado)"
-            class="rounded-lg p-1 text-gray-400 hover:bg-primary/10 hover:text-primary dark:hover:bg-primary/20 dark:hover:text-brand-300 transition-all"
+            class="rounded-lg p-1 text-gray-400 hover:bg-primary/10 hover:text-primary dark:hover:bg-primary/20 dark:hover:text-brand-300 transition-all touch-target-adapt"
+            aria-label="Editar grado académico"
             title="Editar">
             <Pencil class="h-3 w-3" />
           </button>
           <button
             @click="abrirEliminar(grado)"
-            class="rounded-lg p-1 text-gray-400 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-500/10 dark:hover:text-red-400 transition-all"
+            class="rounded-lg p-1 text-gray-400 hover:bg-error-50 hover:text-error-600 dark:hover:bg-error-500/10 dark:hover:text-error-400 transition-all touch-target-adapt"
+            aria-label="Eliminar grado académico"
             title="Eliminar">
             <Trash2 class="h-3 w-3" />
           </button>
@@ -67,7 +70,7 @@
           <p class="text-body-tiny text-gray-400 dark:text-gray-500 mt-0.5">No hay formación registrada.</p>
         </div>
       </div>
-      <button v-if="esAdmin" @click="openModal(null)" class="shrink-0 text-body-tiny font-bold uppercase tracking-wider text-primary hover:text-brand-500 flex items-center gap-1 transition-colors bg-primary/5 hover:bg-primary/10 px-2.5 py-1 rounded-lg">
+      <button v-if="esAdmin" @click="openModal(null)" aria-label="Agregar grado académico" class="shrink-0 text-body-tiny font-bold uppercase tracking-wider text-primary hover:text-brand-500 flex items-center gap-1 transition-colors bg-primary/5 hover:bg-primary/10 px-2.5 py-1 rounded-lg">
         <Plus class="h-3 w-3" /> Añadir
       </button>
     </div>
@@ -101,22 +104,22 @@
   const colorNivel = (nivel: string) => {
     if (!nivel) return 'bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400'
     const n = nivel.toLowerCase()
-    if (n.includes('doctor')) return 'bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-300'
-    if (n.includes('maest')) return 'bg-indigo-100 text-indigo-700 dark:bg-indigo-500/20 dark:text-indigo-300'
-    if (n.includes('licen') || n.includes('bach')) return 'bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-300'
-    if (n.includes('téc') || n.includes('tec')) return 'bg-cyan-100 text-cyan-700 dark:bg-cyan-500/20 dark:text-cyan-300'
+    if (n.includes('doctor')) return 'bg-warning-100 text-warning-700 dark:bg-warning-500/20 dark:text-warning-300'
+    if (n.includes('maest')) return 'bg-brand-100 text-brand-700 dark:bg-brand-500/20 dark:text-brand-300'
+    if (n.includes('licen') || n.includes('bach')) return 'bg-blue-light-100 text-blue-light-700 dark:bg-blue-light-500/20 dark:text-blue-light-300'
+    if (n.includes('téc') || n.includes('tec')) return 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300'
     return 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300'
   }
 
   const badgeNivel = (nivel: string) => {
-    if (!nivel) return 'bg-gray-50 text-gray-600 ring-gray-600/10 dark:bg-gray-400/10 dark:text-gray-400 dark:ring-gray-400/20'
+    if (!nivel) return 'bg-gray-50 text-gray-600 ring-gray-200/50 dark:bg-gray-800/10 dark:text-gray-400 dark:ring-white/5'
     const n = nivel.toLowerCase()
-    if (n.includes('doctor')) return 'bg-amber-50 text-amber-700 ring-amber-700/10 dark:bg-amber-500/10 dark:text-amber-400 dark:ring-amber-500/20'
-    if (n.includes('mg')) return 'bg-indigo-50 text-indigo-700 ring-indigo-700/10 dark:bg-indigo-500/10 dark:text-indigo-400 dark:ring-indigo-500/20'
-    if (n.includes('licen')) return 'bg-blue-50 text-blue-700 ring-blue-700/10 dark:bg-blue-500/10 dark:text-blue-400 dark:ring-blue-500/20'
-    if (n.includes('bach')) return 'bg-sky-50 text-sky-700 ring-sky-700/10 dark:bg-sky-500/10 dark:text-sky-400 dark:ring-sky-500/20'
-    if (n.includes('tec') || n.includes('tec')) return 'bg-cyan-50 text-cyan-700 ring-cyan-700/10 dark:bg-cyan-500/10 dark:text-cyan-400 dark:ring-cyan-400/20'
-    return 'bg-gray-50 text-gray-600 ring-gray-600/10 dark:bg-gray-400/10 dark:text-gray-400 dark:ring-gray-400/20'
+    if (n.includes('doctor')) return 'bg-warning-50 text-warning-700 ring-warning-200/50 dark:bg-warning-500/10 dark:text-warning-400 dark:ring-warning-500/20'
+    if (n.includes('mg') || n.includes('maest')) return 'bg-brand-50 text-brand-700 ring-brand-200/50 dark:bg-brand-500/10 dark:text-brand-400 dark:ring-brand-500/20'
+    if (n.includes('licen')) return 'bg-blue-light-50 text-blue-light-700 ring-blue-light-200/50 dark:bg-blue-light-500/10 dark:text-blue-light-400 dark:ring-blue-light-500/20'
+    if (n.includes('bach')) return 'bg-blue-light-50 text-blue-light-700 ring-blue-light-200/50 dark:bg-blue-light-500/10 dark:text-blue-light-400 dark:ring-blue-light-500/20'
+    if (n.includes('tec')) return 'bg-gray-50 text-gray-700 ring-gray-200/50 dark:bg-gray-800/10 dark:text-gray-400 dark:ring-white/5'
+    return 'bg-gray-50 text-gray-600 ring-gray-200/50 dark:bg-gray-800/10 dark:text-gray-400 dark:ring-white/5'
   }
 
   const getNivelIcon = (nivel: string) => {
@@ -162,3 +165,28 @@
     }
   }
 </script>
+
+<style scoped>
+  /* Asegurar que las acciones de editar/eliminar siempre sean visibles en dispositivos táctiles */
+  @media (hover: none), (pointer: coarse) {
+    .group-hover\:opacity-100 {
+      opacity: 1 !important;
+    }
+    
+    .opacity-0 {
+      opacity: 1 !important;
+    }
+  }
+
+  /* Ajuste de touch target premium para botones pequeños en pantallas táctiles */
+  @media (pointer: coarse) {
+    .touch-target-adapt {
+      min-width: 44px;
+      min-height: 44px;
+      padding: 10px !important;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+</style>

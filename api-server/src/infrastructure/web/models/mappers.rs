@@ -153,22 +153,38 @@ impl From<crate::infrastructure::web::models::dash::ReporteRenuncias> for crate:
 impl From<crate::domain::entities::login::Usuario> for crate::infrastructure::web::models::login::Usuario {
     fn from(e: crate::domain::entities::login::Usuario) -> Self {
         Self {
-            id: e.id.into(),
-            nickname: e.nickname.into(),
-            pass: e.pass.into(),
-            nombre: e.nombre.into(),
-            nivel: e.nivel.into(),
+            id: e.id,
+            google_sub: e.google_sub,
+            email: e.email,
+            full_name: e.full_name,
+            picture_url: e.picture_url,
+            role: e.role,
+            status: e.status,
+            created_at: e.created_at.map(|d| d.format("%Y-%m-%d %H:%M:%S").to_string()),
+            updated_at: e.updated_at.map(|d| d.format("%Y-%m-%d %H:%M:%S").to_string()),
         }
     }
 }
 impl From<crate::infrastructure::web::models::login::Usuario> for crate::domain::entities::login::Usuario {
     fn from(m: crate::infrastructure::web::models::login::Usuario) -> Self {
         Self {
-            id: m.id.into(),
-            nickname: m.nickname.into(),
-            pass: m.pass.into(),
-            nombre: m.nombre.into(),
-            nivel: m.nivel.into(),
+            id: m.id,
+            google_sub: m.google_sub,
+            email: m.email,
+            full_name: m.full_name,
+            picture_url: m.picture_url,
+            role: m.role,
+            status: m.status,
+            created_at: m.created_at.and_then(|s| {
+                chrono::NaiveDateTime::parse_from_str(&s, "%Y-%m-%d %H:%M:%S")
+                    .ok()
+                    .map(|ndt| chrono::DateTime::<chrono::Utc>::from_naive_utc_and_offset(ndt, chrono::Utc))
+            }),
+            updated_at: m.updated_at.and_then(|s| {
+                chrono::NaiveDateTime::parse_from_str(&s, "%Y-%m-%d %H:%M:%S")
+                    .ok()
+                    .map(|ndt| chrono::DateTime::<chrono::Utc>::from_naive_utc_and_offset(ndt, chrono::Utc))
+            }),
         }
     }
 }
@@ -236,6 +252,7 @@ impl From<crate::domain::entities::personal::Vinculos> for crate::infrastructure
         Self {
             id: e.id.into(),
             dni: e.dni.into(),
+            doc_ingreso_id: e.doc_ingreso_id.into(),
             doc_ingreso: e.doc_ingreso.into(),
             numero_doc_ingreso: e.numero_doc_ingreso.into(),
             descrip_ingreso: e.descrip_ingreso.into(),
@@ -248,17 +265,19 @@ impl From<crate::domain::entities::personal::Vinculos> for crate::infrastructure
             cargo_estructural: e.cargo_estructural.into(),
             grupo_ocupacional: e.grupo_ocupacional.into(),
             estado: e.estado.into(),
+            doc_salida_id: e.doc_salida_id.into(),
             doc_salida: e.doc_salida.into(),
             descrip_salida: e.descrip_salida.into(),
             fecha_salida: e.fecha_salida.into(),
             numero_doc_salida: e.numero_doc_salida.into(),
             sindicato: e.sindicato.into(),
+            id_evento: e.id_evento.into(),
             tipo_evento: e.tipo_evento.into(),
             estado_evento: e.estado_evento.into(),
+            doc_evento_id: e.doc_evento_id.into(),
             doc_evento_tipo: e.doc_evento_tipo.into(),
             numero_doc_evento: e.numero_doc_evento.into(),
             fecha_evento: e.fecha_evento.into(),
-            id_evento: e.id_evento.into(),
         }
     }
 }
@@ -267,6 +286,7 @@ impl From<crate::infrastructure::web::models::personal::Vinculos> for crate::dom
         Self {
             id: m.id.into(),
             dni: m.dni.into(),
+            doc_ingreso_id: m.doc_ingreso_id.into(),
             doc_ingreso: m.doc_ingreso.into(),
             numero_doc_ingreso: m.numero_doc_ingreso.into(),
             descrip_ingreso: m.descrip_ingreso.into(),
@@ -279,17 +299,19 @@ impl From<crate::infrastructure::web::models::personal::Vinculos> for crate::dom
             cargo_estructural: m.cargo_estructural.into(),
             grupo_ocupacional: m.grupo_ocupacional.into(),
             estado: m.estado.into(),
+            doc_salida_id: m.doc_salida_id.into(),
             doc_salida: m.doc_salida.into(),
             descrip_salida: m.descrip_salida.into(),
             fecha_salida: m.fecha_salida.into(),
             numero_doc_salida: m.numero_doc_salida.into(),
             sindicato: m.sindicato.into(),
+            id_evento: m.id_evento.into(),
             tipo_evento: m.tipo_evento.into(),
             estado_evento: m.estado_evento.into(),
+            doc_evento_id: m.doc_evento_id.into(),
             doc_evento_tipo: m.doc_evento_tipo.into(),
             numero_doc_evento: m.numero_doc_evento.into(),
             fecha_evento: m.fecha_evento.into(),
-            id_evento: m.id_evento.into(),
         }
     }
 }
@@ -299,6 +321,7 @@ impl From<crate::domain::entities::personal::Documento> for crate::infrastructur
         Self {
             id: e.id.into(),
             tipo: e.tipo.into(),
+            area_id: e.area_id.into(),
             numero: e.numero.into(),
             fecha: e.fecha.into(),
             fecha_valida: e.fecha_valida.into(),
@@ -314,6 +337,7 @@ impl From<crate::infrastructure::web::models::personal::Documento> for crate::do
         Self {
             id: m.id.into(),
             tipo: m.tipo.into(),
+            area_id: m.area_id.into(),
             numero: m.numero.into(),
             fecha: m.fecha.into(),
             fecha_valida: m.fecha_valida.into(),

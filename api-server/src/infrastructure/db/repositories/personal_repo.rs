@@ -60,13 +60,12 @@ pub async fn get_perfil_by_dni(db: &MySqlPool, dni: &str) -> Result<Perfil, sqlx
     .await
 }
 pub async fn get_vinculos_by_dni(db: &MySqlPool, dni: &str) -> Result<Vec<Vinculos>, sqlx::Error> {
-    sqlx::query_as!(
-        Vinculos,
+    sqlx::query_as::<_, Vinculos>(
         r#"
-        select * from vinculos_vigentes where dni = ? order by fecha_ingreso desc
+        SELECT * FROM vinculos_vigentes WHERE dni = ? ORDER BY fecha_ingreso DESC
         "#,
-        dni
     )
+    .bind(dni)
     .fetch_all(db)
     .await
 }

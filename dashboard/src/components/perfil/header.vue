@@ -19,24 +19,24 @@
         <!-- Nombre y datos -->
         <div class="flex flex-col">
           <div class="flex flex-wrap items-center gap-2.5 mb-1.5">
-            <h4 class="text-title-lg font-semibold -tracking-wide text-[#1a1a3e] dark:text-white/95">
+            <h4 class="text-title-lg font-semibold -tracking-wide text-foreground dark:text-white/90">
               {{ store.perfilActual.nombre }}
             </h4>
           </div>
 
           <div class="flex flex-row items-center gap-3">
-            <div class="flex items-center gap-1.5 text-[0.8125rem] text-[#6b7280] dark:text-slate-400 tabular-nums">
+            <div class="flex items-center gap-1.5 text-[0.8125rem] text-muted-foreground dark:text-gray-400 tabular-nums">
               <CreditCard class="w-3.5 h-3.5 shrink-0" />
               <span>{{ store.perfilActual.dni }}</span>
             </div>
             <div v-if="fechaNacimiento" class="flex items-center gap-3">
-              <div class="h-3.5 w-px bg-[#e4e7ec] dark:bg-slate-700"></div>
-              <div class="flex items-center gap-1.5 text-[0.8125rem] text-[#6b7280] dark:text-slate-400 tabular-nums">
+              <div class="h-3.5 w-px bg-gray-200 dark:bg-white/10"></div>
+              <div class="flex items-center gap-1.5 text-[0.8125rem] text-muted-foreground dark:text-gray-400 tabular-nums">
                 <Calendar class="w-3.5 h-3.5 shrink-0" />
                 <span>{{ fechaNacimiento }}</span>
               </div>
-              <div class="h-3.5 w-px bg-[#e4e7ec] dark:bg-slate-700"></div>
-              <span class="text-[0.8125rem] text-[#6b7280] dark:text-slate-400 tabular-nums">{{ edad }} años</span>
+              <div class="h-3.5 w-px bg-gray-200 dark:bg-white/10"></div>
+              <span class="text-[0.8125rem] text-muted-foreground dark:text-gray-400 tabular-nums">{{ edad }} años</span>
             </div>
           </div>
         </div>
