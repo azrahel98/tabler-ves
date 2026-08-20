@@ -15,8 +15,10 @@ import {
   IconCommand,
 } from '@tabler/icons-vue'
 import { useAuthStore } from '@/stores/auth'
+import { useInterfazStore } from '@/stores/interfaz'
 
 const emit = defineEmits<{ (e: 'toggleSidebar'): void }>()
+const interfazStore = useInterfazStore()
 
 const router = useRouter()
 const oscuro = ref(false)
@@ -155,9 +157,9 @@ onUnmounted(() => {
       <div class="flex items-center gap-3">
         <button
           type="button"
-          @click="emit('toggleSidebar')"
-          class="inline-flex items-center justify-center h-9 w-9 rounded-xl text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200 transition-colors cursor-pointer md:hidden focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-          aria-label="Abrir menú">
+          @click="interfazStore.alternarMenuLateral(); emit('toggleSidebar')"
+          class="inline-flex items-center justify-center h-9 w-9 rounded-xl text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200 transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+          :aria-label="interfazStore.menuLateralColapsado ? 'Expandir menú lateral' : 'Colapsar menú lateral'">
           <IconMenu2 class="h-5 w-5" />
         </button>
 

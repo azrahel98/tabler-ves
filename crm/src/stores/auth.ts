@@ -3,6 +3,7 @@ import { computed, ref } from 'vue'
 import { apiClient } from '@/api/client'
 import type { GoogleRegisterPayload, LoginResponse, RegisterResponse, User } from '@/api/types'
 import router from '@/router'
+import { tokenExpirado } from '@/utils/token'
 
 export const useAuthStore = defineStore('auth', () => {
 	const token = ref<string | null>(localStorage.getItem('auth_token'))
@@ -12,7 +13,18 @@ export const useAuthStore = defineStore('auth', () => {
 	const isLoading = ref<boolean>(false)
 	const error = ref<string | null>(null)
 
-	const isAuthenticated = computed(() => !!token.value)
+	const isAuthenticated = computed(() => {
+		if (!token.value) return false
+		return !tokenExpirado(token.value)
+	})
+
+	function verificarToken(): boolean {
+		if (!token.value || tokenExpirado(token.value)) {
+			cerrarSesion()
+			return false
+		}
+		return true
+	}
 
 	async function loginWithGoogle(googleSub: string, email: string): Promise<LoginResponse> {
 		isLoading.value = true
@@ -55,12 +67,18 @@ export const useAuthStore = defineStore('auth', () => {
 		}
 	}
 
-	function logout() {
+	function cerrarSesion() {
 		token.value = null
 		currentUser.value = null
 		localStorage.removeItem('auth_token')
 		localStorage.removeItem('auth_user')
-		router.push({ name: 'login' })
+		if (router.currentRoute.value?.name && router.currentRoute.value.name !== 'login') {
+			router.push({ name: 'login' })
+		}
+	}
+
+	function logout() {
+		cerrarSesion()
 	}
 
 	return {
@@ -72,5 +90,7 @@ export const useAuthStore = defineStore('auth', () => {
 		loginWithGoogle,
 		registerWithGoogle,
 		logout,
+		cerrarSesion,
+		verificarToken,
 	}
 })

@@ -351,7 +351,7 @@ onUnmounted(() => {
 <template>
   <div
     ref="contenedorRef"
-    class="relative w-full rounded-xl border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800 overflow-hidden flex flex-col">
+    class="relative w-full rounded-xl border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800 overflow-hidden flex flex-col h-min">
     <!-- Header del Mapa -->
     <div
       class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-100 px-4 py-3 dark:border-gray-700 bg-white dark:bg-gray-800 z-10">

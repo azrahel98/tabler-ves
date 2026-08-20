@@ -1,6 +1,16 @@
+import router from '@/router'
+import { tokenExpirado } from '@/utils/token'
 import { ApiError, type ApiErrorResponse } from './types'
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:4010'
+
+function manejarSesionExpirada() {
+	localStorage.removeItem('auth_token')
+	localStorage.removeItem('auth_user')
+	if (router.currentRoute.value?.name && router.currentRoute.value.name !== 'login') {
+		router.push({ name: 'login' })
+	}
+}
 
 function getHeaders(customHeaders?: HeadersInit, isFormData = false): Headers {
 	const headers = new Headers(customHeaders)
@@ -10,8 +20,14 @@ function getHeaders(customHeaders?: HeadersInit, isFormData = false): Headers {
 	}
 
 	const token = localStorage.getItem('auth_token')
-	if (token && !headers.has('token')) {
-		headers.set('token', token)
+	if (token) {
+		if (tokenExpirado(token)) {
+			manejarSesionExpirada()
+			throw new ApiError(401, 'Sesión expirada')
+		}
+		if (!headers.has('token')) {
+			headers.set('token', token)
+		}
 	}
 
 	return headers
@@ -41,6 +57,10 @@ async function request<T>(endpoint: string, options: RequestInit = {}, isFormDat
 				errorMessage = errorData.error
 			}
 		} catch {
+		}
+
+		if (response.status === 401 || response.status === 403) {
+			manejarSesionExpirada()
 		}
 
 		throw new ApiError(errorCode, errorMessage)
@@ -73,6 +93,10 @@ async function requestBlob(endpoint: string, options: RequestInit = {}): Promise
 			if (errorData.code) errorCode = errorData.code
 			if (errorData.error) errorMessage = errorData.error
 		} catch {
+		}
+
+		if (response.status === 401 || response.status === 403) {
+			manejarSesionExpirada()
 		}
 
 		throw new ApiError(errorCode, errorMessage)
@@ -130,4 +154,3 @@ export const apiClient = {
 		return request<T>(endpoint, { ...options, method: 'DELETE' })
 	},
 }
-

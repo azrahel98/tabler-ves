@@ -59,7 +59,7 @@ const opcionesDoughnut = {
 </script>
 
 <template>
-  <div class="flex flex-col rounded-xl border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800">
+  <div class="flex flex-col rounded-xl border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800 h-min">
     <div class="flex items-center justify-between border-b border-gray-100 px-4 py-3 dark:border-gray-700">
       <div class="flex items-center gap-2">
         <div

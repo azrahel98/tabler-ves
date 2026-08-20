@@ -11,6 +11,7 @@ import {
   IconAlertCircle,
   IconLoader2,
   IconCalendar,
+  IconCake,
   IconGenderMale,
   IconGenderFemale,
   IconBuildingCommunity,
@@ -138,16 +139,19 @@ function calcularEdad(fechaNacimiento: string | null): number | null {
                   <IconCalendar class="h-3.5 w-3.5 text-slate-400 dark:text-slate-500 shrink-0" />
                   <span>F. Nacimiento</span>
                 </span>
-                <div class="text-right">
-                  <span class="font-semibold text-gray-800 dark:text-white">{{
-                    $formatearFecha(perfil.nacimiento)
-                  }}</span>
-                  <span
-                    v-if="calcularEdad(perfil.nacimiento) !== null"
-                    class="ml-1 px-1.5 py-0.5 rounded bg-gray-100 dark:bg-navy-900 text-2xs font-bold text-gray-600 dark:text-gray-300">
-                    {{ calcularEdad(perfil.nacimiento) }} a.
-                  </span>
-                </div>
+                <span class="font-semibold text-gray-800 dark:text-white">
+                  {{ $formatearFecha(perfil.nacimiento) }}
+                </span>
+              </div>
+
+              <div v-if="calcularEdad(perfil.nacimiento) !== null" class="flex items-center justify-between">
+                <span class="flex items-center gap-2 text-gray-600 dark:text-gray-300">
+                  <IconCake class="h-3.5 w-3.5 text-slate-400 dark:text-slate-500 shrink-0" />
+                  <span>Edad</span>
+                </span>
+                <span class="font-semibold text-gray-800 dark:text-white">
+                  {{ calcularEdad(perfil.nacimiento) }} años
+                </span>
               </div>
 
               <div v-if="perfil.sexo" class="flex items-center justify-between">

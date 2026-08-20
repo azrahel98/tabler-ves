@@ -67,18 +67,18 @@ onMounted(async () => {
     </div>
 
     <template v-else>
-      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 items-start">
         <CardDistribucionRegimen :resumen="resumen" />
         <CardDistribucionGenero :resumen="resumen" />
         <CardAfiliacionSindical :resumen="resumen" />
       </div>
 
-      <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
+      <div class="grid grid-cols-1 gap-4 lg:grid-cols-2 items-start">
         <GraficoBarrasAreas :areas="areaReport" />
         <WidgetTrabajadoresRecientes :trabajadores="trabajadoresNuevos" />
       </div>
 
-      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 items-start">
         <CardDistribucionEdad :rangos-edad="rangosEdad" />
         <CardRangosAntiguedad :rangos-antiguedad="rangosAntiguedad" />
         <WidgetCumpleanos :cumpleanos="cumpleanos" />
