@@ -5,6 +5,7 @@ import {
   registerWithGoogleApi,
   type AuthUser,
 } from '@/services/auth'
+import { tokenExpirado } from '@/utils/token'
 
 export interface User extends AuthUser {
   name?: string
@@ -12,14 +13,31 @@ export interface User extends AuthUser {
 }
 
 export const useAuthStore = defineStore('auth', () => {
-  const token = ref<string | null>(localStorage.getItem('crm_token'))
+  const storedToken = localStorage.getItem('crm_token')
+  const initialToken = tokenExpirado(storedToken) ? null : storedToken
+
+  if (storedToken && !initialToken) {
+    localStorage.removeItem('crm_token')
+    localStorage.removeItem('crm_user')
+  }
+
+  const token = ref<string | null>(initialToken)
   const user = ref<User | null>(
-    localStorage.getItem('crm_user')
+    initialToken && localStorage.getItem('crm_user')
       ? JSON.parse(localStorage.getItem('crm_user') as string)
       : null,
   )
 
-  const isAuthenticated = computed(() => !!token.value)
+  const isAuthenticated = computed(() => {
+    if (!token.value) return false
+    if (tokenExpirado(token.value)) {
+      logout()
+      return false
+    }
+    return true
+  })
+
+  const currentUser = computed(() => user.value)
 
   function setAuth(newToken: string, newUser: AuthUser) {
     const normalizedUser: User = {
@@ -59,6 +77,7 @@ export const useAuthStore = defineStore('auth', () => {
   return {
     token,
     user,
+    currentUser,
     isAuthenticated,
     setAuth,
     loginWithGoogle,

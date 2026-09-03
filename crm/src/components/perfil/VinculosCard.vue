@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import { formatDate } from '@/utils/date'
 import { useDetalleDocumentoStore } from '@/stores/detalleDocumento'
 import type { VinculoLaboral, ArchivoLegajo } from '@/api/perfil'
 import {
@@ -187,8 +188,8 @@ function obtenerRutaArchivo(archivo: ArchivoLegajo): string {
             <div class="text-right hidden sm:block">
               <div class="text-2xs font-semibold text-slate-700 dark:text-slate-200 flex items-center gap-1">
                 <IconCalendar class="h-3 w-3 text-slate-400" />
-                <span>{{ $formatearFecha(v.fecha_ingreso) }}</span>
-                <span v-if="v.fecha_salida" class="text-slate-400"> - {{ $formatearFecha(v.fecha_salida) }}</span>
+                <span>{{ formatDate(v.fecha_ingreso) }}</span>
+                <span v-if="v.fecha_salida" class="text-slate-400"> - {{ formatDate(v.fecha_salida) }}</span>
               </div>
               <div v-if="v.sueldo" class="text-2xs font-bold text-blue-600 dark:text-blue-400">
                 {{ formatearMoneda(v.sueldo) }}
