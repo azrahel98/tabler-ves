@@ -17,6 +17,8 @@ import {
   IconAlertCircle,
   IconChevronDown,
   IconArrowsSort,
+  IconBuildingSkyscraper,
+  IconFileCertificate,
 } from '@tabler/icons-vue'
 
 interface Props {
@@ -105,8 +107,8 @@ const sortedVinculos = computed(() => {
             class="border-b border-border bg-muted/30 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground select-none">
             <tr>
               <th scope="col" class="px-3 sm:px-4 py-2.5 font-semibold">Cargo</th>
-              <th scope="col" class="hidden sm:table-cell px-3 sm:px-4 py-2.5 font-semibold">Área / Gerencia</th>
-              <th scope="col" class="hidden md:table-cell px-3 sm:px-4 py-2.5 font-semibold">Régimen</th>
+              <th scope="col" class="hidden sm:table-cell px-3 sm:px-4 py-2.5 font-semibold">Ingreso</th>
+              <th scope="col" class="hidden sm:table-cell px-3 sm:px-4 py-2.5 font-semibold">Cese</th>
               <th scope="col" class="px-3 sm:px-4 py-2.5 text-right font-semibold">Sueldo</th>
               <th scope="col" class="px-2 py-2.5 text-center w-10 sm:w-12">
                 <span class="sr-only">Detalle</span>
@@ -122,55 +124,43 @@ const sortedVinculos = computed(() => {
                 @keydown.space.prevent="toggleExpand(v.id)">
                 <td class="px-3 sm:px-4 py-2.5 min-w-0">
                   <div class="flex items-start gap-2.5">
-                    <span
-                      v-if="getVinculoStatusType(v) === 'success'"
-                      class="relative flex size-2 shrink-0 mt-1"
-                      title="Vínculo Activo / Vigente"
-                    >
-                      <span class="absolute inline-flex size-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
+                    <span v-if="getVinculoStatusType(v) === 'success'" class="relative flex size-2 shrink-0 mt-1"
+                      title="Vínculo Activo / Vigente">
+                      <span
+                        class="absolute inline-flex size-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
                       <span class="relative inline-flex size-2 rounded-full bg-emerald-500"></span>
                     </span>
-                    <span
-                      v-else-if="getVinculoStatusType(v) === 'warning'"
-                      class="relative flex size-2 shrink-0 mt-1"
-                      title="Inactivo sin documento de salida"
-                    >
-                      <span class="absolute inline-flex size-full animate-ping rounded-full bg-amber-400 opacity-75"></span>
+                    <span v-else-if="getVinculoStatusType(v) === 'warning'" class="relative flex size-2 shrink-0 mt-1"
+                      title="Inactivo sin documento de salida">
+                      <span
+                        class="absolute inline-flex size-full animate-ping rounded-full bg-amber-400 opacity-75"></span>
                       <span class="relative inline-flex size-2 rounded-full bg-amber-500"></span>
                     </span>
-                    <span
-                      v-else
-                      class="inline-flex size-2 rounded-full bg-muted-foreground/35 shrink-0 mt-1"
-                      title="Vínculo Concluido / Cesado"
-                    ></span>
+                    <span v-else class="inline-flex size-2 rounded-full bg-muted-foreground/35 shrink-0 mt-1"
+                      title="Vínculo Concluido / Cesado"></span>
 
                     <div class="min-w-0 flex-1">
                       <span class="font-medium text-foreground text-[11px] block wrap-break-word break-words"
                         :title="v.cargo">
                         {{ v.cargo }}
                       </span>
-                      <span class="text-[10px] text-muted-foreground block sm:hidden wrap-break-word break-words mt-0.5"
-                        :title="v.area">
-                        {{ v.area }}
+                      <span class="text-[10px] text-muted-foreground block sm:hidden font-mono mt-0.5">
+                        {{ formatDate(v.fecha_ingreso) }} &bull; {{ v.fecha_salida ? formatDate(v.fecha_salida) : 'Vigente' }}
                       </span>
-                      <div class="flex items-center gap-1.5 md:hidden mt-1">
-                        <span class="px-1.5 py-0.2 rounded bg-muted text-[10px] font-mono text-muted-foreground">
-                          {{ v.regimen }}
-                        </span>
-                      </div>
                     </div>
                   </div>
                 </td>
 
-                <td class="hidden sm:table-cell px-3 sm:px-4 py-2.5 min-w-0">
-                  <span class="text-[11px] text-muted-foreground block wrap-break-word break-words" :title="v.area">
-                    {{ v.area }}
+                <td class="hidden sm:table-cell px-3 sm:px-4 py-2.5 whitespace-nowrap">
+                  <span class="font-mono text-muted-foreground text-[11px]">
+                    {{ formatDate(v.fecha_ingreso) }}
                   </span>
                 </td>
 
-                <td class="hidden md:table-cell px-3 sm:px-4 py-2.5 whitespace-nowrap">
-                  <span class="px-2 py-0.5 rounded bg-muted text-[11px] font-mono text-muted-foreground font-medium">
-                    {{ v.regimen }}
+                <td class="hidden sm:table-cell px-3 sm:px-4 py-2.5 whitespace-nowrap">
+                  <span
+                    :class="v.fecha_salida ? 'font-mono text-muted-foreground text-[11px]' : 'text-[11px] font-medium text-emerald-600 dark:text-emerald-400'">
+                    {{ v.fecha_salida ? formatDate(v.fecha_salida) : 'Vigente' }}
                   </span>
                 </td>
 
@@ -196,17 +186,16 @@ const sortedVinculos = computed(() => {
                     <div
                       class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pb-2.5 border-b border-border/60">
                       <div class="flex items-center gap-2 flex-wrap">
-                        <Badge
-                          :variant="getBadgeVariant(getVinculoStatusType(v))"
-                          size="xs"
-                          class="gap-1.5"
-                        >
+                        <Badge :variant="getBadgeVariant(getVinculoStatusType(v))" size="xs" class="gap-1.5">
                           <span v-if="getVinculoStatusType(v) === 'success'" class="relative flex size-1.5 shrink-0">
-                            <span class="absolute inline-flex size-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
+                            <span
+                              class="absolute inline-flex size-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
                             <span class="relative inline-flex size-1.5 rounded-full bg-emerald-500"></span>
                           </span>
-                          <span v-else-if="getVinculoStatusType(v) === 'warning'" class="relative flex size-1.5 shrink-0">
-                            <span class="absolute inline-flex size-full animate-ping rounded-full bg-amber-400 opacity-75"></span>
+                          <span v-else-if="getVinculoStatusType(v) === 'warning'"
+                            class="relative flex size-1.5 shrink-0">
+                            <span
+                              class="absolute inline-flex size-full animate-ping rounded-full bg-amber-400 opacity-75"></span>
                             <span class="relative inline-flex size-1.5 rounded-full bg-amber-500"></span>
                           </span>
                           <span v-else class="inline-flex size-1.5 rounded-full bg-muted-foreground/50 shrink-0"></span>
@@ -228,10 +217,21 @@ const sortedVinculos = computed(() => {
                         <div
                           class="grid grid-cols-[115px_1fr] sm:grid-cols-[135px_1fr] items-start sm:items-center gap-2">
                           <span class="text-muted-foreground flex items-center gap-1.5 shrink-0">
+                            <IconBuildingSkyscraper class="size-4 text-muted-foreground shrink-0" /> Área:
+                          </span>
+                          <span class="font-medium text-foreground wrap-break-word break-words min-w-0"
+                            :title="v.area">
+                            {{ v.area || '-' }}
+                          </span>
+                        </div>
+
+                        <div
+                          class="grid grid-cols-[115px_1fr] sm:grid-cols-[135px_1fr] items-start sm:items-center gap-2">
+                          <span class="text-muted-foreground flex items-center gap-1.5 shrink-0">
                             <IconCalendar class="size-4 text-muted-foreground shrink-0" /> Fecha Ingreso:
                           </span>
                           <span class="font-mono font-medium text-foreground min-w-0">{{ formatDate(v.fecha_ingreso)
-                            }}</span>
+                          }}</span>
                         </div>
 
                         <div
@@ -286,12 +286,22 @@ const sortedVinculos = computed(() => {
                               {{ (v.sindicato || 'N')[0] }}
                             </span>
                             <span class="font-medium text-foreground truncate min-w-0">{{ v.sindicato || 'No Afiliado'
-                              }}</span>
+                            }}</span>
                           </div>
                         </div>
                       </div>
 
                       <div class="space-y-2.5">
+                        <div
+                          class="grid grid-cols-[115px_1fr] sm:grid-cols-[135px_1fr] items-start sm:items-center gap-2">
+                          <span class="text-muted-foreground flex items-center gap-1.5 shrink-0">
+                            <IconFileCertificate class="size-4 text-muted-foreground shrink-0" /> Régimen:
+                          </span>
+                          <span class="font-medium text-foreground truncate min-w-0" :title="v.regimen">
+                            {{ v.regimen || '-' }}
+                          </span>
+                        </div>
+
                         <div
                           class="grid grid-cols-[115px_1fr] sm:grid-cols-[135px_1fr] items-start sm:items-center gap-2">
                           <span class="text-muted-foreground flex items-center gap-1.5 shrink-0">

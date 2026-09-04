@@ -89,7 +89,7 @@ const authStore = useAuthStore()
           <span :class="isCollapsed ? 'lg:hidden truncate' : 'truncate'">Dashboard</span>
         </router-link>
 
-        <router-link to="/pruebas"
+        <!-- <router-link to="/pruebas"
           class="flex items-center rounded-lg text-sm  transition-colors text-sidebar-nav-foreground hover:bg-sidebar-nav-hover"
           :class="isCollapsed ? 'lg:justify-center lg:px-0 px-3 py-2.5' : 'px-3 py-2 gap-3'"
           :title="isCollapsed ? 'Componentes UI' : undefined" @click="emit('close')">
@@ -111,7 +111,7 @@ const authStore = useAuthStore()
           :title="isCollapsed ? 'Cards' : undefined" @click="emit('close')">
           <IconCards class="size-5 shrink-0" :stroke-width="1.3" />
           <span :class="isCollapsed ? 'lg:hidden truncate' : 'truncate'">Cards</span>
-        </router-link>
+        </router-link> -->
 
         <router-link to="/organigrama"
           class="flex items-center rounded-lg text-sm  transition-colors text-sidebar-nav-foreground hover:bg-sidebar-nav-hover"

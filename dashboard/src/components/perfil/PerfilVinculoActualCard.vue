@@ -49,7 +49,7 @@ const getBadgeVariant = (type: VinculoStatusType): 'success' | 'warning' | 'seco
       </div>
 
       <Badge :variant="getBadgeVariant(getVinculoStatusType(vinculoActivo))" size="xs"
-        class="gap-1.5 shrink-0 uppercase font-semibold text-[10px]">
+        class="gap-1.5 shrink-0 uppercase font-semibold ">
         <span v-if="getVinculoStatusType(vinculoActivo) === 'success'" class="relative flex size-1.5 shrink-0">
           <span class="absolute inline-flex size-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
           <span class="relative inline-flex size-1.5 rounded-full bg-emerald-500"></span>
@@ -67,7 +67,7 @@ const getBadgeVariant = (type: VinculoStatusType): 'success' | 'warning' | 'seco
     <div class="grid grid-cols-3 border-y border-border/60 py-3 my-1">
       <div>
         <span class="text-muted-foreground text-[11px]">Remuneración:</span>
-        <p class="font-semibold text-foreground text-sm">{{ formatMoneda(vinculoActivo.sueldo) }}</p>
+        <p class="font-semibold text-foreground text-xs">{{ formatMoneda(vinculoActivo.sueldo) }}</p>
       </div>
       <div class="border-l border-border/60 pl-4 sm:pl-6">
         <span class="text-muted-foreground text-[11px]">Plaza AIRHSP:</span>
@@ -75,7 +75,7 @@ const getBadgeVariant = (type: VinculoStatusType): 'success' | 'warning' | 'seco
       </div>
       <div class="border-l border-border/60 pl-4 sm:pl-6">
         <span class="text-muted-foreground text-[11px]">Régimen:</span>
-        <p class="font-semibold text-foreground text-sm truncate">{{ vinculoActivo.regimen }}</p>
+        <p class="font-semibold text-foreground text-xs truncate">{{ vinculoActivo.regimen }}</p>
       </div>
     </div>
 
@@ -85,14 +85,15 @@ const getBadgeVariant = (type: VinculoStatusType): 'success' | 'warning' | 'seco
           <span class="text-muted-foreground flex items-center gap-1.5 shrink-0">
             <IconCalendar class="size-4 text-muted-foreground" /> Fecha Ingreso:
           </span>
-          <span class="font-mono font-medium text-foreground">{{ formatDate(vinculoActivo.fecha_ingreso) }}</span>
+          <span class="font-mono  font-medium text-foreground">{{ formatDate(vinculoActivo.fecha_ingreso)
+          }}</span>
         </div>
 
         <div class="grid grid-cols-[130px_1fr] sm:grid-cols-[145px_1fr] items-center gap-2.5">
           <span class="text-muted-foreground flex items-center gap-1.5 shrink-0">
             <IconFileText class="size-4 text-muted-foreground" /> Doc. Ingreso:
           </span>
-          <span class="font-medium text-foreground truncate"
+          <span class="font-medium text-[11.2px] text-foreground truncate"
             :title="[vinculoActivo.doc_ingreso, vinculoActivo.numero_doc_ingreso].filter(Boolean).join(' N° ')">
             {{ [vinculoActivo.doc_ingreso, vinculoActivo.numero_doc_ingreso].filter(Boolean).join(' N° ') || '-' }}
           </span>
