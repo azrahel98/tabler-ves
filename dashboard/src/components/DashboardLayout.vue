@@ -1,16 +1,24 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import Sidebar from '@/components/Sidebar.vue'
 import Navbar from '@/components/Navbar.vue'
+import NotificationToast from '@/components/NotificationToast.vue'
+import { useNotificacionesStore } from '@/stores/notificaciones'
 
 const isSidebarOpen = ref(false)
 const isSidebarCollapsed = ref(false)
+const notifStore = useNotificacionesStore()
 
 onMounted(() => {
   const savedState = localStorage.getItem('crm_sidebar_collapsed')
   if (savedState !== null) {
     isSidebarCollapsed.value = savedState === 'true'
   }
+  notifStore.inicializar()
+})
+
+onUnmounted(() => {
+  notifStore.detenerStream()
 })
 
 const toggleCollapse = () => {
@@ -32,5 +40,7 @@ const toggleCollapse = () => {
         <router-view />
       </main>
     </div>
+
+    <NotificationToast />
   </div>
 </template>

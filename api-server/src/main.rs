@@ -9,6 +9,7 @@ mod infrastructure;
 pub struct AppState {
     pub db: MySqlPool,
     pub cliente_http: reqwest::Client,
+    pub notificaciones_tx: tokio::sync::broadcast::Sender<crate::domain::entities::notificacion::NotificacionEvento>,
 }
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
@@ -47,6 +48,7 @@ async fn main() -> std::io::Result<()> {
             std::process::exit(1);
         }
     };
+    let (notificaciones_tx, _notificaciones_rx) = tokio::sync::broadcast::channel(100);
     HttpServer::new(move || {
         let cors = Cors::default()
             .supports_credentials()
@@ -57,6 +59,7 @@ async fn main() -> std::io::Result<()> {
             .app_data(web::Data::new(AppState {
                 db: pool.clone(),
                 cliente_http: reqwest::Client::new(),
+                notificaciones_tx: notificaciones_tx.clone(),
             }))
             .app_data(web::Data::new(pool.clone()))
             .configure(crate::infrastructure::web::routes::login::init_routes)
@@ -64,6 +67,7 @@ async fn main() -> std::io::Result<()> {
             .configure(crate::infrastructure::web::routes::dash::init_routes)
             .configure(crate::infrastructure::web::routes::fileserver::init_routes)
             .configure(crate::infrastructure::web::routes::usuarios::init_routes)
+            .configure(crate::infrastructure::web::routes::notificacion::init_routes)
             .wrap(Logger::default())
             .wrap(cors)
     })

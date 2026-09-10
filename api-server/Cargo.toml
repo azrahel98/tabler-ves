@@ -32,4 +32,5 @@ rust_xlsxwriter = "0.79"
 calamine = { version = "0.26", features = ["dates"] }
 base64 = "0.22"
 ts-rs = { version = "12.0", features = ["chrono-impl", "no-serde-warnings"] }
+tokio = { version = "1", features = ["sync", "time", "macros"] }
 

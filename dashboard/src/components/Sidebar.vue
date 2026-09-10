@@ -7,9 +7,6 @@ import {
   IconLayoutDashboard,
   IconLayoutSidebarLeftCollapse,
   IconLayoutSidebarLeftExpand,
-  IconComponents,
-  IconTable,
-  IconCards,
   IconUser,
   IconSitemap,
 } from '@tabler/icons-vue'
@@ -53,8 +50,7 @@ const authStore = useAuthStore()
         </div>
         <div v-if="!isCollapsed" class="flex flex-col min-w-0">
           <span class="text-sm font-bold tracking-tight text-foreground">CRM Pulse</span>
-          <span class="text-[10px] font-medium text-muted-foreground -mt-0.5 tracking-wider uppercase">Admin
-            Suite</span>
+          <span class="text-[10px] font-medium text-muted-foreground -mt-0.5 tracking-wider uppercase">Admin Suite</span>
         </div>
       </router-link>
 
@@ -82,39 +78,15 @@ const authStore = useAuthStore()
 
       <nav class="space-y-1">
         <router-link to="/panel"
-          class="flex items-center rounded-lg text-sm  transition-colors text-sidebar-nav-foreground hover:bg-sidebar-nav-hover"
+          class="flex items-center rounded-lg text-sm transition-colors text-sidebar-nav-foreground hover:bg-sidebar-nav-hover"
           :class="isCollapsed ? 'lg:justify-center lg:px-0 px-3 py-2.5' : 'px-3 py-2 gap-3'"
           :title="isCollapsed ? 'Dashboard' : undefined" @click="emit('close')">
           <IconLayoutDashboard class="size-5 shrink-0" :stroke-width="1.3" />
           <span :class="isCollapsed ? 'lg:hidden truncate' : 'truncate'">Dashboard</span>
         </router-link>
 
-        <!-- <router-link to="/pruebas"
-          class="flex items-center rounded-lg text-sm  transition-colors text-sidebar-nav-foreground hover:bg-sidebar-nav-hover"
-          :class="isCollapsed ? 'lg:justify-center lg:px-0 px-3 py-2.5' : 'px-3 py-2 gap-3'"
-          :title="isCollapsed ? 'Componentes UI' : undefined" @click="emit('close')">
-          <IconComponents class="size-5 shrink-0" :stroke-width="1.3" />
-          <span :class="isCollapsed ? 'lg:hidden truncate' : 'truncate'">Componentes UI</span>
-        </router-link>
-
-        <router-link to="/tablas"
-          class="flex items-center rounded-lg text-sm transition-colors text-sidebar-nav-foreground hover:bg-sidebar-nav-hover"
-          :class="isCollapsed ? 'lg:justify-center lg:px-0 px-3 py-2.5' : 'px-3 py-2 gap-3'"
-          :title="isCollapsed ? 'DataTables' : undefined" @click="emit('close')">
-          <IconTable class="size-5 shrink-0" :stroke-width="1.3" />
-          <span :class="isCollapsed ? 'lg:hidden truncate' : 'truncate'">DataTables</span>
-        </router-link>
-
-        <router-link to="/tarjetas"
-          class="flex items-center rounded-lg text-sm  transition-colors text-sidebar-nav-foreground hover:bg-sidebar-nav-hover"
-          :class="isCollapsed ? 'lg:justify-center lg:px-0 px-3 py-2.5' : 'px-3 py-2 gap-3'"
-          :title="isCollapsed ? 'Cards' : undefined" @click="emit('close')">
-          <IconCards class="size-5 shrink-0" :stroke-width="1.3" />
-          <span :class="isCollapsed ? 'lg:hidden truncate' : 'truncate'">Cards</span>
-        </router-link> -->
-
         <router-link to="/organigrama"
-          class="flex items-center rounded-lg text-sm  transition-colors text-sidebar-nav-foreground hover:bg-sidebar-nav-hover"
+          class="flex items-center rounded-lg text-sm transition-colors text-sidebar-nav-foreground hover:bg-sidebar-nav-hover"
           :class="isCollapsed ? 'lg:justify-center lg:px-0 px-3 py-2.5' : 'px-3 py-2 gap-3'"
           :title="isCollapsed ? 'Organigrama' : undefined" @click="emit('close')">
           <IconSitemap class="size-5 shrink-0" :stroke-width="1.3" />
@@ -122,14 +94,13 @@ const authStore = useAuthStore()
         </router-link>
 
         <router-link :to="route.fullPath" v-if="route.path.startsWith('/perfil')"
-          class="flex items-center rounded-lg text-sm  transition-colors text-sidebar-nav-foreground hover:bg-sidebar-nav-hover"
+          class="flex items-center rounded-lg text-sm transition-colors text-sidebar-nav-foreground hover:bg-sidebar-nav-hover"
           :class="isCollapsed ? 'lg:justify-center lg:px-0 px-3 py-2.5' : 'px-3 py-2 gap-3'"
           :title="isCollapsed ? 'Perfil' : undefined" @click="emit('close')">
           <IconUser class="size-5 shrink-0" :stroke-width="1.3" />
           <span :class="isCollapsed ? 'lg:hidden truncate' : 'truncate'">Perfil</span>
         </router-link>
       </nav>
-
     </div>
 
     <div class="p-3 border-t border-sidebar-line shrink-0">

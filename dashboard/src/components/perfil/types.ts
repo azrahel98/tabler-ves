@@ -1,4 +1,4 @@
-import { api, getApiBaseUrl } from './api'
+import { api, getApiBaseUrl } from '@/services/api'
 
 export interface PersonalPerfil {
   dni: string
@@ -100,61 +100,16 @@ export interface PersonalSearchResult {
   sexo: string
 }
 
+export type VinculoStatusType = 'success' | 'warning' | 'normal'
+
 export function getFileDownloadUrl(hash: string): string {
   const baseUrl = getApiBaseUrl()
   return `${baseUrl}/fileserver/${hash}`
 }
 
-export async function fetchPersonalPerfil(dni: string): Promise<PersonalPerfil> {
-  return await api<PersonalPerfil>(`/personal/perfil/${dni}`)
-}
-
-export async function fetchPersonalBanco(dni: string): Promise<PersonalBanco | null> {
-  try {
-    return await api<PersonalBanco | null>(`/personal/banco/${dni}`)
-  } catch {
-    return null
-  }
-}
-
-export async function fetchPersonalGrados(dni: string): Promise<PersonalGrado[]> {
-  try {
-    return await api<PersonalGrado[]>(`/personal/grado/${dni}`)
-  } catch {
-    return []
-  }
-}
-
-export async function fetchPersonalContacto(dni: string): Promise<PersonalContacto | null> {
-  try {
-    return await api<PersonalContacto | null>(`/personal/contacto/${dni}`)
-  } catch {
-    return null
-  }
-}
-
-export async function fetchPersonalVinculos(dni: string): Promise<PersonalVinculo[]> {
-  try {
-    return await api<PersonalVinculo[]>(`/personal/vinculos/${dni}`)
-  } catch {
-    return []
-  }
-}
-
-export async function fetchPersonalArchivos(dni: string): Promise<PersonalArchivo[]> {
-  try {
-    return await api<PersonalArchivo[]>(`/fileserver/archivos_por_dni/${dni}`)
-  } catch {
-    return []
-  }
-}
-
-export async function fetchPersonalDocumentos(dni: string): Promise<PersonalDocumento[]> {
-  try {
-    return await api<PersonalDocumento[]>(`/fileserver/documentos/${dni}`)
-  } catch {
-    return []
-  }
+export function getPersonalAvatarUrl(dni: string): string {
+  const baseUrl = getApiBaseUrl()
+  return `${baseUrl}/personal/avatar/${dni}`
 }
 
 export async function buscarTrabajadores(nombre: string): Promise<PersonalSearchResult[]> {
@@ -167,25 +122,10 @@ export async function buscarTrabajadores(nombre: string): Promise<PersonalSearch
   }
 }
 
-export async function updatePersonalPerfil(perfil: PersonalPerfil): Promise<boolean> {
-  await api('/personal/editar_por_dni', {
-    method: 'PUT',
-    body: perfil,
-  })
-  return true
-}
-
-export function getPersonalAvatarUrl(dni: string): string {
-  const baseUrl = getApiBaseUrl()
-  return `${baseUrl}/personal/avatar/${dni}`
-}
-
 export function formatMoneda(val: number | null | undefined): string {
   if (val === null || val === undefined) return 'S/ 0.00'
   return new Intl.NumberFormat('es-PE', { style: 'currency', currency: 'PEN' }).format(val)
 }
-
-export type VinculoStatusType = 'success' | 'warning' | 'normal'
 
 export function getVinculoStatusType(v: PersonalVinculo | null | undefined): VinculoStatusType {
   if (!v) return 'normal'
@@ -200,7 +140,6 @@ export function getVinculoStatusType(v: PersonalVinculo | null | undefined): Vin
 export interface RenunciaPayload {
   id: number
   tipoDocumento: string
-  areaId?: number | null
   numeroDocumento: number
   añoDocumento: number
   fecha: string
@@ -223,69 +162,3 @@ export interface TipoDocumentoOption {
   sigla: string
 }
 
-export async function registrarRenunciaPorVinculo(payload: RenunciaPayload): Promise<RenunciaResponse> {
-  return await api<RenunciaResponse>('/personal/renuncia_por_vinculo', {
-    method: 'POST',
-    body: payload,
-  })
-}
-
-export async function fetchTiposDocumentos(): Promise<TipoDocumentoOption[]> {
-  try {
-    const data = await api<TipoDocumentoOption[]>('/api/dash/documentos')
-    return Array.isArray(data) && data.length > 0 ? data : []
-  } catch {
-    return []
-  }
-}
-
-export interface AreaOption {
-  id: number
-  nombre: string
-  activo: boolean
-  nivel: number
-  sigla: string
-}
-
-export interface DocumentoData {
-  tipoDocumento: string
-  areaId: number | null
-  numeroDocumento: number
-  añoDocumento: number
-  fecha: string
-  fechaValida?: string | null
-  descripcion: string
-}
-
-export interface CrearDocumentoPayload {
-  dni?: string
-  documento: DocumentoData
-}
-
-export interface CrearDocumentoResponse {
-  message: string
-  id: number
-}
-
-const TIPOS_SIN_AREA: readonly number[] = [6, 9]
-
-export function requiereArea(tipoId: number | string): boolean {
-  const parsed = Number(tipoId)
-  return !TIPOS_SIN_AREA.includes(parsed)
-}
-
-export async function fetchAreas(): Promise<AreaOption[]> {
-  try {
-    const data = await api<AreaOption[]>('/personal/buscar_areas')
-    return Array.isArray(data) ? data : []
-  } catch {
-    return []
-  }
-}
-
-export async function crearDocumento(payload: CrearDocumentoPayload): Promise<CrearDocumentoResponse> {
-  return await api<CrearDocumentoResponse>('/personal/crear_documento', {
-    method: 'POST',
-    body: payload,
-  })
-}

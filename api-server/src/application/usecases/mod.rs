@@ -7,3 +7,4 @@ pub mod contacto_service;
 pub mod sindicato_service;
 pub mod documento_service;
 pub mod dash_service;
+pub mod notificacion_service;

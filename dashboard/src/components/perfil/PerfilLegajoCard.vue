@@ -3,7 +3,8 @@ import { ref, computed } from 'vue'
 import { format } from 'date-fns'
 import Card from '@/components/ui/card/Card.vue'
 import Badge from '@/components/ui/badge/Badge.vue'
-import { getFileDownloadUrl, type PersonalArchivo, type PersonalDocumento } from '@/services/personal'
+import Button from '@/components/ui/button/Button.vue'
+import { getFileDownloadUrl, type PersonalArchivo, type PersonalDocumento } from './types'
 import { parseDateSafe, formatDate } from '@/utils/date'
 import {
   IconChevronDown,
@@ -15,6 +16,7 @@ import {
   IconUser,
   IconFileCheck,
   IconFileText,
+  IconPlus,
 } from '@tabler/icons-vue'
 
 interface Props {
@@ -23,6 +25,10 @@ interface Props {
 }
 
 const props = defineProps<Props>()
+
+const emit = defineEmits<{
+  (e: 'nuevoDocumento'): void
+}>()
 
 const viewMode = ref<'list' | 'grid'>('list')
 const selectedSort = ref<string>('newest')
@@ -319,7 +325,13 @@ const filteredAndSortedArchivos = computed(() => {
             <p class="text-xs text-muted-foreground">Resoluciones de alcaldía y disposiciones emitidas</p>
           </div>
         </div>
-        <Badge variant="outline" size="xs">{{ documentos.length }} Registrados</Badge>
+        <div class="flex items-center gap-2">
+          <Badge variant="outline" size="xs">{{ documentos.length }} Registrados</Badge>
+          <Button variant="outline" size="xs" class="gap-1" @click="emit('nuevoDocumento')">
+            <IconPlus class="size-3" />
+            <span>Registrar</span>
+          </Button>
+        </div>
       </div>
 
       <div v-if="documentos.length > 0" class="space-y-2.5">

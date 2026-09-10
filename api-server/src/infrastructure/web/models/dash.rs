@@ -69,7 +69,6 @@ pub struct ReporteRenuncias {
 pub struct ReporteDocumento {
     pub id: i32,
     pub nombre: Option<String>,
-    pub sigla: Option<String>,
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone, sqlx::FromRow, ts_rs::TS)]
@@ -92,4 +91,3 @@ pub struct Alerta70Anos {
     pub plaza: Option<String>,
     pub avatar: Option<String>,
 }
-

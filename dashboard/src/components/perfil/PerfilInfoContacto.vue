@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import Card from '@/components/ui/card/Card.vue'
 import Badge from '@/components/ui/badge/Badge.vue'
-import type { PersonalPerfil, PersonalContacto } from '@/services/personal'
+import type { PersonalPerfil, PersonalContacto } from './types'
 import { formatDate, calculateAge } from '@/utils/date'
 import {
   IconUser,

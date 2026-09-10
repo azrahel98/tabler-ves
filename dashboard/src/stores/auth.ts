@@ -1,11 +1,29 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import {
-  loginWithGoogleApi,
-  registerWithGoogleApi,
-  type AuthUser,
-} from '@/services/auth'
+import { api } from '@/services/api'
 import { isTokenValid } from '@/utils/jwt'
+
+export interface AuthUser {
+  id: number
+  google_sub: string
+  email: string
+  full_name: string
+  picture_url?: string | null
+  role: string
+  status: 'APPROVED' | 'PENDING' | 'REJECTED' | string
+  created_at?: string
+  updated_at?: string
+}
+
+export interface LoginResponse {
+  token: string
+  user: AuthUser
+}
+
+export interface RegisterResponse {
+  id: number
+  message: string
+}
 
 export interface User extends AuthUser {
   name?: string
@@ -52,8 +70,11 @@ export const useAuthStore = defineStore('auth', () => {
     localStorage.setItem('crm_user', JSON.stringify(normalizedUser))
   }
 
-  async function loginWithGoogle(google_sub: string, email: string) {
-    const res = await loginWithGoogleApi(google_sub, email)
+  async function loginWithGoogle(google_sub: string, email: string): Promise<LoginResponse> {
+    const res = await api<LoginResponse>('/login/', {
+      method: 'POST',
+      body: { google_sub, email },
+    })
     setAuth(res.token, res.user)
     return res
   }
@@ -63,8 +84,11 @@ export const useAuthStore = defineStore('auth', () => {
     email: string
     full_name: string
     picture_url?: string | null
-  }) {
-    return await registerWithGoogleApi(payload)
+  }): Promise<RegisterResponse> {
+    return await api<RegisterResponse>('/login/register', {
+      method: 'POST',
+      body: payload,
+    })
   }
 
   if (token.value && !isTokenValid(token.value)) {
@@ -82,4 +106,3 @@ export const useAuthStore = defineStore('auth', () => {
     logout,
   }
 })
-

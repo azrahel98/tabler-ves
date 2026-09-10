@@ -1,16 +1,15 @@
+use super::registrar_historial;
 use crate::AppState;
+use crate::application::usecases::{
+    banco_service, contacto_service, documento_service, personal_service, sindicato_service,
+};
 use crate::infrastructure::web::middleware::{
     error::{ApiError, validar},
     jwt::Claims,
 };
 use crate::infrastructure::web::models::personal::{
-    ContactoEmergencia, DatosBancarios, DatosBancariosResponse, Documento,
-    DocumentoSindicato, EventoVinculoPayload, NuevoVinculo,
-    Perfil,
-};
-use crate::application::usecases::{
-    banco_service, contacto_service, documento_service, personal_service,
-    sindicato_service,
+    ContactoEmergencia, DatosBancarios, DatosBancariosResponse, Documento, DocumentoSindicato,
+    EventoVinculoPayload, NuevoVinculo, Perfil,
 };
 use actix_files::NamedFile;
 use actix_web::{
@@ -22,7 +21,6 @@ use serde::Deserialize;
 use serde_json::{Value, json};
 use sqlx::Row;
 use validator::Validate;
-use super::registrar_historial;
 #[derive(Deserialize, Validate)]
 pub struct PerfilDni {
     #[validate(custom(function = "crate::infrastructure::web::models::personal::es_dni_valido"))]
@@ -78,7 +76,8 @@ pub async fn editar_perfil(
     };
     let perfil_entity = perfil.0.clone().into();
     let audit_ctx_entity = audit_ctx.clone().into();
-    let rows_affected = personal_service::update_perfil(&data.db, &perfil_entity, &audit_ctx_entity).await?;
+    let rows_affected =
+        personal_service::update_perfil(&data.db, &perfil_entity, &audit_ctx_entity).await?;
     Ok(HttpResponse::Ok().json(format!("Rows affected: {}", rows_affected)))
 }
 pub async fn consultar_dni_reniec(
@@ -86,8 +85,7 @@ pub async fn consultar_dni_reniec(
     path: web::Path<String>,
 ) -> Result<impl Responder, ApiError> {
     let dni = path.into_inner();
-    let perfil =
-        personal_service::consultar_dni_reniec(&data.db, &data.cliente_http, &dni).await?;
+    let perfil = personal_service::consultar_dni_reniec(&data.db, &data.cliente_http, &dni).await?;
     Ok(HttpResponse::Ok().json(perfil))
 }
 pub async fn banco_por_dni(
@@ -164,8 +162,7 @@ pub async fn eliminar_contacto(
     req: HttpRequest,
 ) -> Result<impl Responder, ApiError> {
     let id = path.into_inner();
-    let (diff_value, accion, dni) =
-        contacto_service::delete_contacto(&data.db, &id).await?;
+    let (diff_value, accion, dni) = contacto_service::delete_contacto(&data.db, &id).await?;
     if let Some(diff) = diff_value {
         let _ = registrar_historial(&req, &data.db, accion, &dni, Some(diff)).await;
     }
@@ -591,6 +588,63 @@ pub async fn renuncia_por_vinculo(
     .await
     {
         eprintln!("registrar_historial failed: {}", e);
+    }
+    if let Some(dni_str) = json_value.get("dni").and_then(|d| d.as_str()) {
+        let persona_row = sqlx::query(
+            r#"
+            SELECT 
+                CONCAT_WS(' ', p.nombre, p.apaterno, p.amaterno) AS nombre_completo,
+                p.avatar
+            FROM persona p
+            WHERE p.dni = ?
+            "#,
+        )
+        .bind(dni_str)
+        .fetch_optional(&data.db)
+        .await
+        .ok()
+        .flatten();
+
+        let nombre_completo = persona_row
+            .as_ref()
+            .and_then(|r| r.try_get::<Option<String>, _>("nombre_completo").ok().flatten())
+            .unwrap_or_else(|| dni_str.to_string());
+
+        let avatar_url = format!("/api/personal/avatar/{}", dni_str);
+        let enlace = format!("/personal/{}", dni_str);
+        let titulo = "Renuncia de personal".to_string();
+        let mensaje = format!("{} ha pasado a estado inactivo.", nombre_completo);
+        let metadata_obj = serde_json::json!({
+            "dni": dni_str,
+            "vinculo_id": doc.id,
+            "cargo": json_value.get("nombre")
+        });
+
+        let notif_id = crate::application::usecases::notificacion_service::crear_notificacion(
+            &data.db,
+            "RENUNCIA",
+            &titulo,
+            &mensaje,
+            Some(&avatar_url),
+            Some(&enlace),
+            Some(&metadata_obj),
+        )
+        .await
+        .unwrap_or(0);
+
+        let evento = crate::domain::entities::notificacion::NotificacionEvento {
+            id: notif_id,
+            tipo: "RENUNCIA".to_string(),
+            titulo,
+            mensaje,
+            avatar: Some(avatar_url),
+            enlace: Some(enlace),
+            leido: false,
+            metadata: Some(metadata_obj),
+            created_at: chrono::Local::now().to_rfc3339(),
+        };
+
+        let _ = data.notificaciones_tx.send(evento);
     }
     Ok(HttpResponse::Ok().json(json_value))
 }
@@ -1047,7 +1101,7 @@ pub async fn buscar_por_plaza(
 }
 pub async fn buscar_areas(data: web::Data<AppState>) -> Result<impl Responder, ApiError> {
     let areas =
-        sqlx::query("SELECT id, nombre, activo, nivel, sigla FROM area WHERE activo = 1 ORDER BY nombre")
+        sqlx::query("SELECT id, nombre, activo, nivel, sigla FROM area WHERE activo = 1 and sigla is not null ORDER BY nombre")
             .fetch_all(&data.db)
             .await
             .map_err(|e| {
@@ -1057,9 +1111,11 @@ pub async fn buscar_areas(data: web::Data<AppState>) -> Result<impl Responder, A
     let resultado: Vec<Value> = areas
         .iter()
         .map(|row| {
-            let activo = row
-                .try_get::<bool, _>("activo")
-                .unwrap_or_else(|_| row.try_get::<i8, _>("activo").map(|v| v != 0).unwrap_or(true));
+            let activo = row.try_get::<bool, _>("activo").unwrap_or_else(|_| {
+                row.try_get::<i8, _>("activo")
+                    .map(|v| v != 0)
+                    .unwrap_or(true)
+            });
             json!({
                 "id": row.get::<i32, _>("id"),
                 "nombre": row.get::<String, _>("nombre"),
@@ -1363,7 +1419,11 @@ pub async fn calidad_datos(data: web::Data<AppState>) -> Result<impl Responder, 
 pub struct AvatarPayload {
     #[validate(custom(function = "crate::infrastructure::web::models::personal::es_dni_valido"))]
     pub dni: String,
-    #[validate(length(min = 1, max = 3_000_000, message = "Imagen inválida o demasiado grande"))]
+    #[validate(length(
+        min = 1,
+        max = 3_000_000,
+        message = "Imagen inválida o demasiado grande"
+    ))]
     pub imagen_base64: String,
 }
 
@@ -1386,9 +1446,7 @@ pub async fn subir_avatar(
     Ok(HttpResponse::Ok().json(serde_json::json!({ "avatar": avatar_url })))
 }
 
-pub async fn ver_avatar(
-    path: web::Path<String>,
-) -> Result<NamedFile, ApiError> {
+pub async fn ver_avatar(path: web::Path<String>) -> Result<NamedFile, ApiError> {
     let dni = path.into_inner();
     if dni.len() != 8 || !dni.chars().all(|c| c.is_ascii_digit()) {
         return Err(ApiError::BadRequest("DNI inválido".into()));

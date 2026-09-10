@@ -3,7 +3,7 @@ import { computed, ref, onMounted } from 'vue'
 import { Bar } from 'vue-chartjs'
 import Card from '@/components/ui/card/Card.vue'
 import Badge from '@/components/ui/badge/Badge.vue'
-import type { AreaReport } from '@/services/dashboard'
+import type { AreaReport } from './types'
 import type { ChartOptions, ChartData } from 'chart.js'
 import {
   IconBuildingSkyscraper,

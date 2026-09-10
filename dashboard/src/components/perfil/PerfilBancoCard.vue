@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import Card from '@/components/ui/card/Card.vue'
 import Badge from '@/components/ui/badge/Badge.vue'
-import type { PersonalBanco } from '@/services/personal'
+import type { PersonalBanco } from './types'
 import {
   IconBuildingBank,
   IconCheck,

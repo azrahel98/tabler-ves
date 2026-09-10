@@ -2,7 +2,7 @@
 import { ref, computed } from 'vue'
 import Card from '@/components/ui/card/Card.vue'
 import Badge from '@/components/ui/badge/Badge.vue'
-import type { PersonalGrado } from '@/services/personal'
+import type { PersonalGrado } from './types'
 import { formatDate, parseDateSafe } from '@/utils/date'
 import { IconSchool, IconArrowsSort } from '@tabler/icons-vue'
 

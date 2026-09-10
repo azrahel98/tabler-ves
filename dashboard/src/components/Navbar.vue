@@ -2,19 +2,22 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { useThemeStore } from '@/stores/theme'
 import NavbarSearch from '@/components/NavbarSearch.vue'
+import NavbarNotifications from '@/components/NavbarNotifications.vue'
 import {
   IconMenu2,
   IconLayoutSidebarLeftCollapse,
   IconSun,
   IconMoon,
-  IconBell,
   IconChevronDown,
   IconLayoutDashboard,
   IconUsers,
   IconUser,
   IconLogout,
 } from '@tabler/icons-vue'
+
+import { useNotificacionesStore } from '@/stores/notificaciones'
 
 const emit = defineEmits<{
   (e: 'toggleSidebar'): void
@@ -23,22 +26,13 @@ const emit = defineEmits<{
 
 const router = useRouter()
 const authStore = useAuthStore()
+const themeStore = useThemeStore()
+const notifStore = useNotificacionesStore()
 
 const isUserMenuOpen = ref(false)
-const isDarkMode = ref(document.documentElement.classList.contains('dark'))
-
-const toggleDarkMode = () => {
-  isDarkMode.value = !isDarkMode.value
-  if (isDarkMode.value) {
-    document.documentElement.classList.add('dark')
-    localStorage.setItem('hs_theme', 'dark')
-  } else {
-    document.documentElement.classList.remove('dark')
-    localStorage.setItem('hs_theme', 'light')
-  }
-}
 
 const handleLogout = () => {
+  notifStore.resetear()
   authStore.logout()
   router.push('/iniciar-sesion')
 }
@@ -76,20 +70,13 @@ const handleLogout = () => {
         type="button"
         class="size-9 flex items-center justify-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted focus:outline-hidden transition"
         title="Modo Oscuro / Claro"
-        @click="toggleDarkMode"
+        @click="themeStore.toggleTheme"
       >
-        <IconSun v-if="isDarkMode" class="size-4" :stroke-width="2" />
+        <IconSun v-if="themeStore.isDark" class="size-4" :stroke-width="2" />
         <IconMoon v-else class="size-4" :stroke-width="2" />
       </button>
 
-      <button
-        type="button"
-        class="relative size-9 flex items-center justify-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted focus:outline-hidden transition"
-        title="Notificaciones"
-      >
-        <IconBell class="size-4" :stroke-width="2" />
-        <span class="absolute top-2 inset-e-2 size-2 rounded-full bg-rose-500 ring-2 ring-navbar"></span>
-      </button>
+      <NavbarNotifications />
 
       <div class="h-6 w-px bg-border mx-1"></div>
 

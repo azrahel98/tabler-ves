@@ -11,6 +11,8 @@ import PerfilGradosCard from '@/components/perfil/PerfilGradosCard.vue'
 import PerfilBancoCard from '@/components/perfil/PerfilBancoCard.vue'
 import PerfilSearchModal from '@/components/perfil/PerfilSearchModal.vue'
 import PerfilEditModal from '@/components/perfil/PerfilEditModal.vue'
+import PerfilRenunciaModal from '@/components/perfil/PerfilRenunciaModal.vue'
+import PerfilDocumentoModal from '@/components/perfil/PerfilDocumentoModal.vue'
 import {
   fetchPersonalPerfil,
   fetchPersonalBanco,
@@ -20,6 +22,8 @@ import {
   fetchPersonalArchivos,
   fetchPersonalDocumentos,
   updatePersonalPerfil,
+  registrarRenunciaPorVinculo,
+  crearDocumento,
   type PersonalPerfil,
   type PersonalBanco,
   type PersonalGrado,
@@ -27,6 +31,8 @@ import {
   type PersonalVinculo,
   type PersonalArchivo,
   type PersonalDocumento,
+  type RenunciaPayload,
+  type DocumentoData,
 } from '@/services/personal'
 import {
   IconUser,
@@ -56,7 +62,12 @@ const documentos = ref<PersonalDocumento[]>([])
 
 const isSearchModalOpen = ref<boolean>(false)
 const isEditModalOpen = ref<boolean>(false)
+const isRenunciaModalOpen = ref<boolean>(false)
+const isDocumentoModalOpen = ref<boolean>(false)
+const vinculoARenunciar = ref<PersonalVinculo | null>(null)
 const isSaving = ref<boolean>(false)
+const isSavingRenuncia = ref<boolean>(false)
+const isSavingDocumento = ref<boolean>(false)
 const copiedField = ref<string | null>(null)
 
 const vinculoActivo = computed(() => {
@@ -139,6 +150,45 @@ const onSavePerfil = async (form: PersonalPerfil) => {
   }
 }
 
+const abrirModalRenuncia = (vinculo: PersonalVinculo) => {
+  vinculoARenunciar.value = vinculo
+  isRenunciaModalOpen.value = true
+}
+
+const onSaveRenuncia = async (payload: RenunciaPayload) => {
+  isSavingRenuncia.value = true
+  try {
+    const res = await registrarRenunciaPorVinculo(payload)
+    isRenunciaModalOpen.value = false
+    const msg = res?.documento
+      ? `Renuncia registrada con documento ${res.documento}.`
+      : 'Renuncia del vínculo registrada con éxito.'
+    showToast('success', msg)
+    await loadWorkerData(currentDni.value)
+  } catch (err: any) {
+    showToast('error', err?.message || 'Error al registrar la renuncia.')
+  } finally {
+    isSavingRenuncia.value = false
+  }
+}
+
+const onSaveDocumento = async (data: DocumentoData) => {
+  isSavingDocumento.value = true
+  try {
+    const res = await crearDocumento({
+      dni: currentDni.value,
+      documento: data,
+    })
+    isDocumentoModalOpen.value = false
+    showToast('success', `Documento registrado con éxito (ID ${res.id}).`)
+    documentos.value = await fetchPersonalDocumentos(currentDni.value)
+  } catch (err: any) {
+    showToast('error', err?.message || 'Error al registrar el documento.')
+  } finally {
+    isSavingDocumento.value = false
+  }
+}
+
 const handleKeyDown = (e: KeyboardEvent) => {
   if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
     e.preventDefault()
@@ -146,6 +196,10 @@ const handleKeyDown = (e: KeyboardEvent) => {
   } else if (e.key === 'Escape') {
     if (isEditModalOpen.value) {
       isEditModalOpen.value = false
+    } else if (isRenunciaModalOpen.value) {
+      isRenunciaModalOpen.value = false
+    } else if (isDocumentoModalOpen.value) {
+      isDocumentoModalOpen.value = false
     } else if (isSearchModalOpen.value) {
       isSearchModalOpen.value = false
     }
@@ -262,6 +316,7 @@ watch(
         :copied-field="copiedField"
         @update:active-tab="activeTab = $event"
         @open-edit-modal="isEditModalOpen = true"
+        @registrar-renuncia="abrirModalRenuncia"
         @copy-to-clipboard="copyToClipboard"
       />
 
@@ -282,15 +337,23 @@ watch(
               :vinculo-activo="vinculoActivo"
               :vinculos="vinculos"
               @ver-historial="activeTab = 'vinculos'"
+              @registrar-renuncia="abrirModalRenuncia"
             />
           </div>
 
           <div v-if="activeTab === 'vinculos'" class="space-y-6">
-            <PerfilHistorialVinculosCard :vinculos="vinculos" />
+            <PerfilHistorialVinculosCard
+              :vinculos="vinculos"
+              @registrar-renuncia="abrirModalRenuncia"
+            />
           </div>
 
           <div v-if="activeTab === 'legajo'" class="space-y-6">
-            <PerfilLegajoCard :archivos="archivos" :documentos="documentos" />
+            <PerfilLegajoCard
+              :archivos="archivos"
+              :documentos="documentos"
+              @nuevo-documento="isDocumentoModalOpen = true"
+            />
           </div>
 
           <div v-if="activeTab === 'grados'" class="space-y-6">
@@ -320,6 +383,25 @@ watch(
       :is-saving="isSaving"
       @close="isEditModalOpen = false"
       @save="onSavePerfil"
+    />
+
+    <PerfilRenunciaModal
+      :is-open="isRenunciaModalOpen"
+      :vinculo="vinculoARenunciar"
+      :servidor-nombre="perfil?.nombre || ''"
+      :servidor-dni="perfil?.dni || currentDni"
+      :is-saving="isSavingRenuncia"
+      @close="isRenunciaModalOpen = false"
+      @save="onSaveRenuncia"
+    />
+
+    <PerfilDocumentoModal
+      :is-open="isDocumentoModalOpen"
+      :servidor-nombre="perfil?.nombre || ''"
+      :servidor-dni="perfil?.dni || currentDni"
+      :is-saving="isSavingDocumento"
+      @close="isDocumentoModalOpen = false"
+      @save="onSaveDocumento"
     />
 
     <transition

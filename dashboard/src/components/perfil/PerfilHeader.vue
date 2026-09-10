@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import Button from '@/components/ui/button/Button.vue'
 import {
   getPersonalAvatarUrl,
   type PersonalPerfil,
   type PersonalVinculo,
-} from '@/services/personal'
+} from './types'
 import {
   IconUser,
   IconId,
@@ -13,7 +12,6 @@ import {
   IconBuildingBank,
   IconSchool,
   IconFileText,
-  IconEdit,
   IconCheck,
   IconCopy,
 } from '@tabler/icons-vue'
@@ -35,6 +33,7 @@ const emit = defineEmits<{
   (e: 'update:activeTab', tab: 'perfil' | 'vinculos' | 'legajo' | 'grados' | 'banco'): void
   (e: 'openEditModal'): void
   (e: 'copyToClipboard', text: string, fieldId: string): void
+  (e: 'registrarRenuncia', vinculo: PersonalVinculo): void
 }>()
 
 const avatarError = ref<boolean>(false)
@@ -79,15 +78,8 @@ const handleTabKeyDown = (event: KeyboardEvent) => {
 
 <template>
   <div class="bg-card border border-border rounded-2xl overflow-hidden shadow-xs">
-    <div class="border-b border-border bg-muted/20 px-4 sm:px-6 py-3 flex flex-wrap items-end justify-end gap-3">
-      <Button size="xs" variant="primary" class="text-xs shadow-xs" @click="emit('openEditModal')">
-        <IconEdit class="size-3.5" />
-        <span>Editar Datos</span>
-      </Button>
-    </div>
-
     <div class="p-5 sm:p-6">
-      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5">
+      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4">
           <div
             class="relative size-18 sm:size-21 rounded-full bg-primary/10 border border-primary/20 text-primary flex items-center justify-center shrink-0 shadow-xs overflow-hidden">
@@ -130,6 +122,8 @@ const handleTabKeyDown = (event: KeyboardEvent) => {
             </div>
           </div>
         </div>
+
+
       </div>
 
       <div class="border-t border-border mt-6 pt-1 overflow-x-auto">

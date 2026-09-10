@@ -2,6 +2,7 @@
 import { ref, computed } from 'vue'
 import Card from '@/components/ui/card/Card.vue'
 import Badge from '@/components/ui/badge/Badge.vue'
+import Button from '@/components/ui/button/Button.vue'
 import { formatMoneda, getVinculoStatusType, type PersonalVinculo, type VinculoStatusType } from '@/services/personal'
 import { formatDate, parseDateSafe } from '@/utils/date'
 import {
@@ -12,6 +13,7 @@ import {
   IconFileDescription,
   IconFileCheck,
   IconFileCode,
+  IconFileX,
   IconId,
   IconShieldCheck,
   IconAlertCircle,
@@ -26,6 +28,10 @@ interface Props {
 }
 
 const props = defineProps<Props>()
+
+const emit = defineEmits<{
+  (e: 'registrarRenuncia', vinculo: PersonalVinculo): void
+}>()
 
 const sortOrder = ref<'desc' | 'asc'>('desc')
 const expandedIds = ref<Set<number | string>>(new Set())
@@ -206,9 +212,21 @@ const sortedVinculos = computed(() => {
                         </span>
                       </div>
 
-                      <div class="font-mono text-[11px] text-muted-foreground">
-                        Período: {{ formatDate(v.fecha_ingreso) }} &bull; {{ v.fecha_salida ? formatDate(v.fecha_salida)
-                          : 'Vigente' }}
+                      <div class="flex items-center gap-2 flex-wrap justify-end">
+                        <div class="font-mono text-[11px] text-muted-foreground">
+                          Período: {{ formatDate(v.fecha_ingreso) }} &bull; {{ v.fecha_salida ? formatDate(v.fecha_salida)
+                            : 'Vigente' }}
+                        </div>
+                        <Button
+                          v-if="v.estado.toLowerCase() === 'activo'"
+                          size="xs"
+                          variant="outline"
+                          class="text-rose-600 hover:text-rose-700 hover:bg-rose-500/10 border-rose-500/30 gap-1.5 cursor-pointer text-[11px]"
+                          @click.stop="emit('registrarRenuncia', v)"
+                        >
+                          <IconFileX class="size-3.5" />
+                          <span>Registrar Renuncia</span>
+                        </Button>
                       </div>
                     </div>
 

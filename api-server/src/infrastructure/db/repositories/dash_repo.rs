@@ -7,7 +7,6 @@ use chrono::{NaiveDate, NaiveDateTime};
 use serde_json::{Value, json};
 use sqlx::{MySqlPool, Row};
 
-
 pub async fn get_cumpleanos(pool: &MySqlPool) -> Result<Vec<Cumpleaños>, ApiError> {
     sqlx::query_as!(
         Cumpleaños,
@@ -355,11 +354,7 @@ where
 
     let data_rows = if let Some(id) = sindicato_id {
         query.push_str(" and (vs.sindicato_id = ? or s.id = ?)");
-        sqlx::query(&query)
-            .bind(id)
-            .bind(id)
-            .fetch_all(pool)
-            .await
+        sqlx::query(&query).bind(id).bind(id).fetch_all(pool).await
     } else if let Some(nombre) = sindicato_nombre {
         query.push_str(" and (s.nombre = ? or lower(s.nombre) = lower(?))");
         sqlx::query(&query)
@@ -483,8 +478,6 @@ where
     Ok(result)
 }
 
-
-
 pub async fn get_historial(pool: &MySqlPool, dni: &str, key: &str) -> Result<Vec<Value>, ApiError> {
     let data = sqlx::query(
         r#"
@@ -587,7 +580,7 @@ pub async fn get_renuncias(pool: &MySqlPool) -> Result<Vec<ReporteRenuncias>, Ap
 pub async fn get_documentos(pool: &MySqlPool) -> Result<Vec<ReporteDocumento>, ApiError> {
     sqlx::query_as::<_, ReporteDocumento>(
         r#"
-        SELECT id, nombre, CAST(NULL AS CHAR) AS sigla FROM tipo_documento ORDER BY nombre
+        SELECT id, nombre FROM tipo_documento ORDER BY nombre
         "#,
     )
     .fetch_all(pool)
@@ -1000,7 +993,8 @@ pub async fn get_alerta_70_anos(
             let edad_actual: i64 = fila.try_get("edad_actual").unwrap_or(0);
             let dias_para_70: i64 = fila.try_get("dias_para_70").unwrap_or(0);
             let dias_para_cese_mes: i64 = fila.try_get("dias_para_cese_mes").unwrap_or(0);
-            let dias_para_cese_extension: i64 = fila.try_get("dias_para_cese_extension").unwrap_or(0);
+            let dias_para_cese_extension: i64 =
+                fila.try_get("dias_para_cese_extension").unwrap_or(0);
 
             Alerta70Anos {
                 dni: fila.get("dni"),
@@ -1025,4 +1019,3 @@ pub async fn get_alerta_70_anos(
 
     Ok(resultado)
 }
-

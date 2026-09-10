@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import Card from '@/components/ui/card/Card.vue'
 import Badge from '@/components/ui/badge/Badge.vue'
-import { formatMoneda, getVinculoStatusType, type PersonalVinculo, type VinculoStatusType } from '@/services/personal'
+import { formatMoneda, getVinculoStatusType, type PersonalVinculo, type VinculoStatusType } from './types'
 import { formatDate } from '@/utils/date'
 import {
   IconBriefcase,
@@ -15,6 +15,7 @@ import {
   IconShieldCheck,
   IconHistory,
   IconAlertCircle,
+  IconBuildingSkyscraper,
 } from '@tabler/icons-vue'
 
 interface Props {
@@ -26,6 +27,7 @@ defineProps<Props>()
 
 const emit = defineEmits<{
   (e: 'verHistorial'): void
+  (e: 'registrarRenuncia', vinculo: PersonalVinculo): void
 }>()
 
 const getBadgeVariant = (type: VinculoStatusType): 'success' | 'warning' | 'secondary' => {
@@ -36,99 +38,107 @@ const getBadgeVariant = (type: VinculoStatusType): 'success' | 'warning' | 'seco
 </script>
 
 <template>
-  <Card v-if="vinculoActivo" class="space-y-3">
+  <Card v-if="vinculoActivo" class="space-y-3.5">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5 border-b border-border pb-3">
+      <span class="text-sm font-bold text-foreground tracking-wider flex items-center gap-2">
+        <IconBriefcase class="size-3.5 text-primary shrink-0" />
+        <h3 class="font-semibold text-foreground tracking-tight text-sm">Vínculo Laboral Actual</h3>
+      </span>
 
-    <div class="flex items-start justify-between gap-3">
-      <div class="space-y-1 min-w-0 m-0 p-0">
-
-        <h2 class="font-bold text-foreground text-xs wrap-break-word break-words m-0 p-0">{{
-          vinculoActivo.cargo
-        }}</h2>
-        <p class="text-[11px] text-primary font-semibold wrap-break-word break-words m-0 p-0">{{ vinculoActivo.area }}
-        </p>
+      <div class="flex items-center gap-2 shrink-0">
+        <Badge :variant="getBadgeVariant(getVinculoStatusType(vinculoActivo))" size="xs"
+          class="gap-1.5 shrink-0 uppercase font-semibold">
+          <span v-if="getVinculoStatusType(vinculoActivo) === 'success'" class="relative flex size-1.5 shrink-0">
+            <span class="absolute inline-flex size-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
+            <span class="relative inline-flex size-1.5 rounded-full bg-emerald-500"></span>
+          </span>
+          <span v-else-if="getVinculoStatusType(vinculoActivo) === 'warning'" class="relative flex size-1.5 shrink-0">
+            <span class="absolute inline-flex size-full animate-ping rounded-full bg-amber-400 opacity-75"></span>
+            <span class="relative inline-flex size-1.5 rounded-full bg-amber-500"></span>
+          </span>
+          <span v-else class="inline-flex size-1.5 rounded-full bg-muted-foreground/50 shrink-0"></span>
+          {{ getVinculoStatusType(vinculoActivo) === 'warning' ? `${vinculoActivo.estado} (sin doc. salida)` :
+            vinculoActivo.estado }}
+        </Badge>
       </div>
-
-      <Badge :variant="getBadgeVariant(getVinculoStatusType(vinculoActivo))" size="xs"
-        class="gap-1.5 shrink-0 uppercase font-semibold ">
-        <span v-if="getVinculoStatusType(vinculoActivo) === 'success'" class="relative flex size-1.5 shrink-0">
-          <span class="absolute inline-flex size-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
-          <span class="relative inline-flex size-1.5 rounded-full bg-emerald-500"></span>
-        </span>
-        <span v-else-if="getVinculoStatusType(vinculoActivo) === 'warning'" class="relative flex size-1.5 shrink-0">
-          <span class="absolute inline-flex size-full animate-ping rounded-full bg-amber-400 opacity-75"></span>
-          <span class="relative inline-flex size-1.5 rounded-full bg-amber-500"></span>
-        </span>
-        <span v-else class="inline-flex size-1.5 rounded-full bg-muted-foreground/50 shrink-0"></span>
-        {{ getVinculoStatusType(vinculoActivo) === 'warning' ? `${vinculoActivo.estado} (sin doc. salida)` :
-          vinculoActivo.estado }}
-      </Badge>
     </div>
 
-    <div class="grid grid-cols-3 border-y border-border/60 py-3 my-1">
-      <div>
-        <span class="text-muted-foreground text-[11px]">Remuneración:</span>
-        <p class="font-semibold text-foreground text-xs">{{ formatMoneda(vinculoActivo.sueldo) }}</p>
+
+
+    <div class="space-y-1">
+      <h5 class="text-xs sm:text-sm font-semibold text-foreground tracking-tight wrap-break-word">
+        {{ vinculoActivo.cargo }}
+      </h5>
+      <div class="flex items-center gap-1.5 text-[11px] text-primary font-medium wrap-break-word">
+        <IconBuildingSkyscraper class="size-3 shrink-0" />
+        <span>{{ vinculoActivo.area }}</span>
       </div>
-      <div class="border-l border-border/60 pl-4 sm:pl-6">
-        <span class="text-muted-foreground text-[11px]">Plaza AIRHSP:</span>
-        <p class="font-mono font-semibold text-foreground text-sm">{{ vinculoActivo.codigo }}</p>
+    </div>
+
+    <div class="grid grid-cols-3 border-y border-border/60 py-2.5 my-0.5 divide-x divide-border/60">
+      <div class="pr-3">
+        <span class="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground block">Remuneración</span>
+        <p class="font-semibold font-mono text-foreground text-xs mt-0.5">{{ formatMoneda(vinculoActivo.sueldo) }}</p>
       </div>
-      <div class="border-l border-border/60 pl-4 sm:pl-6">
-        <span class="text-muted-foreground text-[11px]">Régimen:</span>
-        <p class="font-semibold text-foreground text-xs truncate">{{ vinculoActivo.regimen }}</p>
+      <div class="px-3 sm:px-4">
+        <span class="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground block">Plaza AIRHSP</span>
+        <p class="font-mono font-semibold text-foreground text-xs mt-0.5">{{ vinculoActivo.codigo || '-' }}</p>
+      </div>
+      <div class="pl-3 sm:pl-4">
+        <span class="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground block">Régimen</span>
+        <p class="font-semibold text-foreground text-xs truncate mt-0.5" :title="vinculoActivo.regimen">{{
+          vinculoActivo.regimen }}</p>
       </div>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-3.5 pt-1 text-xs">
       <div class="space-y-3.5">
-        <div class="grid grid-cols-[130px_1fr] sm:grid-cols-[145px_1fr] items-center gap-2.5">
-          <span class="text-muted-foreground flex items-center gap-1.5 shrink-0">
-            <IconCalendar class="size-4 text-muted-foreground" /> Fecha Ingreso:
+        <div class="grid grid-cols-[130px_1fr] sm:grid-cols-[145px_1fr] items-start gap-2.5">
+          <span class="text-muted-foreground flex items-center gap-1.5 shrink-0 mt-0.5">
+            <IconCalendar class="size-4 text-muted-foreground shrink-0" /> Fecha Ingreso:
           </span>
-          <span class="font-mono  font-medium text-foreground">{{ formatDate(vinculoActivo.fecha_ingreso)
-          }}</span>
+          <span class="font-mono font-medium text-foreground">{{ formatDate(vinculoActivo.fecha_ingreso) }}</span>
         </div>
 
-        <div class="grid grid-cols-[130px_1fr] sm:grid-cols-[145px_1fr] items-center gap-2.5">
-          <span class="text-muted-foreground flex items-center gap-1.5 shrink-0">
-            <IconFileText class="size-4 text-muted-foreground" /> Doc. Ingreso:
+        <div class="grid grid-cols-[130px_1fr] sm:grid-cols-[145px_1fr] items-start gap-2.5">
+          <span class="text-muted-foreground flex items-center gap-1.5 shrink-0 mt-0.5">
+            <IconFileText class="size-4 text-muted-foreground shrink-0" /> Doc. Ingreso:
           </span>
-          <span class="font-medium text-[11.2px] text-foreground truncate"
+          <span class="font-medium text-xs text-foreground truncate"
             :title="[vinculoActivo.doc_ingreso, vinculoActivo.numero_doc_ingreso].filter(Boolean).join(' N° ')">
             {{ [vinculoActivo.doc_ingreso, vinculoActivo.numero_doc_ingreso].filter(Boolean).join(' N° ') || '-' }}
           </span>
         </div>
 
-        <div class="grid grid-cols-[130px_1fr] sm:grid-cols-[145px_1fr] items-center gap-2.5">
-          <span class="text-muted-foreground flex items-center gap-1.5 shrink-0">
-            <IconFileDescription class="size-4 text-muted-foreground" /> Ref. Ingreso:
+        <div class="grid grid-cols-[130px_1fr] sm:grid-cols-[145px_1fr] items-start gap-2.5">
+          <span class="text-muted-foreground flex items-center gap-1.5 shrink-0 mt-0.5">
+            <IconFileDescription class="size-4 text-muted-foreground shrink-0" /> Ref. Ingreso:
           </span>
           <span class="font-medium text-foreground truncate" :title="vinculoActivo.descrip_ingreso || ''">
             {{ vinculoActivo.descrip_ingreso || '-' }}
           </span>
         </div>
 
-        <div class="grid grid-cols-[130px_1fr] sm:grid-cols-[145px_1fr] items-center gap-2.5">
-          <span class="text-muted-foreground flex items-center gap-1.5 shrink-0">
-            <IconBriefcase class="size-4 text-muted-foreground" /> G. Ocupacional:
+        <div class="grid grid-cols-[130px_1fr] sm:grid-cols-[145px_1fr] items-start gap-2.5">
+          <span class="text-muted-foreground flex items-center gap-1.5 shrink-0 mt-0.5">
+            <IconBriefcase class="size-4 text-muted-foreground shrink-0" /> G. Ocupacional:
           </span>
           <span class="font-medium text-foreground capitalize truncate">{{ vinculoActivo.grupo_ocupacional || '-'
-            }}</span>
+          }}</span>
         </div>
 
-        <div class="grid grid-cols-[130px_1fr] sm:grid-cols-[145px_1fr] items-center gap-2.5">
-          <span class="text-muted-foreground flex items-center gap-1.5 shrink-0">
-            <IconId class="size-4 text-muted-foreground" /> C. Estructural:
+        <div class="grid grid-cols-[130px_1fr] sm:grid-cols-[145px_1fr] items-start gap-2.5">
+          <span class="text-muted-foreground flex items-center gap-1.5 shrink-0 mt-0.5">
+            <IconId class="size-4 text-muted-foreground shrink-0" /> C. Estructural:
           </span>
-          <span class="font-medium text-foreground wrap-break-word break-words"
-            :title="vinculoActivo.cargo_estructural || ''">
+          <span class="font-medium text-foreground wrap-break-word" :title="vinculoActivo.cargo_estructural || ''">
             {{ vinculoActivo.cargo_estructural || '-' }}
           </span>
         </div>
 
         <div class="grid grid-cols-[130px_1fr] sm:grid-cols-[145px_1fr] items-center gap-2.5">
           <span class="text-muted-foreground flex items-center gap-1.5 shrink-0">
-            <IconShieldCheck class="size-4 text-muted-foreground" /> Afiliación:
+            <IconShieldCheck class="size-4 text-muted-foreground shrink-0" /> Afiliación:
           </span>
           <div class="flex items-center gap-2 min-w-0">
             <span
@@ -141,12 +151,12 @@ const getBadgeVariant = (type: VinculoStatusType): 'success' | 'warning' | 'seco
 
         <div class="grid grid-cols-[130px_1fr] sm:grid-cols-[145px_1fr] items-center gap-2.5">
           <span class="text-muted-foreground flex items-center gap-1.5 shrink-0">
-            <IconHistory class="size-4 text-muted-foreground" /> Historial:
+            <IconHistory class="size-4 text-muted-foreground shrink-0" /> Historial:
           </span>
           <div class="flex items-center gap-2 min-w-0">
             <div class="flex items-center -space-x-1.5 overflow-hidden shrink-0">
               <span v-for="v in vinculos.slice(0, 3)" :key="v.id"
-                class="size-5 rounded-full ring-2 ring-card bg-muted text-foreground flex items-center justify-center text-[9px] font-bold uppercase cursor-pointer"
+                class="size-5 rounded-full ring-2 ring-card bg-muted text-foreground flex items-center justify-center text-[10px] font-bold uppercase cursor-pointer"
                 :title="v.cargo" @click="emit('verHistorial')">
                 {{ v.cargo ? v.cargo[0] : 'V' }}
               </span>
@@ -160,65 +170,70 @@ const getBadgeVariant = (type: VinculoStatusType): 'success' | 'warning' | 'seco
       </div>
 
       <div class="space-y-3.5">
-        <div class="grid grid-cols-[130px_1fr] sm:grid-cols-[145px_1fr] items-center gap-2.5">
-          <span class="text-muted-foreground flex items-center gap-1.5 shrink-0">
-            <IconCalendarOff class="size-4 text-muted-foreground" /> Fecha Salida:
+        <div v-if="vinculoActivo.fecha_salida"
+          class="grid grid-cols-[130px_1fr] sm:grid-cols-[145px_1fr] items-start gap-2.5">
+          <span class="text-muted-foreground flex items-center gap-1.5 shrink-0 mt-0.5">
+            <IconCalendarOff class="size-4 text-muted-foreground shrink-0" /> Fecha Salida:
           </span>
-          <span
-            :class="vinculoActivo.fecha_salida ? 'font-mono text-foreground font-medium' : 'text-emerald-600 dark:text-emerald-400 font-medium'">
-            {{ vinculoActivo.fecha_salida ? formatDate(vinculoActivo.fecha_salida) : 'Vigente' }}
+          <span class="font-mono text-foreground font-medium">
+            {{ formatDate(vinculoActivo.fecha_salida) }}
           </span>
         </div>
 
-        <div class="grid grid-cols-[130px_1fr] sm:grid-cols-[145px_1fr] items-center gap-2.5">
-          <span class="text-muted-foreground flex items-center gap-1.5 shrink-0">
-            <IconFileCheck class="size-4 text-muted-foreground" /> Doc. Salida:
+        <div v-if="vinculoActivo.doc_salida || vinculoActivo.numero_doc_salida"
+          class="grid grid-cols-[130px_1fr] sm:grid-cols-[145px_1fr] items-start gap-2.5">
+          <span class="text-muted-foreground flex items-center gap-1.5 shrink-0 mt-0.5">
+            <IconFileCheck class="size-4 text-muted-foreground shrink-0" /> Doc. Salida:
           </span>
           <span class="font-medium text-foreground truncate"
-            :title="[vinculoActivo.doc_salida, vinculoActivo.numero_doc_salida].filter(Boolean).join(' N° ') || '-'">
-            {{ [vinculoActivo.doc_salida, vinculoActivo.numero_doc_salida].filter(Boolean).join(' N° ') || '-' }}
+            :title="[vinculoActivo.doc_salida, vinculoActivo.numero_doc_salida].filter(Boolean).join(' N° ')">
+            {{ [vinculoActivo.doc_salida, vinculoActivo.numero_doc_salida].filter(Boolean).join(' N° ') }}
           </span>
         </div>
 
-        <div class="grid grid-cols-[130px_1fr] sm:grid-cols-[145px_1fr] items-center gap-2.5">
-          <span class="text-muted-foreground flex items-center gap-1.5 shrink-0">
-            <IconFileDescription class="size-4 text-muted-foreground" /> Ref. Salida:
+        <div v-if="vinculoActivo.descrip_salida"
+          class="grid grid-cols-[130px_1fr] sm:grid-cols-[145px_1fr] items-start gap-2.5">
+          <span class="text-muted-foreground flex items-center gap-1.5 shrink-0 mt-0.5">
+            <IconFileDescription class="size-4 text-muted-foreground shrink-0" /> Ref. Salida:
           </span>
-          <span class="font-medium text-foreground truncate" :title="vinculoActivo.descrip_salida || ''">
-            {{ vinculoActivo.descrip_salida || '-' }}
-          </span>
-        </div>
-
-        <div class="grid grid-cols-[130px_1fr] sm:grid-cols-[145px_1fr] items-center gap-2.5">
-          <span class="text-muted-foreground flex items-center gap-1.5 shrink-0">
-            <IconAlertCircle class="size-4 text-muted-foreground" /> Evento:
-          </span>
-          <span class="font-medium text-foreground capitalize truncate" :title="vinculoActivo.tipo_evento || ''">
-            {{ vinculoActivo.tipo_evento ? `${vinculoActivo.tipo_evento} (${vinculoActivo.estado_evento ||
-              'registrado'})` : '-' }}
+          <span class="font-medium text-foreground truncate" :title="vinculoActivo.descrip_salida">
+            {{ vinculoActivo.descrip_salida }}
           </span>
         </div>
 
-        <div class="grid grid-cols-[130px_1fr] sm:grid-cols-[145px_1fr] items-center gap-2.5">
-          <span class="text-muted-foreground flex items-center gap-1.5 shrink-0">
-            <IconFileCode class="size-4 text-muted-foreground" /> Doc. Evento:
+        <div v-if="vinculoActivo.tipo_evento"
+          class="grid grid-cols-[130px_1fr] sm:grid-cols-[145px_1fr] items-start gap-2.5">
+          <span class="text-muted-foreground flex items-center gap-1.5 shrink-0 mt-0.5">
+            <IconAlertCircle class="size-4 text-muted-foreground shrink-0" /> Evento:
+          </span>
+          <span class="font-medium text-foreground capitalize truncate" :title="vinculoActivo.tipo_evento">
+            {{ vinculoActivo.tipo_evento }}{{ vinculoActivo.estado_evento ? ` (${vinculoActivo.estado_evento})` : '' }}
+          </span>
+        </div>
+
+        <div v-if="vinculoActivo.doc_evento_tipo || vinculoActivo.numero_doc_evento"
+          class="grid grid-cols-[130px_1fr] sm:grid-cols-[145px_1fr] items-start gap-2.5">
+          <span class="text-muted-foreground flex items-center gap-1.5 shrink-0 mt-0.5">
+            <IconFileCode class="size-4 text-muted-foreground shrink-0" /> Doc. Evento:
           </span>
           <span class="font-medium text-foreground truncate"
-            :title="[vinculoActivo.doc_evento_tipo, vinculoActivo.numero_doc_evento].filter(Boolean).join(' N° ') || '-'">
-            {{ [vinculoActivo.doc_evento_tipo, vinculoActivo.numero_doc_evento].filter(Boolean).join(' N° ') || '-' }}
+            :title="[vinculoActivo.doc_evento_tipo, vinculoActivo.numero_doc_evento].filter(Boolean).join(' N° ')">
+            {{ [vinculoActivo.doc_evento_tipo, vinculoActivo.numero_doc_evento].filter(Boolean).join(' N° ') }}
           </span>
         </div>
 
-        <div class="grid grid-cols-[130px_1fr] sm:grid-cols-[145px_1fr] items-center gap-2.5">
-          <span class="text-muted-foreground flex items-center gap-1.5 shrink-0">
-            <IconCalendar class="size-4 text-muted-foreground" /> Fecha Evento:
+        <div v-if="vinculoActivo.fecha_evento"
+          class="grid grid-cols-[130px_1fr] sm:grid-cols-[145px_1fr] items-start gap-2.5">
+          <span class="text-muted-foreground flex items-center gap-1.5 shrink-0 mt-0.5">
+            <IconCalendar class="size-4 text-muted-foreground shrink-0" /> Fecha Evento:
           </span>
           <span class="font-medium font-mono text-foreground">{{ formatDate(vinculoActivo.fecha_evento) }}</span>
         </div>
 
-        <div class="grid grid-cols-[130px_1fr] sm:grid-cols-[145px_1fr] items-center gap-2.5">
+        <div v-if="vinculoActivo.estado"
+          class="grid grid-cols-[130px_1fr] sm:grid-cols-[145px_1fr] items-center gap-2.5">
           <span class="text-muted-foreground flex items-center gap-1.5 shrink-0">
-            <IconShieldCheck class="size-4 text-muted-foreground" /> Estado:
+            <IconShieldCheck class="size-4 text-muted-foreground shrink-0" /> Estado:
           </span>
           <div>
             <Badge :variant="vinculoActivo.estado.toLowerCase() === 'activo' ? 'success' : 'secondary'" size="xs">
@@ -230,7 +245,9 @@ const getBadgeVariant = (type: VinculoStatusType): 'success' | 'warning' | 'seco
     </div>
   </Card>
 
-  <Card v-else class="text-xs text-muted-foreground py-8 text-center">
-    No se registra un vínculo laboral activo en este momento.
+  <Card v-else class="text-xs text-muted-foreground py-10 text-center space-y-2">
+    <IconBriefcase class="size-8 mx-auto text-muted-foreground/40" />
+    <p class="font-semibold text-foreground text-sm">Sin vínculo laboral activo</p>
+    <p>No se registra una vinculación laboral vigente en el sistema para este servidor.</p>
   </Card>
 </template>

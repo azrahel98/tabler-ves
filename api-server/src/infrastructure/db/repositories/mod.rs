@@ -5,6 +5,7 @@ pub mod usuario_repo;
 pub mod contacto_repo;
 pub mod sindicato_repo;
 pub mod documento_repo;
+pub mod notificacion_repo;
 use std::sync::OnceLock;
 pub fn get_db_key() -> &'static str {
     static DB_KEY: OnceLock<String> = OnceLock::new();

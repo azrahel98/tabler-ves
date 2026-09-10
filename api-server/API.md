@@ -261,7 +261,7 @@ Lista de tipos de documento.
 **Respuesta:**
 
 ```json
-[{ "id": 1, "nombre": "Resolución", "sigla": "RA" }]
+[{ "id": 1, "nombre": "Resolución" }]
 ```
 
 ---
@@ -693,6 +693,61 @@ Desafiliar un vínculo de su sindicato.
 
 ---
 
+### `GET /personal/documento/{id}`
+
+Obtener un documento de legajo por su ID.
+
+**Respuesta:**
+
+```json
+{
+  "id": 10,
+  "tipoDocumento": "RA",
+  "areaId": 1,
+  "numeroDocumento": 123,
+  "añoDocumento": 2024,
+  "fecha": "2024-01-15",
+  "fechaValida": null,
+  "conv": null,
+  "descripcion": "Descripción del documento",
+  "funcion": null
+}
+```
+
+---
+
+### `POST /personal/documento` o `POST /personal/crear_documento`
+
+Crear un nuevo documento de legajo asociado opcionalmente al DNI para auditoría.
+
+**Body:**
+
+```json
+{
+  "dni": "12345678",
+  "documento": {
+    "tipoDocumento": "RA",
+    "areaId": 1,
+    "numeroDocumento": 123,
+    "añoDocumento": 2024,
+    "fecha": "2024-01-15",
+    "fechaValida": null,
+    "descripcion": "Resolución de designación"
+  }
+}
+```
+
+**Respuesta:**
+
+```json
+{
+  "message": "Documento creado correctamente",
+  "id": 15
+}
+```
+
+---
+
 ### `PUT /personal/editar_documento`
 
 Editar un documento existente.
@@ -705,6 +760,7 @@ Editar un documento existente.
   "documento": {
     "id": 10,
     "tipoDocumento": "RA",
+    "areaId": 1,
     "numeroDocumento": 123,
     "añoDocumento": 2024,
     "fecha": "2024-01-15",
@@ -715,6 +771,14 @@ Editar un documento existente.
 ```
 
 **Respuesta:** `"Documento actualizado"`
+
+---
+
+### `DELETE /personal/documento/{id}` o `DELETE /personal/eliminar_documento/{id}`
+
+Eliminar un documento de legajo por su ID.
+
+**Respuesta:** `"Documento eliminado correctamente"`
 
 ---
 
@@ -970,12 +1034,12 @@ Detalle de una plaza por código.
 
 ### `GET /personal/buscar_areas`
 
-Lista de áreas activas.
+Lista de áreas activas que tienen sigla definida (`activo = 1 and sigla is not null`), ordenadas por nombre.
 
 **Respuesta:**
 
 ```json
-[{ "id": 1, "nombre": "Gerencia Municipal", "activo": true, "nivel": 1 }]
+[{ "id": 1, "nombre": "GERENCIA MUNICIPAL", "activo": true, "nivel": 2, "sigla": "GM" }]
 ```
 
 ---
@@ -1411,4 +1475,103 @@ Eliminar un documento por su ID.
 - `id` (path): ID del documento a eliminar.
 
 **Respuesta:** `"Documento eliminado correctamente"`
+
+---
+
+## Notificaciones `/notificaciones`
+
+Sistema de notificaciones en tiempo real y persistencia para alertas (ej. renuncias de personal).
+
+### `GET /notificaciones/stream`
+
+Canal de Server-Sent Events (SSE) para recibir notificaciones en tiempo real.
+
+- **Headers opcionales:** `token: <JWT>`
+- **Query params opcionales:** `?token=<JWT>` (útil para `new EventSource(url)` nativo de JS)
+- **Tipo de contenido:** `text/event-stream`
+- **Heartbeat:** Envía `: keep-alive\n\n` periódicamente cada 20s para mantener viva la conexión.
+- **Evento de notificación recibido:**
+```json
+{
+  "id": 1,
+  "tipo": "RENUNCIA",
+  "titulo": "Renuncia de personal",
+  "mensaje": "Juan Perez ha pasado a estado inactivo.",
+  "avatar": "/api/personal/avatar/12345678",
+  "enlace": "/personal/12345678",
+  "leido": false,
+  "metadata": {
+    "dni": "12345678",
+    "vinculo_id": 42,
+    "cargo": "Especialista"
+  },
+  "created_at": "2026-09-10T16:30:00-05:00"
+}
+```
+
+---
+
+### `GET /notificaciones`
+
+Listar las últimas notificaciones y el conteo de no leídas (ideal para cargar la campanita al entrar al sistema).
+
+- **Query params:**
+  - `limit` (opcional, entero, por defecto `30`): cantidad máxima de notificaciones a recuperar.
+
+**Respuesta:**
+```json
+{
+  "notificaciones": [
+    {
+      "id": 1,
+      "tipo": "RENUNCIA",
+      "titulo": "Renuncia de personal",
+      "mensaje": "Juan Perez ha pasado a estado inactivo.",
+      "avatar": "/api/personal/avatar/12345678",
+      "enlace": "/personal/12345678",
+      "leido": false,
+      "metadata": {
+        "dni": "12345678",
+        "vinculo_id": 42,
+        "cargo": "Especialista"
+      },
+      "created_at": "2026-09-10T21:30:00Z"
+    }
+  ],
+  "no_leidas": 1
+}
+```
+
+---
+
+### `PUT /notificaciones/{id}/leer`
+
+Marcar una notificación individual como leída.
+
+- **Parámetros:**
+  - `id` (path): ID numérico de la notificación.
+
+**Respuesta:**
+```json
+{
+  "status": "success",
+  "mensaje": "Notificación marcada como leída",
+  "id": 1
+}
+```
+
+---
+
+### `PUT /notificaciones/leer-todas`
+
+Marcar todas las notificaciones pendientes como leídas.
+
+**Respuesta:**
+```json
+{
+  "status": "success",
+  "mensaje": "Todas las notificaciones fueron marcadas como leídas",
+  "actualizadas": 3
+}
+```
 

@@ -1,6 +1,12 @@
 {
   "version": 1,
   "skills": {
+    "impeccable": {
+      "source": "pbakaus/impeccable",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/impeccable/SKILL.md",
+      "computedHash": "dce739bef2928af5b36f892ad718faf1fdb0e4656a2acf6164fadce33bc22067"
+    },
     "preline-theme-generator": {
       "source": "htmlstreamofficial/preline",
       "sourceType": "github",
