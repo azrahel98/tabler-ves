@@ -162,3 +162,24 @@ export interface TipoDocumentoOption {
   sigla: string
 }
 
+export interface RegistrarUrlPayload {
+  dni_asociado: string
+  original_name: string
+  external_url: string
+  documento_id?: number | null
+}
+
+export interface RegistrarUrlResponse {
+  id: number
+  original_name: string
+  file_hash: string
+  external_url: string
+  extension: string
+}
+
+export interface UploadArchivoResponse {
+  id: number
+  original_name: string
+  file_hash: string
+  extension: string
+}

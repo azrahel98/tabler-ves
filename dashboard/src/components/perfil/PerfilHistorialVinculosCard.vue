@@ -146,7 +146,7 @@ const sortedVinculos = computed(() => {
                       title="Vínculo Concluido / Cesado"></span>
 
                     <div class="min-w-0 flex-1">
-                      <span class="font-medium text-foreground text-[11px] block wrap-break-word break-words"
+                      <span class="font-medium text-foreground text-[11px] block wrap-break-word"
                         :title="v.cargo">
                         {{ v.cargo }}
                       </span>
@@ -237,7 +237,7 @@ const sortedVinculos = computed(() => {
                           <span class="text-muted-foreground flex items-center gap-1.5 shrink-0">
                             <IconBuildingSkyscraper class="size-4 text-muted-foreground shrink-0" /> Área:
                           </span>
-                          <span class="font-medium text-foreground wrap-break-word break-words min-w-0"
+                          <span class="font-medium text-foreground wrap-break-word min-w-0"
                             :title="v.area">
                             {{ v.area || '-' }}
                           </span>
@@ -287,7 +287,7 @@ const sortedVinculos = computed(() => {
                           <span class="text-muted-foreground flex items-center gap-1.5 shrink-0">
                             <IconId class="size-4 text-muted-foreground shrink-0" /> C. Estructural:
                           </span>
-                          <span class="font-medium text-foreground wrap-break-word break-words min-w-0"
+                          <span class="font-medium text-foreground wrap-break-word min-w-0"
                             :title="v.cargo_estructural || ''">
                             {{ v.cargo_estructural || '-' }}
                           </span>

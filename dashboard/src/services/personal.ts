@@ -289,3 +289,46 @@ export async function crearDocumento(payload: CrearDocumentoPayload): Promise<Cr
     body: payload,
   })
 }
+
+export interface RegistrarUrlPayload {
+  dni_asociado: string
+  original_name: string
+  external_url: string
+  documento_id?: number | null
+}
+
+export interface RegistrarUrlResponse {
+  id: number
+  original_name: string
+  file_hash: string
+  external_url: string
+  extension: string
+}
+
+export async function registrarUrlArchivo(payload: RegistrarUrlPayload): Promise<RegistrarUrlResponse> {
+  return await api<RegistrarUrlResponse>('/fileserver/registrar_url', {
+    method: 'POST',
+    body: payload,
+  })
+}
+
+export interface UploadArchivoResponse {
+  id: number
+  original_name: string
+  file_hash: string
+  extension: string
+}
+
+export async function uploadArchivoLegajo(formData: FormData): Promise<UploadArchivoResponse[]> {
+  return await api<UploadArchivoResponse[]>('/fileserver/upload', {
+    method: 'POST',
+    body: formData,
+  })
+}
+
+export async function eliminarArchivoLegajo(id: number): Promise<boolean> {
+  await api(`/fileserver/eliminar_archivo/${id}`, {
+    method: 'DELETE',
+  })
+  return true
+}

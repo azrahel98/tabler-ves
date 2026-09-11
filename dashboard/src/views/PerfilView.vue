@@ -13,6 +13,9 @@ import PerfilSearchModal from '@/components/perfil/PerfilSearchModal.vue'
 import PerfilEditModal from '@/components/perfil/PerfilEditModal.vue'
 import PerfilRenunciaModal from '@/components/perfil/PerfilRenunciaModal.vue'
 import PerfilDocumentoModal from '@/components/perfil/PerfilDocumentoModal.vue'
+import PerfilVincularUrlModal from '@/components/perfil/PerfilVincularUrlModal.vue'
+import PerfilSubirArchivoModal from '@/components/perfil/PerfilSubirArchivoModal.vue'
+import PerfilEliminarArchivoModal from '@/components/perfil/PerfilEliminarArchivoModal.vue'
 import {
   fetchPersonalPerfil,
   fetchPersonalBanco,
@@ -24,6 +27,9 @@ import {
   updatePersonalPerfil,
   registrarRenunciaPorVinculo,
   crearDocumento,
+  registrarUrlArchivo,
+  uploadArchivoLegajo,
+  eliminarArchivoLegajo,
   type PersonalPerfil,
   type PersonalBanco,
   type PersonalGrado,
@@ -33,6 +39,7 @@ import {
   type PersonalDocumento,
   type RenunciaPayload,
   type DocumentoData,
+  type RegistrarUrlPayload,
 } from '@/services/personal'
 import {
   IconUser,
@@ -64,10 +71,18 @@ const isSearchModalOpen = ref<boolean>(false)
 const isEditModalOpen = ref<boolean>(false)
 const isRenunciaModalOpen = ref<boolean>(false)
 const isDocumentoModalOpen = ref<boolean>(false)
+const isVincularUrlModalOpen = ref<boolean>(false)
+const isSubirArchivoModalOpen = ref<boolean>(false)
+const isEliminarArchivoModalOpen = ref<boolean>(false)
+const archivoAEliminar = ref<PersonalArchivo | null>(null)
+const documentoAVincular = ref<PersonalDocumento | null>(null)
 const vinculoARenunciar = ref<PersonalVinculo | null>(null)
 const isSaving = ref<boolean>(false)
 const isSavingRenuncia = ref<boolean>(false)
 const isSavingDocumento = ref<boolean>(false)
+const isSavingVincular = ref<boolean>(false)
+const isSavingSubirArchivo = ref<boolean>(false)
+const isDeletingArchivo = ref<boolean>(false)
 const copiedField = ref<string | null>(null)
 
 const vinculoActivo = computed(() => {
@@ -189,6 +204,88 @@ const onSaveDocumento = async (data: DocumentoData) => {
   }
 }
 
+const onAbrirVincularUrl = (doc: PersonalDocumento) => {
+  documentoAVincular.value = doc
+  isVincularUrlModalOpen.value = true
+}
+
+const onSaveVincularUrl = async (payload: RegistrarUrlPayload) => {
+  isSavingVincular.value = true
+  try {
+    await registrarUrlArchivo(payload)
+    isVincularUrlModalOpen.value = false
+    showToast('success', 'PDF vinculado exitosamente al documento.')
+    archivos.value = await fetchPersonalArchivos(currentDni.value)
+  } catch (err: any) {
+    showToast('error', err?.message || 'Error al vincular el PDF.')
+  } finally {
+    isSavingVincular.value = false
+  }
+}
+
+const onUploadFile = async ({
+  file,
+  customName,
+  documentoId,
+}: {
+  file: File
+  customName: string
+  documentoId: number | null
+}) => {
+  isSavingSubirArchivo.value = true
+  try {
+    const formData = new FormData()
+    formData.append('dni_asociado', currentDni.value)
+    const nameToUse = customName || file.name
+    formData.append('file', file, nameToUse)
+    if (documentoId) {
+      formData.append('documento_id', String(documentoId))
+    }
+    await uploadArchivoLegajo(formData)
+    isSubirArchivoModalOpen.value = false
+    showToast('success', 'Archivo PDF subido exitosamente al legajo.')
+    archivos.value = await fetchPersonalArchivos(currentDni.value)
+  } catch (err: any) {
+    showToast('error', err?.message || 'Error al subir el archivo PDF.')
+  } finally {
+    isSavingSubirArchivo.value = false
+  }
+}
+
+const onUploadUrlFromModal = async (payload: RegistrarUrlPayload) => {
+  isSavingSubirArchivo.value = true
+  try {
+    await registrarUrlArchivo(payload)
+    isSubirArchivoModalOpen.value = false
+    showToast('success', 'Archivo registrado exitosamente en el legajo.')
+    archivos.value = await fetchPersonalArchivos(currentDni.value)
+  } catch (err: any) {
+    showToast('error', err?.message || 'Error al registrar el archivo.')
+  } finally {
+    isSavingSubirArchivo.value = false
+  }
+}
+
+const onAbrirEliminarArchivo = (archivo: PersonalArchivo) => {
+  archivoAEliminar.value = archivo
+  isEliminarArchivoModalOpen.value = true
+}
+
+const onConfirmarEliminarArchivo = async () => {
+  if (!archivoAEliminar.value) return
+  isDeletingArchivo.value = true
+  try {
+    await eliminarArchivoLegajo(archivoAEliminar.value.id)
+    isEliminarArchivoModalOpen.value = false
+    showToast('success', 'Archivo eliminado del legajo correctamente.')
+    archivos.value = await fetchPersonalArchivos(currentDni.value)
+  } catch (err: any) {
+    showToast('error', err?.message || 'Error al eliminar el archivo.')
+  } finally {
+    isDeletingArchivo.value = false
+  }
+}
+
 const handleKeyDown = (e: KeyboardEvent) => {
   if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
     e.preventDefault()
@@ -200,6 +297,12 @@ const handleKeyDown = (e: KeyboardEvent) => {
       isRenunciaModalOpen.value = false
     } else if (isDocumentoModalOpen.value) {
       isDocumentoModalOpen.value = false
+    } else if (isVincularUrlModalOpen.value) {
+      isVincularUrlModalOpen.value = false
+    } else if (isSubirArchivoModalOpen.value) {
+      isSubirArchivoModalOpen.value = false
+    } else if (isEliminarArchivoModalOpen.value) {
+      isEliminarArchivoModalOpen.value = false
     } else if (isSearchModalOpen.value) {
       isSearchModalOpen.value = false
     }
@@ -353,6 +456,9 @@ watch(
               :archivos="archivos"
               :documentos="documentos"
               @nuevo-documento="isDocumentoModalOpen = true"
+              @vincular-url="onAbrirVincularUrl"
+              @subir-archivo="isSubirArchivoModalOpen = true"
+              @eliminar-archivo="onAbrirEliminarArchivo"
             />
           </div>
 
@@ -402,6 +508,34 @@ watch(
       :is-saving="isSavingDocumento"
       @close="isDocumentoModalOpen = false"
       @save="onSaveDocumento"
+    />
+
+    <PerfilVincularUrlModal
+      :is-open="isVincularUrlModalOpen"
+      :documento="documentoAVincular"
+      :dni="currentDni"
+      :is-saving="isSavingVincular"
+      @close="isVincularUrlModalOpen = false"
+      @save="onSaveVincularUrl"
+    />
+
+    <PerfilSubirArchivoModal
+      :is-open="isSubirArchivoModalOpen"
+      :dni="currentDni"
+      :documentos="documentos"
+      :archivos="archivos"
+      :is-saving="isSavingSubirArchivo"
+      @close="isSubirArchivoModalOpen = false"
+      @upload-file="onUploadFile"
+      @upload-url="onUploadUrlFromModal"
+    />
+
+    <PerfilEliminarArchivoModal
+      :is-open="isEliminarArchivoModalOpen"
+      :archivo="archivoAEliminar"
+      :is-deleting="isDeletingArchivo"
+      @close="isEliminarArchivoModalOpen = false"
+      @confirm="onConfirmarEliminarArchivo"
     />
 
     <transition

@@ -7,7 +7,6 @@ import Button from '@/components/ui/button/Button.vue'
 import { getFileDownloadUrl, type PersonalArchivo, type PersonalDocumento } from './types'
 import { parseDateSafe, formatDate } from '@/utils/date'
 import {
-  IconChevronDown,
   IconLayoutGrid,
   IconList,
   IconDownload,
@@ -16,7 +15,9 @@ import {
   IconUser,
   IconFileCheck,
   IconFileText,
-  IconPlus,
+  IconLink,
+  IconUpload,
+  IconTrash,
 } from '@tabler/icons-vue'
 
 interface Props {
@@ -28,19 +29,18 @@ const props = defineProps<Props>()
 
 const emit = defineEmits<{
   (e: 'nuevoDocumento'): void
+  (e: 'vincularUrl', doc: PersonalDocumento): void
+  (e: 'subirArchivo'): void
+  (e: 'eliminarArchivo', archivo: PersonalArchivo): void
 }>()
+
+function getArchivoDeDocumento(docId: number): PersonalArchivo | undefined {
+  return props.archivos.find(a => a.documento_id === docId)
+}
 
 const viewMode = ref<'list' | 'grid'>('list')
 const selectedSort = ref<string>('newest')
 const searchQuery = ref<string>('')
-
-const sortOptions = [
-  { value: 'newest', label: 'Más recientes' },
-  { value: 'oldest', label: 'Más antiguos' },
-  { value: 'name_asc', label: 'Nombre (A-Z)' },
-  { value: 'name_desc', label: 'Nombre (Z-A)' },
-  { value: 'size', label: 'Tamaño' },
-]
 
 function parseSizeToKb(sizeStr?: string): number {
   if (!sizeStr) return 0
@@ -144,18 +144,6 @@ const filteredAndSortedArchivos = computed(() => {
               class="h-7.5 pl-7 pr-2.5 text-[11px] rounded-lg border border-border bg-background/50 focus:bg-background focus:outline-hidden focus:ring-1 focus:ring-primary w-36 sm:w-44 transition" />
           </div>
 
-          <div class="relative inline-flex items-center border border-border rounded-lg px-2 h-7.5 bg-card text-[11px]">
-            <span class="text-muted-foreground mr-1 text-[11px]">Ordenar:</span>
-            <div class="relative inline-flex items-center">
-              <select v-model="selectedSort"
-                class="appearance-none bg-transparent pr-3.5 font-medium text-foreground cursor-pointer focus:outline-hidden text-[11px]">
-                <option v-for="opt in sortOptions" :key="opt.value" :value="opt.value" class="bg-card text-foreground">
-                  {{ opt.label }}
-                </option>
-              </select>
-              <IconChevronDown class="size-3 text-muted-foreground absolute right-0 pointer-events-none" />
-            </div>
-          </div>
 
           <div class="inline-flex items-center rounded-lg border border-border p-0.5 bg-muted/20">
             <button type="button" class="p-1 rounded-md transition cursor-pointer"
@@ -169,6 +157,12 @@ const filteredAndSortedArchivos = computed(() => {
               <IconLayoutGrid class="size-3.5" />
             </button>
           </div>
+
+          <Button type="button" variant="primary" size="xs" class="gap-1.5 cursor-pointer text-xs shrink-0"
+            @click="emit('subirArchivo')">
+            <IconUpload class="size-3.5" />
+            <span>Subir</span>
+          </Button>
         </div>
       </div>
 
@@ -238,12 +232,20 @@ const filteredAndSortedArchivos = computed(() => {
                   <td class="px-3 sm:px-4 py-2 text-muted-foreground text-right sm:text-left whitespace-nowrap">
                     <div class="flex items-center justify-between gap-2">
                       <span class="font-mono text-[11px]">{{ formatFileDate(archivo.fecha_subida) }}</span>
-                      <a :href="getFileUrl(archivo)" target="_blank" rel="noopener noreferrer"
-                        class="opacity-0 group-hover:opacity-100 transition p-0.5 text-muted-foreground hover:text-primary rounded hover:bg-muted"
-                        :title="archivo.external_url ? 'Abrir enlace externo' : 'Descargar archivo'">
-                        <IconExternalLink v-if="archivo.external_url" class="size-3" />
-                        <IconDownload v-else class="size-3" />
-                      </a>
+                      <div class="flex items-center gap-1">
+                        <a :href="getFileUrl(archivo)" target="_blank" rel="noopener noreferrer"
+                          class="opacity-0 group-hover:opacity-100 transition p-0.5 text-muted-foreground hover:text-primary rounded hover:bg-muted"
+                          :title="archivo.external_url ? 'Abrir enlace externo' : 'Descargar archivo'">
+                          <IconExternalLink v-if="archivo.external_url" class="size-3" />
+                          <IconDownload v-else class="size-3" />
+                        </a>
+                        <button type="button"
+                          class="opacity-0 group-hover:opacity-100 transition p-0.5 text-muted-foreground hover:text-destructive rounded hover:bg-destructive/10 cursor-pointer"
+                          title="Eliminar archivo del legajo"
+                          @click="emit('eliminarArchivo', archivo)">
+                          <IconTrash class="size-3" />
+                        </button>
+                      </div>
                     </div>
                   </td>
                 </tr>
@@ -271,12 +273,20 @@ const filteredAndSortedArchivos = computed(() => {
                     letter-spacing="0.3">PDF</text>
                 </svg>
               </div>
-              <a :href="getFileUrl(archivo)" target="_blank" rel="noopener noreferrer"
-                class="p-1 rounded-md border border-border text-muted-foreground hover:text-primary hover:bg-muted transition"
-                :title="archivo.external_url ? 'Abrir enlace' : 'Descargar archivo'">
-                <IconExternalLink v-if="archivo.external_url" class="size-3" />
-                <IconDownload v-else class="size-3" />
-              </a>
+              <div class="flex items-center gap-1">
+                <a :href="getFileUrl(archivo)" target="_blank" rel="noopener noreferrer"
+                  class="p-1 rounded-md border border-border text-muted-foreground hover:text-primary hover:bg-muted transition"
+                  :title="archivo.external_url ? 'Abrir enlace' : 'Descargar archivo'">
+                  <IconExternalLink v-if="archivo.external_url" class="size-3" />
+                  <IconDownload v-else class="size-3" />
+                </a>
+                <button type="button"
+                  class="p-1 rounded-md border border-border text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition cursor-pointer"
+                  title="Eliminar archivo del legajo"
+                  @click="emit('eliminarArchivo', archivo)">
+                  <IconTrash class="size-3" />
+                </button>
+              </div>
             </div>
 
             <div class="space-y-0.5">
@@ -301,7 +311,7 @@ const filteredAndSortedArchivos = computed(() => {
                   class="size-3.5 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 text-[8px] font-bold flex items-center justify-center shrink-0">
                   {{ getAccessDetails(archivo).initial }}
                 </div>
-                <span class="truncate max-w-[80px]">{{ getAccessDetails(archivo).label }}</span>
+                <span class="truncate max-w-20">{{ getAccessDetails(archivo).label }}</span>
               </div>
               <span class="font-mono text-[10px]">{{ formatFileDate(archivo.fecha_subida) }}</span>
             </div>
@@ -327,21 +337,58 @@ const filteredAndSortedArchivos = computed(() => {
         </div>
         <div class="flex items-center gap-2">
           <Badge variant="outline" size="xs">{{ documentos.length }} Registrados</Badge>
-          <Button variant="outline" size="xs" class="gap-1" @click="emit('nuevoDocumento')">
-            <IconPlus class="size-3" />
-            <span>Registrar</span>
-          </Button>
+
         </div>
       </div>
 
-      <div v-if="documentos.length > 0" class="space-y-2.5">
-        <div v-for="doc in documentos" :key="doc.id"
-          class="p-3 rounded-xl border border-border bg-card space-y-1 text-xs hover:border-primary/30 transition">
-          <div class="flex items-center justify-between">
-            <span class="font-semibold text-foreground text-[11px]">{{ doc.sigla }}</span>
-            <span class="font-mono text-muted-foreground text-[11px]">{{ formatDate(doc.fecha) }}</span>
-          </div>
-          <p class="text-muted-foreground text-[11px]">{{ doc.descripcion }}</p>
+      <div v-if="documentos.length > 0" class="overflow-hidden rounded-xl border border-border bg-card">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs" aria-label="Tabla de documentos formales de legajo">
+            <thead
+              class="border-b border-border bg-muted/30 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground select-none">
+              <tr>
+                <th scope="col" class="px-3 sm:px-4 py-2.5 font-semibold">Documento / Sigla</th>
+                <th scope="col" class="px-3 sm:px-4 py-2.5 font-semibold">Descripción</th>
+                <th scope="col" class="px-3 sm:px-4 py-2.5 font-semibold whitespace-nowrap">Fecha</th>
+                <th scope="col" class="px-3 sm:px-4 py-2.5 text-right font-semibold whitespace-nowrap">Archivo PDF</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-border">
+              <tr v-for="doc in documentos" :key="doc.id" class="transition-colors hover:bg-muted/40">
+                <td class="px-3 sm:px-4 py-2.5 whitespace-nowrap align-top">
+                  <span class="font-semibold text-foreground text-[11px] block">{{ doc.sigla }}</span>
+                </td>
+                <td class="px-3 sm:px-4 py-2.5 min-w-0 align-top">
+                  <p class="text-[11px] text-muted-foreground leading-relaxed">{{ doc.descripcion }}</p>
+                </td>
+                <td class="px-3 sm:px-4 py-2.5 font-mono text-[11px] text-muted-foreground whitespace-nowrap align-top">
+                  {{ formatDate(doc.fecha) }}
+                </td>
+                <td class="px-3 sm:px-4 py-2.5 text-right whitespace-nowrap align-top">
+                  <div v-if="getArchivoDeDocumento(doc.id)" class="inline-flex items-center gap-1.5 justify-end">
+                    <a :href="getFileUrl(getArchivoDeDocumento(doc.id)!)" target="_blank" rel="noopener noreferrer"
+                      class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[11px] font-medium bg-rose-500/10 text-rose-600 dark:text-rose-400 hover:bg-rose-500/20 transition-colors"
+                      :title="getArchivoDeDocumento(doc.id)?.original_name">
+                      <IconFileText class="size-3 shrink-0" />
+                      <span>Ver PDF</span>
+                      <IconExternalLink class="size-2.5 opacity-70 shrink-0" />
+                    </a>
+                    <button type="button"
+                      class="p-1 text-muted-foreground hover:text-foreground hover:bg-muted rounded-md transition-colors cursor-pointer"
+                      title="Cambiar o vincular otra URL a este documento" @click="emit('vincularUrl', doc)">
+                      <IconLink class="size-3" />
+                    </button>
+                  </div>
+                  <button v-else type="button"
+                    class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[11px] font-medium text-primary hover:bg-primary/10 border border-primary/20 hover:border-primary/40 transition-colors cursor-pointer"
+                    title="Vincular URL como PDF a este documento" @click="emit('vincularUrl', doc)">
+                    <IconLink class="size-3 shrink-0" />
+                    <span>Vincular URL</span>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
 
