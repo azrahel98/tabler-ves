@@ -75,7 +75,19 @@ const formData = ref<{
   descripcion: 'Renuncia voluntaria',
 })
 
+const tipoDocumentoActual = computed(() => {
+  return tiposDocumento.value.find((t) => String(t.id) === String(formData.value.tipoDocumento)) || null
+})
+
+const esSunat = computed(() => {
+  if (!tipoDocumentoActual.value) return false
+  const nombre = (tipoDocumentoActual.value.nombre || '').toLowerCase()
+  const sigla = (tipoDocumentoActual.value.sigla || '').toLowerCase()
+  return nombre.includes('sunat') || sigla.includes('sunat')
+})
+
 const necesitaArea = computed(() => {
+  if (esSunat.value) return false
   if (!formData.value.tipoDocumento) return false
   return requiereArea(formData.value.tipoDocumento)
 })
@@ -116,9 +128,23 @@ const loadCatalogos = async () => {
 watch(
   () => formData.value.tipoDocumento,
   (nuevoTipo) => {
-    if (nuevoTipo && !requiereArea(nuevoTipo)) {
+    if (esSunat.value) {
+      formData.value.numeroDocumento = ''
+      formData.value.fechaValida = ''
       formData.value.areaId = ''
-      if (formErrors.value.areaId) {
+      formData.value.descripcion = 'Registrado desde la SUNAT'
+      delete formErrors.value.numeroDocumento
+      delete formErrors.value.añoDocumento
+      delete formErrors.value.areaId
+    } else {
+      if (formData.value.descripcion === 'Registrado desde la SUNAT') {
+        formData.value.descripcion = 'Renuncia voluntaria'
+      }
+      if (!formData.value.añoDocumento) {
+        formData.value.añoDocumento = new Date().getFullYear()
+      }
+      if (nuevoTipo && !requiereArea(nuevoTipo)) {
+        formData.value.areaId = ''
         delete formErrors.value.areaId
       }
     }
@@ -141,6 +167,12 @@ watch(
         descripcion: 'Renuncia voluntaria',
       }
       await loadCatalogos()
+      if (esSunat.value) {
+        formData.value.numeroDocumento = ''
+        formData.value.fechaValida = ''
+        formData.value.areaId = ''
+        formData.value.descripcion = 'Registrado desde la SUNAT'
+      }
     }
   },
 )
@@ -160,14 +192,16 @@ const validateForm = (): boolean => {
     errors.areaId = 'El área es requerida para este tipo de documento.'
   }
 
-  const num = Number(formData.value.numeroDocumento)
-  if (!formData.value.numeroDocumento || isNaN(num) || num <= 0) {
-    errors.numeroDocumento = 'Ingrese un número de documento válido y mayor a cero.'
-  }
+  if (!esSunat.value) {
+    const num = Number(formData.value.numeroDocumento)
+    if (!formData.value.numeroDocumento || isNaN(num) || num <= 0) {
+      errors.numeroDocumento = 'Ingrese un número de documento válido y mayor a cero.'
+    }
 
-  const anio = Number(formData.value.añoDocumento)
-  if (!formData.value.añoDocumento || isNaN(anio) || anio < 1990 || anio > 2050) {
-    errors.añoDocumento = 'Ingrese un año válido (entre 1990 y 2050).'
+    const anio = Number(formData.value.añoDocumento)
+    if (!formData.value.añoDocumento || isNaN(anio) || anio < 1990 || anio > 2050) {
+      errors.añoDocumento = 'Ingrese un año válido (entre 1990 y 2050).'
+    }
   }
 
   if (!formData.value.fecha || !formData.value.fecha.trim()) {
@@ -194,10 +228,10 @@ const handleSubmit = () => {
     id: props.vinculo.id,
     tipoDocumento: String(formData.value.tipoDocumento),
     areaId: necesitaArea.value ? Number(formData.value.areaId) : null,
-    numeroDocumento: Number(formData.value.numeroDocumento),
-    añoDocumento: Number(formData.value.añoDocumento),
+    numeroDocumento: esSunat.value ? null : Number(formData.value.numeroDocumento),
+    añoDocumento: esSunat.value ? null : Number(formData.value.añoDocumento),
     fecha: formData.value.fecha.trim(),
-    fechaValida: formData.value.fechaValida.trim() ? formData.value.fechaValida.trim() : null,
+    fechaValida: esSunat.value ? null : (formData.value.fechaValida.trim() ? formData.value.fechaValida.trim() : null),
     descripcion: formData.value.descripcion.trim(),
   }
 
@@ -289,7 +323,7 @@ const handleSubmit = () => {
 
         <form id="renuncia-form" class="space-y-4" @submit.prevent="handleSubmit">
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <div class="space-y-1 sm:col-span-1">
+            <div class="space-y-1" :class="esSunat ? 'sm:col-span-3' : 'sm:col-span-1'">
               <label for="renuncia-tipo-doc" class="block font-medium text-foreground text-[11.5px]">
                 Tipo de Documento <span class="text-rose-500">*</span>
               </label>
@@ -312,7 +346,7 @@ const handleSubmit = () => {
               </p>
             </div>
 
-            <div class="space-y-1 sm:col-span-1">
+            <div v-if="!esSunat" class="space-y-1 sm:col-span-1">
               <label for="renuncia-num-doc" class="block font-medium text-foreground text-[11.5px]">
                 Número de Documento <span class="text-rose-500">*</span>
               </label>
@@ -332,7 +366,7 @@ const handleSubmit = () => {
               </p>
             </div>
 
-            <div class="space-y-1 sm:col-span-1">
+            <div v-if="!esSunat" class="space-y-1 sm:col-span-1">
               <label for="renuncia-anio-doc" class="block font-medium text-foreground text-[11.5px]">
                 Año <span class="text-rose-500">*</span>
               </label>
@@ -351,6 +385,16 @@ const handleSubmit = () => {
                 {{ formErrors.añoDocumento }}
               </p>
             </div>
+          </div>
+
+          <div
+            v-if="esSunat"
+            class="p-2.5 rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-700 dark:text-blue-300 text-[11px] flex items-center gap-2"
+          >
+            <IconCheck class="size-3.5 text-blue-600 dark:text-blue-400 shrink-0" />
+            <span>
+              Documento SUNAT: no requiere numeración oficial, año ni fecha válida complementaria.
+            </span>
           </div>
 
           <div v-if="necesitaArea" class="space-y-2 p-3 rounded-xl bg-muted/20 border border-border/70">
@@ -407,7 +451,7 @@ const handleSubmit = () => {
           </div>
 
           <div
-            v-else-if="formData.tipoDocumento"
+            v-else-if="formData.tipoDocumento && !esSunat"
             class="p-2.5 rounded-lg bg-muted/40 border border-border/60 text-muted-foreground text-[11px] flex items-center gap-2"
           >
             <IconCheck class="size-3.5 text-emerald-500 shrink-0" />
@@ -416,7 +460,7 @@ const handleSubmit = () => {
             </span>
           </div>
 
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div class="grid grid-cols-1 gap-3" :class="esSunat ? '' : 'sm:grid-cols-2'">
             <div class="space-y-1">
               <label for="renuncia-fecha" class="block font-medium text-foreground text-[11.5px]">
                 Fecha de Renuncia / Cese <span class="text-rose-500">*</span>
@@ -434,7 +478,7 @@ const handleSubmit = () => {
               </p>
             </div>
 
-            <div class="space-y-1">
+            <div v-if="!esSunat" class="space-y-1">
               <label for="renuncia-fecha-valida" class="block font-medium text-foreground text-[11.5px]">
                 Fecha Válida <span class="text-muted-foreground font-normal">(Opcional)</span>
               </label>
@@ -453,6 +497,9 @@ const handleSubmit = () => {
               <label for="renuncia-descripcion" class="block font-medium text-foreground text-[11.5px]">
                 Descripción / Motivo <span class="text-rose-500">*</span>
               </label>
+              <span v-if="esSunat" class="text-[10px] text-muted-foreground font-medium">
+                Bloqueado para SUNAT
+              </span>
             </div>
 
             <textarea
@@ -460,8 +507,9 @@ const handleSubmit = () => {
               v-model="formData.descripcion"
               rows="2"
               placeholder="Indique los detalles o justificación de la renuncia o término de funciones..."
-              :disabled="isSaving"
-              class="w-full p-2.5 rounded-lg border bg-background text-foreground text-xs focus:outline-hidden focus:ring-2 focus:ring-primary focus:border-primary transition resize-none"
+              :disabled="isSaving || esSunat"
+              :readonly="esSunat"
+              class="w-full p-2.5 rounded-lg border bg-background text-foreground text-xs focus:outline-hidden focus:ring-2 focus:ring-primary focus:border-primary transition resize-none disabled:bg-muted/50 disabled:text-muted-foreground disabled:cursor-not-allowed"
               :class="formErrors.descripcion ? 'border-destructive' : 'border-input'"
             ></textarea>
             <p v-if="formErrors.descripcion" class="text-[10px] text-destructive font-medium">

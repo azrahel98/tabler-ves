@@ -715,7 +715,7 @@ const closeNodeDetail = () => {
           </h4>
           <div v-if="selectedNodeDetail.jefe"
             class="flex items-center gap-3.5 p-3.5 rounded-xl border border-border bg-background">
-            <img v-if="selectedNodeDetail.dni" :src="getPersonalAvatarUrl(selectedNodeDetail.dni)"
+            <img v-if="selectedNodeDetail.dni" v-auth-src="getPersonalAvatarUrl(selectedNodeDetail.dni)"
               :alt="selectedNodeDetail.jefe" class="size-12 rounded-xl object-cover border border-border shrink-0"
               @error="($event.target as HTMLElement).style.display = 'none'" />
             <div v-else

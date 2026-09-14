@@ -201,8 +201,8 @@ export interface RenunciaPayload {
   id: number
   tipoDocumento: string
   areaId?: number | null
-  numeroDocumento: number
-  añoDocumento: number
+  numeroDocumento?: number | null
+  añoDocumento?: number | null
   fecha: string
   fechaValida?: string | null
   descripcion: string
@@ -328,6 +328,13 @@ export async function uploadArchivoLegajo(formData: FormData): Promise<UploadArc
 
 export async function eliminarArchivoLegajo(id: number): Promise<boolean> {
   await api(`/fileserver/eliminar_archivo/${id}`, {
+    method: 'DELETE',
+  })
+  return true
+}
+
+export async function eliminarEventoVinculo(id: number): Promise<boolean> {
+  await api(`/personal/delete_evento_vinculo/${id}`, {
     method: 'DELETE',
   })
   return true

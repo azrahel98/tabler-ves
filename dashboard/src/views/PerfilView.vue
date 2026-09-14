@@ -16,6 +16,8 @@ import PerfilDocumentoModal from '@/components/perfil/PerfilDocumentoModal.vue'
 import PerfilVincularUrlModal from '@/components/perfil/PerfilVincularUrlModal.vue'
 import PerfilSubirArchivoModal from '@/components/perfil/PerfilSubirArchivoModal.vue'
 import PerfilEliminarArchivoModal from '@/components/perfil/PerfilEliminarArchivoModal.vue'
+import PerfilDocumentoDrawer from '@/components/perfil/PerfilDocumentoDrawer.vue'
+import PerfilDocumentoVisorModal from '@/components/perfil/PerfilDocumentoVisorModal.vue'
 import {
   fetchPersonalPerfil,
   fetchPersonalBanco,
@@ -30,6 +32,7 @@ import {
   registrarUrlArchivo,
   uploadArchivoLegajo,
   eliminarArchivoLegajo,
+  eliminarEventoVinculo,
   type PersonalPerfil,
   type PersonalBanco,
   type PersonalGrado,
@@ -41,6 +44,10 @@ import {
   type DocumentoData,
   type RegistrarUrlPayload,
 } from '@/services/personal'
+import {
+  type DocumentoVinculoInfo,
+  type TipoDocumentoVinculo,
+} from '@/components/perfil/types'
 import {
   IconUser,
   IconSearch,
@@ -84,6 +91,19 @@ const isSavingVincular = ref<boolean>(false)
 const isSavingSubirArchivo = ref<boolean>(false)
 const isDeletingArchivo = ref<boolean>(false)
 const copiedField = ref<string | null>(null)
+
+const isDocumentoDrawerOpen = ref<boolean>(false)
+const documentoDrawerInfo = ref<DocumentoVinculoInfo | null>(null)
+const isDeletingEvento = ref<boolean>(false)
+
+const isVisorOpen = ref<boolean>(false)
+const archivoSeleccionadoVisor = ref<PersonalArchivo | null>(null)
+const tituloVisor = ref<string>('')
+
+const archivoAsociadoAlDrawer = computed(() => {
+  if (!documentoDrawerInfo.value?.documentoId) return null
+  return archivos.value.find((a) => a.documento_id === documentoDrawerInfo.value?.documentoId) || null
+})
 
 const vinculoActivo = computed(() => {
   return vinculos.value.find((v) => v.estado.toLowerCase() === 'activo') || vinculos.value[0] || null
@@ -286,12 +306,82 @@ const onConfirmarEliminarArchivo = async () => {
   }
 }
 
+const abrirDocumentoDrawer = (payload: { tipo: TipoDocumentoVinculo; vinculo: PersonalVinculo }) => {
+  const { tipo, vinculo } = payload
+  if (tipo === 'ingreso') {
+    documentoDrawerInfo.value = {
+      tipo: 'ingreso',
+      titulo: 'Documento de Inicio / Ingreso',
+      subtitulo: vinculo.cargo,
+      tipoDocumentoNombre: vinculo.doc_ingreso,
+      numeroDocumento: vinculo.numero_doc_ingreso,
+      documentoId: vinculo.doc_ingreso_id,
+      descripcion: vinculo.descrip_ingreso,
+      fecha: vinculo.fecha_ingreso,
+      vinculo,
+    }
+  } else if (tipo === 'salida') {
+    documentoDrawerInfo.value = {
+      tipo: 'salida',
+      titulo: 'Documento de Salida',
+      subtitulo: vinculo.cargo,
+      tipoDocumentoNombre: vinculo.doc_salida,
+      numeroDocumento: vinculo.numero_doc_salida,
+      documentoId: vinculo.doc_salida_id,
+      descripcion: vinculo.descrip_salida,
+      fecha: vinculo.fecha_salida,
+      vinculo,
+    }
+  } else {
+    documentoDrawerInfo.value = {
+      tipo: 'evento',
+      titulo: 'Documento de Evento',
+      subtitulo: vinculo.cargo,
+      tipoDocumentoNombre: vinculo.doc_evento_tipo,
+      numeroDocumento: vinculo.numero_doc_evento,
+      documentoId: vinculo.doc_evento_id,
+      descripcion: vinculo.tipo_evento ? `${vinculo.tipo_evento}${vinculo.estado_evento ? ` (${vinculo.estado_evento})` : ''}` : null,
+      fecha: vinculo.fecha_evento,
+      eventoId: vinculo.id_evento,
+      tipoEvento: vinculo.tipo_evento,
+      estadoEvento: vinculo.estado_evento,
+      vinculo,
+    }
+  }
+  isDocumentoDrawerOpen.value = true
+}
+
+const onEliminarEvento = async (eventoId: number) => {
+  isDeletingEvento.value = true
+  try {
+    await eliminarEventoVinculo(eventoId)
+    isDocumentoDrawerOpen.value = false
+    documentoDrawerInfo.value = null
+    showToast('success', 'Evento laboral eliminado exitosamente.')
+    await loadWorkerData(currentDni.value)
+  } catch (err: any) {
+    showToast('error', err?.message || 'Error al eliminar el evento de vínculo.')
+  } finally {
+    isDeletingEvento.value = false
+  }
+}
+
+const abrirVisorArchivo = (archivo: PersonalArchivo, titulo?: string) => {
+  archivoSeleccionadoVisor.value = archivo
+  tituloVisor.value = titulo || archivo.original_name
+  isVisorOpen.value = true
+}
+
 const handleKeyDown = (e: KeyboardEvent) => {
   if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
     e.preventDefault()
     isSearchModalOpen.value = true
   } else if (e.key === 'Escape') {
-    if (isEditModalOpen.value) {
+    if (isVisorOpen.value) {
+      isVisorOpen.value = false
+    } else if (isDocumentoDrawerOpen.value) {
+      isDocumentoDrawerOpen.value = false
+    } else if (isEditModalOpen.value) {
       isEditModalOpen.value = false
     } else if (isRenunciaModalOpen.value) {
       isRenunciaModalOpen.value = false
@@ -441,6 +531,7 @@ watch(
               :vinculos="vinculos"
               @ver-historial="activeTab = 'vinculos'"
               @registrar-renuncia="abrirModalRenuncia"
+              @ver-documento="abrirDocumentoDrawer"
             />
           </div>
 
@@ -448,6 +539,7 @@ watch(
             <PerfilHistorialVinculosCard
               :vinculos="vinculos"
               @registrar-renuncia="abrirModalRenuncia"
+              @ver-documento="abrirDocumentoDrawer"
             />
           </div>
 
@@ -459,6 +551,7 @@ watch(
               @vincular-url="onAbrirVincularUrl"
               @subir-archivo="isSubirArchivoModalOpen = true"
               @eliminar-archivo="onAbrirEliminarArchivo"
+              @abrir-visor="abrirVisorArchivo"
             />
           </div>
 
@@ -536,6 +629,23 @@ watch(
       :is-deleting="isDeletingArchivo"
       @close="isEliminarArchivoModalOpen = false"
       @confirm="onConfirmarEliminarArchivo"
+    />
+
+    <PerfilDocumentoDrawer
+      :is-open="isDocumentoDrawerOpen"
+      :documento="documentoDrawerInfo"
+      :archivo="archivoAsociadoAlDrawer"
+      :is-deleting="isDeletingEvento"
+      @close="isDocumentoDrawerOpen = false"
+      @eliminar-evento="onEliminarEvento"
+      @abrir-visor="abrirVisorArchivo"
+    />
+
+    <PerfilDocumentoVisorModal
+      :is-open="isVisorOpen"
+      :archivo="archivoSeleccionadoVisor"
+      :titulo="tituloVisor"
+      @close="isVisorOpen = false"
     />
 
     <transition

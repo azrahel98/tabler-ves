@@ -83,7 +83,7 @@ const handleTabKeyDown = (event: KeyboardEvent) => {
         <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4">
           <div
             class="relative size-18 sm:size-21 rounded-full bg-primary/10 border border-primary/20 text-primary flex items-center justify-center shrink-0 shadow-xs overflow-hidden">
-            <img v-if="!avatarError && avatarUrl" :src="avatarUrl" :alt="perfil?.nombre || 'Foto del servidor'"
+            <img v-if="!avatarError && avatarUrl" v-auth-src="avatarUrl" :alt="perfil?.nombre || 'Foto del servidor'"
               class="size-full object-cover" @error="avatarError = true" />
             <span v-else class="text-xl sm:text-2xl font-bold tracking-tight select-none">
               {{ userInitials }}

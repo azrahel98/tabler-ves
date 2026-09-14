@@ -271,7 +271,7 @@ const regimenBadgeVariant = (regimen: string): 'primary' | 'success' | 'warning'
             <td class="px-5 py-3.5">
               <router-link :to="{ name: 'perfil', params: { dni: t.dni } }"
                 class="flex items-center gap-3 group cursor-pointer">
-                <img v-if="resolveAvatarUrl(t.avatar)" :src="resolveAvatarUrl(t.avatar)!" :alt="t.nombre"
+                <img v-if="resolveAvatarUrl(t.avatar)" v-auth-src="resolveAvatarUrl(t.avatar)!" :alt="t.nombre"
                   class="size-8.5 rounded-full border border-border object-cover shrink-0 shadow-2xs group-hover:border-primary transition-colors" />
                 <div v-else
                   class="flex size-8.5 shrink-0 items-center justify-center rounded-full font-bold text-xs border transition-colors"

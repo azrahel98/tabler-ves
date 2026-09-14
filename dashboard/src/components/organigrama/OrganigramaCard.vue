@@ -139,7 +139,7 @@ const handleProfile = (e: MouseEvent) => {
       >
         <img
           v-if="dniVal"
-          :src="getPersonalAvatarUrl(dniVal)"
+          v-auth-src="getPersonalAvatarUrl(dniVal)"
           :alt="jefeName"
           class="size-6 rounded-full object-cover border shrink-0"
           :class="isSolidHeader ? 'border-white/40' : 'border-border'"

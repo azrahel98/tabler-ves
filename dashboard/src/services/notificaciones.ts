@@ -5,8 +5,7 @@ export interface Notificacion {
   tipo: string
   titulo: string
   mensaje: string
-  avatar?: string | null
-  enlace?: string | null
+  dni:string
   leido: boolean
   metadata?: Record<string, unknown> | null
   created_at: string
@@ -48,15 +47,7 @@ export async function marcarTodasNotificacionesLeidas(): Promise<MarcarTodasLeid
   })
 }
 
-export function resolveNotificationAvatar(avatar?: string | null): string {
-  if (!avatar) return ''
-  if (avatar.startsWith('http://') || avatar.startsWith('https://') || avatar.startsWith('data:')) {
-    return avatar
-  }
-  const baseUrl = getApiBaseUrl()
-  const cleanPath = avatar.startsWith('/') ? avatar : `/${avatar}`
-  return `${baseUrl}${cleanPath}`
-}
+
 
 export function resolveNotificationLink(enlace?: string | null): string {
   if (!enlace) return ''

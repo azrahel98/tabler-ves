@@ -16,6 +16,7 @@ import {
   IconHistory,
   IconAlertCircle,
   IconBuildingSkyscraper,
+  IconExternalLink,
 } from '@tabler/icons-vue'
 
 interface Props {
@@ -28,6 +29,7 @@ defineProps<Props>()
 const emit = defineEmits<{
   (e: 'verHistorial'): void
   (e: 'registrarRenuncia', vinculo: PersonalVinculo): void
+  (e: 'verDocumento', payload: { tipo: 'ingreso' | 'salida' | 'evento'; vinculo: PersonalVinculo }): void
 }>()
 
 const getBadgeVariant = (type: VinculoStatusType): 'success' | 'warning' | 'secondary' => {
@@ -104,10 +106,17 @@ const getBadgeVariant = (type: VinculoStatusType): 'success' | 'warning' | 'seco
           <span class="text-muted-foreground flex items-center gap-1.5 shrink-0 mt-0.5">
             <IconFileText class="size-4 text-muted-foreground shrink-0" /> Doc. Ingreso:
           </span>
-          <span class="font-medium text-xs text-foreground truncate"
-            :title="[vinculoActivo.doc_ingreso, vinculoActivo.numero_doc_ingreso].filter(Boolean).join(' N° ')">
-            {{ [vinculoActivo.doc_ingreso, vinculoActivo.numero_doc_ingreso].filter(Boolean).join(' N° ') || '-' }}
-          </span>
+          <button
+            v-if="vinculoActivo.doc_ingreso || vinculoActivo.numero_doc_ingreso"
+            type="button"
+            class="text-left font-medium text-xs text-primary hover:underline truncate inline-flex items-center gap-1 cursor-pointer transition-colors"
+            :title="[vinculoActivo.doc_ingreso, vinculoActivo.numero_doc_ingreso].filter(Boolean).join(' N° ')"
+            @click="emit('verDocumento', { tipo: 'ingreso', vinculo: vinculoActivo })"
+          >
+            <span class="truncate">{{ [vinculoActivo.doc_ingreso, vinculoActivo.numero_doc_ingreso].filter(Boolean).join(' N° ') }}</span>
+            <IconExternalLink class="size-3 shrink-0 opacity-70" />
+          </button>
+          <span v-else class="text-muted-foreground text-xs">-</span>
         </div>
 
         <div class="grid grid-cols-[130px_1fr] sm:grid-cols-[145px_1fr] items-start gap-2.5">
@@ -185,10 +194,15 @@ const getBadgeVariant = (type: VinculoStatusType): 'success' | 'warning' | 'seco
           <span class="text-muted-foreground flex items-center gap-1.5 shrink-0 mt-0.5">
             <IconFileCheck class="size-4 text-muted-foreground shrink-0" /> Doc. Salida:
           </span>
-          <span class="font-medium text-foreground truncate"
-            :title="[vinculoActivo.doc_salida, vinculoActivo.numero_doc_salida].filter(Boolean).join(' N° ')">
-            {{ [vinculoActivo.doc_salida, vinculoActivo.numero_doc_salida].filter(Boolean).join(' N° ') }}
-          </span>
+          <button
+            type="button"
+            class="text-left font-medium text-xs text-amber-600 dark:text-amber-400 hover:underline truncate inline-flex items-center gap-1 cursor-pointer transition-colors"
+            :title="[vinculoActivo.doc_salida, vinculoActivo.numero_doc_salida].filter(Boolean).join(' N° ')"
+            @click="emit('verDocumento', { tipo: 'salida', vinculo: vinculoActivo })"
+          >
+            <span class="truncate">{{ [vinculoActivo.doc_salida, vinculoActivo.numero_doc_salida].filter(Boolean).join(' N° ') }}</span>
+            <IconExternalLink class="size-3 shrink-0 opacity-70" />
+          </button>
         </div>
 
         <div v-if="vinculoActivo.descrip_salida"
@@ -206,9 +220,15 @@ const getBadgeVariant = (type: VinculoStatusType): 'success' | 'warning' | 'seco
           <span class="text-muted-foreground flex items-center gap-1.5 shrink-0 mt-0.5">
             <IconAlertCircle class="size-4 text-muted-foreground shrink-0" /> Evento:
           </span>
-          <span class="font-medium text-foreground capitalize truncate" :title="vinculoActivo.tipo_evento">
-            {{ vinculoActivo.tipo_evento }}{{ vinculoActivo.estado_evento ? ` (${vinculoActivo.estado_evento})` : '' }}
-          </span>
+          <button
+            type="button"
+            class="text-left font-medium text-foreground hover:text-purple-600 dark:hover:text-purple-400 capitalize truncate inline-flex items-center gap-1 cursor-pointer transition-colors"
+            :title="vinculoActivo.tipo_evento"
+            @click="emit('verDocumento', { tipo: 'evento', vinculo: vinculoActivo })"
+          >
+            <span class="truncate">{{ vinculoActivo.tipo_evento }}{{ vinculoActivo.estado_evento ? ` (${vinculoActivo.estado_evento})` : '' }}</span>
+            <IconExternalLink class="size-3 shrink-0 opacity-60 text-muted-foreground" />
+          </button>
         </div>
 
         <div v-if="vinculoActivo.doc_evento_tipo || vinculoActivo.numero_doc_evento"
@@ -216,10 +236,15 @@ const getBadgeVariant = (type: VinculoStatusType): 'success' | 'warning' | 'seco
           <span class="text-muted-foreground flex items-center gap-1.5 shrink-0 mt-0.5">
             <IconFileCode class="size-4 text-muted-foreground shrink-0" /> Doc. Evento:
           </span>
-          <span class="font-medium text-foreground truncate"
-            :title="[vinculoActivo.doc_evento_tipo, vinculoActivo.numero_doc_evento].filter(Boolean).join(' N° ')">
-            {{ [vinculoActivo.doc_evento_tipo, vinculoActivo.numero_doc_evento].filter(Boolean).join(' N° ') }}
-          </span>
+          <button
+            type="button"
+            class="text-left font-medium text-xs text-purple-600 dark:text-purple-400 hover:underline truncate inline-flex items-center gap-1 cursor-pointer transition-colors"
+            :title="[vinculoActivo.doc_evento_tipo, vinculoActivo.numero_doc_evento].filter(Boolean).join(' N° ')"
+            @click="emit('verDocumento', { tipo: 'evento', vinculo: vinculoActivo })"
+          >
+            <span class="truncate">{{ [vinculoActivo.doc_evento_tipo, vinculoActivo.numero_doc_evento].filter(Boolean).join(' N° ') }}</span>
+            <IconExternalLink class="size-3 shrink-0 opacity-70" />
+          </button>
         </div>
 
         <div v-if="vinculoActivo.fecha_evento"

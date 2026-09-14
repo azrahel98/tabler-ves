@@ -157,7 +157,7 @@ const handleProfile = (e: MouseEvent) => {
         >
           <img
             v-if="node.dni"
-            :src="getPersonalAvatarUrl(node.dni)"
+            v-auth-src="getPersonalAvatarUrl(node.dni)"
             :alt="node.jefe"
             class="size-7 rounded-full object-cover border border-border shrink-0"
             @error="($event.target as HTMLElement).style.display = 'none'"

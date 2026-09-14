@@ -203,7 +203,7 @@ onUnmounted(() => {
             <div class="flex items-center gap-2.5 min-w-0 flex-1">
               <div
                 class="size-9 rounded-lg bg-primary/10 border border-primary/20 text-primary flex items-center justify-center shrink-0 text-xs font-bold overflow-hidden shadow-2xs">
-                <img :src="getPersonalAvatarUrl(item.dni)" :alt="item.nombre" class="size-full object-cover"
+                <img v-auth-src="getPersonalAvatarUrl(item.dni)" :alt="item.nombre" class="size-full object-cover"
                   @error="($event.target as HTMLElement).style.display = 'none'" />
 
               </div>

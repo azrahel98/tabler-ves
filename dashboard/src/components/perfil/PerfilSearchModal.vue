@@ -88,7 +88,7 @@ const onSelectWorker = (dni: string) => {
             <div class="flex items-center gap-3">
               <div
                 class="size-8 rounded-lg bg-primary/10 border border-primary/20 text-primary flex items-center justify-center shrink-0 text-xs font-bold overflow-hidden">
-                <img :src="getPersonalAvatarUrl(res.dni)" :alt="res.nombre" class="size-full object-cover"
+                <img v-auth-src="getPersonalAvatarUrl(res.dni)" :alt="res.nombre" class="size-full object-cover"
                   @error="($event.target as HTMLElement).style.display = 'none'" />
 
               </div>

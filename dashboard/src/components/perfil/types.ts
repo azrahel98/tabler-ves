@@ -140,8 +140,8 @@ export function getVinculoStatusType(v: PersonalVinculo | null | undefined): Vin
 export interface RenunciaPayload {
   id: number
   tipoDocumento: string
-  numeroDocumento: number
-  añoDocumento: number
+  numeroDocumento?: number | null
+  añoDocumento?: number | null
   fecha: string
   fechaValida?: string | null
   descripcion: string
@@ -182,4 +182,21 @@ export interface UploadArchivoResponse {
   original_name: string
   file_hash: string
   extension: string
+}
+
+export type TipoDocumentoVinculo = 'ingreso' | 'salida' | 'evento'
+
+export interface DocumentoVinculoInfo {
+  tipo: TipoDocumentoVinculo
+  titulo: string
+  subtitulo?: string
+  tipoDocumentoNombre?: string | null
+  numeroDocumento?: string | null
+  documentoId?: number | null
+  descripcion?: string | null
+  fecha?: string | null
+  eventoId?: number | null
+  tipoEvento?: string | null
+  estadoEvento?: string | null
+  vinculo: PersonalVinculo
 }

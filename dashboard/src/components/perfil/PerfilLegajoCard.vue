@@ -5,6 +5,7 @@ import Card from '@/components/ui/card/Card.vue'
 import Badge from '@/components/ui/badge/Badge.vue'
 import Button from '@/components/ui/button/Button.vue'
 import { getFileDownloadUrl, type PersonalArchivo, type PersonalDocumento } from './types'
+import { getApiBaseUrl, openProtectedFile } from '@/services/api'
 import { parseDateSafe, formatDate } from '@/utils/date'
 import {
   IconLayoutGrid,
@@ -32,6 +33,7 @@ const emit = defineEmits<{
   (e: 'vincularUrl', doc: PersonalDocumento): void
   (e: 'subirArchivo'): void
   (e: 'eliminarArchivo', archivo: PersonalArchivo): void
+  (e: 'abrirVisor', archivo: PersonalArchivo): void
 }>()
 
 function getArchivoDeDocumento(docId: number): PersonalArchivo | undefined {
@@ -85,8 +87,31 @@ function getAccessDetails(archivo: PersonalArchivo) {
   }
 }
 
-function getFileUrl(archivo: PersonalArchivo): string {
+const openingFileId = ref<number | null>(null)
+
+function resolveFileUrl(archivo: PersonalArchivo): string {
   return archivo.external_url || getFileDownloadUrl(archivo.file_hash)
+}
+
+function handleOpenFile(archivo: PersonalArchivo) {
+  emit('abrirVisor', archivo)
+}
+
+async function handleDownloadFile(archivo: PersonalArchivo) {
+  if (archivo.external_url) {
+    const baseUrl = getApiBaseUrl()
+    if (!archivo.external_url.startsWith(baseUrl) && !archivo.external_url.startsWith('/')) {
+      window.open(archivo.external_url, '_blank', 'noopener,noreferrer')
+      return
+    }
+  }
+  const url = resolveFileUrl(archivo)
+  try {
+    openingFileId.value = archivo.id
+    await openProtectedFile(url, archivo.original_name, 'download')
+  } finally {
+    openingFileId.value = null
+  }
 }
 
 const filteredAndSortedArchivos = computed(() => {
@@ -201,11 +226,11 @@ const filteredAndSortedArchivos = computed(() => {
                             letter-spacing="0.3">PDF</text>
                         </svg>
                       </div>
-                      <a :href="getFileUrl(archivo)" target="_blank" rel="noopener noreferrer"
-                        class="font-medium text-foreground hover:text-primary transition-colors truncate max-w-sm sm:max-w-md block text-[11px]"
+                      <button type="button" @click="handleOpenFile(archivo)"
+                        class="font-medium text-foreground hover:text-primary transition-colors truncate max-w-sm sm:max-w-md block text-[11px] text-left cursor-pointer"
                         :title="archivo.original_name">
                         {{ archivo.original_name }}
-                      </a>
+                      </button>
                     </div>
                   </td>
 
@@ -233,12 +258,13 @@ const filteredAndSortedArchivos = computed(() => {
                     <div class="flex items-center justify-between gap-2">
                       <span class="font-mono text-[11px]">{{ formatFileDate(archivo.fecha_subida) }}</span>
                       <div class="flex items-center gap-1">
-                        <a :href="getFileUrl(archivo)" target="_blank" rel="noopener noreferrer"
-                          class="opacity-0 group-hover:opacity-100 transition p-0.5 text-muted-foreground hover:text-primary rounded hover:bg-muted"
-                          :title="archivo.external_url ? 'Abrir enlace externo' : 'Descargar archivo'">
+                        <button type="button"
+                          class="opacity-0 group-hover:opacity-100 transition p-0.5 text-muted-foreground hover:text-primary rounded hover:bg-muted cursor-pointer"
+                          :title="archivo.external_url ? 'Abrir enlace externo' : 'Descargar archivo'"
+                          @click="handleDownloadFile(archivo)">
                           <IconExternalLink v-if="archivo.external_url" class="size-3" />
                           <IconDownload v-else class="size-3" />
-                        </a>
+                        </button>
                         <button type="button"
                           class="opacity-0 group-hover:opacity-100 transition p-0.5 text-muted-foreground hover:text-destructive rounded hover:bg-destructive/10 cursor-pointer"
                           title="Eliminar archivo del legajo"
@@ -274,12 +300,13 @@ const filteredAndSortedArchivos = computed(() => {
                 </svg>
               </div>
               <div class="flex items-center gap-1">
-                <a :href="getFileUrl(archivo)" target="_blank" rel="noopener noreferrer"
-                  class="p-1 rounded-md border border-border text-muted-foreground hover:text-primary hover:bg-muted transition"
-                  :title="archivo.external_url ? 'Abrir enlace' : 'Descargar archivo'">
+                <button type="button"
+                  class="p-1 rounded-md border border-border text-muted-foreground hover:text-primary hover:bg-muted transition cursor-pointer"
+                  :title="archivo.external_url ? 'Abrir enlace' : 'Descargar archivo'"
+                  @click="handleDownloadFile(archivo)">
                   <IconExternalLink v-if="archivo.external_url" class="size-3" />
                   <IconDownload v-else class="size-3" />
-                </a>
+                </button>
                 <button type="button"
                   class="p-1 rounded-md border border-border text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition cursor-pointer"
                   title="Eliminar archivo del legajo"
@@ -290,11 +317,11 @@ const filteredAndSortedArchivos = computed(() => {
             </div>
 
             <div class="space-y-0.5">
-              <a :href="getFileUrl(archivo)" target="_blank" rel="noopener noreferrer"
-                class="text-[11px] font-semibold text-foreground hover:text-primary transition line-clamp-2 block"
+              <button type="button" @click="handleOpenFile(archivo)"
+                class="text-[11px] font-semibold text-foreground hover:text-primary transition line-clamp-2 block text-left cursor-pointer"
                 :title="archivo.original_name">
                 {{ archivo.original_name }}
-              </a>
+              </button>
               <p class="text-[10px] text-muted-foreground font-mono">
                 {{ archivo.size || '256 KB' }}
               </p>
@@ -366,13 +393,13 @@ const filteredAndSortedArchivos = computed(() => {
                 </td>
                 <td class="px-3 sm:px-4 py-2.5 text-right whitespace-nowrap align-top">
                   <div v-if="getArchivoDeDocumento(doc.id)" class="inline-flex items-center gap-1.5 justify-end">
-                    <a :href="getFileUrl(getArchivoDeDocumento(doc.id)!)" target="_blank" rel="noopener noreferrer"
-                      class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[11px] font-medium bg-rose-500/10 text-rose-600 dark:text-rose-400 hover:bg-rose-500/20 transition-colors"
+                    <button type="button" @click="handleOpenFile(getArchivoDeDocumento(doc.id)!)"
+                      class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[11px] font-medium bg-rose-500/10 text-rose-600 dark:text-rose-400 hover:bg-rose-500/20 transition-colors cursor-pointer"
                       :title="getArchivoDeDocumento(doc.id)?.original_name">
                       <IconFileText class="size-3 shrink-0" />
                       <span>Ver PDF</span>
                       <IconExternalLink class="size-2.5 opacity-70 shrink-0" />
-                    </a>
+                    </button>
                     <button type="button"
                       class="p-1 text-muted-foreground hover:text-foreground hover:bg-muted rounded-md transition-colors cursor-pointer"
                       title="Cambiar o vincular otra URL a este documento" @click="emit('vincularUrl', doc)">

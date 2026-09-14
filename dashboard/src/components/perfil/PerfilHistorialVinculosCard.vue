@@ -21,6 +21,7 @@ import {
   IconArrowsSort,
   IconBuildingSkyscraper,
   IconFileCertificate,
+  IconExternalLink,
 } from '@tabler/icons-vue'
 
 interface Props {
@@ -31,6 +32,7 @@ const props = defineProps<Props>()
 
 const emit = defineEmits<{
   (e: 'registrarRenuncia', vinculo: PersonalVinculo): void
+  (e: 'verDocumento', payload: { tipo: 'ingreso' | 'salida' | 'evento'; vinculo: PersonalVinculo }): void
 }>()
 
 const sortOrder = ref<'desc' | 'asc'>('desc')
@@ -146,12 +148,12 @@ const sortedVinculos = computed(() => {
                       title="Vínculo Concluido / Cesado"></span>
 
                     <div class="min-w-0 flex-1">
-                      <span class="font-medium text-foreground text-[11px] block wrap-break-word"
-                        :title="v.cargo">
+                      <span class="font-medium text-foreground text-[11px] block wrap-break-word" :title="v.cargo">
                         {{ v.cargo }}
                       </span>
                       <span class="text-[10px] text-muted-foreground block sm:hidden font-mono mt-0.5">
-                        {{ formatDate(v.fecha_ingreso) }} &bull; {{ v.fecha_salida ? formatDate(v.fecha_salida) : 'Vigente' }}
+                        {{ formatDate(v.fecha_ingreso) }} &bull; {{ v.fecha_salida ? formatDate(v.fecha_salida) :
+                        'Vigente' }}
                       </span>
                     </div>
                   </div>
@@ -214,16 +216,13 @@ const sortedVinculos = computed(() => {
 
                       <div class="flex items-center gap-2 flex-wrap justify-end">
                         <div class="font-mono text-[11px] text-muted-foreground">
-                          Período: {{ formatDate(v.fecha_ingreso) }} &bull; {{ v.fecha_salida ? formatDate(v.fecha_salida)
-                            : 'Vigente' }}
+                          Período: {{ formatDate(v.fecha_ingreso) }} &bull; {{ v.fecha_salida ?
+                            formatDate(v.fecha_salida)
+                          : 'Vigente' }}
                         </div>
-                        <Button
-                          v-if="v.estado.toLowerCase() === 'activo'"
-                          size="xs"
-                          variant="outline"
+                        <Button v-if="v.estado.toLowerCase() != 'inactivo'" size="xs" variant="outline"
                           class="text-rose-600 hover:text-rose-700 hover:bg-rose-500/10 border-rose-500/30 gap-1.5 cursor-pointer text-[11px]"
-                          @click.stop="emit('registrarRenuncia', v)"
-                        >
+                          @click.stop="emit('registrarRenuncia', v)">
                           <IconFileX class="size-3.5" />
                           <span>Registrar Renuncia</span>
                         </Button>
@@ -237,8 +236,7 @@ const sortedVinculos = computed(() => {
                           <span class="text-muted-foreground flex items-center gap-1.5 shrink-0">
                             <IconBuildingSkyscraper class="size-4 text-muted-foreground shrink-0" /> Área:
                           </span>
-                          <span class="font-medium text-foreground wrap-break-word min-w-0"
-                            :title="v.area">
+                          <span class="font-medium text-foreground wrap-break-word min-w-0" :title="v.area">
                             {{ v.area || '-' }}
                           </span>
                         </div>
@@ -249,7 +247,7 @@ const sortedVinculos = computed(() => {
                             <IconCalendar class="size-4 text-muted-foreground shrink-0" /> Fecha Ingreso:
                           </span>
                           <span class="font-mono font-medium text-foreground min-w-0">{{ formatDate(v.fecha_ingreso)
-                          }}</span>
+                            }}</span>
                         </div>
 
                         <div
@@ -257,10 +255,17 @@ const sortedVinculos = computed(() => {
                           <span class="text-muted-foreground flex items-center gap-1.5 shrink-0">
                             <IconFileText class="size-4 text-muted-foreground shrink-0" /> Doc. Ingreso:
                           </span>
-                          <span class="font-medium text-foreground truncate min-w-0"
-                            :title="[v.doc_ingreso, v.numero_doc_ingreso].filter(Boolean).join(' N° ') || '-'">
-                            {{ [v.doc_ingreso, v.numero_doc_ingreso].filter(Boolean).join(' N° ') || '-' }}
-                          </span>
+                          <button
+                            v-if="v.doc_ingreso || v.numero_doc_ingreso"
+                            type="button"
+                            class="text-left font-medium text-primary hover:underline truncate min-w-0 inline-flex items-center gap-1 cursor-pointer transition-colors"
+                            :title="[v.doc_ingreso, v.numero_doc_ingreso].filter(Boolean).join(' N° ') || '-'"
+                            @click.stop="emit('verDocumento', { tipo: 'ingreso', vinculo: v })"
+                          >
+                            <span class="truncate">{{ [v.doc_ingreso, v.numero_doc_ingreso].filter(Boolean).join(' N° ') }}</span>
+                            <IconExternalLink class="size-3 shrink-0 opacity-70" />
+                          </button>
+                          <span v-else class="text-muted-foreground">-</span>
                         </div>
 
                         <div
@@ -304,7 +309,7 @@ const sortedVinculos = computed(() => {
                               {{ (v.sindicato || 'N')[0] }}
                             </span>
                             <span class="font-medium text-foreground truncate min-w-0">{{ v.sindicato || 'No Afiliado'
-                            }}</span>
+                              }}</span>
                           </div>
                         </div>
                       </div>
@@ -336,10 +341,17 @@ const sortedVinculos = computed(() => {
                           <span class="text-muted-foreground flex items-center gap-1.5 shrink-0">
                             <IconFileCheck class="size-4 text-muted-foreground shrink-0" /> Doc. Salida:
                           </span>
-                          <span class="font-medium text-foreground truncate min-w-0"
-                            :title="[v.doc_salida, v.numero_doc_salida].filter(Boolean).join(' N° ') || '-'">
-                            {{ [v.doc_salida, v.numero_doc_salida].filter(Boolean).join(' N° ') || '-' }}
-                          </span>
+                          <button
+                            v-if="v.doc_salida || v.numero_doc_salida"
+                            type="button"
+                            class="text-left font-medium text-amber-600 dark:text-amber-400 hover:underline truncate min-w-0 inline-flex items-center gap-1 cursor-pointer transition-colors"
+                            :title="[v.doc_salida, v.numero_doc_salida].filter(Boolean).join(' N° ') || '-'"
+                            @click.stop="emit('verDocumento', { tipo: 'salida', vinculo: v })"
+                          >
+                            <span class="truncate">{{ [v.doc_salida, v.numero_doc_salida].filter(Boolean).join(' N° ') }}</span>
+                            <IconExternalLink class="size-3 shrink-0 opacity-70" />
+                          </button>
+                          <span v-else class="text-muted-foreground">-</span>
                         </div>
 
                         <div
@@ -357,10 +369,17 @@ const sortedVinculos = computed(() => {
                           <span class="text-muted-foreground flex items-center gap-1.5 shrink-0">
                             <IconAlertCircle class="size-4 text-muted-foreground shrink-0" /> Evento:
                           </span>
-                          <span class="font-medium text-foreground capitalize truncate min-w-0"
-                            :title="v.tipo_evento || ''">
-                            {{ v.tipo_evento ? `${v.tipo_evento} (${v.estado_evento || 'registrado'})` : '-' }}
-                          </span>
+                          <button
+                            v-if="v.tipo_evento"
+                            type="button"
+                            class="text-left font-medium text-foreground hover:text-purple-600 dark:hover:text-purple-400 capitalize truncate min-w-0 inline-flex items-center gap-1 cursor-pointer transition-colors"
+                            :title="v.tipo_evento || ''"
+                            @click.stop="emit('verDocumento', { tipo: 'evento', vinculo: v })"
+                          >
+                            <span class="truncate">{{ v.tipo_evento ? `${v.tipo_evento} (${v.estado_evento || 'registrado'})` : '-' }}</span>
+                            <IconExternalLink class="size-3 shrink-0 opacity-60 text-muted-foreground" />
+                          </button>
+                          <span v-else class="text-muted-foreground">-</span>
                         </div>
 
                         <div
@@ -368,10 +387,17 @@ const sortedVinculos = computed(() => {
                           <span class="text-muted-foreground flex items-center gap-1.5 shrink-0">
                             <IconFileCode class="size-4 text-muted-foreground shrink-0" /> Doc. Evento:
                           </span>
-                          <span class="font-medium text-foreground truncate min-w-0"
-                            :title="[v.doc_evento_tipo, v.numero_doc_evento].filter(Boolean).join(' N° ') || '-'">
-                            {{ [v.doc_evento_tipo, v.numero_doc_evento].filter(Boolean).join(' N° ') || '-' }}
-                          </span>
+                          <button
+                            v-if="v.doc_evento_tipo || v.numero_doc_evento"
+                            type="button"
+                            class="text-left font-medium text-purple-600 dark:text-purple-400 hover:underline truncate min-w-0 inline-flex items-center gap-1 cursor-pointer transition-colors"
+                            :title="[v.doc_evento_tipo, v.numero_doc_evento].filter(Boolean).join(' N° ') || '-'"
+                            @click.stop="emit('verDocumento', { tipo: 'evento', vinculo: v })"
+                          >
+                            <span class="truncate">{{ [v.doc_evento_tipo, v.numero_doc_evento].filter(Boolean).join(' N° ') }}</span>
+                            <IconExternalLink class="size-3 shrink-0 opacity-70" />
+                          </button>
+                          <span v-else class="text-muted-foreground">-</span>
                         </div>
 
                         <div

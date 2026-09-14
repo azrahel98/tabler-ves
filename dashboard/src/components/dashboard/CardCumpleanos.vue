@@ -138,7 +138,7 @@ onMounted(async () => {
           :data-index="index"
           class="p-3 hover:bg-muted/30 focus-visible:bg-muted/40 focus-visible:outline-hidden transition-colors flex items-center justify-between gap-2.5 text-xs group cursor-pointer">
           <div class="flex items-center gap-2.5 min-w-0">
-            <img v-if="resolveAvatarUrl(c.avatar)" :src="resolveAvatarUrl(c.avatar)!" :alt="c.nombre"
+            <img v-if="resolveAvatarUrl(c.avatar)" v-auth-src="resolveAvatarUrl(c.avatar)!" :alt="c.nombre"
               class="size-8 rounded-full object-cover border border-border shrink-0 shadow-2xs group-hover:border-primary transition-colors"
               :class="isToday(c.nacimiento) ? 'border-pink-500 ring-2 ring-pink-500/30' : ''" />
             <div v-else
