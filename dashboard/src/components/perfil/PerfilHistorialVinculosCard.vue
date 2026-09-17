@@ -3,7 +3,14 @@ import { ref, computed } from 'vue'
 import Card from '@/components/ui/card/Card.vue'
 import Badge from '@/components/ui/badge/Badge.vue'
 import Button from '@/components/ui/button/Button.vue'
-import { formatMoneda, getVinculoStatusType, type PersonalVinculo, type VinculoStatusType } from '@/services/personal'
+import {
+  formatMoneda,
+  getVinculoStatusType,
+  getTipoEventoLabel,
+  type PersonalVinculo,
+  type VinculoStatusType,
+  type EventoVinculoDetalle,
+} from '@/services/personal'
 import { formatDate, parseDateSafe } from '@/utils/date'
 import {
   IconBriefcase,
@@ -32,7 +39,8 @@ const props = defineProps<Props>()
 
 const emit = defineEmits<{
   (e: 'registrarRenuncia', vinculo: PersonalVinculo): void
-  (e: 'verDocumento', payload: { tipo: 'ingreso' | 'salida' | 'evento'; vinculo: PersonalVinculo }): void
+  (e: 'verDocumento', payload: { tipo: 'ingreso' | 'salida' | 'evento'; vinculo: PersonalVinculo; evento?: EventoVinculoDetalle }): void
+  (e: 'verEventos', vinculo: PersonalVinculo): void
 }>()
 
 const sortOrder = ref<'desc' | 'asc'>('desc')
@@ -43,6 +51,8 @@ const toggleSort = () => {
 }
 
 const toggleExpand = (id: number | string) => {
+  const vinculo = props.vinculos.find((v) => v.id === id)
+  if (vinculo?.origen === 'SUNAT') return
   const next = new Set(expandedIds.value)
   if (next.has(id)) {
     next.delete(id)
@@ -125,11 +135,16 @@ const sortedVinculos = computed(() => {
           </thead>
           <tbody class="divide-y divide-border">
             <template v-for="v in sortedVinculos" :key="v.id">
-              <tr tabindex="0"
-                class="transition-colors hover:bg-muted/40 cursor-pointer focus-visible:bg-muted/50 focus-visible:outline-hidden"
-                :class="isExpanded(v.id) ? 'bg-muted/25' : ''" :aria-expanded="isExpanded(v.id)"
-                @click="toggleExpand(v.id)" @keydown.enter.prevent="toggleExpand(v.id)"
-                @keydown.space.prevent="toggleExpand(v.id)">
+              <tr :tabindex="v.origen === 'SUNAT' ? undefined : 0"
+                class="transition-colors focus-visible:bg-muted/50 focus-visible:outline-hidden"
+                :class="[
+                  v.origen !== 'SUNAT' ? 'hover:bg-muted/40 cursor-pointer' : '',
+                  v.origen !== 'SUNAT' && isExpanded(v.id) ? 'bg-muted/25' : ''
+                ]"
+                :aria-expanded="v.origen !== 'SUNAT' ? isExpanded(v.id) : undefined"
+                @click="v.origen !== 'SUNAT' && toggleExpand(v.id)"
+                @keydown.enter.prevent="v.origen !== 'SUNAT' && toggleExpand(v.id)"
+                @keydown.space.prevent="v.origen !== 'SUNAT' && toggleExpand(v.id)">
                 <td class="px-3 sm:px-4 py-2.5 min-w-0">
                   <div class="flex items-start gap-2.5">
                     <span v-if="getVinculoStatusType(v) === 'success'" class="relative flex size-2 shrink-0 mt-1"
@@ -148,9 +163,22 @@ const sortedVinculos = computed(() => {
                       title="Vínculo Concluido / Cesado"></span>
 
                     <div class="min-w-0 flex-1">
-                      <span class="font-medium text-foreground text-[11px] block wrap-break-word" :title="v.cargo">
-                        {{ v.cargo }}
-                      </span>
+                      <div class="flex items-center gap-1.5 flex-wrap">
+                        <span class="font-medium text-foreground text-[11px] block wrap-break-word" :title="v.cargo || (v.origen === 'SUNAT' ? 'Vínculo declarado en SUNAT' : '-')">
+                          {{ v.cargo || (v.origen === 'SUNAT' ? 'Vínculo SUNAT (T-Registro)' : '-') }}
+                        </span>
+                        <Badge v-if="v.origen === 'SUNAT'" variant="outline" size="xs" class="text-[9px] px-1 py-0 border-blue-500/40 text-blue-600 dark:text-blue-400 font-semibold uppercase">
+                          SUNAT
+                        </Badge>
+                        <span
+                          v-if="v.eventos && v.eventos.length > 0"
+                          class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[9px] font-semibold bg-purple-500/10 text-purple-700 dark:text-purple-300 border border-purple-500/20"
+                          :title="`${v.eventos.length} eventos laborales registrados`"
+                        >
+                          <IconFileCode class="size-2.5 shrink-0" />
+                          <span>{{ v.eventos.length }} {{ v.eventos.length === 1 ? 'evento' : 'eventos' }}</span>
+                        </span>
+                      </div>
                       <span class="text-[10px] text-muted-foreground block sm:hidden font-mono mt-0.5">
                         {{ formatDate(v.fecha_ingreso) }} &bull; {{ v.fecha_salida ? formatDate(v.fecha_salida) :
                         'Vigente' }}
@@ -174,11 +202,11 @@ const sortedVinculos = computed(() => {
 
                 <td
                   class="px-3 sm:px-4 py-2.5 text-right font-mono font-medium text-foreground tabular-nums text-xs whitespace-nowrap">
-                  {{ formatMoneda(v.sueldo) }}
+                  {{ v.origen === 'SUNAT' ? '-' : formatMoneda(v.sueldo) }}
                 </td>
 
                 <td class="px-2 py-2.5 text-center">
-                  <button type="button"
+                  <button v-if="v.origen !== 'SUNAT'" type="button"
                     class="size-8 rounded-md text-muted-foreground hover:text-foreground transition-transform duration-200 cursor-pointer inline-flex items-center justify-center"
                     :class="isExpanded(v.id) ? 'rotate-180 text-foreground' : ''"
                     :aria-label="isExpanded(v.id) ? 'Contraer detalles' : 'Expandir detalles'"
@@ -188,7 +216,7 @@ const sortedVinculos = computed(() => {
                 </td>
               </tr>
 
-              <tr v-if="isExpanded(v.id)" class="bg-muted/15 border-b border-border/80">
+              <tr v-if="v.origen !== 'SUNAT' && isExpanded(v.id)" class="bg-muted/15 border-b border-border/80">
                 <td colspan="5" class="p-2.5 sm:p-4">
                   <div class="p-3 sm:p-4 rounded-xl bg-card border border-border/70 space-y-3 text-xs">
                     <div
@@ -220,7 +248,7 @@ const sortedVinculos = computed(() => {
                             formatDate(v.fecha_salida)
                           : 'Vigente' }}
                         </div>
-                        <Button v-if="v.estado.toLowerCase() != 'inactivo'" size="xs" variant="outline"
+                        <Button v-if="v.estado.toLowerCase() != 'inactivo' && v.origen !== 'SUNAT'" size="xs" variant="outline"
                           class="text-rose-600 hover:text-rose-700 hover:bg-rose-500/10 border-rose-500/30 gap-1.5 cursor-pointer text-[11px]"
                           @click.stop="emit('registrarRenuncia', v)">
                           <IconFileX class="size-3.5" />
@@ -367,28 +395,27 @@ const sortedVinculos = computed(() => {
                         <div
                           class="grid grid-cols-[115px_1fr] sm:grid-cols-[135px_1fr] items-start sm:items-center gap-2">
                           <span class="text-muted-foreground flex items-center gap-1.5 shrink-0">
-                            <IconAlertCircle class="size-4 text-muted-foreground shrink-0" /> Evento:
+                            <IconAlertCircle class="size-4 text-muted-foreground shrink-0" /> Eventos:
                           </span>
                           <button
-                            v-if="v.tipo_evento"
                             type="button"
-                            class="text-left font-medium text-foreground hover:text-purple-600 dark:hover:text-purple-400 capitalize truncate min-w-0 inline-flex items-center gap-1 cursor-pointer transition-colors"
-                            :title="v.tipo_evento || ''"
-                            @click.stop="emit('verDocumento', { tipo: 'evento', vinculo: v })"
+                            class="text-left font-medium text-purple-600 dark:text-purple-400 hover:underline truncate min-w-0 inline-flex items-center gap-1 cursor-pointer transition-colors"
+                            @click.stop="emit('verEventos', v)"
                           >
-                            <span class="truncate">{{ v.tipo_evento ? `${v.tipo_evento} (${v.estado_evento || 'registrado'})` : '-' }}</span>
-                            <IconExternalLink class="size-3 shrink-0 opacity-60 text-muted-foreground" />
+                            <span class="truncate">
+                              {{ v.eventos && v.eventos.length > 0 ? `${v.eventos.length} ${v.eventos.length === 1 ? 'evento registrado' : 'eventos registrados'}` : 'Sin eventos' }}
+                            </span>
+                            <IconExternalLink class="size-3 shrink-0 opacity-70" />
                           </button>
-                          <span v-else class="text-muted-foreground">-</span>
                         </div>
 
                         <div
+                          v-if="v.doc_evento_tipo || v.numero_doc_evento"
                           class="grid grid-cols-[115px_1fr] sm:grid-cols-[135px_1fr] items-start sm:items-center gap-2">
                           <span class="text-muted-foreground flex items-center gap-1.5 shrink-0">
                             <IconFileCode class="size-4 text-muted-foreground shrink-0" /> Doc. Evento:
                           </span>
                           <button
-                            v-if="v.doc_evento_tipo || v.numero_doc_evento"
                             type="button"
                             class="text-left font-medium text-purple-600 dark:text-purple-400 hover:underline truncate min-w-0 inline-flex items-center gap-1 cursor-pointer transition-colors"
                             :title="[v.doc_evento_tipo, v.numero_doc_evento].filter(Boolean).join(' N° ') || '-'"
@@ -397,17 +424,70 @@ const sortedVinculos = computed(() => {
                             <span class="truncate">{{ [v.doc_evento_tipo, v.numero_doc_evento].filter(Boolean).join(' N° ') }}</span>
                             <IconExternalLink class="size-3 shrink-0 opacity-70" />
                           </button>
-                          <span v-else class="text-muted-foreground">-</span>
                         </div>
 
                         <div
+                          v-if="v.fecha_evento"
                           class="grid grid-cols-[115px_1fr] sm:grid-cols-[135px_1fr] items-start sm:items-center gap-2">
                           <span class="text-muted-foreground flex items-center gap-1.5 shrink-0">
                             <IconCalendar class="size-4 text-muted-foreground shrink-0" /> Fecha Evento:
                           </span>
                           <span class="font-medium font-mono text-foreground min-w-0">
-                            {{ v.fecha_evento ? formatDate(v.fecha_evento) : '-' }}
+                            {{ formatDate(v.fecha_evento) }}
                           </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div v-if="v.eventos && v.eventos.length > 0" class="pt-2.5 border-t border-border/60 space-y-2">
+                      <div class="flex items-center justify-between">
+                        <span class="text-[11px] font-semibold text-foreground flex items-center gap-1.5">
+                          <IconFileCode class="size-3.5 text-purple-600 dark:text-purple-400 shrink-0" />
+                          Eventos Laborales Registrados ({{ v.eventos.length }})
+                        </span>
+                        <button
+                          type="button"
+                          class="text-[11px] text-purple-600 dark:text-purple-400 hover:underline font-medium inline-flex items-center gap-1 cursor-pointer"
+                          @click.stop="emit('verEventos', v)"
+                        >
+                          <span>Gestionar eventos</span>
+                          <IconExternalLink class="size-3 shrink-0 opacity-70" />
+                        </button>
+                      </div>
+                      <div class="space-y-1.5">
+                        <div
+                          v-for="ev in v.eventos"
+                          :key="ev.id"
+                          class="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 p-2 rounded-lg bg-muted/40 border border-border/50 text-[11px]"
+                        >
+                          <div class="flex items-center gap-2 flex-wrap min-w-0">
+                            <Badge variant="outline" size="xs" class="font-semibold border-purple-500/30 text-purple-600 dark:text-purple-400 uppercase text-[9px]">
+                              {{ getTipoEventoLabel(ev.tipo_evento) }}
+                            </Badge>
+                            <span v-if="ev.estado" class="text-muted-foreground text-[10px] font-medium">
+                              ({{ ev.estado }})
+                            </span>
+                            <span v-if="ev.nueva_area" class="text-foreground text-[11px] truncate" :title="ev.nueva_area">
+                              Área: {{ ev.nueva_area }}
+                            </span>
+                            <span v-if="ev.nuevo_cargo" class="text-foreground text-[11px] truncate" :title="ev.nuevo_cargo">
+                              Cargo: {{ ev.nuevo_cargo }}
+                            </span>
+                          </div>
+                          <div class="flex items-center gap-2 shrink-0">
+                            <span v-if="ev.fecha_inicio" class="text-[10px] font-mono text-muted-foreground">
+                              {{ formatDate(ev.fecha_inicio) }}
+                            </span>
+                            <button
+                              v-if="ev.tipo_doc_inicio || ev.numero_doc_inicio"
+                              type="button"
+                              class="text-primary hover:underline text-[11px] font-medium inline-flex items-center gap-1 cursor-pointer"
+                              @click.stop="emit('verDocumento', { tipo: 'evento', vinculo: v, evento: ev })"
+                            >
+                              <span>{{ [ev.tipo_doc_inicio, ev.numero_doc_inicio].filter(Boolean).join(' N° ') }}</span>
+                              <IconExternalLink class="size-3 shrink-0 opacity-70" />
+                            </button>
+                          </div>
                         </div>
                       </div>
                     </div>

@@ -18,6 +18,8 @@ import PerfilSubirArchivoModal from '@/components/perfil/PerfilSubirArchivoModal
 import PerfilEliminarArchivoModal from '@/components/perfil/PerfilEliminarArchivoModal.vue'
 import PerfilDocumentoDrawer from '@/components/perfil/PerfilDocumentoDrawer.vue'
 import PerfilDocumentoVisorModal from '@/components/perfil/PerfilDocumentoVisorModal.vue'
+import PerfilEventosDrawer from '@/components/perfil/PerfilEventosDrawer.vue'
+import PerfilEventoModal from '@/components/perfil/PerfilEventoModal.vue'
 import {
   fetchPersonalPerfil,
   fetchPersonalBanco,
@@ -26,6 +28,8 @@ import {
   fetchPersonalVinculos,
   fetchPersonalArchivos,
   fetchPersonalDocumentos,
+  fetchEventosVinculo,
+  upsertEventoVinculo,
   updatePersonalPerfil,
   registrarRenunciaPorVinculo,
   crearDocumento,
@@ -40,6 +44,8 @@ import {
   type PersonalVinculo,
   type PersonalArchivo,
   type PersonalDocumento,
+  type EventoVinculoDetalle,
+  type EventoVinculoPayload,
   type RenunciaPayload,
   type DocumentoData,
   type RegistrarUrlPayload,
@@ -96,6 +102,16 @@ const isDocumentoDrawerOpen = ref<boolean>(false)
 const documentoDrawerInfo = ref<DocumentoVinculoInfo | null>(null)
 const isDeletingEvento = ref<boolean>(false)
 
+const isEventosDrawerOpen = ref<boolean>(false)
+const eventosVinculoSeleccionado = ref<EventoVinculoDetalle[]>([])
+const eventosVinculoActivo = ref<EventoVinculoDetalle[]>([])
+const vinculoParaEventos = ref<PersonalVinculo | null>(null)
+const isLoadingEventos = ref<boolean>(false)
+
+const isEventoModalOpen = ref<boolean>(false)
+const eventoAEditar = ref<EventoVinculoDetalle | null>(null)
+const isSavingEvento = ref<boolean>(false)
+
 const isVisorOpen = ref<boolean>(false)
 const archivoSeleccionadoVisor = ref<PersonalArchivo | null>(null)
 const tituloVisor = ref<string>('')
@@ -106,7 +122,8 @@ const archivoAsociadoAlDrawer = computed(() => {
 })
 
 const vinculoActivo = computed(() => {
-  return vinculos.value.find((v) => v.estado.toLowerCase() === 'activo') || vinculos.value[0] || null
+  const validos = vinculos.value.filter((v) => v.origen !== 'SUNAT')
+  return validos.find((v) => v.estado.toLowerCase() === 'activo') || validos[0] || null
 })
 
 const copyToClipboard = async (text: string, fieldId: string) => {
@@ -147,6 +164,15 @@ const loadWorkerData = async (dni: string) => {
     vinculos.value = v
     archivos.value = a
     documentos.value = d
+
+    const vActivo = v.filter((item) => item.origen !== 'SUNAT').find((item) => item.estado.toLowerCase() === 'activo') || v.filter((item) => item.origen !== 'SUNAT')[0] || null
+    if (vActivo?.eventos) {
+      eventosVinculoActivo.value = vActivo.eventos
+    } else if (vActivo?.id) {
+      eventosVinculoActivo.value = await fetchEventosVinculo(vActivo.id)
+    } else {
+      eventosVinculoActivo.value = []
+    }
   } catch (err: any) {
     loadError.value = err?.message || 'No se pudo conectar con el servicio de legajo digital. Verifique la conexión con el servidor.'
   } finally {
@@ -306,8 +332,8 @@ const onConfirmarEliminarArchivo = async () => {
   }
 }
 
-const abrirDocumentoDrawer = (payload: { tipo: TipoDocumentoVinculo; vinculo: PersonalVinculo }) => {
-  const { tipo, vinculo } = payload
+const abrirDocumentoDrawer = (payload: { tipo: TipoDocumentoVinculo; vinculo: PersonalVinculo; evento?: EventoVinculoDetalle }) => {
+  const { tipo, vinculo, evento } = payload
   if (tipo === 'ingreso') {
     documentoDrawerInfo.value = {
       tipo: 'ingreso',
@@ -336,15 +362,15 @@ const abrirDocumentoDrawer = (payload: { tipo: TipoDocumentoVinculo; vinculo: Pe
     documentoDrawerInfo.value = {
       tipo: 'evento',
       titulo: 'Documento de Evento',
-      subtitulo: vinculo.cargo,
-      tipoDocumentoNombre: vinculo.doc_evento_tipo,
-      numeroDocumento: vinculo.numero_doc_evento,
-      documentoId: vinculo.doc_evento_id,
-      descripcion: vinculo.tipo_evento ? `${vinculo.tipo_evento}${vinculo.estado_evento ? ` (${vinculo.estado_evento})` : ''}` : null,
-      fecha: vinculo.fecha_evento,
-      eventoId: vinculo.id_evento,
-      tipoEvento: vinculo.tipo_evento,
-      estadoEvento: vinculo.estado_evento,
+      subtitulo: evento ? `${evento.tipo_evento} - ${vinculo.cargo}` : vinculo.cargo,
+      tipoDocumentoNombre: evento?.tipo_doc_inicio || vinculo.doc_evento_tipo,
+      numeroDocumento: evento?.numero_doc_inicio || vinculo.numero_doc_evento,
+      documentoId: evento?.doc_inicio_id || vinculo.doc_evento_id,
+      descripcion: evento?.descrip_inicio || (vinculo.tipo_evento ? `${vinculo.tipo_evento}${vinculo.estado_evento ? ` (${vinculo.estado_evento})` : ''}` : null),
+      fecha: evento?.fecha_inicio || vinculo.fecha_evento,
+      eventoId: evento?.id || vinculo.id_evento,
+      tipoEvento: evento?.tipo_evento || vinculo.tipo_evento,
+      estadoEvento: evento?.estado || vinculo.estado_evento,
       vinculo,
     }
   }
@@ -370,6 +396,78 @@ const abrirVisorArchivo = (archivo: PersonalArchivo, titulo?: string) => {
   archivoSeleccionadoVisor.value = archivo
   tituloVisor.value = titulo || archivo.original_name
   isVisorOpen.value = true
+}
+
+const onAbrirEventosDrawer = async (vinculo: PersonalVinculo) => {
+  vinculoParaEventos.value = vinculo
+  isEventosDrawerOpen.value = true
+  if (vinculo.eventos) {
+    eventosVinculoSeleccionado.value = vinculo.eventos
+    if (vinculo.id === vinculoActivo.value?.id) {
+      eventosVinculoActivo.value = vinculo.eventos
+    }
+  }
+  isLoadingEventos.value = !vinculo.eventos
+  try {
+    const evs = await fetchEventosVinculo(vinculo.id)
+    eventosVinculoSeleccionado.value = evs
+    vinculo.eventos = evs
+    if (vinculo.id === vinculoActivo.value?.id) {
+      eventosVinculoActivo.value = evs
+    }
+  } finally {
+    isLoadingEventos.value = false
+  }
+}
+
+const onAbrirCrearEvento = () => {
+  eventoAEditar.value = null
+  isEventoModalOpen.value = true
+}
+
+const onAbrirEditarEvento = (evento: EventoVinculoDetalle) => {
+  eventoAEditar.value = evento
+  isEventoModalOpen.value = true
+}
+
+const onGuardarEvento = async (payload: EventoVinculoPayload) => {
+  isSavingEvento.value = true
+  try {
+    await upsertEventoVinculo(payload)
+    isEventoModalOpen.value = false
+    eventoAEditar.value = null
+    showToast('success', payload.id ? 'Evento laboral actualizado exitosamente.' : 'Evento laboral registrado exitosamente.')
+    if (vinculoParaEventos.value) {
+      eventosVinculoSeleccionado.value = await fetchEventosVinculo(vinculoParaEventos.value.id)
+      if (vinculoParaEventos.value.id === vinculoActivo.value?.id) {
+        eventosVinculoActivo.value = eventosVinculoSeleccionado.value
+      }
+    }
+    await loadWorkerData(currentDni.value)
+  } catch (err: any) {
+    showToast('error', err?.message || 'Error al guardar el evento de vínculo.')
+  } finally {
+    isSavingEvento.value = false
+  }
+}
+
+const onEliminarEventoFromList = async (eventoId: number) => {
+  isDeletingEvento.value = true
+  try {
+    await eliminarEventoVinculo(eventoId)
+    showToast('success', 'Evento laboral eliminado exitosamente.')
+    if (vinculoParaEventos.value) {
+      eventosVinculoSeleccionado.value = await fetchEventosVinculo(vinculoParaEventos.value.id)
+      if (vinculoParaEventos.value.id === vinculoActivo.value?.id) {
+        eventosVinculoActivo.value = eventosVinculoSeleccionado.value
+      }
+    }
+    await loadWorkerData(currentDni.value)
+  } catch (err: any) {
+    showToast('error', err?.message || 'Error al eliminar el evento de vínculo.')
+  } finally {
+    isDeletingEvento.value = false
+  }
 }
 
 const handleKeyDown = (e: KeyboardEvent) => {
@@ -529,9 +627,11 @@ watch(
             <PerfilVinculoActualCard
               :vinculo-activo="vinculoActivo"
               :vinculos="vinculos"
+              :cantidad-eventos="eventosVinculoActivo.length"
               @ver-historial="activeTab = 'vinculos'"
               @registrar-renuncia="abrirModalRenuncia"
               @ver-documento="abrirDocumentoDrawer"
+              @ver-eventos="onAbrirEventosDrawer"
             />
           </div>
 
@@ -540,6 +640,7 @@ watch(
               :vinculos="vinculos"
               @registrar-renuncia="abrirModalRenuncia"
               @ver-documento="abrirDocumentoDrawer"
+              @ver-eventos="onAbrirEventosDrawer"
             />
           </div>
 
@@ -639,6 +740,27 @@ watch(
       @close="isDocumentoDrawerOpen = false"
       @eliminar-evento="onEliminarEvento"
       @abrir-visor="abrirVisorArchivo"
+    />
+
+    <PerfilEventosDrawer
+      :is-open="isEventosDrawerOpen"
+      :vinculo="vinculoParaEventos || vinculoActivo"
+      :eventos="eventosVinculoSeleccionado"
+      :is-loading="isLoadingEventos"
+      :is-deleting="isDeletingEvento"
+      @close="isEventosDrawerOpen = false"
+      @crear-evento="onAbrirCrearEvento"
+      @editar-evento="onAbrirEditarEvento"
+      @eliminar-evento="onEliminarEventoFromList"
+    />
+
+    <PerfilEventoModal
+      :is-open="isEventoModalOpen"
+      :vinculo="vinculoParaEventos || vinculoActivo"
+      :evento="eventoAEditar"
+      :is-saving="isSavingEvento"
+      @close="isEventoModalOpen = false"
+      @save="onGuardarEvento"
     />
 
     <PerfilDocumentoVisorModal

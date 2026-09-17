@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
-import Badge from '@/components/ui/badge/Badge.vue'
 import Button from '@/components/ui/button/Button.vue'
 import { type PersonalArchivo, getFileDownloadUrl } from './types'
 import { getApiBaseUrl, fetchAuthBlob } from '@/services/api'
@@ -8,8 +7,10 @@ import {
   IconExternalLink,
   IconFileText,
   IconAlertTriangle,
-  IconShieldCheck,
   IconRefresh,
+  IconMaximize,
+  IconMinimize,
+  IconX,
 } from '@tabler/icons-vue'
 
 interface Props {
@@ -43,6 +44,13 @@ const esUrlExterna = computed(() => {
 const tituloMostrado = computed(() => {
   if (props.titulo) return props.titulo
   return props.archivo?.original_name || 'Visor de Documento'
+})
+
+const visorUrl = computed(() => {
+  if (!blobObjectUrl.value) return ''
+  return blobObjectUrl.value.includes('#')
+    ? blobObjectUrl.value
+    : `${blobObjectUrl.value}#toolbar=0&navpanes=0`
 })
 
 const limpiarBlobUrl = () => {
@@ -116,8 +124,6 @@ onUnmounted(() => {
   window.removeEventListener('keydown', handleKeyDown)
 })
 
-
-
 const handleAbrirNuevaPestana = () => {
   if (blobObjectUrl.value) {
     window.open(blobObjectUrl.value, '_blank')
@@ -144,22 +150,35 @@ const handleAbrirNuevaPestana = () => {
           </div>
 
           <div class="min-w-0">
-            <div class="flex items-center gap-2">
-              <h3 id="visor-titulo"
-                class="font-bold text-foreground text-sm tracking-tight truncate max-w-xs sm:max-w-md md:max-w-lg">
-                {{ tituloMostrado }}
-              </h3>
-              <Badge size="xs" :variant="esUrlExterna ? 'secondary' : 'default'" class="hidden sm:inline-flex gap-1">
-                <IconShieldCheck v-if="!esUrlExterna" class="size-3" />
-                <span>{{ esUrlExterna ? 'Enlace Externo' : 'Autenticado' }}</span>
-              </Badge>
-            </div>
+            <h3 id="visor-titulo"
+              class="font-bold text-foreground text-sm tracking-tight truncate max-w-xs sm:max-w-md md:max-w-lg">
+              {{ tituloMostrado }}
+            </h3>
             <p v-if="archivo" class="text-[11px] text-muted-foreground font-mono truncate">
               {{ archivo.original_name }} • {{ archivo.size || 'PDF' }}
             </p>
           </div>
         </div>
 
+        <div class="flex items-center gap-1 shrink-0">
+          <button
+            type="button"
+            class="size-8 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted flex items-center justify-center transition-colors cursor-pointer"
+            :title="isFullscreen ? 'Restaurar pantalla' : 'Pantalla completa'"
+            @click="isFullscreen = !isFullscreen"
+          >
+            <IconMinimize v-if="isFullscreen" class="size-4" />
+            <IconMaximize v-else class="size-4" />
+          </button>
+          <button
+            type="button"
+            class="size-8 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted flex items-center justify-center transition-colors cursor-pointer"
+            title="Cerrar visor"
+            @click="emit('close')"
+          >
+            <IconX class="size-4" />
+          </button>
+        </div>
       </div>
 
       <div class="flex-1 bg-muted/10 relative overflow-hidden flex flex-col">
@@ -187,8 +206,8 @@ const handleAbrirNuevaPestana = () => {
           </Button>
         </div>
 
-        <div v-else-if="blobObjectUrl" class="w-full h-full flex flex-col">
-          <iframe :src="blobObjectUrl" class="w-full flex-1 border-0" title="Vista previa del documento"></iframe>
+        <div v-else-if="blobObjectUrl" class="w-full h-full flex flex-col select-none" @contextmenu.prevent>
+          <iframe :src="visorUrl" class="w-full flex-1 border-0" title="Vista previa del documento"></iframe>
 
           <div v-if="esUrlExterna"
             class="px-4 py-2 border-t border-border bg-card flex items-center justify-between text-xs shrink-0">

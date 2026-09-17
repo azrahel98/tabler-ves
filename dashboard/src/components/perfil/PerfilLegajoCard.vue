@@ -4,13 +4,13 @@ import { format } from 'date-fns'
 import Card from '@/components/ui/card/Card.vue'
 import Badge from '@/components/ui/badge/Badge.vue'
 import Button from '@/components/ui/button/Button.vue'
-import { getFileDownloadUrl, type PersonalArchivo, type PersonalDocumento } from './types'
-import { getApiBaseUrl, openProtectedFile } from '@/services/api'
+import { type PersonalArchivo, type PersonalDocumento } from './types'
+import { getApiBaseUrl } from '@/services/api'
 import { parseDateSafe, formatDate } from '@/utils/date'
 import {
   IconLayoutGrid,
   IconList,
-  IconDownload,
+  IconEye,
   IconExternalLink,
   IconSearch,
   IconUser,
@@ -87,17 +87,11 @@ function getAccessDetails(archivo: PersonalArchivo) {
   }
 }
 
-const openingFileId = ref<number | null>(null)
-
-function resolveFileUrl(archivo: PersonalArchivo): string {
-  return archivo.external_url || getFileDownloadUrl(archivo.file_hash)
-}
-
 function handleOpenFile(archivo: PersonalArchivo) {
   emit('abrirVisor', archivo)
 }
 
-async function handleDownloadFile(archivo: PersonalArchivo) {
+function handleAbrirArchivo(archivo: PersonalArchivo) {
   if (archivo.external_url) {
     const baseUrl = getApiBaseUrl()
     if (!archivo.external_url.startsWith(baseUrl) && !archivo.external_url.startsWith('/')) {
@@ -105,13 +99,7 @@ async function handleDownloadFile(archivo: PersonalArchivo) {
       return
     }
   }
-  const url = resolveFileUrl(archivo)
-  try {
-    openingFileId.value = archivo.id
-    await openProtectedFile(url, archivo.original_name, 'download')
-  } finally {
-    openingFileId.value = null
-  }
+  handleOpenFile(archivo)
 }
 
 const filteredAndSortedArchivos = computed(() => {
@@ -260,10 +248,10 @@ const filteredAndSortedArchivos = computed(() => {
                       <div class="flex items-center gap-1">
                         <button type="button"
                           class="opacity-0 group-hover:opacity-100 transition p-0.5 text-muted-foreground hover:text-primary rounded hover:bg-muted cursor-pointer"
-                          :title="archivo.external_url ? 'Abrir enlace externo' : 'Descargar archivo'"
-                          @click="handleDownloadFile(archivo)">
+                          :title="archivo.external_url ? 'Abrir enlace externo' : 'Visualizar documento'"
+                          @click="handleAbrirArchivo(archivo)">
                           <IconExternalLink v-if="archivo.external_url" class="size-3" />
-                          <IconDownload v-else class="size-3" />
+                          <IconEye v-else class="size-3" />
                         </button>
                         <button type="button"
                           class="opacity-0 group-hover:opacity-100 transition p-0.5 text-muted-foreground hover:text-destructive rounded hover:bg-destructive/10 cursor-pointer"
@@ -302,10 +290,10 @@ const filteredAndSortedArchivos = computed(() => {
               <div class="flex items-center gap-1">
                 <button type="button"
                   class="p-1 rounded-md border border-border text-muted-foreground hover:text-primary hover:bg-muted transition cursor-pointer"
-                  :title="archivo.external_url ? 'Abrir enlace' : 'Descargar archivo'"
-                  @click="handleDownloadFile(archivo)">
+                  :title="archivo.external_url ? 'Abrir enlace' : 'Visualizar documento'"
+                  @click="handleAbrirArchivo(archivo)">
                   <IconExternalLink v-if="archivo.external_url" class="size-3" />
-                  <IconDownload v-else class="size-3" />
+                  <IconEye v-else class="size-3" />
                 </button>
                 <button type="button"
                   class="p-1 rounded-md border border-border text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition cursor-pointer"

@@ -69,6 +69,8 @@ export interface PersonalVinculo {
   doc_evento_tipo?: string | null
   numero_doc_evento?: string | null
   fecha_evento?: string | null
+  origen?: string
+  eventos?: EventoVinculoDetalle[]
 }
 
 export interface PersonalArchivo {
@@ -137,6 +139,21 @@ export function getVinculoStatusType(v: PersonalVinculo | null | undefined): Vin
   return hasDocSalida ? 'normal' : 'warning'
 }
 
+export function getTipoEventoLabel(tipo: string | null | undefined): string {
+  if (!tipo) return '-'
+  const map: Record<string, string> = {
+    rotacion: 'Rotación',
+    destaque: 'Destaque',
+    encargo_puesto: 'Encargo de Puesto',
+    encargo_funciones: 'Encargo de Funciones',
+    abandono: 'Abandono de Cargo',
+    suspension: 'Suspensión',
+    licencia: 'Licencia',
+    otro: 'Otro Evento',
+  }
+  return map[tipo.toLowerCase()] || tipo
+}
+
 export interface RenunciaPayload {
   id: number
   tipoDocumento: string
@@ -200,3 +217,61 @@ export interface DocumentoVinculoInfo {
   estadoEvento?: string | null
   vinculo: PersonalVinculo
 }
+
+export interface CargoOption {
+  id: number
+  nombre: string
+  activo: boolean
+}
+
+export interface EventoVinculoDetalle {
+  id: number
+  vinculo_id: number
+  tipo_evento: string
+  estado?: string | null
+  nueva_area_id?: number | null
+  nueva_area?: string | null
+  nuevo_cargo_id?: number | null
+  nuevo_cargo?: string | null
+  doc_inicio_id?: number | null
+  tipo_doc_inicio?: string | null
+  numero_doc_inicio?: string | null
+  fecha_inicio?: string | null
+  fecha_valida_inicio?: string | null
+  descrip_inicio?: string | null
+  doc_salida_id?: number | null
+  tipo_doc_salida?: string | null
+  numero_doc_salida?: string | null
+  fecha_salida?: string | null
+  fecha_valida_salida?: string | null
+  descrip_salida?: string | null
+}
+
+export interface EventoVinculoPayload {
+  id?: number | null
+  vinculo_id: number
+  tipo_evento: string
+  nueva_area_id?: number | null
+  nuevo_cargo_id?: number | null
+  documento_inicio?: {
+    tipoDocumento: string
+    areaId: number | null
+    numeroDocumento: number
+    añoDocumento: number
+    fecha: string
+    fechaValida?: string | null
+    descripcion: string
+  } | null
+  documento_salida?: {
+    tipoDocumento: string
+    areaId: number | null
+    numeroDocumento: number
+    añoDocumento: number
+    fecha: string
+    fechaValida?: string | null
+    descripcion: string
+  } | null
+  mismo_documento?: boolean | null
+  estado?: string | null
+}
+

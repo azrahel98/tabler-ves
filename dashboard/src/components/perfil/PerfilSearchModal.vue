@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
+import { useRouter } from 'vue-router'
 import Button from '@/components/ui/button/Button.vue'
 import Badge from '@/components/ui/badge/Badge.vue'
 import {
@@ -7,7 +8,7 @@ import {
   getPersonalAvatarUrl,
   type PersonalSearchResult,
 } from '@/services/personal'
-import { IconSearch, IconX } from '@tabler/icons-vue'
+import { IconSearch, IconX, IconUserPlus } from '@tabler/icons-vue'
 
 interface Props {
   isOpen: boolean
@@ -44,9 +45,16 @@ const handleSearch = async () => {
   }
 }
 
+const router = useRouter()
+
 const onSelectWorker = (dni: string) => {
   emit('selectWorker', dni)
   emit('close')
+}
+
+const irANuevoTrabajador = () => {
+  emit('close')
+  router.push('/personal/nuevo')
 }
 </script>
 
@@ -106,6 +114,14 @@ const onSelectWorker = (dni: string) => {
         <div v-else-if="searchQuery" class="py-4 text-center text-muted-foreground">
           No se encontraron servidores públicos con los términos ingresados.
         </div>
+      </div>
+
+      <div class="p-3 bg-muted/20 border-t border-border flex items-center justify-between">
+        <span class="text-[11px] text-muted-foreground">¿El servidor no está registrado?</span>
+        <Button size="xs" variant="outline" class="gap-1.5 text-xs text-primary border-primary/20 cursor-pointer" @click="irANuevoTrabajador">
+          <IconUserPlus class="size-3.5" />
+          <span>Registrar Nuevo Servidor</span>
+        </Button>
       </div>
     </div>
   </div>

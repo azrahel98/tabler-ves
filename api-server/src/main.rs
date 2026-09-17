@@ -1,16 +1,24 @@
 use actix_cors::Cors;
-use actix_web::{App, HttpServer, middleware::Logger, web};
+use actix_web::{middleware::Logger, web, App, HttpServer};
 use dotenv::from_filename;
 use sqlx::mysql::{MySqlPool, MySqlPoolOptions};
 use std::time::Duration;
-mod domain;
-mod application;
-mod infrastructure;
+
+mod auth;
+mod common;
+mod dash;
+mod fileserver;
+pub mod keys;
+mod notificaciones;
+mod personal;
+
 pub struct AppState {
     pub db: MySqlPool,
     pub cliente_http: reqwest::Client,
-    pub notificaciones_tx: tokio::sync::broadcast::Sender<crate::domain::entities::notificacion::NotificacionEvento>,
+    pub notificaciones_tx:
+        tokio::sync::broadcast::Sender<crate::notificaciones::models::NotificacionEvento>,
 }
+
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     from_filename(".env").ok();
@@ -55,6 +63,7 @@ async fn main() -> std::io::Result<()> {
             .allow_any_origin()
             .allow_any_header()
             .allow_any_method();
+
         App::new()
             .app_data(web::Data::new(AppState {
                 db: pool.clone(),
@@ -62,12 +71,11 @@ async fn main() -> std::io::Result<()> {
                 notificaciones_tx: notificaciones_tx.clone(),
             }))
             .app_data(web::Data::new(pool.clone()))
-            .configure(crate::infrastructure::web::routes::login::init_routes)
-            .configure(crate::infrastructure::web::routes::personal::init_routes)
-            .configure(crate::infrastructure::web::routes::dash::init_routes)
-            .configure(crate::infrastructure::web::routes::fileserver::init_routes)
-            .configure(crate::infrastructure::web::routes::usuarios::init_routes)
-            .configure(crate::infrastructure::web::routes::notificacion::init_routes)
+            .configure(auth::configure)
+            .configure(personal::configure)
+            .configure(dash::configure)
+            .configure(fileserver::configure)
+            .configure(notificaciones::configure)
             .wrap(Logger::default())
             .wrap(cors)
     })

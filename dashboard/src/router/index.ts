@@ -8,6 +8,7 @@ import CardsGalleryView from '@/views/dashboard/CardsGalleryView.vue'
 import PerfilView from '@/views/PerfilView.vue'
 import OrganigramaView from '@/views/OrganigramaView.vue'
 import LoginView from '@/views/LoginView.vue'
+import NuevoTrabajadorView from '@/views/NuevoTrabajadorView.vue'
 
 const routes: RouteRecordRaw[] = [
   {
@@ -63,6 +64,13 @@ const routes: RouteRecordRaw[] = [
         path: 'organigrama',
         name: 'organigrama',
         component: OrganigramaView,
+        meta: { requiresAuth: true },
+      },
+      {
+        path: 'personal/nuevo',
+        alias: 'nuevo-trabajador',
+        name: 'nuevo-trabajador',
+        component: NuevoTrabajadorView,
         meta: { requiresAuth: true },
       },
     ],

@@ -4,6 +4,7 @@ api-server
 
 # Env / secrets
 .env
+/src/keys.rs
 
 # HTTP test files
 .http
@@ -37,4 +38,6 @@ AGENTS.md
 # AI-generated docs
 /docs
 
+.tokensave
 
+API.md

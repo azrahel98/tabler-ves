@@ -211,33 +211,79 @@ Reporte de personal activo por ID o nombre de sindicato.
 
 ---
 
-### `GET /api/dash/historial?dni=12345678&key=...`
+### `GET /api/dash/historial`
 
-Historial de operaciones filtrado por DNI.
+Historial y bitácora de auditoría con paginación completa y metadatos. Permite filtrar por DNI de un trabajador o consultar eventos recientes a nivel global.
 
 **Query params:**
 
-| Campo | Tipo   | Requerido |
-| ----- | ------ | --------- |
-| `dni` | string | sí        |
-| `key` | string | sí        |
+| Campo    | Tipo    | Requerido | Descripción |
+| -------- | ------- | --------- | ----------- |
+| `dni`    | string  | no        | Filtro por DNI. Si se omite o está vacío, retorna auditoría global del sistema. |
+| `page`   | integer | no        | Número de página (1-indexed, por defecto `1`). |
+| `limit`  | integer | no        | Cantidad máxima de registros por página (por defecto `50`, clamp entre 1 y 200). |
+| `offset` | integer | no        | Desplazamiento manual opcional. Si no se indica, se calcula como `(page - 1) * limit`. |
+| `key`    | string  | no        | *(Deprecado)* Mantenido por retrocompatibilidad. El backend utiliza su clave interna de forma segura. |
 
 **Respuesta:**
 
 ```json
-[{ "operacion": "editar", "detalle": "...", "fecha": "2024-01-15 10:30:00", "nombre": "Admin" }]
+{
+  "items": [
+    {
+      "dni": "12345678",
+      "operacion": "editar informacion personal",
+      "detalle": {
+        "data": {
+          "direccion": {
+            "antes": "Av. A 123",
+            "despues": "Av. B 456"
+          }
+        },
+        "metadata": {
+          "ip": "192.168.1.10",
+          "user_agent": "Mozilla/5.0..."
+        }
+      },
+      "fecha": "2024-01-15 10:30:00",
+      "nombre": "Admin General"
+    }
+  ],
+  "total": 150,
+  "page": 1,
+  "limit": 50,
+  "total_pages": 3
+}
 ```
 
 ---
 
 ### `GET /api/dash/organigrama`
 
-Organigrama jerárquico.
+Organigrama jerárquico. Prioriza automáticamente encargados activos (`encargo_puesto`, `encargo_funciones`, `encargatura`) sobre titulares, asignando la condición y el sufijo correspondiente.
 
 **Respuesta:**
 
 ```json
-[{ "id": 1, "area": "Gerencia Municipal", "jefe": "Apellido Nombre", "dni": "12345678", "subgerencias": [] }]
+[
+  { 
+    "id": 1, 
+    "area": "Gerencia Municipal", 
+    "jefe": "Apellido Nombre", 
+    "dni": "12345678", 
+    "condicion": "TITULAR", 
+    "subgerencias": [
+      {
+        "id": 9,
+        "area": "Subgerencia de Limpieza Pública",
+        "jefe": "Pérez Juan (Encargado)",
+        "dni": "87654321",
+        "condicion": "ENCARGADO",
+        "subgerencias": []
+      }
+    ] 
+  }
+]
 ```
 
 ---
@@ -254,9 +300,9 @@ Renuncias recientes (últimos 120 días).
 
 ---
 
-### `GET /api/dash/documentos`
+### `GET /api/dash/documentos` (o `GET /api/dash/tipos_documento`)
 
-Lista de tipos de documento.
+Catálogo de tipos de documento (usado para selectores en formularios de legajo/renuncia).
 
 **Respuesta:**
 
@@ -784,7 +830,10 @@ Eliminar un documento de legajo por su ID.
 
 ### `GET /personal/vinculos/{dni}`
 
-Vínculos laborales de un trabajador.
+Vínculos laborales de un trabajador. Retorna la unión cronológica (`ORDER BY fecha_ingreso DESC`) de los vínculos registrados en el sistema institucional y los declarados en la tabla `sunat_vinculo` (T-Registro SUNAT).
+
+- **`origen`**: `"SUNAT"` para registros provenientes de SUNAT; cadena vacía `""` para los vínculos institucionales registrados en la base de datos local.
+- Para registros de SUNAT, `fecha_ingreso` refleja `fecha_inicio`, `fecha_salida` refleja `fecha_cese`, y `estado` es `"activo"` (sin fecha de cese) o `"inactivo"`.
 
 **Respuesta:**
 
@@ -793,8 +842,8 @@ Vínculos laborales de un trabajador.
   {
     "id": 1,
     "dni": "12345678",
-    "area": "Gerencia",
-    "cargo": "Analista",
+    "area": "Gerencia Municipal",
+    "cargo": "Analista de Sistemas",
     "regimen": "D.L. 276",
     "sueldo": 2500.0,
     "codigo": "P001",
@@ -804,7 +853,25 @@ Vínculos laborales de un trabajador.
     "sindicato": null,
     "tipo_evento": null,
     "estado_evento": null,
-    "id_evento": null
+    "id_evento": null,
+    "origen": ""
+  },
+  {
+    "id": 12,
+    "dni": "12345678",
+    "area": null,
+    "cargo": "",
+    "regimen": null,
+    "sueldo": null,
+    "codigo": null,
+    "estado": "inactivo",
+    "fecha_ingreso": "2018-05-01",
+    "fecha_salida": "2019-12-31",
+    "sindicato": null,
+    "tipo_evento": null,
+    "estado_evento": null,
+    "id_evento": null,
+    "origen": "SUNAT"
   }
 ]
 ```
@@ -896,40 +963,47 @@ Registrar renuncia de un vínculo. El campo `id` del body es el ID del vínculo.
 
 ### `PUT /personal/upsert_evento_vinculo`
 
-Agregar o cerrar un evento de vínculo (rotación, abandono).
+Agregar o cerrar un evento de vínculo laboral (`rotacion`, `encargo_puesto`, `encargo_funciones`, `destaque`, `abandono`, `suspension`, `licencia sin goce`).
 
-- Si se envía `documento_inicio`: crea un evento nuevo.
-- Si se envía `documento_salida` + `id` del evento: cierra el evento existente.
+**Comportamiento de Estados:**
+- **`encargo_puesto` / `encargo_funciones`**: Vínculo permanece `activo`. El trabajador asume temporalmente la jefatura en el área indicada (`nueva_area_id`, `nuevo_cargo_id`), mostrándose en el organigrama con la condición `(Encargado)` o `(Encargado de Funciones)`. Al cerrarse vuelve a `desactivado`.
+- **`destaque`**: Al crearse, `vinculo.estado` pasa a `pendiente`. Al cerrarse con documento de reincorporación, pasa a `activo`.
+- **`abandono`**: Al crearse, `vinculo.estado` pasa a `pendiente` (durante PAD). Al cerrarse con la Resolución de Destitución (`documento_salida`), `vinculo.estado` pasa a `inactivo`, liberando la plaza.
+- **`mismo_documento`**: Si es `true`, el mismo documento funge como inicio y fin (sin duplicar registros en `documento`). Al crearse asigna `documento_salida = documento_inicio`, y al cerrarse puede reutilizar el documento de inicio sin enviar un nuevo documento.
 
-**Body (crear evento):**
+**Body (crear evento con nuevo cargo o mismo documento):**
 
 ```json
 {
   "id": null,
   "vinculo_id": 1,
-  "tipo_evento": "rotacion",
+  "tipo_evento": "encargo_puesto",
   "nueva_area_id": 5,
+  "nuevo_cargo_id": 30,
+  "mismo_documento": false,
   "documento_inicio": {
     "tipoDocumento": "RA",
     "numeroDocumento": 789,
     "añoDocumento": 2024,
     "fecha": "2024-03-01",
-    "fechaValida": null,
-    "descripcion": "Rotación de área"
+    "fechaValida": "2024-06-30",
+    "descripcion": "Resolución de encargo de puesto de Subgerente"
   },
   "documento_salida": null,
-  "estado": null
+  "estado": "activo"
 }
 ```
 
-**Body (cerrar evento):**
+**Body (cerrar evento con documento nuevo):**
 
 ```json
 {
   "id": 10,
   "vinculo_id": 1,
-  "tipo_evento": "rotacion",
+  "tipo_evento": "abandono",
   "nueva_area_id": null,
+  "nuevo_cargo_id": null,
+  "mismo_documento": false,
   "documento_inicio": null,
   "documento_salida": {
     "tipoDocumento": "RA",
@@ -937,8 +1011,24 @@ Agregar o cerrar un evento de vínculo (rotación, abandono).
     "añoDocumento": 2024,
     "fecha": "2024-06-01",
     "fechaValida": null,
-    "descripcion": "Cierre de rotación"
+    "descripcion": "Resolución de destitución por abandono de cargo"
   },
+  "estado": null
+}
+```
+
+**Body (cerrar evento reutilizando el mismo documento de inicio):**
+
+```json
+{
+  "id": 10,
+  "vinculo_id": 1,
+  "tipo_evento": "destaque",
+  "nueva_area_id": null,
+  "nuevo_cargo_id": null,
+  "mismo_documento": true,
+  "documento_inicio": null,
+  "documento_salida": null,
   "estado": null
 }
 ```
@@ -952,6 +1042,47 @@ Agregar o cerrar un evento de vínculo (rotación, abandono).
 Eliminar un evento de vínculo y sus documentos asociados.
 
 **Respuesta:** `"Evento de vínculo eliminado"`
+
+---
+
+### `GET /personal/eventos_vinculo/{vinculo_id}`
+
+Obtiene la lista de todos los eventos registrados en la tabla `eventovinculo` para un vínculo específico, con datos del área nueva, cargo nuevo y detalle de los documentos de inicio y salida.
+
+**Headers requeridos:**
+- `Authorization: Bearer <token>`
+
+**Parámetros de ruta:**
+- `vinculo_id` (entero): Identificador del vínculo laboral.
+
+**Respuesta exitosa (`200 OK`):**
+
+```json
+[
+  {
+    "id": 15,
+    "vinculo_id": 1,
+    "tipo_evento": "encargo_puesto",
+    "estado": "activo",
+    "nueva_area_id": 5,
+    "nueva_area": "SUBGERENCIA DE RECURSOS HUMANOS",
+    "nuevo_cargo_id": 30,
+    "nuevo_cargo": "SUBGERENTE",
+    "doc_inicio_id": 101,
+    "tipo_doc_inicio": "RESOLUCION DE ALCALDIA",
+    "numero_doc_inicio": "789-2024-ALC",
+    "fecha_inicio": "2024-03-01",
+    "fecha_valida_inicio": "2024-06-30",
+    "descrip_inicio": "Resolución de encargo de puesto de Subgerente",
+    "doc_salida_id": null,
+    "tipo_doc_salida": null,
+    "numero_doc_salida": null,
+    "fecha_salida": null,
+    "fecha_valida_salida": null,
+    "descrip_salida": null
+  }
+]
+```
 
 ---
 
@@ -1574,4 +1705,104 @@ Marcar todas las notificaciones pendientes como leídas.
   "actualizadas": 3
 }
 ```
+
+---
+
+## File Server `/fileserver` 🔒
+
+Todas las rutas de `/fileserver` requieren JWT.
+
+### `GET /fileserver/documentos/{dni}`
+
+Obtiene la lista consolidada de documentos formales de legajo asociados a un trabajador mediante su DNI. Incluye documentos de ingreso y salida del vínculo laboral, así como documentos de inicio y salida correspondientes a eventos de vínculo (rotaciones, licencias, destaques, etc.), ordenados de forma descendente por fecha.
+
+- **Parámetros:**
+  - `dni` (path): DNI del trabajador (8 dígitos).
+
+**Respuesta (Éxito 200):**
+```json
+[
+  {
+    "id": 105,
+    "sigla": "RESOLUCIÓN DE ALCALDÍA N° 120-2024-MDEV",
+    "fecha": "2024-06-15",
+    "descripcion": "Asignación de funciones y rotación temporal"
+  },
+  {
+    "id": 98,
+    "sigla": "RESOLUCIÓN DE ALCALDÍA N° 045-2024-MDEV",
+    "fecha": "2024-01-10",
+    "descripcion": "Designación e ingreso formal"
+  }
+]
+```
+
+---
+
+## Personal `/personal` 🔒
+
+Todas las rutas de `/personal` requieren JWT.
+
+### `GET /personal/vinculos/{dni}`
+
+Obtiene el historial consolidado de vínculos laborales de un trabajador por su DNI (incluyendo registros internos y vínculos de SUNAT), ordenados descendentemente por fecha de ingreso. Cada vínculo incluye la lista (`array`) completa de sus eventos asociados (rotaciones, licencias, etc.).
+
+- **Parámetros:**
+  - `dni` (path): DNI del trabajador (8 dígitos).
+
+**Respuesta (Éxito 200):**
+```json
+[
+  {
+    "id": 12,
+    "dni": "47513269",
+    "doc_ingreso_id": 45,
+    "doc_ingreso": "RESOLUCIÓN DE ALCALDÍA",
+    "numero_doc_ingreso": "120-2024-MDEV",
+    "descrip_ingreso": "Ingreso a laborar",
+    "fecha_ingreso": "2024-01-15",
+    "area": "SUBGERENCIA DE TECNOLOGÍA",
+    "cargo": "ANALISTA DE SISTEMAS",
+    "regimen": "D.L. 1057 (CAS)",
+    "sueldo": 3500.0,
+    "codigo": "PLAZA-001",
+    "cargo_estructural": "ESPECIALISTA",
+    "grupo_ocupacional": "PROFESIONAL",
+    "estado": "activo",
+    "doc_salida_id": null,
+    "doc_salida": null,
+    "fecha_salida": null,
+    "descrip_salida": null,
+    "numero_doc_salida": null,
+    "sindicato": null,
+    "eventos": [
+      {
+        "id": 5,
+        "vinculo_id": 12,
+        "tipo_evento": "ROTACION",
+        "estado": "activo",
+        "nueva_area_id": 3,
+        "nueva_area": "GERENCIA DE ADMINISTRACIÓN",
+        "nuevo_cargo_id": 8,
+        "nuevo_cargo": "COORDINADOR DE PROYECTOS",
+        "doc_inicio_id": 150,
+        "tipo_doc_inicio": "MEMORANDO",
+        "numero_doc_inicio": "080-2024-MDEV",
+        "fecha_inicio": "2024-06-01",
+        "fecha_valida_inicio": "2024-06-01",
+        "descrip_inicio": "Rotación por necesidad de servicio",
+        "doc_salida_id": null,
+        "tipo_doc_salida": null,
+        "numero_doc_salida": null,
+        "fecha_salida": null,
+        "fecha_valida_salida": null,
+        "descrip_salida": null
+      }
+    ],
+    "origen": ""
+  }
+]
+```
+
+
 

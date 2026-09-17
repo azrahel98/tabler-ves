@@ -40,6 +40,44 @@ export interface PersonalContacto {
   telefono: string
 }
 
+export interface EventoVinculoDetalle {
+  id: number
+  vinculo_id: number
+  tipo_evento: string
+  estado?: string | null
+  nueva_area_id?: number | null
+  nueva_area?: string | null
+  nuevo_cargo_id?: number | null
+  nuevo_cargo?: string | null
+  doc_inicio_id?: number | null
+  tipo_doc_inicio?: string | null
+  numero_doc_inicio?: string | null
+  fecha_inicio?: string | null
+  fecha_valida_inicio?: string | null
+  descrip_inicio?: string | null
+  doc_salida_id?: number | null
+  tipo_doc_salida?: string | null
+  numero_doc_salida?: string | null
+  fecha_salida?: string | null
+  fecha_valida_salida?: string | null
+  descrip_salida?: string | null
+}
+
+export function getTipoEventoLabel(tipo: string | null | undefined): string {
+  if (!tipo) return '-'
+  const map: Record<string, string> = {
+    rotacion: 'Rotación',
+    destaque: 'Destaque',
+    encargo_puesto: 'Encargo de Puesto',
+    encargo_funciones: 'Encargo de Funciones',
+    abandono: 'Abandono de Cargo',
+    suspension: 'Suspensión',
+    licencia: 'Licencia',
+    otro: 'Otro Evento',
+  }
+  return map[tipo.toLowerCase()] || tipo
+}
+
 export interface PersonalVinculo {
   id: number
   dni: string
@@ -69,6 +107,8 @@ export interface PersonalVinculo {
   doc_evento_tipo?: string | null
   numero_doc_evento?: string | null
   fecha_evento?: string | null
+  origen?: string
+  eventos?: EventoVinculoDetalle[]
 }
 
 export interface PersonalArchivo {
@@ -339,3 +379,155 @@ export async function eliminarEventoVinculo(id: number): Promise<boolean> {
   })
   return true
 }
+
+export interface CargoOption {
+  id: number
+  nombre: string
+  activo: boolean
+}
+
+
+export interface EventoVinculoPayload {
+  id?: number | null
+  vinculo_id: number
+  tipo_evento: string
+  nueva_area_id?: number | null
+  nuevo_cargo_id?: number | null
+  documento_inicio?: DocumentoData | null
+  documento_salida?: DocumentoData | null
+  mismo_documento?: boolean | null
+  estado?: string | null
+}
+
+export async function fetchEventosVinculo(vinculoId: number): Promise<EventoVinculoDetalle[]> {
+  try {
+    const data = await api<EventoVinculoDetalle[]>(`/personal/eventos_vinculo/${vinculoId}`)
+    return Array.isArray(data) ? data : []
+  } catch {
+    return []
+  }
+}
+
+export async function upsertEventoVinculo(payload: EventoVinculoPayload): Promise<any> {
+  return await api('/personal/upsert_evento_vinculo', {
+    method: 'PUT',
+    body: payload,
+  })
+}
+
+export async function fetchCargos(): Promise<CargoOption[]> {
+  try {
+    const data = await api<CargoOption[]>('/personal/buscar_cargos')
+    return Array.isArray(data) ? data : []
+  } catch {
+    return []
+  }
+}
+
+export interface NuevoTrabajadorPersonal {
+  dni: string
+  nombre: string
+  apaterno: string
+  amaterno: string
+  nacimiento: string
+  sexo?: string | null
+  telf?: string | null
+  direccion?: string | null
+  email?: string | null
+  ruc?: string | null
+  region?: string | null
+  distrito?: string | null
+}
+
+export interface NuevoTrabajadorDocumento {
+  tipoDocumento: string
+  areaId?: number | null
+  numeroDocumento: number
+  añoDocumento: number
+  fecha: string
+  fechaValida?: string | null
+  descripcion: string
+}
+
+export interface NuevoTrabajadorPayload {
+  personal: NuevoTrabajadorPersonal
+  airshp: string
+  documento: NuevoTrabajadorDocumento
+  regimen: number
+  cargo: number
+  area: number
+  sueldo: number
+}
+
+export interface VacanteOption {
+  id?: number | null
+  codigo: string
+  area_id?: number | null
+  area?: string | null
+  cargo_id?: number | null
+  cargo?: string | null
+  sueldo?: number | null
+  nombre?: string | null
+}
+
+export interface PlazaDetalleOption {
+  codigo: string
+  cargo_estructural?: string | null
+  cargo_descripcion?: string | null
+  grupo_ocupacional?: string | null
+  grupo_descripcion?: string | null
+  condicion?: string | null
+  regimen_id: number
+  regimen: string
+}
+
+export interface ReniecConsultaResult {
+  dni: string
+  nombre: string
+  apaterno: string
+  amaterno: string
+  nacimiento: string
+  sexo?: string | null
+  telf?: string | null
+  direccion?: string | null
+  email?: string | null
+  ruc?: string | null
+  region?: string | null
+  distrito?: string | null
+}
+
+export async function consultarDniReniec(dni: string): Promise<ReniecConsultaResult | null> {
+  try {
+    return await api<ReniecConsultaResult>(`/personal/reniec/${dni}`)
+  } catch {
+    return null
+  }
+}
+
+export async function fetchPlazasVacantes(): Promise<VacanteOption[]> {
+  try {
+    const data = await api<VacanteOption[]>('/personal/buscar_vacantes')
+    return Array.isArray(data) ? data : []
+  } catch {
+    return []
+  }
+}
+
+export async function fetchPlazaDetalle(codigo: string): Promise<PlazaDetalleOption | null> {
+  try {
+    return await api<PlazaDetalleOption>('/personal/buscar_por_plaza', {
+      query: { codigo },
+    })
+  } catch {
+    return null
+  }
+}
+
+export async function registrarNuevoTrabajador(payload: NuevoTrabajadorPayload): Promise<string> {
+  return await api<string>('/personal/registrar_trabajador', {
+    method: 'POST',
+    body: payload,
+  })
+}
+
+
