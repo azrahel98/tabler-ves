@@ -420,7 +420,12 @@ const onAbrirEventosDrawer = async (vinculo: PersonalVinculo) => {
   }
 }
 
-const onAbrirCrearEvento = () => {
+const onAbrirCrearEvento = (vinculo?: PersonalVinculo) => {
+  if (vinculo) {
+    vinculoParaEventos.value = vinculo
+  } else if (!vinculoParaEventos.value && vinculoActivo.value) {
+    vinculoParaEventos.value = vinculoActivo.value
+  }
   eventoAEditar.value = null
   isEventoModalOpen.value = true
 }
@@ -608,6 +613,7 @@ watch(
         @update:active-tab="activeTab = $event"
         @open-edit-modal="isEditModalOpen = true"
         @registrar-renuncia="abrirModalRenuncia"
+        @crear-evento="onAbrirCrearEvento"
         @copy-to-clipboard="copyToClipboard"
       />
 
@@ -632,6 +638,7 @@ watch(
               @registrar-renuncia="abrirModalRenuncia"
               @ver-documento="abrirDocumentoDrawer"
               @ver-eventos="onAbrirEventosDrawer"
+              @crear-evento="onAbrirCrearEvento"
             />
           </div>
 
@@ -641,6 +648,7 @@ watch(
               @registrar-renuncia="abrirModalRenuncia"
               @ver-documento="abrirDocumentoDrawer"
               @ver-eventos="onAbrirEventosDrawer"
+              @crear-evento="onAbrirCrearEvento"
             />
           </div>
 

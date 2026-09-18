@@ -29,6 +29,7 @@ import {
   IconBuildingSkyscraper,
   IconFileCertificate,
   IconExternalLink,
+  IconCalendarPlus,
 } from '@tabler/icons-vue'
 
 interface Props {
@@ -41,6 +42,7 @@ const emit = defineEmits<{
   (e: 'registrarRenuncia', vinculo: PersonalVinculo): void
   (e: 'verDocumento', payload: { tipo: 'ingreso' | 'salida' | 'evento'; vinculo: PersonalVinculo; evento?: EventoVinculoDetalle }): void
   (e: 'verEventos', vinculo: PersonalVinculo): void
+  (e: 'crearEvento', vinculo: PersonalVinculo): void
 }>()
 
 const sortOrder = ref<'desc' | 'asc'>('desc')
@@ -248,6 +250,12 @@ const sortedVinculos = computed(() => {
                             formatDate(v.fecha_salida)
                           : 'Vigente' }}
                         </div>
+                        <Button v-if="v.origen !== 'SUNAT'" size="xs" variant="outline"
+                          class="text-purple-600 hover:text-purple-700 hover:bg-purple-500/10 border-purple-500/30 gap-1.5 cursor-pointer text-[11px]"
+                          @click.stop="emit('crearEvento', v)">
+                          <IconCalendarPlus class="size-3.5" />
+                          <span>Agregar Evento</span>
+                        </Button>
                         <Button v-if="v.estado.toLowerCase() != 'inactivo' && v.origen !== 'SUNAT'" size="xs" variant="outline"
                           class="text-rose-600 hover:text-rose-700 hover:bg-rose-500/10 border-rose-500/30 gap-1.5 cursor-pointer text-[11px]"
                           @click.stop="emit('registrarRenuncia', v)">
@@ -397,16 +405,24 @@ const sortedVinculos = computed(() => {
                           <span class="text-muted-foreground flex items-center gap-1.5 shrink-0">
                             <IconAlertCircle class="size-4 text-muted-foreground shrink-0" /> Eventos:
                           </span>
-                          <button
-                            type="button"
-                            class="text-left font-medium text-purple-600 dark:text-purple-400 hover:underline truncate min-w-0 inline-flex items-center gap-1 cursor-pointer transition-colors"
-                            @click.stop="emit('verEventos', v)"
-                          >
-                            <span class="truncate">
-                              {{ v.eventos && v.eventos.length > 0 ? `${v.eventos.length} ${v.eventos.length === 1 ? 'evento registrado' : 'eventos registrados'}` : 'Sin eventos' }}
-                            </span>
-                            <IconExternalLink class="size-3 shrink-0 opacity-70" />
-                          </button>
+                          <div class="flex items-center gap-2 flex-wrap min-w-0">
+                            <button
+                              type="button"
+                              class="text-left font-medium text-purple-600 dark:text-purple-400 hover:underline truncate min-w-0 inline-flex items-center gap-1 cursor-pointer transition-colors"
+                              @click.stop="emit('verEventos', v)"
+                            >
+                              <span class="truncate">
+                                {{ v.eventos && v.eventos.length > 0 ? `${v.eventos.length} ${v.eventos.length === 1 ? 'evento registrado' : 'eventos registrados'}` : 'Sin eventos' }}
+                              </span>
+                              <IconExternalLink class="size-3 shrink-0 opacity-70" />
+                            </button>
+                            <button v-if="v.origen !== 'SUNAT'" type="button"
+                              class="text-[11px] font-semibold text-purple-600 dark:text-purple-400 hover:text-purple-700 inline-flex items-center gap-1 hover:underline cursor-pointer"
+                              @click.stop="emit('crearEvento', v)">
+                              <IconCalendarPlus class="size-3 shrink-0" />
+                              <span>+ Agregar Evento</span>
+                            </button>
+                          </div>
                         </div>
 
                         <div
@@ -439,20 +455,29 @@ const sortedVinculos = computed(() => {
                       </div>
                     </div>
 
-                    <div v-if="v.eventos && v.eventos.length > 0" class="pt-2.5 border-t border-border/60 space-y-2">
+                    <div v-if="v.origen !== 'SUNAT' || (v.eventos && v.eventos.length > 0)" class="pt-2.5 border-t border-border/60 space-y-2">
                       <div class="flex items-center justify-between">
                         <span class="text-[11px] font-semibold text-foreground flex items-center gap-1.5">
                           <IconFileCode class="size-3.5 text-purple-600 dark:text-purple-400 shrink-0" />
-                          Eventos Laborales Registrados ({{ v.eventos.length }})
+                          Eventos Laborales Registrados ({{ v.eventos?.length || 0 }})
                         </span>
-                        <button
-                          type="button"
-                          class="text-[11px] text-purple-600 dark:text-purple-400 hover:underline font-medium inline-flex items-center gap-1 cursor-pointer"
-                          @click.stop="emit('verEventos', v)"
-                        >
-                          <span>Gestionar eventos</span>
-                          <IconExternalLink class="size-3 shrink-0 opacity-70" />
-                        </button>
+                        <div class="flex items-center gap-2">
+                          <Button v-if="v.origen !== 'SUNAT'" size="xs" variant="outline"
+                            class="text-purple-600 hover:text-purple-700 hover:bg-purple-500/10 border-purple-500/30 gap-1 cursor-pointer text-[11px] h-6.5 px-2"
+                            @click.stop="emit('crearEvento', v)">
+                            <IconCalendarPlus class="size-3" />
+                            <span>Agregar Evento</span>
+                          </Button>
+                          <button
+                            v-if="v.eventos && v.eventos.length > 0"
+                            type="button"
+                            class="text-[11px] text-purple-600 dark:text-purple-400 hover:underline font-medium inline-flex items-center gap-1 cursor-pointer"
+                            @click.stop="emit('verEventos', v)"
+                          >
+                            <span>Gestionar eventos</span>
+                            <IconExternalLink class="size-3 shrink-0 opacity-70" />
+                          </button>
+                        </div>
                       </div>
                       <div class="space-y-1.5">
                         <div

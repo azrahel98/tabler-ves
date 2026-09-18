@@ -16,7 +16,6 @@ import {
   IconUser,
   IconLogout,
 } from '@tabler/icons-vue'
-
 import { useNotificacionesStore } from '@/stores/notificaciones'
 
 const emit = defineEmits<{
@@ -39,11 +38,11 @@ const handleLogout = () => {
 </script>
 
 <template>
-  <header class="sticky top-0 z-30 h-16 bg-navbar border-b border-navbar-line flex items-center justify-between px-4 sm:px-6">
-    <div class="flex items-center gap-3">
+  <header class="sticky top-0 z-30 h-13 sm:h-14 2xl:h-16 bg-navbar border-b border-navbar-line flex items-center justify-between px-3 sm:px-6">
+    <div class="flex items-center gap-2.5 sm:gap-3">
       <button
         type="button"
-        class="lg:hidden p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted focus:outline-hidden"
+        class="lg:hidden p-1.5 sm:p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted focus:outline-hidden cursor-pointer"
         aria-label="Abrir barra lateral"
         @click="emit('toggleSidebar')"
       >
@@ -52,7 +51,7 @@ const handleLogout = () => {
 
       <button
         type="button"
-        class="hidden lg:flex p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted focus:outline-hidden transition"
+        class="hidden lg:flex p-1.5 sm:p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted focus:outline-hidden transition cursor-pointer"
         title="Alternar barra lateral"
         aria-label="Alternar barra lateral"
         @click="emit('toggleCollapse')"
@@ -65,10 +64,10 @@ const handleLogout = () => {
       </div>
     </div>
 
-    <div class="flex items-center gap-2 sm:gap-3">
+    <div class="flex items-center gap-1.5 sm:gap-3">
       <button
         type="button"
-        class="size-9 flex items-center justify-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted focus:outline-hidden transition"
+        class="size-8 sm:size-9 flex items-center justify-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted focus:outline-hidden transition cursor-pointer"
         title="Modo Oscuro / Claro"
         @click="themeStore.toggleTheme"
       >
@@ -78,18 +77,18 @@ const handleLogout = () => {
 
       <NavbarNotifications />
 
-      <div class="h-6 w-px bg-border mx-1"></div>
+      <div class="h-5 sm:h-6 w-px bg-border mx-0.5 sm:mx-1"></div>
 
       <div class="relative">
         <button
           type="button"
-          class="flex items-center gap-2 p-1 rounded-lg hover:bg-muted focus:outline-hidden transition"
+          class="flex items-center gap-2 p-1 rounded-lg hover:bg-muted focus:outline-hidden transition cursor-pointer"
           @click="isUserMenuOpen = !isUserMenuOpen"
         >
           <img
             :src="authStore.user?.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=256&auto=format&fit=crop'"
             alt="Avatar de usuario"
-            class="size-8 rounded-full object-cover border border-border"
+            class="size-7 sm:size-8 rounded-full object-cover border border-border"
           />
           <div class="hidden md:flex flex-col text-left">
             <span class="text-xs font-semibold text-foreground leading-tight">
@@ -149,7 +148,7 @@ const handleLogout = () => {
           <div class="border-t border-border pt-1">
             <button
               type="button"
-              class="w-full flex items-center gap-2.5 px-4 py-2 text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition text-left"
+              class="w-full flex items-center gap-2.5 px-4 py-2 text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition text-left cursor-pointer"
               @click="handleLogout"
             >
               <IconLogout class="size-4" :stroke-width="2" />

@@ -498,7 +498,7 @@ export interface ReniecConsultaResult {
 
 export async function consultarDniReniec(dni: string): Promise<ReniecConsultaResult | null> {
   try {
-    return await api<ReniecConsultaResult>(`/personal/reniec/${dni}`)
+    return await api<ReniecConsultaResult>(`/personal/consultar_dni/${dni}`)
   } catch {
     return null
   }

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import Button from '@/components/ui/button/Button.vue'
 import {
   getPersonalAvatarUrl,
   type PersonalPerfil,
@@ -14,6 +15,7 @@ import {
   IconFileText,
   IconCheck,
   IconCopy,
+  IconCalendarPlus,
 } from '@tabler/icons-vue'
 
 interface Props {
@@ -34,6 +36,7 @@ const emit = defineEmits<{
   (e: 'openEditModal'): void
   (e: 'copyToClipboard', text: string, fieldId: string): void
   (e: 'registrarRenuncia', vinculo: PersonalVinculo): void
+  (e: 'crearEvento', vinculo: PersonalVinculo): void
 }>()
 
 const avatarError = ref<boolean>(false)
@@ -123,7 +126,14 @@ const handleTabKeyDown = (event: KeyboardEvent) => {
           </div>
         </div>
 
-
+        <div v-if="vinculoActivo && vinculoActivo.origen !== 'SUNAT'" class="flex items-center gap-2 self-start sm:self-center shrink-0">
+          <Button size="xs" variant="outline"
+            class="text-purple-600 hover:text-purple-700 hover:bg-purple-500/10 border-purple-500/30 gap-1.5 cursor-pointer text-xs"
+            @click="emit('crearEvento', vinculoActivo)">
+            <IconCalendarPlus class="size-3.5" />
+            <span>Agregar Evento</span>
+          </Button>
+        </div>
       </div>
 
       <div class="border-t border-border mt-6 pt-1 overflow-x-auto">
