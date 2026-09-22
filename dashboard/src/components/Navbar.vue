@@ -12,8 +12,6 @@ import {
   IconMoon,
   IconChevronDown,
   IconLayoutDashboard,
-  IconUsers,
-  IconUser,
   IconLogout,
 } from '@tabler/icons-vue'
 import { useNotificacionesStore } from '@/stores/notificaciones'
@@ -38,24 +36,18 @@ const handleLogout = () => {
 </script>
 
 <template>
-  <header class="sticky top-0 z-30 h-13 sm:h-14 2xl:h-16 bg-navbar border-b border-navbar-line flex items-center justify-between px-3 sm:px-6">
+  <header
+    class="sticky top-0 z-30 h-13 sm:h-14 2xl:h-16 bg-navbar border-b border-navbar-line flex items-center justify-between px-3 sm:px-6">
     <div class="flex items-center gap-2.5 sm:gap-3">
-      <button
-        type="button"
+      <button type="button"
         class="lg:hidden p-1.5 sm:p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted focus:outline-hidden cursor-pointer"
-        aria-label="Abrir barra lateral"
-        @click="emit('toggleSidebar')"
-      >
+        aria-label="Abrir barra lateral" @click="emit('toggleSidebar')">
         <IconMenu2 class="size-5" :stroke-width="2" />
       </button>
 
-      <button
-        type="button"
+      <button type="button"
         class="hidden lg:flex p-1.5 sm:p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted focus:outline-hidden transition cursor-pointer"
-        title="Alternar barra lateral"
-        aria-label="Alternar barra lateral"
-        @click="emit('toggleCollapse')"
-      >
+        title="Alternar barra lateral" aria-label="Alternar barra lateral" @click="emit('toggleCollapse')">
         <IconLayoutSidebarLeftCollapse class="size-5" :stroke-width="2" />
       </button>
 
@@ -65,12 +57,9 @@ const handleLogout = () => {
     </div>
 
     <div class="flex items-center gap-1.5 sm:gap-3">
-      <button
-        type="button"
+      <button type="button"
         class="size-8 sm:size-9 flex items-center justify-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted focus:outline-hidden transition cursor-pointer"
-        title="Modo Oscuro / Claro"
-        @click="themeStore.toggleTheme"
-      >
+        title="Modo Oscuro / Claro" @click="themeStore.toggleTheme">
         <IconSun v-if="themeStore.isDark" class="size-4" :stroke-width="2" />
         <IconMoon v-else class="size-4" :stroke-width="2" />
       </button>
@@ -80,16 +69,12 @@ const handleLogout = () => {
       <div class="h-5 sm:h-6 w-px bg-border mx-0.5 sm:mx-1"></div>
 
       <div class="relative">
-        <button
-          type="button"
+        <button type="button"
           class="flex items-center gap-2 p-1 rounded-lg hover:bg-muted focus:outline-hidden transition cursor-pointer"
-          @click="isUserMenuOpen = !isUserMenuOpen"
-        >
+          @click="isUserMenuOpen = !isUserMenuOpen">
           <img
             :src="authStore.user?.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=256&auto=format&fit=crop'"
-            alt="Avatar de usuario"
-            class="size-7 sm:size-8 rounded-full object-cover border border-border"
-          />
+            alt="Avatar de usuario" class="size-7 sm:size-8 rounded-full object-cover border border-border" />
           <div class="hidden md:flex flex-col text-left">
             <span class="text-xs font-semibold text-foreground leading-tight">
               {{ authStore.user?.name || 'Administrador' }}
@@ -101,56 +86,29 @@ const handleLogout = () => {
           <IconChevronDown class="size-3.5 text-muted-foreground hidden md:block" :stroke-width="2" />
         </button>
 
-        <div
-          v-if="isUserMenuOpen"
-          class="fixed inset-0 z-40"
-          @click="isUserMenuOpen = false"
-        ></div>
+        <div v-if="isUserMenuOpen" class="fixed inset-0 z-40" @click="isUserMenuOpen = false"></div>
 
-        <div
-          v-if="isUserMenuOpen"
-          class="absolute inset-e-0 mt-2 w-56 bg-card border border-border rounded-xl shadow-lg py-1.5 z-50 text-xs"
-        >
+        <div v-if="isUserMenuOpen"
+          class="absolute inset-e-0 mt-2 w-56 bg-card border border-border rounded-xl shadow-lg py-1.5 z-50 text-xs">
           <div class="px-4 py-2 border-b border-border">
             <p class="font-semibold text-foreground">{{ authStore.user?.name || 'Administrador' }}</p>
             <p class="text-muted-foreground truncate">{{ authStore.user?.email || 'admin@crmpulse.com' }}</p>
           </div>
 
           <div class="py-1">
-            <router-link
-              to="/perfil"
-              class="flex items-center gap-2.5 px-4 py-2 text-foreground hover:bg-muted transition"
-              @click="isUserMenuOpen = false"
-            >
-              <IconUser class="size-4 text-muted-foreground" :stroke-width="2" />
-              <span>Mi Perfil</span>
-            </router-link>
 
-            <router-link
-              to="/panel"
+            <router-link to="/panel"
               class="flex items-center gap-2.5 px-4 py-2 text-foreground hover:bg-muted transition"
-              @click="isUserMenuOpen = false"
-            >
+              @click="isUserMenuOpen = false">
               <IconLayoutDashboard class="size-4 text-muted-foreground" :stroke-width="2" />
               <span>Panel Principal</span>
-            </router-link>
-
-            <router-link
-              to="/customers"
-              class="flex items-center gap-2.5 px-4 py-2 text-foreground hover:bg-muted transition"
-              @click="isUserMenuOpen = false"
-            >
-              <IconUsers class="size-4 text-muted-foreground" :stroke-width="2" />
-              <span>Cartera de Clientes</span>
             </router-link>
           </div>
 
           <div class="border-t border-border pt-1">
-            <button
-              type="button"
+            <button type="button"
               class="w-full flex items-center gap-2.5 px-4 py-2 text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition text-left cursor-pointer"
-              @click="handleLogout"
-            >
+              @click="handleLogout">
               <IconLogout class="size-4" :stroke-width="2" />
               <span>Cerrar sesión</span>
             </button>

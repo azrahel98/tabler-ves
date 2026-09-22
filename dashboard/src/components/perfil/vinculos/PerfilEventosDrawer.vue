@@ -5,7 +5,7 @@ import Button from '@/components/ui/button/Button.vue'
 import {
   type PersonalVinculo,
   type EventoVinculoDetalle,
-} from './types'
+} from '@/components/perfil/types'
 import { formatDate } from '@/utils/date'
 import {
   IconX,
@@ -14,7 +14,6 @@ import {
   IconFileText,
   IconFileCheck,
   IconAlertCircle,
-  IconBriefcase,
   IconBuildingSkyscraper,
   IconTrash,
   IconEdit,
@@ -101,17 +100,18 @@ const handleConfirmarEliminar = (eventoId: number) => {
       <div class="fixed inset-0 bg-neutral-900/60 backdrop-blur-xs" @click="!isDeleting && emit('close')"></div>
     </transition>
 
-    <div class="fixed inset-y-0 right-0 max-w-full flex pl-10">
+    <div class="fixed inset-y-0 right-0 max-w-full flex pl-6 sm:pl-10">
       <transition appear enter-active-class="transform transition ease-out duration-300 sm:duration-350"
         enter-from-class="translate-x-full" enter-to-class="translate-x-0"
         leave-active-class="transform transition ease-in duration-250" leave-from-class="translate-x-0"
         leave-to-class="translate-x-full">
         <aside v-if="isOpen && vinculo"
           class="w-screen max-w-md sm:max-w-lg bg-card border-l border-border shadow-2xl flex flex-col z-10 overflow-hidden text-xs">
-          <div class="p-4 sm:p-5 border-b border-border flex items-center justify-between shrink-0 bg-muted/20">
+          
+          <header class="px-5 py-4 border-b border-border flex items-center justify-between shrink-0 bg-muted/15">
             <div class="flex items-center gap-3 min-w-0">
               <div
-                class="size-9 rounded-xl flex items-center justify-center shrink-0 border border-purple-500/20 bg-purple-500/10 text-purple-600 dark:text-purple-400">
+                class="size-9 rounded-xl flex items-center justify-center shrink-0 border border-primary/20 bg-primary/10 text-primary">
                 <IconFileCode class="size-5" />
               </div>
 
@@ -125,7 +125,7 @@ const handleConfirmarEliminar = (eventoId: number) => {
                   </Badge>
                 </div>
                 <p class="text-[11px] text-muted-foreground truncate mt-0.5">
-                  {{ vinculo.cargo }} &bull; {{ vinculo.area || 'Sin área asignada' }}
+                  {{ vinculo.regimen }} &bull; Plaza {{ vinculo.codigo || '-' }} &bull; {{ vinculo.cargo }}
                 </p>
               </div>
             </div>
@@ -135,45 +135,30 @@ const handleConfirmarEliminar = (eventoId: number) => {
               aria-label="Cerrar panel de eventos" :disabled="isDeleting" @click="emit('close')">
               <IconX class="size-4" />
             </button>
-          </div>
+          </header>
 
-          <div class="p-3.5 sm:p-4 bg-muted/15 border-b border-border flex items-center justify-between gap-3 shrink-0">
-            <div class="space-y-0.5 min-w-0">
-              <span class="text-[10px] uppercase font-semibold tracking-wider text-muted-foreground block">
-                Vínculo Seleccionado
-              </span>
-              <p class="font-medium text-foreground text-xs truncate">
-                {{ vinculo.regimen }} &bull; Plaza: {{ vinculo.codigo || '-' }}
-              </p>
-            </div>
-
-            <Button size="xs" class="bg-primary hover:bg-primary/90 text-primary-foreground gap-1.5 cursor-pointer shrink-0"
-              :disabled="isDeleting" @click="emit('crearEvento')">
-              <IconPlus class="size-3.5" />
-              <span>Nuevo Evento</span>
-            </Button>
-          </div>
-
-          <div class="flex-1 overflow-y-auto p-4 sm:p-5 space-y-3.5">
-            <div v-if="isLoading" class="space-y-3 py-4">
-              <div v-for="i in 3" :key="i" class="p-4 rounded-xl border border-border bg-card animate-pulse space-y-2.5">
+          <div class="flex-1 overflow-y-auto px-5 py-4 space-y-3.5">
+            <div v-if="isLoading" class="space-y-3 py-2">
+              <div v-for="i in 3" :key="i"
+                class="p-4 rounded-xl border border-border bg-card animate-pulse space-y-2.5">
                 <div class="flex justify-between">
-                  <div class="h-4 w-24 bg-muted rounded"></div>
+                  <div class="h-4 w-28 bg-muted rounded"></div>
                   <div class="h-4 w-16 bg-muted rounded"></div>
                 </div>
                 <div class="h-3 w-3/4 bg-muted rounded"></div>
-                <div class="h-8 w-full bg-muted/60 rounded"></div>
+                <div class="h-6 w-full bg-muted/60 rounded"></div>
               </div>
             </div>
 
-            <div v-else-if="eventos.length === 0" class="text-center py-12 px-4 space-y-3">
-              <div class="size-12 rounded-2xl bg-muted/60 text-muted-foreground flex items-center justify-center mx-auto">
+            <div v-else-if="eventos.length === 0" class="text-center py-14 px-4 space-y-3">
+              <div
+                class="size-12 rounded-2xl bg-muted/60 text-muted-foreground flex items-center justify-center mx-auto">
                 <IconAlertCircle class="size-6" />
               </div>
               <div class="space-y-1">
                 <h4 class="font-semibold text-foreground text-sm">Sin eventos registrados</h4>
                 <p class="text-muted-foreground text-xs max-w-xs mx-auto leading-relaxed">
-                  Este vínculo laboral no cuenta con movimientos administrativos o eventos de rotación, destaque o suspensión registrados.
+                  Este vínculo no registra rotaciones, encargaturas, suspensiones u otros eventos administrativos.
                 </p>
               </div>
               <Button size="xs" variant="outline" class="gap-1.5 cursor-pointer mt-2" @click="emit('crearEvento')">
@@ -183,21 +168,22 @@ const handleConfirmarEliminar = (eventoId: number) => {
             </div>
 
             <div v-else class="space-y-3">
-              <div v-for="ev in eventos" :key="ev.id"
-                class="rounded-xl border border-border bg-card p-3.5 sm:p-4 space-y-3 shadow-xs hover:border-border/90 transition-all">
-                <div class="flex items-start justify-between gap-2">
+              <article v-for="ev in eventos" :key="ev.id"
+                class="rounded-xl border border-border bg-card p-4 space-y-3 shadow-2xs hover:border-border/90 transition-all">
+                
+                <div class="flex items-center justify-between gap-2">
                   <div class="flex items-center gap-2 flex-wrap">
                     <Badge size="xs" :variant="getBadgeVariant(ev.tipo_evento)" class="capitalize font-semibold">
                       {{ getTipoEventoLabel(ev.tipo_evento) }}
                     </Badge>
 
                     <span v-if="ev.estado?.toLowerCase() === 'activo'"
-                      class="inline-flex items-center gap-1 text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded">
+                      class="inline-flex items-center gap-1.5 text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-md">
                       <span class="size-1.5 rounded-full bg-emerald-500"></span>
                       Activo
                     </span>
                     <span v-else
-                      class="inline-flex items-center gap-1 text-[10px] font-medium text-muted-foreground bg-muted px-2 py-0.5 rounded">
+                      class="inline-flex items-center gap-1 text-[10px] font-medium text-muted-foreground bg-muted px-2 py-0.5 rounded-md">
                       Finalizado
                     </span>
                   </div>
@@ -208,24 +194,20 @@ const handleConfirmarEliminar = (eventoId: number) => {
                 </div>
 
                 <div v-if="ev.nueva_area || ev.nuevo_cargo"
-                  class="p-2.5 rounded-lg border border-border/80 bg-muted/20 space-y-1.5">
-                  <span class="text-[10px] uppercase font-semibold tracking-wider text-muted-foreground block">
-                    Movimiento Asignado
-                  </span>
+                  class="p-2.5 rounded-lg border border-border/70 bg-muted/20 space-y-1">
                   <div v-if="ev.nueva_area" class="flex items-center gap-1.5 text-foreground font-medium truncate">
                     <IconBuildingSkyscraper class="size-3.5 text-primary shrink-0" />
                     <span class="truncate">{{ ev.nueva_area }}</span>
                   </div>
-                  <div v-if="ev.nuevo_cargo" class="flex items-center gap-1.5 text-muted-foreground truncate">
-                    <IconBriefcase class="size-3.5 shrink-0" />
-                    <span class="truncate">{{ ev.nuevo_cargo }}</span>
+                  <div v-if="ev.nuevo_cargo" class="text-muted-foreground text-[11px] truncate pl-5">
+                    {{ ev.nuevo_cargo }}
                   </div>
                 </div>
 
-                <div class="space-y-2 border-t border-border/60 pt-2.5">
+                <div class="space-y-2.5 border-t border-border/60 pt-2.5">
                   <div class="space-y-1">
                     <div class="flex items-center justify-between text-[11px]">
-                      <span class="text-muted-foreground flex items-center gap-1">
+                      <span class="text-muted-foreground flex items-center gap-1.5">
                         <IconFileText class="size-3.5 text-primary shrink-0" /> Doc. Inicio
                       </span>
                       <span class="font-mono text-foreground font-medium">
@@ -245,8 +227,8 @@ const handleConfirmarEliminar = (eventoId: number) => {
                   <div v-if="ev.doc_salida_id || ev.numero_doc_salida || ev.fecha_salida"
                     class="space-y-1 pt-2 border-t border-border/40">
                     <div class="flex items-center justify-between text-[11px]">
-                      <span class="text-muted-foreground flex items-center gap-1">
-                        <IconFileCheck class="size-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" /> Doc. Cierre / Término
+                      <span class="text-muted-foreground flex items-center gap-1.5">
+                        <IconFileCheck class="size-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" /> Doc. Cierre
                       </span>
                       <span class="font-mono text-foreground font-medium">
                         {{ ev.fecha_salida ? formatDate(ev.fecha_salida) : '-' }}
@@ -254,7 +236,8 @@ const handleConfirmarEliminar = (eventoId: number) => {
                     </div>
                     <p class="font-medium text-foreground text-xs truncate"
                       :title="[ev.tipo_doc_salida, ev.numero_doc_salida].filter(Boolean).join(' N° ')">
-                      {{ [ev.tipo_doc_salida, ev.numero_doc_salida].filter(Boolean).join(' N° ') || 'Mismo documento de inicio' }}
+                      {{ [ev.tipo_doc_salida, ev.numero_doc_salida].filter(Boolean).join(' N° ') ||
+                        'Mismo documento de inicio' }}
                     </p>
                     <p v-if="ev.descrip_salida" class="text-muted-foreground text-[11px] leading-relaxed line-clamp-2"
                       :title="ev.descrip_salida">
@@ -265,14 +248,14 @@ const handleConfirmarEliminar = (eventoId: number) => {
 
                 <div v-if="eventoAEliminarId !== ev.id"
                   class="flex items-center justify-end gap-2 pt-2 border-t border-border/60">
-                  <Button size="xs" variant="outline" class="gap-1 cursor-pointer text-[11px]" :disabled="isDeleting"
+                  <Button size="xs" variant="outline" class="gap-1.5 cursor-pointer text-[11px]" :disabled="isDeleting"
                     @click="emit('editarEvento', ev)">
                     <IconEdit class="size-3" />
                     <span>{{ ev.estado?.toLowerCase() === 'activo' ? 'Cerrar / Editar' : 'Detalles' }}</span>
                   </Button>
 
                   <Button size="xs" variant="outline"
-                    class="gap-1 text-rose-600 hover:text-rose-700 hover:bg-rose-500/10 border-rose-500/30 cursor-pointer text-[11px]"
+                    class="gap-1.5 text-destructive hover:text-destructive hover:bg-destructive/10 border-destructive/30 cursor-pointer text-[11px]"
                     :disabled="isDeleting" @click="eventoAEliminarId = ev.id">
                     <IconTrash class="size-3" />
                     <span>Eliminar</span>
@@ -303,19 +286,20 @@ const handleConfirmarEliminar = (eventoId: number) => {
                     </Button>
                   </div>
                 </div>
-              </div>
+              </article>
             </div>
           </div>
 
-          <div class="p-3 sm:p-4 border-t border-border flex items-center justify-between bg-muted/10 shrink-0">
-            <Button size="xs" variant="outline" class="gap-1.5 cursor-pointer" @click="emit('crearEvento')">
+          <footer class="px-5 py-3.5 border-t border-border flex items-center justify-between bg-muted/10 shrink-0">
+            <Button size="xs" variant="primary" class="gap-1.5 cursor-pointer" :disabled="isDeleting"
+              @click="emit('crearEvento')">
               <IconPlus class="size-3.5" />
               <span>Nuevo Evento</span>
             </Button>
-            <Button size="sm" variant="outline" class="cursor-pointer" :disabled="isDeleting" @click="emit('close')">
+            <Button size="xs" variant="outline" class="cursor-pointer" :disabled="isDeleting" @click="emit('close')">
               Cerrar
             </Button>
-          </div>
+          </footer>
         </aside>
       </transition>
     </div>

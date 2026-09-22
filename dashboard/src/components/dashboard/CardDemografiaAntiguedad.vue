@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { computed, ref, onMounted } from 'vue'
+import { computed } from 'vue'
 import { Line } from 'vue-chartjs'
 import Card from '@/components/ui/card/Card.vue'
 import Badge from '@/components/ui/badge/Badge.vue'
+import { useThemeStore } from '@/stores/theme'
 import type { RangoReport } from './types'
 import type { ChartOptions, ChartData } from 'chart.js'
 
@@ -15,15 +16,8 @@ const props = withDefaults(defineProps<Props>(), {
   isLoading: false,
 })
 
-const isDark = ref(document.documentElement.classList.contains('dark'))
-
-const observer = new MutationObserver(() => {
-  isDark.value = document.documentElement.classList.contains('dark')
-})
-
-onMounted(() => {
-  observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] })
-})
+const themeStore = useThemeStore()
+const isDark = computed(() => themeStore.isDark)
 
 const chartGridColor = computed(() => isDark.value ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.06)')
 const chartTextColor = computed(() => isDark.value ? '#94a3b8' : '#475569')

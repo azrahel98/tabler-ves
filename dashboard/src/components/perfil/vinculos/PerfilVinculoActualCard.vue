@@ -8,7 +8,7 @@ import {
   getTipoEventoLabel,
   type PersonalVinculo,
   type EventoVinculoDetalle,
-} from './types'
+} from '@/components/perfil/types'
 import { formatDate } from '@/utils/date'
 import {
   IconBriefcase,
@@ -63,15 +63,6 @@ const emit = defineEmits<{
         <IconBriefcase class="size-3.5 text-primary shrink-0" />
         <h3 class="font-semibold text-foreground tracking-tight text-sm">Ultimo Laboral Actual</h3>
       </span>
-
-      <div class="flex items-center gap-2 flex-wrap">
-        <Button v-if="vinculoEfectivo.origen !== 'SUNAT'" size="xs" variant="outline"
-          class="text-purple-600 hover:text-purple-700 hover:bg-purple-500/10 border-purple-500/30 gap-1.5 cursor-pointer text-xs"
-          @click="emit('crearEvento', vinculoEfectivo)">
-          <IconCalendarPlus class="size-3.5" />
-          <span>Agregar Evento</span>
-        </Button>
-      </div>
     </div>
 
 
@@ -281,12 +272,12 @@ const emit = defineEmits<{
       </div>
     </div>
 
-    <div v-if="vinculoEfectivo.origen !== 'SUNAT' || (vinculoEfectivo.eventos && vinculoEfectivo.eventos.length > 0)"
+    <div v-if="(vinculoEfectivo.eventos && vinculoEfectivo.eventos.length >= 1)"
       class="pt-3 border-t border-border/70 space-y-2">
       <div class="flex items-center justify-between">
         <span class="text-xs font-semibold text-foreground flex items-center gap-1.5">
           <IconFileCode class="size-3.5 text-purple-600 dark:text-purple-400 shrink-0" />
-          Eventos Laborales Registrados ({{ vinculoEfectivo.eventos?.length || 0 }})
+          Eventos ({{ vinculoEfectivo.eventos?.length || 0 }})
         </span>
         <div class="flex items-center gap-2">
           <Button v-if="vinculoEfectivo.origen !== 'SUNAT'" size="xs" variant="outline"

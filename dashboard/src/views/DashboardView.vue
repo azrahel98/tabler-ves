@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
+import { setupCharts } from '@/lib/chart'
 import Button from '@/components/ui/button/Button.vue'
 import CardPersonalPorArea from '@/components/dashboard/CardPersonalPorArea.vue'
 import CardNominaPersonal from '@/components/dashboard/CardNominaPersonal.vue'
@@ -21,6 +22,8 @@ import {
   IconAlertTriangle,
   IconRefresh,
 } from '@tabler/icons-vue'
+
+setupCharts()
 
 const isLoading = ref(true)
 const errorMessage = ref<string | null>(null)

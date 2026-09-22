@@ -118,8 +118,11 @@ const onSubmit = () => {
 </script>
 
 <template>
-  <div v-if="isOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-neutral-900/60 backdrop-blur-xs"
-    @click.self="handleRequestClose">
+  <div v-if="isOpen" role="dialog" aria-modal="true" aria-labelledby="modal-edit-profile-title"
+    tabindex="-1"
+    class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-neutral-900/60 backdrop-blur-xs focus:outline-hidden"
+    @click.self="handleRequestClose"
+    @keydown.esc="handleRequestClose">
     <div class="w-full max-w-xl bg-card border border-border rounded-2xl shadow-xl overflow-hidden text-xs">
       <div v-if="showConfirmDiscard"
         class="p-4 bg-amber-500/10 border-b border-amber-500/20 text-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
@@ -140,7 +143,7 @@ const onSubmit = () => {
 
       <div class="p-4 border-b border-border flex items-center justify-between">
         <div>
-          <h3 class="font-bold text-foreground text-sm flex items-center gap-2">
+          <h3 id="modal-edit-profile-title" class="font-bold text-foreground text-sm flex items-center gap-2">
             <IconEdit class="size-4 text-primary" />
             <span>Actualizar Ficha del Servidor</span>
           </h3>

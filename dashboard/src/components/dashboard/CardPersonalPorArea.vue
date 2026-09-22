@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { computed, ref, onMounted } from 'vue'
+import { computed, ref } from 'vue'
 import { Bar } from 'vue-chartjs'
 import Card from '@/components/ui/card/Card.vue'
 import Badge from '@/components/ui/badge/Badge.vue'
+import { useThemeStore } from '@/stores/theme'
 import type { AreaReport } from './types'
 import type { ChartOptions, ChartData } from 'chart.js'
 import {
@@ -28,15 +29,8 @@ const emit = defineEmits<{
 }>()
 
 const activeView = ref<'chart' | 'list'>('chart')
-const isDark = ref(document.documentElement.classList.contains('dark'))
-
-const observer = new MutationObserver(() => {
-  isDark.value = document.documentElement.classList.contains('dark')
-})
-
-onMounted(() => {
-  observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] })
-})
+const themeStore = useThemeStore()
+const isDark = computed(() => themeStore.isDark)
 
 const totalPersonal = computed(() => {
   return props.areas.reduce((acc, a) => acc + a.cantidad, 0)

@@ -194,8 +194,6 @@ pub struct PerfilInput {
 pub struct NuevoVinculo {
     #[validate(nested)]
     pub personal: PerfilInput,
-    #[validate(length(min = 1, message = "El código de plaza es requerido"))]
-    pub airshp: String,
     #[validate(nested)]
     pub documento: Documento,
     #[validate(range(min = 1, message = "ID de régimen inválido"))]

@@ -84,7 +84,16 @@ Cumpleaños próximos (±5 días pasados / +30 días futuros).
 **Respuesta:**
 
 ```json
-[{ "dni": "12345678", "nombre": "Apellido Nombre", "nacimiento": "1990-01-15", "edad": 36, "avatar": "/personal/avatar/12345678", "regimen": "D.L. 276" }]
+[
+  {
+    "dni": "12345678",
+    "nombre": "Apellido Nombre",
+    "nacimiento": "1990-01-15",
+    "edad": 36,
+    "avatar": "/personal/avatar/12345678",
+    "regimen": "D.L. 276"
+  }
+]
 ```
 
 ---
@@ -217,13 +226,13 @@ Historial y bitácora de auditoría con paginación completa y metadatos. Permit
 
 **Query params:**
 
-| Campo    | Tipo    | Requerido | Descripción |
-| -------- | ------- | --------- | ----------- |
-| `dni`    | string  | no        | Filtro por DNI. Si se omite o está vacío, retorna auditoría global del sistema. |
-| `page`   | integer | no        | Número de página (1-indexed, por defecto `1`). |
-| `limit`  | integer | no        | Cantidad máxima de registros por página (por defecto `50`, clamp entre 1 y 200). |
-| `offset` | integer | no        | Desplazamiento manual opcional. Si no se indica, se calcula como `(page - 1) * limit`. |
-| `key`    | string  | no        | *(Deprecado)* Mantenido por retrocompatibilidad. El backend utiliza su clave interna de forma segura. |
+| Campo    | Tipo    | Requerido | Descripción                                                                                           |
+| -------- | ------- | --------- | ----------------------------------------------------------------------------------------------------- |
+| `dni`    | string  | no        | Filtro por DNI. Si se omite o está vacío, retorna auditoría global del sistema.                       |
+| `page`   | integer | no        | Número de página (1-indexed, por defecto `1`).                                                        |
+| `limit`  | integer | no        | Cantidad máxima de registros por página (por defecto `50`, clamp entre 1 y 200).                      |
+| `offset` | integer | no        | Desplazamiento manual opcional. Si no se indica, se calcula como `(page - 1) * limit`.                |
+| `key`    | string  | no        | _(Deprecado)_ Mantenido por retrocompatibilidad. El backend utiliza su clave interna de forma segura. |
 
 **Respuesta:**
 
@@ -266,12 +275,12 @@ Organigrama jerárquico. Prioriza automáticamente encargados activos (`encargo_
 
 ```json
 [
-  { 
-    "id": 1, 
-    "area": "Gerencia Municipal", 
-    "jefe": "Apellido Nombre", 
-    "dni": "12345678", 
-    "condicion": "TITULAR", 
+  {
+    "id": 1,
+    "area": "Gerencia Municipal",
+    "jefe": "Apellido Nombre",
+    "dni": "12345678",
+    "condicion": "TITULAR",
     "subgerencias": [
       {
         "id": 9,
@@ -281,7 +290,7 @@ Organigrama jerárquico. Prioriza automáticamente encargados activos (`encargo_
         "condicion": "ENCARGADO",
         "subgerencias": []
       }
-    ] 
+    ]
   }
 ]
 ```
@@ -295,7 +304,18 @@ Renuncias recientes (últimos 120 días).
 **Respuesta:**
 
 ```json
-[{ "id": 1, "dni": "12345678", "nombre": "Apellido Nombre", "fecha": "2024-01-15", "cargo": "Analista", "area": "Gerencia", "codigo": "P001", "avatar": "/personal/avatar/12345678" }]
+[
+  {
+    "id": 1,
+    "dni": "12345678",
+    "nombre": "Apellido Nombre",
+    "fecha": "2024-01-15",
+    "cargo": "Analista",
+    "area": "Gerencia",
+    "codigo": "P001",
+    "avatar": "/personal/avatar/12345678"
+  }
+]
 ```
 
 ---
@@ -327,7 +347,10 @@ Cantidad de personal activo agrupado por distrito de residencia.
 **Respuesta:**
 
 ```json
-[{ "distrito": "PIURA", "cantidad": 45 }, { "distrito": "SIN ASIGNAR", "cantidad": 5 }]
+[
+  { "distrito": "PIURA", "cantidad": 45 },
+  { "distrito": "SIN ASIGNAR", "cantidad": 5 }
+]
 ```
 
 ---
@@ -339,7 +362,21 @@ Trabajadores ingresados en los últimos 120 días.
 **Respuesta:**
 
 ```json
-[{ "id": 1, "dni": "12345678", "nombre": "Apellido Nombre", "ingreso": "2024-01-15", "documento": "RA-001-2024", "area": "Gerencia", "cargo": "Analista", "regimen": "D.L. 276", "sueldo": 2500.0, "plaza": "P001", "avatar": "/personal/avatar/12345678" }]
+[
+  {
+    "id": 1,
+    "dni": "12345678",
+    "nombre": "Apellido Nombre",
+    "ingreso": "2024-01-15",
+    "documento": "RA-001-2024",
+    "area": "Gerencia",
+    "cargo": "Analista",
+    "regimen": "D.L. 276",
+    "sueldo": 2500.0,
+    "plaza": "P001",
+    "avatar": "/personal/avatar/12345678"
+  }
+]
 ```
 
 ---
@@ -431,13 +468,7 @@ Genera un Excel de comparación MEF a partir de un JSON.
 
 ### `GET /api/dash/alerta_70`
 
-Alerta de servidores activos que van a cumplir o han cumplido 70 años de edad (límite de cese legal laboral). Calcula fecha de cese regular (último día del mes de cumpleaños) y fecha de cese extendido (31 de diciembre del año en curso).
-
-**Query Params (Opcionales):**
-
-| Parámetro  | Tipo      | Requerido | Descripción                                              |
-| ---------- | --------- | --------- | -------------------------------------------------------- |
-| `edad_min` | `integer` | no        | Edad mínima a filtrar (por defecto `69` para preventivo) |
+Alerta de servidores activos que van a cumplir o han cumplido 70 años de edad (límite de cese legal laboral). Evalúa a trabajadores activos con 69 años o más y clasifica su estado de alerta preventivo y excepcional.
 
 **Respuesta:**
 
@@ -448,26 +479,29 @@ Alerta de servidores activos que van a cumplir o han cumplido 70 años de edad (
     "nombre": "PEREZ LOPEZ JUAN",
     "nacimiento": "1956-08-20",
     "edad_actual": 69,
-    "fecha_70_anos": "2026-08-20",
-    "fecha_limite_mes": "2026-08-31",
-    "fecha_extension_fin_ano": "2026-12-31",
-    "dias_para_70": 4,
-    "dias_para_cese_mes": 15,
-    "dias_para_cese_extension": 137,
-    "estado_alerta": "CUMPLE_ESTE_MES",
     "area": "SUBGERENCIA DE RECURSOS HUMANOS",
     "cargo": "ESPECIALISTA ADMINISTRATIVO",
     "regimen": "D.L. 276",
     "plaza": "P-045",
-    "avatar": "/personal/avatar/01234567"
+    "avatar": "/personal/avatar/01234567",
+    "estado": "AlLimite"
   }
 ]
 ```
 
+#### Valores de `estado`
+
+| Valor         | Descripción                                                                                                                          |
+| :------------ | :----------------------------------------------------------------------------------------------------------------------------------- |
+| `Atiempo`     | Tiene 69 años y faltan más de 15 días en el mes de su cumpleaños 70 (o aún no es el mes de su cumpleaños).                           |
+| `AlLimite`    | Tiene 69 años, es el mes de su cumpleaños y faltan entre 6 y 15 días para cumplir 70.                                                |
+| `Excedido`    | Tiene 69 años, es el mes de su cumpleaños y faltan 5 días o menos (o ya los cumplió); o tiene 70 años a más en regímenes ordinarios. |
+| `Excepcional` | Trabajador de 70 años a más perteneciente al régimen `1057` (CAS).                                                                   |
+| `Diciembre`   | Variante reservada para cierres/extensiones anuales.                                                                                 |
+
 ---
 
 ## Personal `/personal` 🔒
-
 
 Todas las rutas de `/personal` requieren JWT **excepto `GET /personal/avatar/{dni}`**.
 
@@ -537,7 +571,14 @@ Buscar trabajadores por nombre.
 **Respuesta:**
 
 ```json
-[{ "nombre": "Nombre Apellido", "dni": "12345678", "estado": "activo", "sexo": "M" }]
+[
+  {
+    "nombre": "Nombre Apellido",
+    "dni": "12345678",
+    "estado": "activo",
+    "sexo": "M"
+  }
+]
 ```
 
 ---
@@ -574,7 +615,14 @@ Consultar datos por DNI. Busca localmente; si no existe, consulta la API de RENI
 **Respuesta:**
 
 ```json
-{ "dni": "12345678", "apaterno": "GARCIA", "amaterno": "LOPEZ", "nombre": "JUAN", "nacimiento": "1990-01-15", "sexo": "M" }
+{
+  "dni": "12345678",
+  "apaterno": "GARCIA",
+  "amaterno": "LOPEZ",
+  "nombre": "JUAN",
+  "nacimiento": "1990-01-15",
+  "sexo": "M"
+}
 ```
 
 ---
@@ -586,7 +634,14 @@ Datos bancarios de un trabajador.
 **Respuesta:**
 
 ```json
-{ "id": 1, "numero_cuenta": "123456789", "tipo_cuenta": "AHORRO", "cci": "00212345678901234567", "banco": "BCP", "estado": 1 }
+{
+  "id": 1,
+  "numero_cuenta": "123456789",
+  "tipo_cuenta": "AHORRO",
+  "cci": "00212345678901234567",
+  "banco": "BCP",
+  "estado": 1
+}
 ```
 
 ---
@@ -598,7 +653,14 @@ Agregar cuenta bancaria.
 **Body:**
 
 ```json
-{ "numero_cuenta": "123456789", "tipo_cuenta": "AHORRO", "cci": "002...", "banco": 1, "estado": 1, "dni": "12345678" }
+{
+  "numero_cuenta": "123456789",
+  "tipo_cuenta": "AHORRO",
+  "cci": "002...",
+  "banco": 1,
+  "estado": 1,
+  "dni": "12345678"
+}
 ```
 
 **Respuesta:** `"Rows affected: 1"`
@@ -612,7 +674,15 @@ Editar cuenta bancaria existente.
 **Body:**
 
 ```json
-{ "id": 1, "numero_cuenta": "123456789", "tipo_cuenta": "AHORRO", "cci": "002...", "banco": "BCP", "estado": 1, "dni": "12345678" }
+{
+  "id": 1,
+  "numero_cuenta": "123456789",
+  "tipo_cuenta": "AHORRO",
+  "cci": "002...",
+  "banco": "BCP",
+  "estado": 1,
+  "dni": "12345678"
+}
 ```
 
 **Respuesta:** `"Rows affected: 1"`
@@ -626,7 +696,17 @@ Grados académicos de un trabajador.
 **Respuesta:**
 
 ```json
-[{ "id": 1, "profesion": "ABOGADO", "universidad": "UNIV.", "nivel_academico": "TITULADO", "abrv": "ABOG", "dni": "12345678", "fecha": "2020-01-15" }]
+[
+  {
+    "id": 1,
+    "profesion": "ABOGADO",
+    "universidad": "UNIV.",
+    "nivel_academico": "TITULADO",
+    "abrv": "ABOG",
+    "dni": "12345678",
+    "fecha": "2020-01-15"
+  }
+]
 ```
 
 ---
@@ -638,7 +718,15 @@ Agregar o actualizar grado académico (upsert).
 **Body:**
 
 ```json
-{ "id": 0, "profesion": "ABOGADO", "universidad": "UNIV.", "nivel_academico": "TITULADO", "abrv": "ABOG", "dni": "12345678", "fecha": "2020-01-15" }
+{
+  "id": 0,
+  "profesion": "ABOGADO",
+  "universidad": "UNIV.",
+  "nivel_academico": "TITULADO",
+  "abrv": "ABOG",
+  "dni": "12345678",
+  "fecha": "2020-01-15"
+}
 ```
 
 > `id = 0` para insertar, `id > 0` para editar.
@@ -664,7 +752,12 @@ Contacto de emergencia de un trabajador.
 **Respuesta:**
 
 ```json
-{ "persona_dni": "12345678", "nombre": "María", "relacion": "Madre", "telefono": "999999999" }
+{
+  "persona_dni": "12345678",
+  "nombre": "María",
+  "relacion": "Madre",
+  "telefono": "999999999"
+}
 ```
 
 ---
@@ -676,7 +769,12 @@ Agregar o actualizar contacto de emergencia (upsert por DNI).
 **Body:**
 
 ```json
-{ "persona_dni": "12345678", "nombre": "María", "relacion": "Madre", "telefono": "999999999" }
+{
+  "persona_dni": "12345678",
+  "nombre": "María",
+  "relacion": "Madre",
+  "telefono": "999999999"
+}
 ```
 
 **Respuesta:** `"Rows affected: 1"`
@@ -880,7 +978,12 @@ Vínculos laborales de un trabajador. Retorna la unión cronológica (`ORDER BY 
 
 ### `POST /personal/registrar_trabajador`
 
-Registrar un nuevo trabajador con persona, documento y vínculo.
+Registrar un nuevo trabajador en el sistema. Realiza las siguientes operaciones de forma transaccional:
+
+1. Registra o actualiza la información del personal en la tabla `persona` (encriptando datos sensibles).
+2. Registra el documento de sustento de ingreso en la tabla `documento`.
+3. Crea el registro de relación laboral en la tabla `vinculo` con estado `activo` (asociando área, cargo, sueldo y régimen laboral).
+4. Registra la auditoría correspondiente en el historial de acciones.
 
 **Body:**
 
@@ -900,7 +1003,6 @@ Registrar un nuevo trabajador con persona, documento y vínculo.
     "region": "PIURA",
     "distrito": "PIURA"
   },
-  "airshp": "P001",
   "documento": {
     "tipoDocumento": "RA",
     "numeroDocumento": 123,
@@ -966,6 +1068,7 @@ Registrar renuncia de un vínculo. El campo `id` del body es el ID del vínculo.
 Agregar o cerrar un evento de vínculo laboral (`rotacion`, `encargo_puesto`, `encargo_funciones`, `destaque`, `abandono`, `suspension`, `licencia sin goce`).
 
 **Comportamiento de Estados:**
+
 - **`encargo_puesto` / `encargo_funciones`**: Vínculo permanece `activo`. El trabajador asume temporalmente la jefatura en el área indicada (`nueva_area_id`, `nuevo_cargo_id`), mostrándose en el organigrama con la condición `(Encargado)` o `(Encargado de Funciones)`. Al cerrarse vuelve a `desactivado`.
 - **`destaque`**: Al crearse, `vinculo.estado` pasa a `pendiente`. Al cerrarse con documento de reincorporación, pasa a `activo`.
 - **`abandono`**: Al crearse, `vinculo.estado` pasa a `pendiente` (durante PAD). Al cerrarse con la Resolución de Destitución (`documento_salida`), `vinculo.estado` pasa a `inactivo`, liberando la plaza.
@@ -1050,9 +1153,11 @@ Eliminar un evento de vínculo y sus documentos asociados.
 Obtiene la lista de todos los eventos registrados en la tabla `eventovinculo` para un vínculo específico, con datos del área nueva, cargo nuevo y detalle de los documentos de inicio y salida.
 
 **Headers requeridos:**
+
 - `Authorization: Bearer <token>`
 
 **Parámetros de ruta:**
+
 - `vinculo_id` (entero): Identificador del vínculo laboral.
 
 **Respuesta exitosa (`200 OK`):**
@@ -1131,7 +1236,19 @@ Vacantes recientes (plazas con estado `vacante`).
 **Respuesta:**
 
 ```json
-[{ "id": 1, "dni": null, "nombre": null, "fecha": "2024-06-15", "area": "Gerencia", "cargo": "Analista", "codigo": "P001", "sueldo": 2500.0, "avatar": null }]
+[
+  {
+    "id": 1,
+    "dni": null,
+    "nombre": null,
+    "fecha": "2024-06-15",
+    "area": "Gerencia",
+    "cargo": "Analista",
+    "codigo": "P001",
+    "sueldo": 2500.0,
+    "avatar": null
+  }
+]
 ```
 
 ---
@@ -1170,7 +1287,15 @@ Lista de áreas activas que tienen sigla definida (`activo = 1 and sigla is not 
 **Respuesta:**
 
 ```json
-[{ "id": 1, "nombre": "GERENCIA MUNICIPAL", "activo": true, "nivel": 2, "sigla": "GM" }]
+[
+  {
+    "id": 1,
+    "nombre": "GERENCIA MUNICIPAL",
+    "activo": true,
+    "nivel": 2,
+    "sigla": "GM"
+  }
+]
 ```
 
 ---
@@ -1189,7 +1314,7 @@ Lista de cargos activos.
 
 ### `GET /personal/activos_por_distrito?distrito=PIURA`
 
-Detalle y estadísticas de trabajadores **activos** que residen en un distrito específico. Coincidencia exacta y *case-insensitive*. Para listar quienes no tienen distrito asignado, usar `"SIN ASIGNAR"`. Incluye conteo por áreas con su ID, rangos de edad, y la lista completa de personas con IDs de área, cargo y régimen.
+Detalle y estadísticas de trabajadores **activos** que residen en un distrito específico. Coincidencia exacta y _case-insensitive_. Para listar quienes no tienen distrito asignado, usar `"SIN ASIGNAR"`. Incluye conteo por áreas con su ID, rangos de edad, y la lista completa de personas con IDs de área, cargo y régimen.
 
 **Query params:**
 
@@ -1253,10 +1378,21 @@ Reporte de calidad de datos: trabajadores activos sin domicilio o sin documento 
 ```json
 {
   "sin_domicilio": [
-    { "dni": "12345678", "nombre": "Apellido Nombre", "direccion": null, "distrito": null }
+    {
+      "dni": "12345678",
+      "nombre": "Apellido Nombre",
+      "direccion": null,
+      "distrito": null
+    }
   ],
   "sin_documento_salida": [
-    { "id": 1, "dni": "12345678", "nombre": "Apellido Nombre", "cargo": "Analista", "area": "Gerencia" }
+    {
+      "id": 1,
+      "dni": "12345678",
+      "nombre": "Apellido Nombre",
+      "cargo": "Analista",
+      "area": "Gerencia"
+    }
   ]
 }
 ```
@@ -1296,7 +1432,14 @@ Subir un archivo PDF (máx. 10 MB).
 **Respuesta:**
 
 ```json
-[{ "id": 1, "original_name": "mi_doc.pdf", "file_hash": "uuid...", "extension": "pdf" }]
+[
+  {
+    "id": 1,
+    "original_name": "mi_doc.pdf",
+    "file_hash": "uuid...",
+    "extension": "pdf"
+  }
+]
 ```
 
 ---
@@ -1307,16 +1450,16 @@ Sube un archivo PDF (máx. 20 MB) y lo vincula a múltiples trabajadores creando
 
 **Body (multipart/form-data):**
 
-| Campo               | Tipo    | Requerido |
-| ------------------- | ------- | --------- |
-| `archivo/file`      | file    | sí        |
-| `tipo_documento_id` | number  | sí        |
-| `numero`            | string  | sí        |
-| `year`              | number  | sí        |
-| `fecha`             | string  | sí        |
-| `fecha_valida`      | string? | no        |
-| `descripcion`       | string  | sí        |
-| `nombre_archivo`    | string? | no        |
+| Campo               | Tipo    | Requerido                                  |
+| ------------------- | ------- | ------------------------------------------ |
+| `archivo/file`      | file    | sí                                         |
+| `tipo_documento_id` | number  | sí                                         |
+| `numero`            | string  | sí                                         |
+| `year`              | number  | sí                                         |
+| `fecha`             | string  | sí                                         |
+| `fecha_valida`      | string? | no                                         |
+| `descripcion`       | string  | sí                                         |
+| `nombre_archivo`    | string? | no                                         |
 | `dnis`              | string  | sí (lista separada por comas o JSON array) |
 
 **Respuesta:**
@@ -1374,7 +1517,19 @@ Lista de archivos de un DNI.
 **Respuesta:**
 
 ```json
-[{ "id": 1, "documento_id": 10, "dni_asociado": "12345678", "original_name": "mi_doc.pdf", "file_hash": "uuid...", "extension": "pdf", "external_url": null, "usuario_subida": "Admin", "fecha_subida": "2024-01-15 10:30:00" }]
+[
+  {
+    "id": 1,
+    "documento_id": 10,
+    "dni_asociado": "12345678",
+    "original_name": "mi_doc.pdf",
+    "file_hash": "uuid...",
+    "extension": "pdf",
+    "external_url": null,
+    "usuario_subida": "Admin",
+    "fecha_subida": "2024-01-15 10:30:00"
+  }
+]
 ```
 
 ---
@@ -1414,7 +1569,14 @@ Lista de documentos de legajo asignados a un DNI (ingreso y salida).
 **Respuesta:**
 
 ```json
-[{ "id": 1, "sigla": "Resolución N° 123-2024-RA", "fecha": "2024-01-15", "descripcion": "Descripción" }]
+[
+  {
+    "id": 1,
+    "sigla": "Resolución N° 123-2024-RA",
+    "fecha": "2024-01-15",
+    "descripcion": "Descripción"
+  }
+]
 ```
 
 ---
@@ -1434,7 +1596,11 @@ Renombrar el `original_name` de un archivo.
 **Respuesta:**
 
 ```json
-{ "message": "Nombre actualizado correctamente", "id": 1, "original_name": "RA-123-2024.pdf" }
+{
+  "message": "Nombre actualizado correctamente",
+  "id": 1,
+  "original_name": "RA-123-2024.pdf"
+}
 ```
 
 **Errores:** `404` si el archivo no existe, `400` si el nombre está vacío.
@@ -1519,6 +1685,7 @@ Eliminar un usuario. No se puede eliminar la propia cuenta.
 Obtener un documento por su ID.
 
 **Parámetros:**
+
 - `id` (path): ID del documento.
 
 **Respuesta (Éxito):**
@@ -1603,6 +1770,7 @@ Editar un documento existente.
 Eliminar un documento por su ID.
 
 **Parámetros:**
+
 - `id` (path): ID del documento a eliminar.
 
 **Respuesta:** `"Documento eliminado correctamente"`
@@ -1622,6 +1790,7 @@ Canal de Server-Sent Events (SSE) para recibir notificaciones en tiempo real.
 - **Tipo de contenido:** `text/event-stream`
 - **Heartbeat:** Envía `: keep-alive\n\n` periódicamente cada 20s para mantener viva la conexión.
 - **Evento de notificación recibido:**
+
 ```json
 {
   "id": 1,
@@ -1650,6 +1819,7 @@ Listar las últimas notificaciones y el conteo de no leídas (ideal para cargar 
   - `limit` (opcional, entero, por defecto `30`): cantidad máxima de notificaciones a recuperar.
 
 **Respuesta:**
+
 ```json
 {
   "notificaciones": [
@@ -1683,6 +1853,7 @@ Marcar una notificación individual como leída.
   - `id` (path): ID numérico de la notificación.
 
 **Respuesta:**
+
 ```json
 {
   "status": "success",
@@ -1698,6 +1869,7 @@ Marcar una notificación individual como leída.
 Marcar todas las notificaciones pendientes como leídas.
 
 **Respuesta:**
+
 ```json
 {
   "status": "success",
@@ -1720,6 +1892,7 @@ Obtiene la lista consolidada de documentos formales de legajo asociados a un tra
   - `dni` (path): DNI del trabajador (8 dígitos).
 
 **Respuesta (Éxito 200):**
+
 ```json
 [
   {
@@ -1751,6 +1924,7 @@ Obtiene el historial consolidado de vínculos laborales de un trabajador por su 
   - `dni` (path): DNI del trabajador (8 dígitos).
 
 **Respuesta (Éxito 200):**
+
 ```json
 [
   {
@@ -1803,6 +1977,3 @@ Obtiene el historial consolidado de vínculos laborales de un trabajador por su 
   }
 ]
 ```
-
-
-

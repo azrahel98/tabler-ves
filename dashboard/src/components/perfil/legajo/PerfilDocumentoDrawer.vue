@@ -5,7 +5,7 @@ import Button from '@/components/ui/button/Button.vue'
 import {
   type DocumentoVinculoInfo,
   type PersonalArchivo,
-} from './types'
+} from '@/components/perfil/types'
 import { formatDate } from '@/utils/date'
 import {
   IconX,
@@ -13,14 +13,11 @@ import {
   IconFileCheck,
   IconFileCode,
   IconAlertCircle,
-  IconBuildingSkyscraper,
-  IconBriefcase,
   IconCalendar,
   IconTrash,
   IconEye,
   IconFileAlert,
   IconShieldCheck,
-  IconInfoCircle,
 } from '@tabler/icons-vue'
 
 interface Props {
@@ -241,40 +238,6 @@ const handleConfirmarEliminar = () => {
               </div>
             </div>
 
-            <div class="p-3.5 rounded-xl border border-border bg-card space-y-2.5">
-              <span class="text-[10px] uppercase font-semibold tracking-wider text-muted-foreground block">
-                Contexto del Vínculo Laboral
-              </span>
-              <div class="space-y-2 text-xs">
-                <div class="flex items-center justify-between gap-2">
-                  <span class="text-muted-foreground flex items-center gap-1.5 shrink-0">
-                    <IconBriefcase class="size-3.5 text-muted-foreground" /> Cargo:
-                  </span>
-                  <span class="font-medium text-foreground text-right truncate">
-                    {{ documento.vinculo.cargo }}
-                  </span>
-                </div>
-
-                <div class="flex items-center justify-between gap-2">
-                  <span class="text-muted-foreground flex items-center gap-1.5 shrink-0">
-                    <IconBuildingSkyscraper class="size-3.5 text-muted-foreground" /> Área:
-                  </span>
-                  <span class="font-medium text-foreground text-right truncate">
-                    {{ documento.vinculo.area || '-' }}
-                  </span>
-                </div>
-
-                <div class="flex items-center justify-between gap-2">
-                  <span class="text-muted-foreground flex items-center gap-1.5 shrink-0">
-                    <IconShieldCheck class="size-3.5 text-muted-foreground" /> Estado Vínculo:
-                  </span>
-                  <Badge size="xs"
-                    :variant="documento.vinculo.estado.toLowerCase() === 'activo' ? 'success' : 'secondary'">
-                    {{ documento.vinculo.estado }}
-                  </Badge>
-                </div>
-              </div>
-            </div>
 
             <div class="p-3.5 rounded-xl border border-border bg-card space-y-2.5">
               <div class="flex items-center justify-between gap-2">
@@ -317,18 +280,7 @@ const handleConfirmarEliminar = () => {
               </div>
             </div>
 
-            <div v-if="!esEvento" class="p-3 rounded-xl border border-border/80 bg-muted/20 flex items-start gap-2.5">
-              <IconInfoCircle class="size-4 text-primary shrink-0 mt-0.5" />
-              <div class="space-y-0.5">
-                <p class="font-medium text-foreground text-[11px]">
-                  Documento de solo consulta
-                </p>
-                <p class="text-[11px] text-muted-foreground leading-relaxed">
-                  Los documentos de inicio y salida forman parte del registro contractual permanente y no admiten
-                  eliminación desde este panel.
-                </p>
-              </div>
-            </div>
+
 
             <div v-if="esEvento" class="space-y-3 pt-2">
               <div v-if="!confirmandoEliminar"

@@ -1,4 +1,3 @@
-use sqlx::MySqlPool;
 use crate::common::errors::ApiError;
 use crate::dash::models::{
     Alerta70Anos, BancosReport, Cumpleaños, DataResumen, HistorialPaginado, Organigrama,
@@ -6,7 +5,7 @@ use crate::dash::models::{
 };
 use crate::dash::repo as dash_repo;
 use serde_json::{Value, json};
-
+use sqlx::MySqlPool;
 
 pub async fn cumpleaños(pool: &MySqlPool) -> Result<Vec<Cumpleaños>, ApiError> {
     dash_repo::get_cumpleanos(pool).await
@@ -63,8 +62,6 @@ pub async fn personal_activo_regimen(
     dash_repo::get_personal_activo_regimen(pool, regimen_id, regimen_nombre).await
 }
 
-
-
 pub async fn reporte_historial(
     pool: &MySqlPool,
     dni: Option<&str>,
@@ -95,7 +92,7 @@ pub async fn reporte_historial(
 pub async fn organigrama(pool: &MySqlPool) -> Result<Vec<Organigrama>, ApiError> {
     let rows = dash_repo::get_db_organi(pool).await?;
     let mut organigrama: Vec<Organigrama> = Vec::new();
-    
+
     // Nivel 0
     for row in &rows {
         if row.nivel.is_none() {
@@ -110,7 +107,7 @@ pub async fn organigrama(pool: &MySqlPool) -> Result<Vec<Organigrama>, ApiError>
             organigrama.push(org);
         }
     }
-    
+
     // Nivel 1
     for row in &rows {
         if let Some(nivel) = row.nivel {
@@ -129,7 +126,7 @@ pub async fn organigrama(pool: &MySqlPool) -> Result<Vec<Organigrama>, ApiError>
             }
         }
     }
-    
+
     // Nivel 2
     for row in &rows {
         if let Some(nivel) = row.nivel {
@@ -150,7 +147,7 @@ pub async fn organigrama(pool: &MySqlPool) -> Result<Vec<Organigrama>, ApiError>
             }
         }
     }
-    
+
     Ok(organigrama)
 }
 
@@ -177,29 +174,29 @@ pub async fn exportar_excel(pool: &MySqlPool) -> Result<Vec<u8>, ApiError> {
         .map_err(|e| ApiError::InternalError(format!("Error al nombrar hoja: {}", e)))?;
     let formato_cabecera = Format::new().set_bold();
     let cabeceras = [
-        "UNIDAD_ORGANICA",             
-        "CODIGO_PUESTO_CPE",           
-        "ESTADO",                      
-        "NUMERO_DOCUMENTO_IDENTIDAD",  
-        "APELLIDO_PATERNO",            
-        "APELLIDO_MATERNO",            
-        "NOMBRES",                     
-        "CODIGO_SEXO",                 
-        "DESC_SEXO",                   
-        "FECHA_NACIMIENTO",            
-        "FECHA_INGRESO_PERSONAL",      
-        "REGIMEN_LABORAL",             
-        "CONDICION_LABORAL",           
-        "CODIGO_GRUPO_OCUPACIONAL",    
-        "GRUPO_OCUPACIONAL",           
-        "CODIGO_CARGO_ESTRUCTURAL",    
-        "CARGO_ESTRUCTURAL",           
-        "CARGO_FUNCIONAL",             
-        "ENTIDAD_FINANCIERA",          
-        "TIPO_CUENTA_FINANCIERA",      
-        "NUMERO_CUENTA_FINANCIERA",    
-        "CODIGO_CUENTA_INTERBANCARIA", 
-        "SUELDO",                      
+        "UNIDAD_ORGANICA",
+        "CODIGO_PUESTO_CPE",
+        "ESTADO",
+        "NUMERO_DOCUMENTO_IDENTIDAD",
+        "APELLIDO_PATERNO",
+        "APELLIDO_MATERNO",
+        "NOMBRES",
+        "CODIGO_SEXO",
+        "DESC_SEXO",
+        "FECHA_NACIMIENTO",
+        "FECHA_INGRESO_PERSONAL",
+        "REGIMEN_LABORAL",
+        "CONDICION_LABORAL",
+        "CODIGO_GRUPO_OCUPACIONAL",
+        "GRUPO_OCUPACIONAL",
+        "CODIGO_CARGO_ESTRUCTURAL",
+        "CARGO_ESTRUCTURAL",
+        "CARGO_FUNCIONAL",
+        "ENTIDAD_FINANCIERA",
+        "TIPO_CUENTA_FINANCIERA",
+        "NUMERO_CUENTA_FINANCIERA",
+        "CODIGO_CUENTA_INTERBANCARIA",
+        "SUELDO",
         "SINDICATO",
     ];
     for (col, cabecera) in cabeceras.iter().enumerate() {
@@ -307,7 +304,7 @@ struct DatosMef {
     tipo_cuenta: String,
     num_cuenta: String,
     cci: String,
-    regimen: String, 
+    regimen: String,
     codigo_grupo_ocupacional: String,
     codigo_cargo_estructural: String,
 }
@@ -443,7 +440,7 @@ fn mef_parsear_hoja(
             continue;
         }
         if dict.contains_key(&dni) {
-            continue; 
+            continue;
         }
         let regimen = if let Some(ci) = col_regimen {
             let v = mef_celda_texto(&row[ci]);
@@ -478,7 +475,11 @@ fn mef_parsear_hoja(
     Ok(dict)
 }
 
-pub async fn comparar_mef(pool: &MySqlPool, bytes_cas: Vec<u8>, bytes_otros: Vec<u8>) -> Result<Value, ApiError> {
+pub async fn comparar_mef(
+    pool: &MySqlPool,
+    bytes_cas: Vec<u8>,
+    bytes_otros: Vec<u8>,
+) -> Result<Value, ApiError> {
     use calamine::{Reader, Xlsx, open_workbook_from_rs};
     use std::collections::HashMap;
     use std::io::Cursor;
@@ -540,7 +541,7 @@ pub async fn comparar_mef(pool: &MySqlPool, bytes_cas: Vec<u8>, bytes_otros: Vec
     let mut total_no_en_sistema: u64 = 0;
     let mut counter: u64 = 0;
     let mut dnis_sistema: std::collections::HashSet<String> = std::collections::HashSet::new();
-    
+
     for fila in &filas_bd {
         let dni: String = fila.get("dni");
         let apaterno: String = fila.get("apaterno");
@@ -717,11 +718,11 @@ pub fn exportar_comparacion_mef(comparaciones: &[Value]) -> Result<Vec<u8>, ApiE
         }
         hoja.set_row_height(0, 18.0)
             .map_err(|e| ApiError::InternalError(format!("Error alto fila: {}", e)))?;
-        let _ = hoja.set_column_width(2, 35); 
-        let _ = hoja.set_column_width(4, 30); 
-        let _ = hoja.set_column_width(5, 25); 
-        let _ = hoja.set_column_width(6, 25); 
-        let _ = hoja.set_column_width(7, 22); 
+        let _ = hoja.set_column_width(2, 35);
+        let _ = hoja.set_column_width(4, 30);
+        let _ = hoja.set_column_width(5, 25);
+        let _ = hoja.set_column_width(6, 25);
+        let _ = hoja.set_column_width(7, 22);
         let mut fila_excel = 1u32;
         for comp in comparaciones.iter() {
             let resultado = comp["resultado"].as_str().unwrap_or("");
@@ -791,10 +792,6 @@ pub fn exportar_comparacion_mef(comparaciones: &[Value]) -> Result<Vec<u8>, ApiE
         .map_err(|e| ApiError::InternalError(format!("Error al generar Excel: {}", e)))
 }
 
-pub async fn alerta_70_anos(
-    pool: &MySqlPool,
-    edad_min: Option<i32>,
-) -> Result<Vec<Alerta70Anos>, ApiError> {
-    dash_repo::get_alerta_70_anos(pool, edad_min).await
+pub async fn alerta_70_anos(pool: &MySqlPool) -> Result<Vec<Alerta70Anos>, ApiError> {
+    dash_repo::get_alerta_70_anos(pool).await
 }
-

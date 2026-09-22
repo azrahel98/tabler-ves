@@ -42,24 +42,15 @@ const toggleCollapse = () => {
 </script>
 
 <template>
-  <div class="h-screen overflow-hidden bg-background-1 text-foreground flex">
-    <Sidebar
-      :is-open="isSidebarOpen"
-      :is-collapsed="isSidebarCollapsed"
-      @close="isSidebarOpen = false"
-      @toggle-collapse="toggleCollapse"
-    />
+  <div class="min-h-screen bg-background-1 text-foreground flex">
+    <Sidebar :is-open="isSidebarOpen" :is-collapsed="isSidebarCollapsed" @close="isSidebarOpen = false"
+      @toggle-collapse="toggleCollapse" />
 
-    <div
-      class="flex-1 flex flex-col min-w-0 min-h-0 transition-all duration-300 ease-in-out"
-      :class="isSidebarCollapsed ? 'lg:ps-20' : 'lg:ps-64'"
-    >
-      <Navbar
-        @toggle-sidebar="isSidebarOpen = !isSidebarOpen"
-        @toggle-collapse="toggleCollapse"
-      />
+    <div class="flex-1 flex flex-col min-w-0 min-h-screen transition-all duration-300 ease-in-out"
+      :class="isSidebarCollapsed ? 'lg:ps-20' : 'lg:ps-64'">
+      <Navbar @toggle-sidebar="isSidebarOpen = !isSidebarOpen" @toggle-collapse="toggleCollapse" />
 
-      <main class="flex-1 min-h-0 overflow-y-auto p-3 sm:p-4 2xl:p-6 max-w-7xl w-full mx-auto">
+      <main class="flex-1 p-3 pb-6 sm:p-4 sm:pb-8 2xl:p-6 2xl:pb-10 max-w-7xl w-full mx-auto">
         <router-view />
       </main>
     </div>

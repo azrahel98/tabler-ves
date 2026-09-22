@@ -202,7 +202,7 @@ onUnmounted(() => {
             @click="handleSelect(item.dni)">
             <div class="flex items-center gap-2.5 min-w-0 flex-1">
               <div
-                class="size-9 rounded-lg bg-primary/10 border border-primary/20 text-primary flex items-center justify-center shrink-0 text-xs font-bold overflow-hidden shadow-2xs">
+                class="size-9 rounded-full bg-primary/10 border border-primary/20 text-primary flex items-center justify-center shrink-0 text-xs font-bold overflow-hidden shadow-2xs">
                 <img v-auth-src="getPersonalAvatarUrl(item.dni)" :alt="item.nombre" class="size-full object-cover"
                   @error="($event.target as HTMLElement).style.display = 'none'" />
 
@@ -219,15 +219,14 @@ onUnmounted(() => {
             </div>
 
             <div class="flex items-center gap-2 shrink-0">
-              <Badge :variant="item.estado.toLowerCase() === 'activo' ? 'success' : 'secondary'" size="xs"
-                class="gap-1.5">
-                <span v-if="item.estado.toLowerCase() === 'activo'" class="relative flex size-1.5 shrink-0">
+              <Badge v-if="item.estado.toLowerCase() === 'activo'"
+                :variant="item.estado.toLowerCase() === 'activo' ? 'success' : 'secondary'" size="xs" class="gap-1.5">
+                <span class="relative flex size-1.5 shrink-0">
                   <span
                     class="absolute inline-flex size-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
                   <span class="relative inline-flex size-1.5 rounded-full bg-emerald-500"></span>
                 </span>
-                <span v-else class="inline-flex size-1.5 rounded-full bg-muted-foreground/50 shrink-0"></span>
-                {{ item.estado }}
+
               </Badge>
               <IconChevronRight class="size-3.5 text-muted-foreground" />
             </div>

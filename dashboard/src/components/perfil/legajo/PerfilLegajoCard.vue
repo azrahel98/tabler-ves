@@ -4,7 +4,7 @@ import { format } from 'date-fns'
 import Card from '@/components/ui/card/Card.vue'
 import Badge from '@/components/ui/badge/Badge.vue'
 import Button from '@/components/ui/button/Button.vue'
-import { type PersonalArchivo, type PersonalDocumento } from './types'
+import { type PersonalArchivo, type PersonalDocumento } from '@/components/perfil/types'
 import { getApiBaseUrl } from '@/services/api'
 import { parseDateSafe, formatDate } from '@/utils/date'
 import {
@@ -255,8 +255,7 @@ const filteredAndSortedArchivos = computed(() => {
                         </button>
                         <button type="button"
                           class="opacity-0 group-hover:opacity-100 transition p-0.5 text-muted-foreground hover:text-destructive rounded hover:bg-destructive/10 cursor-pointer"
-                          title="Eliminar archivo del legajo"
-                          @click="emit('eliminarArchivo', archivo)">
+                          title="Eliminar archivo del legajo" @click="emit('eliminarArchivo', archivo)">
                           <IconTrash class="size-3" />
                         </button>
                       </div>
@@ -297,8 +296,7 @@ const filteredAndSortedArchivos = computed(() => {
                 </button>
                 <button type="button"
                   class="p-1 rounded-md border border-border text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition cursor-pointer"
-                  title="Eliminar archivo del legajo"
-                  @click="emit('eliminarArchivo', archivo)">
+                  title="Eliminar archivo del legajo" @click="emit('eliminarArchivo', archivo)">
                   <IconTrash class="size-3" />
                 </button>
               </div>
@@ -374,7 +372,7 @@ const filteredAndSortedArchivos = computed(() => {
                   <span class="font-semibold text-foreground text-[11px] block">{{ doc.sigla }}</span>
                 </td>
                 <td class="px-3 sm:px-4 py-2.5 min-w-0 align-top">
-                  <p class="text-[11px] text-muted-foreground leading-relaxed">{{ doc.descripcion }}</p>
+                  <p class="text-[10px] text-muted-foreground leading-relaxed">{{ doc.descripcion }}</p>
                 </td>
                 <td class="px-3 sm:px-4 py-2.5 font-mono text-[11px] text-muted-foreground whitespace-nowrap align-top">
                   {{ formatDate(doc.fecha) }}

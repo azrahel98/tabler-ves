@@ -25,15 +25,17 @@ const hasChildren = computed(() => {
   return Array.isArray(props.node.subgerencias) && props.node.subgerencias.length > 0
 })
 
+const normalizedQuery = computed(() => {
+  const q = props.searchQuery?.trim()
+  if (!q) return ''
+  return q.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase()
+})
+
 const isSearchMatch = (text?: string | null, jefe?: string | null, dni?: string | null): boolean => {
-  if (!props.searchQuery.trim()) return false
-  const q = props.searchQuery
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .toUpperCase()
-    .trim()
-  const normalize = (val?: string | null) => (val || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase()
-  return normalize(text).includes(q) || normalize(jefe).includes(q) || normalize(dni).includes(q)
+  const q = normalizedQuery.value
+  if (!q) return false
+  const norm = (val?: string | null) => (val || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase()
+  return norm(text).includes(q) || norm(jefe).includes(q) || norm(dni).includes(q)
 }
 
 const childVariant = computed(() => {

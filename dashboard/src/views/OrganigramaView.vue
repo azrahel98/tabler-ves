@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import Button from '@/components/ui/button/Button.vue'
 import OrganigramaCard, { type CardNodeData } from '@/components/organigrama/OrganigramaCard.vue'
@@ -13,7 +13,6 @@ import {
   IconSearch,
   IconRefresh,
   IconExternalLink,
-  IconUsers,
   IconAlertCircle,
   IconZoomIn,
   IconZoomOut,
@@ -22,6 +21,7 @@ import {
   IconX,
   IconChevronDown,
   IconChevronUp,
+  IconFocus2,
 } from '@tabler/icons-vue'
 
 const router = useRouter()
@@ -34,10 +34,19 @@ const selectedGerenciaId = ref<number | 'all'>('all')
 const zoomLevel = ref<number>(1)
 const isFullscreen = ref<boolean>(false)
 const organigramaContainer = ref<HTMLElement | null>(null)
+const organigramaScrollArea = ref<HTMLElement | null>(null)
 const organigramaContent = ref<HTMLElement | null>(null)
 const selectedNodeDetail = ref<CardNodeData | null>(null)
 const areAllExpanded = ref<boolean>(false)
 const expandedNodes = ref<Record<string | number, boolean>>({})
+
+const isPanning = ref<boolean>(false)
+const panStartX = ref<number>(0)
+const panStartY = ref<number>(0)
+const panStartScrollLeft = ref<number>(0)
+const panStartScrollTop = ref<number>(0)
+
+let resizeObserver: ResizeObserver | null = null
 
 const loadData = async () => {
   isLoading.value = true
@@ -45,19 +54,46 @@ const loadData = async () => {
   try {
     const data = await api<CardNodeData[]>('/api/dash/organigrama')
     organigramaRaw.value = Array.isArray(data) ? data : []
-    setTimeout(() => {
-      fitToScreen()
-    }, 150)
   } catch (err: unknown) {
     organigramaRaw.value = []
     errorMessage.value = err instanceof Error ? err.message : 'Error al cargar la estructura del organigrama.'
   } finally {
     isLoading.value = false
+    nextTick(() => {
+      setTimeout(() => {
+        fitToScreen()
+      }, 80)
+    })
   }
+}
+
+let rafId: number | null = null
+
+const debouncedFitToScreen = () => {
+  if (rafId !== null) cancelAnimationFrame(rafId)
+  rafId = requestAnimationFrame(() => {
+    fitToScreen()
+    rafId = null
+  })
 }
 
 onMounted(() => {
   loadData()
+  window.addEventListener('resize', debouncedFitToScreen)
+  if (typeof ResizeObserver !== 'undefined') {
+    resizeObserver = new ResizeObserver(() => {
+      debouncedFitToScreen()
+    })
+    watch(organigramaContainer, (el) => {
+      if (el) resizeObserver?.observe(el)
+    }, { immediate: true })
+  }
+})
+
+onUnmounted(() => {
+  window.removeEventListener('resize', debouncedFitToScreen)
+  if (rafId !== null) cancelAnimationFrame(rafId)
+  resizeObserver?.disconnect()
 })
 
 const normalize = (text?: string | null): string => {
@@ -68,44 +104,6 @@ const normalize = (text?: string | null): string => {
     .toUpperCase()
     .trim()
 }
-
-const countSubgerenciasRecursive = (items?: CardNodeData[]): number => {
-  if (!items || items.length === 0) return 0
-  let count = items.length
-  for (const item of items) {
-    if (item.subgerencias && item.subgerencias.length > 0) {
-      count += countSubgerenciasRecursive(item.subgerencias)
-    }
-  }
-  return count
-}
-
-const countJefesRecursive = (items?: CardNodeData[]): number => {
-  if (!items || items.length === 0) return 0
-  let count = 0
-  for (const item of items) {
-    if (item.jefe) count++
-    if (item.subgerencias && item.subgerencias.length > 0) {
-      count += countJefesRecursive(item.subgerencias)
-    }
-  }
-  return count
-}
-
-const totalAreas = computed(() => {
-  let count = 0
-  const countNodes = (nodes: CardNodeData[]) => {
-    for (const n of nodes) {
-      count++
-      if (n.subgerencias) countNodes(n.subgerencias)
-    }
-  }
-  countNodes(organigramaRaw.value)
-  return count
-})
-
-const totalSubgerencias = computed(() => countSubgerenciasRecursive(organigramaRaw.value))
-const totalJefaturas = computed(() => countJefesRecursive(organigramaRaw.value))
 
 const findInTree = (nodes: CardNodeData[], predicate: (n: CardNodeData) => boolean): CardNodeData | null => {
   for (const n of nodes) {
@@ -217,25 +215,67 @@ const displayedGerenciasLinea = computed<CardNodeData[]>(() => {
   return gerenciasLineaNodes.value
 })
 
+const normalizedSearchQuery = computed(() => normalize(searchQuery.value))
+
 const isSearchMatch = (text?: string | null, jefe?: string | null, dni?: string | null): boolean => {
-  if (!searchQuery.value.trim()) return false
-  const q = normalize(searchQuery.value)
+  const q = normalizedSearchQuery.value
+  if (!q) return false
   const matchArea = normalize(text).includes(q)
   const matchJefe = normalize(jefe).includes(q)
   const matchDni = normalize(dni).includes(q)
   return matchArea || matchJefe || matchDni
 }
 
+const centerScroll = (smooth = true) => {
+  nextTick(() => {
+    if (!organigramaScrollArea.value) return
+    const el = organigramaScrollArea.value
+    const targetLeft = Math.max(0, (el.scrollWidth - el.clientWidth) / 2)
+    const targetTop = Math.max(0, (el.scrollHeight - el.clientHeight) / 2)
+    el.scrollTo({
+      left: targetLeft,
+      top: targetTop,
+      behavior: smooth ? 'smooth' : 'instant',
+    })
+  })
+}
+
+const onPanStart = (e: MouseEvent) => {
+  if ((e.target as HTMLElement)?.closest('button, a, input, select, [role="button"]')) return
+  isPanning.value = true
+  panStartX.value = e.pageX
+  panStartY.value = e.pageY
+  if (organigramaScrollArea.value) {
+    panStartScrollLeft.value = organigramaScrollArea.value.scrollLeft
+    panStartScrollTop.value = organigramaScrollArea.value.scrollTop
+  }
+}
+
+const onPanMove = (e: MouseEvent) => {
+  if (!isPanning.value || !organigramaScrollArea.value) return
+  const dx = e.pageX - panStartX.value
+  const dy = e.pageY - panStartY.value
+  organigramaScrollArea.value.scrollLeft = panStartScrollLeft.value - dx
+  organigramaScrollArea.value.scrollTop = panStartScrollTop.value - dy
+}
+
+const onPanEnd = () => {
+  isPanning.value = false
+}
+
 const zoomIn = () => {
-  zoomLevel.value = Math.min(1.4, Number((zoomLevel.value + 0.1).toFixed(1)))
+  zoomLevel.value = Math.min(1.4, Number((zoomLevel.value + 0.1).toFixed(2)))
+  centerScroll(true)
 }
 
 const zoomOut = () => {
-  zoomLevel.value = Math.max(0.4, Number((zoomLevel.value - 0.1).toFixed(1)))
+  zoomLevel.value = Math.max(0.3, Number((zoomLevel.value - 0.1).toFixed(2)))
+  centerScroll(true)
 }
 
 const resetZoom = () => {
   zoomLevel.value = 1
+  centerScroll(true)
 }
 
 const toggleFullscreen = () => {
@@ -243,10 +283,20 @@ const toggleFullscreen = () => {
   if (!document.fullscreenElement) {
     organigramaContainer.value.requestFullscreen().then(() => {
       isFullscreen.value = true
+      nextTick(() => {
+        setTimeout(() => {
+          fitToScreen()
+        }, 120)
+      })
     }).catch(() => { })
   } else {
     document.exitFullscreen().then(() => {
       isFullscreen.value = false
+      nextTick(() => {
+        setTimeout(() => {
+          fitToScreen()
+        }, 120)
+      })
     }).catch(() => { })
   }
 }
@@ -300,34 +350,57 @@ const toggleNodeExpansion = (nodeId: number | string | undefined) => {
     const current = !!expandedNodes.value[nodeId]
     expandedNodes.value = { ...expandedNodes.value, [nodeId]: !current }
   }
+  nextTick(() => {
+    fitToScreen()
+  })
 }
 
 const toggleAllNodes = () => {
   areAllExpanded.value = !areAllExpanded.value
   expandedNodes.value = {}
+  nextTick(() => {
+    fitToScreen()
+  })
 }
 
 const fitToScreen = () => {
-  if (!organigramaContainer.value || !organigramaContent.value) return
-  const containerWidth = organigramaContainer.value.clientWidth - 48
-  const containerHeight = organigramaContainer.value.clientHeight - 48
-  const contentWidth = organigramaContent.value.scrollWidth || organigramaContent.value.offsetWidth
-  const contentHeight = organigramaContent.value.scrollHeight || organigramaContent.value.offsetHeight
-  if (contentWidth > 0 && contentHeight > 0) {
-    const scaleX = containerWidth / contentWidth
-    const scaleY = containerHeight / contentHeight
-    const scale = Math.min(scaleX, scaleY, 1)
-    zoomLevel.value = Math.max(0.35, Math.min(1.05, Number(scale.toFixed(2))))
-  }
+  if (!organigramaScrollArea.value || !organigramaContent.value) return
+  const area = organigramaScrollArea.value
+  const content = organigramaContent.value
+
+  const paddingX = window.innerWidth < 640 ? 32 : 64
+  const paddingY = window.innerWidth < 640 ? 32 : 64
+  const containerWidth = Math.max(200, area.clientWidth - paddingX)
+  const containerHeight = Math.max(200, area.clientHeight - paddingY)
+
+  const currentZoom = zoomLevel.value || 1
+  const rect = content.getBoundingClientRect()
+  const contentWidth = (rect.width / currentZoom) || 1
+  const contentHeight = (rect.height / currentZoom) || 1
+
+  const isMobile = window.innerWidth < 768
+  const isTablet = window.innerWidth >= 768 && window.innerWidth < 1024
+  const scaleX = containerWidth / contentWidth
+  const scaleY = containerHeight / contentHeight
+  const rawScale = Math.min(scaleX, scaleY, 1)
+
+  const minScale = isMobile ? 0.6 : isTablet ? 0.5 : 0.45
+  const calculatedScale = Math.max(minScale, Math.min(1.05, Number(rawScale.toFixed(2))))
+
+  zoomLevel.value = calculatedScale
+
+  centerScroll(false)
 }
 
 watch(selectedGerenciaId, (val) => {
   if (val !== 'all') {
     expandedNodes.value = { ...expandedNodes.value, [val]: true }
   }
-  setTimeout(() => {
-    fitToScreen()
-  }, 100)
+  nextTick(() => {
+    setTimeout(() => {
+      fitToScreen()
+    }, 50)
+  })
 })
 
 const goToPerfil = (dni?: string | null) => {
@@ -345,67 +418,11 @@ const closeNodeDetail = () => {
 </script>
 
 <template>
-  <div class="space-y-6 pb-20">
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-      <div class="flex items-center gap-3">
-        <div
-          class="size-10 rounded-xl bg-primary/10 text-primary border border-primary/20 flex items-center justify-center shadow-xs">
-          <IconSitemap class="size-5" :stroke-width="2" />
-        </div>
-        <div>
-          <h1 class="text-xl font-bold tracking-tight text-foreground">
-            Organigrama Institucional
-          </h1>
-          <p class="text-xs text-muted-foreground">
-            Gerencia Municipal, dependencias y subgerencias a su cargo
-          </p>
-        </div>
-      </div>
+  <div class="space-y-6 pb-0">
 
-      <div class="flex items-center gap-2">
-        <Button variant="outline" size="sm" :disabled="isLoading" @click="loadData">
-          <IconRefresh class="size-4" :class="isLoading ? 'animate-spin' : ''" />
-          <span class="hidden sm:inline">Actualizar</span>
-        </Button>
-      </div>
-    </div>
 
-    <div
-      class="grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-border rounded-2xl border border-border bg-card shadow-2xs overflow-hidden">
-      <div class="p-4 sm:p-5 flex items-center gap-4">
-        <div class="size-11 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
-          <IconBuildingSkyscraper class="size-5" />
-        </div>
-        <div>
-          <p class="text-xs font-medium text-muted-foreground">Áreas y Dependencias</p>
-          <p class="text-xl font-bold text-foreground font-mono mt-0.5">{{ totalAreas }}</p>
-        </div>
-      </div>
 
-      <div class="p-4 sm:p-5 flex items-center gap-4">
-        <div
-          class="size-11 rounded-xl bg-sky-500/10 text-sky-600 dark:text-sky-400 flex items-center justify-center shrink-0">
-          <IconUsers class="size-5" />
-        </div>
-        <div>
-          <p class="text-xs font-medium text-muted-foreground">Subgerencias a Cargo</p>
-          <p class="text-xl font-bold text-foreground font-mono mt-0.5">{{ totalSubgerencias }}</p>
-        </div>
-      </div>
-
-      <div class="p-4 sm:p-5 flex items-center gap-4">
-        <div
-          class="size-11 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
-          <IconUser class="size-5" />
-        </div>
-        <div>
-          <p class="text-xs font-medium text-muted-foreground">Jefaturas Titulares</p>
-          <p class="text-xl font-bold text-foreground font-mono mt-0.5">{{ totalJefaturas }}</p>
-        </div>
-      </div>
-    </div>
-
-    <div class="p-3.5 sm:p-4 rounded-2xl border border-border bg-card shadow-2xs space-y-3">
+    <div class="p-3.5 pb-0 sm:p-4 rounded-2xl border border-border bg-card shadow-2xs space-y-3">
       <div class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3">
         <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 ">
           <div class="relative w-full sm:w-80">
@@ -434,6 +451,12 @@ const closeNodeDetail = () => {
           <Button variant="outline" size="xs" title="Ajustar escala para ver el organigrama completo en la pantalla"
             @click="fitToScreen">
             <span>Ajustar vista</span>
+          </Button>
+
+          <Button variant="outline" size="xs" title="Centrar organigrama en el visor"
+            @click="centerScroll(true)">
+            <IconFocus2 class="size-3.5" />
+            <span class="hidden sm:inline">Centrar</span>
           </Button>
 
           <div class="flex items-center gap-1 bg-muted/30 p-1 rounded-xl border border-border">
@@ -498,7 +521,7 @@ const closeNodeDetail = () => {
 
     <div v-else ref="organigramaContainer"
       class="relative w-full rounded-2xl border border-border bg-card shadow-2xs overflow-hidden flex flex-col"
-      :class="isFullscreen ? 'fixed inset-0 z-50 rounded-none border-0 h-screen w-screen' : 'h-160 lg:h-180 max-h-[82vh]'">
+      :class="isFullscreen ? 'fixed inset-0 z-50 rounded-none border-0 h-screen w-screen' : 'h-[68vh] sm:h-[74vh] min-h-[500px] max-h-[820px]'">
       <div v-if="isFullscreen"
         class="absolute top-4 inset-x-4 z-30 flex items-center justify-between p-3 rounded-xl bg-background/90 backdrop-blur-md border border-border shadow-md">
         <div class="flex items-center gap-2">
@@ -513,6 +536,10 @@ const closeNodeDetail = () => {
           </Button>
           <Button variant="outline" size="xs" @click="fitToScreen">
             <span>Ajustar vista</span>
+          </Button>
+          <Button variant="outline" size="xs" @click="centerScroll(true)">
+            <IconFocus2 class="size-3" />
+            <span>Centrar</span>
           </Button>
           <Button variant="outline" size="xs" @click="zoomOut">
             <IconZoomOut class="size-3.5" />
@@ -533,12 +560,22 @@ const closeNodeDetail = () => {
         </div>
       </div>
 
-      <div class="w-full h-full p-4 sm:p-8 overflow-auto transition-all flex flex-col items-center"
-        :class="isFullscreen ? 'pt-24' : ''"
-        style="background-image: radial-gradient(var(--color-border) 1px, transparent 1px); background-size: 24px 24px;">
-        <div ref="organigramaContent"
-          class="transition-transform duration-150 origin-top flex flex-col items-center pb-16 m-auto"
-          :style="{ transform: `scale(${zoomLevel})` }">
+      <div ref="organigramaScrollArea"
+        class="w-full h-full overflow-auto p-4 sm:p-8 flex select-none transition-colors"
+        :class="[
+          isFullscreen ? 'pt-24' : '',
+          isPanning ? 'cursor-grabbing' : 'cursor-grab'
+        ]"
+        style="background-image: radial-gradient(var(--color-border) 1px, transparent 1px); background-size: 24px 24px;"
+        @mousedown="onPanStart"
+        @mousemove="onPanMove"
+        @mouseup="onPanEnd"
+        @mouseleave="onPanEnd"
+        @dblclick="centerScroll(true)">
+        <div class="m-auto flex flex-col items-center min-w-max pb-8">
+          <div ref="organigramaContent"
+            class="transition-transform duration-150 origin-top flex flex-col items-center pb-6"
+            :style="{ zoom: zoomLevel }">
           <div class="flex flex-col items-center">
             <span
               class="text-[9px] font-bold uppercase tracking-wider text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-950/70 px-2.5 py-0.5 rounded-full border border-blue-200 dark:border-blue-800 shadow-2xs mb-1">
@@ -551,7 +588,7 @@ const closeNodeDetail = () => {
 
             <div v-if="gerenciaMunicipalNode && topLeaderNode && gerenciaMunicipalNode.id !== topLeaderNode.id"
               class="flex flex-col items-center">
-              <div class="w-0.5 h-6 bg-border"></div>
+              <div class="w-0.5 h-3 bg-border"></div>
               <OrganigramaCard :node="gerenciaMunicipalNode" variant="blue"
                 :is-highlighted="isSearchMatch(gerenciaMunicipalNode.area, gerenciaMunicipalNode.jefe, gerenciaMunicipalNode.dni)"
                 @select="openNodeDetail" @profile="goToPerfil" />
@@ -559,22 +596,22 @@ const closeNodeDetail = () => {
           </div>
 
           <div v-if="allStaffNodes.length > 0" class="flex flex-col items-center w-full mt-0">
-            <div class="w-0.5 h-6 bg-border"></div>
+            <div class="w-0.5 h-3.5 bg-border"></div>
             <span
               class="text-[9px] font-bold uppercase tracking-wider text-muted-foreground bg-muted/80 px-2.5 py-0.5 rounded-full border border-border shadow-2xs">
               Órganos de Asesoramiento, Apoyo y Control
             </span>
-            <div class="w-0.5 h-4 bg-border"></div>
+            <div class="w-0.5 h-2.5 bg-border"></div>
 
             <div class="relative flex justify-center items-start flex-nowrap">
               <div v-for="(item, idx) in allStaffNodes" :key="item.node.id || idx"
-                class="relative flex flex-col items-center px-2 sm:px-3 shrink-0">
+                class="relative flex flex-col items-center px-1.5 sm:px-2 shrink-0">
                 <div v-if="allStaffNodes.length > 1" class="absolute top-0 h-0.5 bg-border" :class="[
                   idx === 0 ? 'left-1/2 right-0' : '',
                   idx === allStaffNodes.length - 1 ? 'left-0 right-1/2' : '',
                   idx > 0 && idx < allStaffNodes.length - 1 ? 'left-0 right-0' : ''
                 ]"></div>
-                <div class="w-0.5 h-4 bg-border"></div>
+                <div class="w-0.5 h-2.5 bg-border"></div>
 
                 <div class="flex flex-col items-center">
                   <span class="text-[8px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md border mb-1"
@@ -600,7 +637,7 @@ const closeNodeDetail = () => {
                   <div
                     v-if="item.node.subgerencias && item.node.subgerencias.length > 0 && isNodeExpanded(item.node.id)"
                     class="w-full mt-1">
-                    <div class="w-0.5 h-3 bg-border mx-auto"></div>
+                    <div class="w-0.5 h-2 bg-border mx-auto"></div>
                     <div class="flex flex-col items-center w-full space-y-1.5">
                       <OrganigramaBranch v-for="sub in item.node.subgerencias" :key="sub.id" :node="sub"
                         :search-query="searchQuery" :variant="item.variant" @select="openNodeDetail"
@@ -613,22 +650,22 @@ const closeNodeDetail = () => {
           </div>
 
           <div v-if="displayedGerenciasLinea.length > 0" class="flex flex-col items-center w-full mt-0">
-            <div class="w-0.5 h-6 bg-border"></div>
+            <div class="w-0.5 h-3.5 bg-border"></div>
             <span
               class="text-[9px] font-bold uppercase tracking-wider text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/70 px-2.5 py-0.5 rounded-full border border-amber-200 dark:border-amber-800 shadow-2xs">
               Órganos de Línea
             </span>
-            <div class="w-0.5 h-4 bg-border"></div>
+            <div class="w-0.5 h-2.5 bg-border"></div>
 
             <div class="relative flex justify-center items-start flex-nowrap">
               <div v-for="(gerencia, idx) in displayedGerenciasLinea" :key="gerencia.id || idx"
-                class="relative flex flex-col items-center px-2 sm:px-3 shrink-0">
+                class="relative flex flex-col items-center px-1.5 sm:px-2 shrink-0">
                 <div v-if="displayedGerenciasLinea.length > 1" class="absolute top-0 h-0.5 bg-border" :class="[
                   idx === 0 ? 'left-1/2 right-0' : '',
                   idx === displayedGerenciasLinea.length - 1 ? 'left-0 right-1/2' : '',
                   idx > 0 && idx < displayedGerenciasLinea.length - 1 ? 'left-0 right-0' : ''
                 ]"></div>
-                <div class="w-0.5 h-4 bg-border"></div>
+                <div class="w-0.5 h-2.5 bg-border"></div>
 
                 <div class="flex flex-col items-center">
                   <OrganigramaCard :node="gerencia" variant="orange" compact
@@ -654,7 +691,7 @@ const closeNodeDetail = () => {
 
                   <div v-if="gerencia.subgerencias && gerencia.subgerencias.length > 0 && isNodeExpanded(gerencia.id)"
                     class="w-full mt-1">
-                    <div class="w-0.5 h-3 bg-border mx-auto"></div>
+                    <div class="w-0.5 h-2 bg-border mx-auto"></div>
                     <div class="flex flex-col items-center w-full space-y-1.5">
                       <OrganigramaBranch v-for="sub in gerencia.subgerencias" :key="sub.id" :node="sub"
                         :search-query="searchQuery" variant="orange-sub" @select="openNodeDetail"
@@ -668,6 +705,7 @@ const closeNodeDetail = () => {
         </div>
       </div>
     </div>
+  </div>
 
     <div v-if="selectedNodeDetail"
       class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-xs"

@@ -34,12 +34,6 @@ pub struct RegimenQuery {
     pub regimen: Option<String>,
 }
 
-#[derive(Deserialize)]
-pub struct Alerta70Query {
-    pub edad_min: Option<i32>,
-}
-
-
 #[get("/cumpleanos")]
 pub async fn cumpleanos(pool: web::Data<MySqlPool>) -> Result<HttpResponse, ApiError> {
     let list = dash_service::cumpleaños(&pool).await?;
@@ -104,16 +98,11 @@ pub async fn personal_activo_regimen(
     pool: web::Data<MySqlPool>,
     query: web::Query<RegimenQuery>,
 ) -> Result<HttpResponse, ApiError> {
-    let result = dash_service::personal_activo_regimen(
-        &pool,
-        query.regimen_id,
-        query.regimen.as_deref(),
-    )
-    .await?;
+    let result =
+        dash_service::personal_activo_regimen(&pool, query.regimen_id, query.regimen.as_deref())
+            .await?;
     Ok(HttpResponse::Ok().json(result))
 }
-
-
 
 #[get("/historial")]
 pub async fn reporte_historial(
@@ -121,14 +110,9 @@ pub async fn reporte_historial(
     query: web::Query<HistorialQuery>,
 ) -> Result<HttpResponse, ApiError> {
     let dni_filter = query.dni.as_deref().filter(|d| !d.trim().is_empty());
-    let result = dash_service::reporte_historial(
-        &pool,
-        dni_filter,
-        query.page,
-        query.limit,
-        query.offset,
-    )
-    .await?;
+    let result =
+        dash_service::reporte_historial(&pool, dni_filter, query.page, query.limit, query.offset)
+            .await?;
     Ok(HttpResponse::Ok().json(result))
 }
 
@@ -249,11 +233,7 @@ pub async fn generar_mef(payload: web::Json<serde_json::Value>) -> Result<HttpRe
 }
 
 #[get("/alerta_70")]
-pub async fn alerta_70_anos(
-    pool: web::Data<MySqlPool>,
-    query: web::Query<Alerta70Query>,
-) -> Result<HttpResponse, ApiError> {
-    let result = dash_service::alerta_70_anos(&pool, query.edad_min).await?;
+pub async fn alerta_70_anos(pool: web::Data<MySqlPool>) -> Result<HttpResponse, ApiError> {
+    let result = dash_service::alerta_70_anos(&pool).await?;
     Ok(HttpResponse::Ok().json(result))
 }
-

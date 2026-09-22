@@ -59,11 +59,14 @@ const irANuevoTrabajador = () => {
 </script>
 
 <template>
-  <div v-if="isOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-neutral-900/60 backdrop-blur-xs"
-    @click.self="emit('close')">
+  <div v-if="isOpen" role="dialog" aria-modal="true" aria-labelledby="modal-search-title"
+    tabindex="-1"
+    class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-neutral-900/60 backdrop-blur-xs focus:outline-hidden"
+    @click.self="emit('close')"
+    @keydown.esc="emit('close')">
     <div class="w-full max-w-lg bg-card border border-border rounded-2xl shadow-xl overflow-hidden text-xs">
       <div class="p-4 border-b border-border flex items-center justify-between">
-        <h3 class="font-bold text-foreground text-sm flex items-center gap-2">
+        <h3 id="modal-search-title" class="font-bold text-foreground text-sm flex items-center gap-2">
           <IconSearch class="size-4 text-primary" />
           <span>Buscar Servidor Público</span>
         </h3>

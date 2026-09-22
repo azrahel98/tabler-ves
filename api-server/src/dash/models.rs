@@ -84,22 +84,25 @@ pub struct TipoDocumentoItem {
 
 pub type ReporteDocumento = TipoDocumentoItem;
 
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq, Eq)]
+pub enum Alertas {
+    Atiempo,
+    AlLimite,
+    Diciembre,
+    Excepcional,
+    Excedido,
+}
+
 #[derive(Debug, Deserialize, Serialize, Clone, sqlx::FromRow)]
 pub struct Alerta70Anos {
     pub dni: String,
     pub nombre: Option<String>,
     pub nacimiento: NaiveDate,
     pub edad_actual: i64,
-    pub fecha_70_anos: NaiveDate,
-    pub fecha_limite_mes: NaiveDate,
-    pub fecha_extension_fin_ano: NaiveDate,
-    pub dias_para_70: i64,
-    pub dias_para_cese_mes: i64,
-    pub dias_para_cese_extension: i64,
-    pub estado_alerta: String,
     pub area: String,
     pub cargo: String,
     pub regimen: Option<String>,
     pub plaza: Option<String>,
     pub avatar: Option<String>,
+    pub estado: Option<Alertas>,
 }

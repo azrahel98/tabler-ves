@@ -351,29 +351,20 @@ pub async fn registrar_trabajador(
     let doc_id = doc_result.last_insert_id();
     sqlx::query(
         r#"
-        INSERT INTO vinculo (dni, doc_ingreso_id, area_id, cargo_id, plaza_id, sueldo, estado,regimen)
-        VALUES (?, ?, ?, ?, ?, ?, 'activo',?)
+        INSERT INTO vinculo (dni, doc_ingreso_id, area_id, cargo_id, sueldo, estado,regimen)
+        VALUES (?, ?, ?, ?, ?, 'activo',?)
         "#,
     )
     .bind(&body.personal.dni)
     .bind(doc_id)
     .bind(body.area)
     .bind(body.cargo)
-    .bind(&body.airshp)
     .bind(body.sueldo)
     .bind(body.regimen)
     .execute(&mut *tx)
     .await
     .map_err(|e| ApiError::InternalError(format!("Insert Vinculo error: {}", e)))?;
-    sqlx::query(
-        r#"
-        UPDATE plaza SET estado = 'ocupado' WHERE codigo = ?
-        "#,
-    )
-    .bind(&body.airshp)
-    .execute(&mut *tx)
-    .await
-    .map_err(|e| ApiError::InternalError(format!("Update Plaza error: {}", e)))?;
+
     tx.commit().await?;
     let _ = registrar_historial(
         &req,
@@ -799,7 +790,12 @@ pub async fn upsert_evento_vinculo(
                 .bind(vinculo_id_actual)
                 .execute(&mut *tx)
                 .await
-                .map_err(|e| ApiError::InternalError(format!("Error al inactivar vínculo por destitución: {}", e)))?;
+                .map_err(|e| {
+                    ApiError::InternalError(format!(
+                        "Error al inactivar vínculo por destitución: {}",
+                        e
+                    ))
+                })?;
 
             let _ = sqlx::query("DELETE FROM vinculo_sindicato WHERE vinculo_id = ?")
                 .bind(vinculo_id_actual)
@@ -824,17 +820,22 @@ pub async fn upsert_evento_vinculo(
                 .execute(&mut *tx)
                 .await
                 .map_err(|e| {
-                    ApiError::InternalError(format!("Error al reactivar el vínculo tras destaque: {}", e))
+                    ApiError::InternalError(format!(
+                        "Error al reactivar el vínculo tras destaque: {}",
+                        e
+                    ))
                 })?;
         } else {
             // Para otros eventos (rotación, encargo_puesto, encargo_funciones)
-            sqlx::query("UPDATE vinculo SET estado = 'activo' WHERE id = ? AND estado != 'inactivo'")
-                .bind(vinculo_id_actual)
-                .execute(&mut *tx)
-                .await
-                .map_err(|e| {
-                    ApiError::InternalError(format!("Error al verificar el vínculo: {}", e))
-                })?;
+            sqlx::query(
+                "UPDATE vinculo SET estado = 'activo' WHERE id = ? AND estado != 'inactivo'",
+            )
+            .bind(vinculo_id_actual)
+            .execute(&mut *tx)
+            .await
+            .map_err(|e| {
+                ApiError::InternalError(format!("Error al verificar el vínculo: {}", e))
+            })?;
         }
     }
     let row = sqlx::query(

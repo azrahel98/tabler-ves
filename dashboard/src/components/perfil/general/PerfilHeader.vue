@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import Button from '@/components/ui/button/Button.vue'
 import {
   getPersonalAvatarUrl,
   type PersonalPerfil,
   type PersonalVinculo,
-} from './types'
+} from '@/components/perfil/types'
 import {
   IconUser,
   IconId,
@@ -15,7 +14,6 @@ import {
   IconFileText,
   IconCheck,
   IconCopy,
-  IconCalendarPlus,
 } from '@tabler/icons-vue'
 
 interface Props {
@@ -83,7 +81,7 @@ const handleTabKeyDown = (event: KeyboardEvent) => {
   <div class="bg-card border border-border rounded-2xl overflow-hidden shadow-xs">
     <div class="p-5 sm:p-6">
       <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 min-w-0 w-full sm:w-auto">
           <div
             class="relative size-18 sm:size-21 rounded-full bg-primary/10 border border-primary/20 text-primary flex items-center justify-center shrink-0 shadow-xs overflow-hidden">
             <img v-if="!avatarError && avatarUrl" v-auth-src="avatarUrl" :alt="perfil?.nombre || 'Foto del servidor'"
@@ -93,9 +91,9 @@ const handleTabKeyDown = (event: KeyboardEvent) => {
             </span>
           </div>
 
-          <div class="space-y-1.5">
+          <div class="space-y-1.5 min-w-0">
             <div class="flex flex-wrap items-center gap-2">
-              <h1 class="text-lg sm:text-xl font-bold text-foreground tracking-tight">
+              <h1 class="text-lg sm:text-xl font-bold text-foreground tracking-tight break-words">
                 {{ perfil?.nombre || 'Cargando datos del servidor...' }}
               </h1>
             </div>
@@ -126,14 +124,6 @@ const handleTabKeyDown = (event: KeyboardEvent) => {
           </div>
         </div>
 
-        <div v-if="vinculoActivo && vinculoActivo.origen !== 'SUNAT'" class="flex items-center gap-2 self-start sm:self-center shrink-0">
-          <Button size="xs" variant="outline"
-            class="text-purple-600 hover:text-purple-700 hover:bg-purple-500/10 border-purple-500/30 gap-1.5 cursor-pointer text-xs"
-            @click="emit('crearEvento', vinculoActivo)">
-            <IconCalendarPlus class="size-3.5" />
-            <span>Agregar Evento</span>
-          </Button>
-        </div>
       </div>
 
       <div class="border-t border-border mt-6 pt-1 overflow-x-auto">

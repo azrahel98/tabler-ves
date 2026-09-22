@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import Button from '@/components/ui/button/Button.vue'
-import { type PersonalArchivo } from './types'
+import { type PersonalArchivo } from '@/components/perfil/types'
 import {
   IconTrash,
   IconX,
@@ -33,11 +33,13 @@ const handleClose = (isDeleting: boolean) => {
 <template>
   <div
     v-if="isOpen"
-    class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-neutral-900/65 backdrop-blur-xs"
     role="dialog"
     aria-modal="true"
     aria-labelledby="modal-eliminar-title"
+    tabindex="-1"
+    class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-neutral-900/65 backdrop-blur-xs focus:outline-hidden"
     @click.self="handleClose(isDeleting)"
+    @keydown.esc="handleClose(isDeleting)"
   >
     <div
       class="w-full max-w-md bg-card border border-border rounded-2xl shadow-2xl overflow-hidden text-xs flex flex-col"

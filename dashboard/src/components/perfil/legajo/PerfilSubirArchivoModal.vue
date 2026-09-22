@@ -5,7 +5,7 @@ import {
   type PersonalArchivo,
   type PersonalDocumento,
   type RegistrarUrlPayload,
-} from './types'
+} from '@/components/perfil/types'
 import { formatDate } from '@/utils/date'
 import {
   IconUpload,
@@ -192,11 +192,13 @@ const handleSubmit = () => {
 <template>
   <div
     v-if="isOpen"
-    class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-neutral-900/65 backdrop-blur-xs"
     role="dialog"
     aria-modal="true"
     aria-labelledby="modal-subir-archivo-title"
+    tabindex="-1"
+    class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-neutral-900/65 backdrop-blur-xs focus:outline-hidden"
     @click.self="handleClose"
+    @keydown.esc="handleClose"
   >
     <div
       class="w-full max-w-xl bg-card border border-border rounded-2xl shadow-2xl overflow-hidden text-xs max-h-[92vh] flex flex-col"

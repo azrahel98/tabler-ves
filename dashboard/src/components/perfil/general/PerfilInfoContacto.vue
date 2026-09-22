@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import Card from '@/components/ui/card/Card.vue'
 import Badge from '@/components/ui/badge/Badge.vue'
-import type { PersonalPerfil, PersonalContacto } from './types'
+import type { PersonalPerfil, PersonalContacto } from '@/components/perfil/types'
 import { formatDate, calculateAge } from '@/utils/date'
 import {
   IconUser,
@@ -41,11 +41,9 @@ const calcularEdad = calculateAge
           <IconUser class="size-3.5 text-primary" />
           <h3 class="font-semibold text-foreground tracking-tight text-sm">Información de Contacto</h3>
         </span>
-        <button
-          type="button"
+        <button type="button"
           class="text-xs text-primary hover:underline font-medium inline-flex items-center gap-1 cursor-pointer"
-          @click="emit('openEditModal')"
-        >
+          @click="emit('openEditModal')">
           <IconEdit class="size-3.5" /> Editar
         </button>
       </div>
@@ -57,13 +55,9 @@ const calcularEdad = calculateAge
           </span>
           <div class="flex items-center gap-1.5 font-mono font-medium text-foreground">
             <span>{{ perfil?.dni || '-' }}</span>
-            <button
-              type="button"
-              class="text-muted-foreground hover:text-primary transition cursor-pointer"
-              title="Copiar número de DNI al portapapeles"
-              aria-label="Copiar número de DNI al portapapeles"
-              @click="emit('copyToClipboard', perfil?.dni || '', 'dni-info')"
-            >
+            <button type="button" class="text-muted-foreground hover:text-primary transition cursor-pointer"
+              title="Copiar número de DNI al portapapeles" aria-label="Copiar número de DNI al portapapeles"
+              @click="emit('copyToClipboard', perfil?.dni || '', 'dni-info')">
               <IconCheck v-if="copiedField === 'dni-info'" class="size-3.5 text-emerald-600 dark:text-emerald-400" />
               <IconCopy v-else class="size-3.5" />
             </button>
@@ -118,12 +112,9 @@ const calcularEdad = calculateAge
           <span class="text-muted-foreground flex items-center gap-1.5 shrink-0">
             <IconMail class="size-4 text-muted-foreground" /> Correo:
           </span>
-          <a
-            v-if="perfil?.email"
-            :href="'mailto:' + perfil.email"
-            class="font-medium text-primary hover:underline truncate max-w-[180px]"
-            :title="perfil.email"
-          >
+          <a v-if="perfil?.email" :href="'mailto:' + perfil.email"
+            class="font-medium text-primary hover:underline text-xs wrap-break-word max-w-[160px] sm:max-w-[200px]"
+            :title="perfil.email">
             {{ perfil.email }}
           </a>
           <button v-else type="button" class="text-primary hover:underline text-xs" @click="emit('openEditModal')">
@@ -144,7 +135,8 @@ const calcularEdad = calculateAge
           <span class="text-muted-foreground flex items-center gap-1.5">
             <IconMapPin class="size-4 text-muted-foreground" /> Dirección:
           </span>
-          <span class="font-medium text-foreground bg-muted/40 p-2 rounded-lg border border-border/50 text-[11.4px]">
+          <span
+            class="font-medium text-foreground bg-muted/40 p-2 rounded-lg border border-border/50 text-[11.4px] break-words">
             {{ perfil?.direccion || 'Sin dirección domiciliaria registrada' }}
           </span>
         </div>
@@ -171,10 +163,8 @@ const calcularEdad = calculateAge
         </div>
         <div class="flex items-center justify-between">
           <span class="text-muted-foreground">Teléfono:</span>
-          <a
-            :href="'tel:' + contacto.telefono"
-            class="font-semibold text-primary hover:underline flex items-center gap-1"
-          >
+          <a :href="'tel:' + contacto.telefono"
+            class="font-semibold text-primary hover:underline flex items-center gap-1">
             <IconPhone class="size-3.5" /> {{ contacto.telefono }}
           </a>
         </div>

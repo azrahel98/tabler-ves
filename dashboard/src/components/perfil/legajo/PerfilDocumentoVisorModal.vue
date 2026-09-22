@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import Button from '@/components/ui/button/Button.vue'
-import { type PersonalArchivo, getFileDownloadUrl } from './types'
+import { type PersonalArchivo, getFileDownloadUrl } from '@/components/perfil/types'
 import { getApiBaseUrl, fetchAuthBlob } from '@/services/api'
 import {
   IconExternalLink,

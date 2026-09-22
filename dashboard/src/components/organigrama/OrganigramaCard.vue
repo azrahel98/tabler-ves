@@ -98,7 +98,7 @@ const handleProfile = (e: MouseEvent) => {
     class="relative rounded-xl border text-left transition-all duration-200 select-none shadow-2xs hover:shadow-md cursor-pointer group"
     :class="[
       variantClasses,
-      compact ? 'w-52 sm:w-56 p-2 text-xs' : 'w-60 sm:w-64 p-2.5 text-xs',
+      compact ? 'w-44 sm:w-48 p-2 text-xs' : 'w-56 sm:w-60 p-2.5 text-xs',
       isHighlighted ? 'ring-2 ring-primary border-primary scale-[1.02]' : ''
     ]"
     @click="handleSelect"

@@ -1,14 +1,15 @@
 import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import DashboardLayout from '@/components/DashboardLayout.vue'
-import DashboardView from '@/views/DashboardView.vue'
-import test from '@/views/dashboard/test.vue'
-import DataTablesGalleryView from '@/views/dashboard/DataTablesGalleryView.vue'
-import CardsGalleryView from '@/views/dashboard/CardsGalleryView.vue'
-import PerfilView from '@/views/PerfilView.vue'
-import OrganigramaView from '@/views/OrganigramaView.vue'
-import LoginView from '@/views/LoginView.vue'
-import NuevoTrabajadorView from '@/views/NuevoTrabajadorView.vue'
+const DashboardView = () => import('@/views/DashboardView.vue')
+const test = () => import('@/views/dashboard/test.vue')
+const DataTablesGalleryView = () => import('@/views/dashboard/DataTablesGalleryView.vue')
+const CardsGalleryView = () => import('@/views/dashboard/CardsGalleryView.vue')
+const PerfilView = () => import('@/views/PerfilView.vue')
+const OrganigramaView = () => import('@/views/OrganigramaView.vue')
+const LoginView = () => import('@/views/LoginView.vue')
+const NuevoTrabajadorView = () => import('@/views/NuevoTrabajadorView.vue')
+const Alerta70View = () => import('@/views/Alerta70View.vue')
 
 const routes: RouteRecordRaw[] = [
   {
@@ -71,6 +72,13 @@ const routes: RouteRecordRaw[] = [
         alias: 'nuevo-trabajador',
         name: 'nuevo-trabajador',
         component: NuevoTrabajadorView,
+        meta: { requiresAuth: true },
+      },
+      {
+        path: 'alerta-70',
+        alias: ['jubilacion-70', 'personal/alerta-70'],
+        name: 'alerta-70',
+        component: Alerta70View,
         meta: { requiresAuth: true },
       },
     ],

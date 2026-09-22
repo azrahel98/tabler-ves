@@ -451,7 +451,6 @@ export interface NuevoTrabajadorDocumento {
 
 export interface NuevoTrabajadorPayload {
   personal: NuevoTrabajadorPersonal
-  airshp: string
   documento: NuevoTrabajadorDocumento
   regimen: number
   cargo: number
@@ -529,5 +528,30 @@ export async function registrarNuevoTrabajador(payload: NuevoTrabajadorPayload):
     body: payload,
   })
 }
+
+export type Alerta70Estado = 'Atiempo' | 'AlLimite' | 'Excedido' | 'Excepcional' | 'Diciembre' | string
+
+export interface Alerta70Servidor {
+  dni: string
+  nombre: string
+  nacimiento: string
+  edad_actual: number
+  area: string
+  cargo: string
+  regimen: string
+  plaza?: string | null
+  avatar?: string | null
+  estado: Alerta70Estado
+}
+
+export async function fetchAlerta70(): Promise<Alerta70Servidor[]> {
+  try {
+    const data = await api<Alerta70Servidor[]>('/api/dash/alerta_70')
+    return Array.isArray(data) ? data : []
+  } catch {
+    return []
+  }
+}
+
 
 

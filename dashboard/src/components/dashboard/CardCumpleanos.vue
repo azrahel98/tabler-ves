@@ -136,23 +136,20 @@ onMounted(async () => {
       <div v-else class="divide-y divide-border">
         <router-link v-for="(c, index) in cumpleanos" :key="c.dni" :to="{ name: 'perfil', params: { dni: c.dni } }"
           :data-index="index"
-          class="p-3 hover:bg-muted/30 focus-visible:bg-muted/40 focus-visible:outline-hidden transition-colors flex items-center justify-between gap-2.5 text-xs group cursor-pointer">
+          class="p-3 hover:bg-muted/30 focus-visible:bg-muted/40 focus-visible:outline-hidden transition-colors flex items-center justify-between text-xs group cursor-pointer">
           <div class="flex items-center gap-2.5 min-w-0">
             <img v-if="resolveAvatarUrl(c.avatar)" v-auth-src="resolveAvatarUrl(c.avatar)!" :alt="c.nombre"
-              class="size-8 rounded-full object-cover border border-border shrink-0 shadow-2xs group-hover:border-primary transition-colors"
-              :class="isToday(c.nacimiento) ? 'border-pink-500 ring-2 ring-pink-500/30' : ''" />
+              class="size-10 rounded-full object-cover border border-border shrink-0 shadow-2xs group-hover:border-primary transition-colors" />
             <div v-else
-              class="size-8 rounded-full bg-pink-500/10 text-pink-600 dark:text-pink-400 flex items-center justify-center font-bold text-xs shrink-0 border border-pink-500/20 group-hover:border-pink-500 transition-colors"
-              :class="isToday(c.nacimiento) ? 'border-pink-500 ring-2 ring-pink-500/30' : ''">
+              class="size-8 rounded-full bg-pink-500/10 text-pink-600 dark:text-pink-400 flex items-center justify-center font-bold text-xs shrink-0 border border-pink-500/20 group-hover:border-pink-500 transition-colors">
               {{ c.nombre.charAt(0) }}
             </div>
 
-            <div class="space-y-0.5 min-w-0">
-              <p
-                class="font-medium text-[11.5px] text-foreground group-hover:text-primary transition-colors wrap-break-word">
+            <div class="min-w-0">
+              <p class="font-medium text-xs text-foreground group-hover:text-primary transition-colors wrap-break-word">
                 {{ c.nombre }}
               </p>
-              <p class="text-[11px] text-muted-foreground truncate">{{ c.regimen }} &bull; DNI {{ c.dni }}</p>
+
             </div>
           </div>
 

@@ -1,9 +1,9 @@
 use crate::common::errors::ApiError;
 use crate::dash::models::{
-    Alerta70Anos, BancosReport, Cumpleaños, DataResumen, DbOrgani, ReporteDocumento,
+    Alerta70Anos, Alertas, BancosReport, Cumpleaños, DataResumen, DbOrgani, ReporteDocumento,
     ReporteRenuncias,
 };
-use chrono::{NaiveDate, NaiveDateTime};
+use chrono::{Datelike, NaiveDate, NaiveDateTime};
 use serde_json::{Value, json};
 use sqlx::{MySqlPool, Row};
 
@@ -490,16 +490,15 @@ pub async fn get_historial(
 
     let (total, data) = match dni {
         Some(dni_val) if !dni_val.trim().is_empty() => {
-            let total_row = sqlx::query_scalar::<_, i64>(
-                "SELECT COUNT(*) FROM historial WHERE dni = ?"
-            )
-            .bind(dni_val)
-            .fetch_one(pool)
-            .await
-            .map_err(|e| {
-                eprintln!("Database error al contar historial: {:?}", e);
-                ApiError::InternalError("Error al contar historial".into())
-            })?;
+            let total_row =
+                sqlx::query_scalar::<_, i64>("SELECT COUNT(*) FROM historial WHERE dni = ?")
+                    .bind(dni_val)
+                    .fetch_one(pool)
+                    .await
+                    .map_err(|e| {
+                        eprintln!("Database error al contar historial: {:?}", e);
+                        ApiError::InternalError("Error al contar historial".into())
+                    })?;
 
             let rows = sqlx::query(
                 r#"
@@ -525,15 +524,13 @@ pub async fn get_historial(
             (total_row, rows)
         }
         _ => {
-            let total_row = sqlx::query_scalar::<_, i64>(
-                "SELECT COUNT(*) FROM historial"
-            )
-            .fetch_one(pool)
-            .await
-            .map_err(|e| {
-                eprintln!("Database error al contar historial: {:?}", e);
-                ApiError::InternalError("Error al contar historial".into())
-            })?;
+            let total_row = sqlx::query_scalar::<_, i64>("SELECT COUNT(*) FROM historial")
+                .fetch_one(pool)
+                .await
+                .map_err(|e| {
+                    eprintln!("Database error al contar historial: {:?}", e);
+                    ApiError::InternalError("Error al contar historial".into())
+                })?;
 
             let rows = sqlx::query(
                 r#"
@@ -1048,32 +1045,14 @@ pub async fn get_comparar_mef_data(
     })
 }
 
-pub async fn get_alerta_70_anos(
-    pool: &MySqlPool,
-    edad_min: Option<i32>,
-) -> Result<Vec<Alerta70Anos>, ApiError> {
-    let edad_filtro = edad_min.unwrap_or(69);
+pub async fn get_alerta_70_anos(pool: &MySqlPool) -> Result<Vec<Alerta70Anos>, ApiError> {
     let filas = sqlx::query(
         r#"
-        SELECT
+            SELECT
             p.dni,
             CONCAT_WS(' ', p.apaterno, p.amaterno, p.nombre) AS nombre,
             p.fecha_nacimiento AS nacimiento,
             TIMESTAMPDIFF(YEAR, p.fecha_nacimiento, CURRENT_DATE) AS edad_actual,
-            DATE_ADD(p.fecha_nacimiento, INTERVAL 70 YEAR) AS fecha_70_anos,
-            LAST_DAY(DATE_ADD(p.fecha_nacimiento, INTERVAL 70 YEAR)) AS fecha_limite_mes,
-            LAST_DAY(STR_TO_DATE(CONCAT(YEAR(DATE_ADD(p.fecha_nacimiento, INTERVAL 70 YEAR)), '-12-01'), '%Y-%m-%d')) AS fecha_extension_fin_ano,
-            DATEDIFF(DATE_ADD(p.fecha_nacimiento, INTERVAL 70 YEAR), CURRENT_DATE) AS dias_para_70,
-            DATEDIFF(LAST_DAY(DATE_ADD(p.fecha_nacimiento, INTERVAL 70 YEAR)), CURRENT_DATE) AS dias_para_cese_mes,
-            DATEDIFF(LAST_DAY(STR_TO_DATE(CONCAT(YEAR(DATE_ADD(p.fecha_nacimiento, INTERVAL 70 YEAR)), '-12-01'), '%Y-%m-%d')), CURRENT_DATE) AS dias_para_cese_extension,
-            CASE
-                WHEN CURRENT_DATE < DATE_ADD(p.fecha_nacimiento, INTERVAL 70 YEAR) THEN 'PROXIMO_A_CUMPLIR'
-                WHEN YEAR(CURRENT_DATE) = YEAR(DATE_ADD(p.fecha_nacimiento, INTERVAL 70 YEAR)) 
-                     AND MONTH(CURRENT_DATE) = MONTH(DATE_ADD(p.fecha_nacimiento, INTERVAL 70 YEAR)) THEN 'CUMPLE_ESTE_MES'
-                WHEN CURRENT_DATE > LAST_DAY(DATE_ADD(p.fecha_nacimiento, INTERVAL 70 YEAR)) 
-                     AND CURRENT_DATE <= LAST_DAY(STR_TO_DATE(CONCAT(YEAR(DATE_ADD(p.fecha_nacimiento, INTERVAL 70 YEAR)), '-12-01'), '%Y-%m-%d')) THEN 'EN_PERIODO_EXTENSION'
-                ELSE 'LIMITE_SUPERADO'
-            END AS estado_alerta,
             ar.nombre AS area,
             cr.nombre AS cargo,
             r.decreto AS regimen,
@@ -1087,8 +1066,7 @@ pub async fn get_alerta_70_anos(
             LEFT JOIN regimen r ON v.regimen = r.id
             LEFT JOIN plaza pl ON v.plaza_id = pl.codigo
         WHERE
-            v.estado = 'activo'
-            AND TIMESTAMPDIFF(YEAR, p.fecha_nacimiento, CURRENT_DATE) >= ?
+            v.estado = 'activo' and TIMESTAMPDIFF(YEAR, p.fecha_nacimiento, CURRENT_DATE) >= 69
         GROUP BY
             p.dni,
             p.apaterno,
@@ -1100,11 +1078,8 @@ pub async fn get_alerta_70_anos(
             r.decreto,
             pl.codigo,
             p.avatar
-        ORDER BY
-            fecha_70_anos ASC;
         "#,
     )
-    .bind(edad_filtro)
     .fetch_all(pool)
     .await
     .map_err(|e| {
@@ -1112,36 +1087,56 @@ pub async fn get_alerta_70_anos(
         ApiError::InternalError("Error al consultar alerta de 70 años".into())
     })?;
 
+    let hoy = chrono::Local::now().naive_local().date();
+
     let resultado: Vec<Alerta70Anos> = filas
         .into_iter()
         .map(|fila| {
             let nacimiento: NaiveDate = fila.get("nacimiento");
-            let fecha_70_anos: NaiveDate = fila.get("fecha_70_anos");
-            let fecha_limite_mes: NaiveDate = fila.get("fecha_limite_mes");
-            let fecha_extension_fin_ano: NaiveDate = fila.get("fecha_extension_fin_ano");
             let edad_actual: i64 = fila.try_get("edad_actual").unwrap_or(0);
-            let dias_para_70: i64 = fila.try_get("dias_para_70").unwrap_or(0);
-            let dias_para_cese_mes: i64 = fila.try_get("dias_para_cese_mes").unwrap_or(0);
-            let dias_para_cese_extension: i64 =
-                fila.try_get("dias_para_cese_extension").unwrap_or(0);
+            let regimen_opt: Option<String> = fila.try_get("regimen").ok();
+
+            let estado = match edad_actual {
+                69 => {
+                    if hoy.month() == nacimiento.month() {
+                        let dias_restantes = nacimiento.day() as i64 - hoy.day() as i64;
+                        if dias_restantes > 15 {
+                            Alertas::Atiempo
+                        } else if dias_restantes > 5 {
+                            Alertas::AlLimite
+                        } else {
+                            Alertas::Excedido
+                        }
+                    } else {
+                        Alertas::Atiempo
+                    }
+                }
+                edad if edad >= 70 => {
+                    let es_1057 = regimen_opt
+                        .as_deref()
+                        .map(|r| r.contains("1057"))
+                        .unwrap_or(false);
+
+                    if es_1057 {
+                        Alertas::Excepcional
+                    } else {
+                        Alertas::Excedido
+                    }
+                }
+                _ => Alertas::Atiempo,
+            };
 
             Alerta70Anos {
                 dni: fila.get("dni"),
                 nombre: fila.try_get("nombre").ok(),
                 nacimiento,
                 edad_actual,
-                fecha_70_anos,
-                fecha_limite_mes,
-                fecha_extension_fin_ano,
-                dias_para_70,
-                dias_para_cese_mes,
-                dias_para_cese_extension,
-                estado_alerta: fila.get("estado_alerta"),
                 area: fila.get("area"),
                 cargo: fila.get("cargo"),
-                regimen: fila.try_get("regimen").ok(),
+                regimen: regimen_opt,
                 plaza: fila.try_get("plaza").ok(),
                 avatar: fila.try_get("avatar").ok(),
+                estado: Some(estado),
             }
         })
         .collect();

@@ -1,25 +1,26 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch, defineAsyncComponent } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import Button from '@/components/ui/button/Button.vue'
-import PerfilHeader from '@/components/perfil/PerfilHeader.vue'
-import PerfilInfoContacto from '@/components/perfil/PerfilInfoContacto.vue'
-import PerfilVinculoActualCard from '@/components/perfil/PerfilVinculoActualCard.vue'
-import PerfilHistorialVinculosCard from '@/components/perfil/PerfilHistorialVinculosCard.vue'
-import PerfilLegajoCard from '@/components/perfil/PerfilLegajoCard.vue'
-import PerfilGradosCard from '@/components/perfil/PerfilGradosCard.vue'
-import PerfilBancoCard from '@/components/perfil/PerfilBancoCard.vue'
-import PerfilSearchModal from '@/components/perfil/PerfilSearchModal.vue'
-import PerfilEditModal from '@/components/perfil/PerfilEditModal.vue'
-import PerfilRenunciaModal from '@/components/perfil/PerfilRenunciaModal.vue'
-import PerfilDocumentoModal from '@/components/perfil/PerfilDocumentoModal.vue'
-import PerfilVincularUrlModal from '@/components/perfil/PerfilVincularUrlModal.vue'
-import PerfilSubirArchivoModal from '@/components/perfil/PerfilSubirArchivoModal.vue'
-import PerfilEliminarArchivoModal from '@/components/perfil/PerfilEliminarArchivoModal.vue'
-import PerfilDocumentoDrawer from '@/components/perfil/PerfilDocumentoDrawer.vue'
-import PerfilDocumentoVisorModal from '@/components/perfil/PerfilDocumentoVisorModal.vue'
-import PerfilEventosDrawer from '@/components/perfil/PerfilEventosDrawer.vue'
-import PerfilEventoModal from '@/components/perfil/PerfilEventoModal.vue'
+import PerfilHeader from '@/components/perfil/general/PerfilHeader.vue'
+import PerfilInfoContacto from '@/components/perfil/general/PerfilInfoContacto.vue'
+import PerfilSearchModal from '@/components/perfil/general/PerfilSearchModal.vue'
+import PerfilEditModal from '@/components/perfil/general/PerfilEditModal.vue'
+import PerfilVinculoActualCard from '@/components/perfil/vinculos/PerfilVinculoActualCard.vue'
+import PerfilHistorialVinculosCard from '@/components/perfil/vinculos/PerfilHistorialVinculosCard.vue'
+import PerfilEventoModal from '@/components/perfil/vinculos/PerfilEventoModal.vue'
+import PerfilLegajoCard from '@/components/perfil/legajo/PerfilLegajoCard.vue'
+import PerfilDocumentoModal from '@/components/perfil/legajo/PerfilDocumentoModal.vue'
+import PerfilGradosCard from '@/components/perfil/grados/PerfilGradosCard.vue'
+import PerfilBancoCard from '@/components/perfil/banco/PerfilBancoCard.vue'
+
+const PerfilEventosDrawer = defineAsyncComponent(() => import('@/components/perfil/vinculos/PerfilEventosDrawer.vue'))
+const PerfilRenunciaModal = defineAsyncComponent(() => import('@/components/perfil/vinculos/PerfilRenunciaModal.vue'))
+const PerfilDocumentoDrawer = defineAsyncComponent(() => import('@/components/perfil/legajo/PerfilDocumentoDrawer.vue'))
+const PerfilDocumentoVisorModal = defineAsyncComponent(() => import('@/components/perfil/legajo/PerfilDocumentoVisorModal.vue'))
+const PerfilSubirArchivoModal = defineAsyncComponent(() => import('@/components/perfil/legajo/PerfilSubirArchivoModal.vue'))
+const PerfilVincularUrlModal = defineAsyncComponent(() => import('@/components/perfil/legajo/PerfilVincularUrlModal.vue'))
+const PerfilEliminarArchivoModal = defineAsyncComponent(() => import('@/components/perfil/legajo/PerfilEliminarArchivoModal.vue'))
 import {
   fetchPersonalPerfil,
   fetchPersonalBanco,
@@ -628,53 +629,50 @@ watch(
           />
         </div>
 
-        <div class="xl:col-span-8 space-y-6">
-          <div v-if="activeTab === 'perfil'" class="space-y-6">
-            <PerfilVinculoActualCard
-              :vinculo-activo="vinculoActivo"
-              :vinculos="vinculos"
-              :cantidad-eventos="eventosVinculoActivo.length"
-              @ver-historial="activeTab = 'vinculos'"
-              @registrar-renuncia="abrirModalRenuncia"
-              @ver-documento="abrirDocumentoDrawer"
-              @ver-eventos="onAbrirEventosDrawer"
-              @crear-evento="onAbrirCrearEvento"
-            />
-          </div>
+        <div class="xl:col-span-8">
+          <PerfilVinculoActualCard
+            v-if="activeTab === 'perfil'"
+            :vinculo-activo="vinculoActivo"
+            :vinculos="vinculos"
+            :cantidad-eventos="eventosVinculoActivo.length"
+            @ver-historial="activeTab = 'vinculos'"
+            @registrar-renuncia="abrirModalRenuncia"
+            @ver-documento="abrirDocumentoDrawer"
+            @ver-eventos="onAbrirEventosDrawer"
+            @crear-evento="onAbrirCrearEvento"
+          />
 
-          <div v-if="activeTab === 'vinculos'" class="space-y-6">
-            <PerfilHistorialVinculosCard
-              :vinculos="vinculos"
-              @registrar-renuncia="abrirModalRenuncia"
-              @ver-documento="abrirDocumentoDrawer"
-              @ver-eventos="onAbrirEventosDrawer"
-              @crear-evento="onAbrirCrearEvento"
-            />
-          </div>
+          <PerfilHistorialVinculosCard
+            v-else-if="activeTab === 'vinculos'"
+            :vinculos="vinculos"
+            @registrar-renuncia="abrirModalRenuncia"
+            @ver-documento="abrirDocumentoDrawer"
+            @ver-eventos="onAbrirEventosDrawer"
+            @crear-evento="onAbrirCrearEvento"
+          />
 
-          <div v-if="activeTab === 'legajo'" class="space-y-6">
-            <PerfilLegajoCard
-              :archivos="archivos"
-              :documentos="documentos"
-              @nuevo-documento="isDocumentoModalOpen = true"
-              @vincular-url="onAbrirVincularUrl"
-              @subir-archivo="isSubirArchivoModalOpen = true"
-              @eliminar-archivo="onAbrirEliminarArchivo"
-              @abrir-visor="abrirVisorArchivo"
-            />
-          </div>
+          <PerfilLegajoCard
+            v-else-if="activeTab === 'legajo'"
+            :archivos="archivos"
+            :documentos="documentos"
+            @nuevo-documento="isDocumentoModalOpen = true"
+            @vincular-url="onAbrirVincularUrl"
+            @subir-archivo="isSubirArchivoModalOpen = true"
+            @eliminar-archivo="onAbrirEliminarArchivo"
+            @abrir-visor="abrirVisorArchivo"
+          />
 
-          <div v-if="activeTab === 'grados'" class="space-y-6">
-            <PerfilGradosCard :grados="grados" />
-          </div>
+          <PerfilGradosCard
+            v-else-if="activeTab === 'grados'"
+            :grados="grados"
+          />
 
-          <div v-if="activeTab === 'banco'" class="space-y-6">
-            <PerfilBancoCard
-              :banco="banco"
-              :copied-field="copiedField"
-              @copy-to-clipboard="copyToClipboard"
-            />
-          </div>
+          <PerfilBancoCard
+            v-else-if="activeTab === 'banco'"
+            :banco="banco"
+            :copied-field="copiedField"
+            @copy-to-clipboard="copyToClipboard"
+          />
         </div>
       </div>
     </div>
