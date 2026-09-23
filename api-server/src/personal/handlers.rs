@@ -161,8 +161,8 @@ pub struct EliminarSindicatoBody {
     pub año_documento: Option<i32>,
     #[validate(length(min = 1, message = "La fecha es requerida"))]
     pub fecha: String,
-    #[serde(rename = "fechaValida")]
-    pub fecha_valida: Option<String>,
+    #[serde(rename = "fechaDocumento", alias = "fechaValida", alias = "fecha_documento", alias = "fecha_valida")]
+    pub fecha_documento: Option<String>,
     #[validate(length(min = 1, message = "La descripción es requerida"))]
     pub descripcion: String,
 }
@@ -182,7 +182,7 @@ pub async fn eliminar_sindicato(
         body.numero_documento,
         body.año_documento,
         &body.fecha,
-        body.fecha_valida.as_deref(),
+        body.fecha_documento.as_deref(),
         &body.descripcion,
     )
     .await?;
@@ -334,16 +334,15 @@ pub async fn registrar_trabajador(
     .map_err(|e| ApiError::InternalError(format!("Upsert Persona error: {}", e)))?;
     let doc_result = sqlx::query(
         r#"
-        INSERT INTO documento (tipo_documento_id, area_id, numero, year, fecha, fecha_valida, descripcion)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO documento (tipo_documento_id, area_id, numero, year, fecha, fecha_documento, descripcion)
+        VALUES (?, 227, ?, ?, ?, ?, ?)
         "#,
     )
     .bind(&body.documento.tipo)
-    .bind(body.documento.area_id.unwrap_or(body.area))
     .bind(body.documento.numero)
     .bind(body.documento.año)
     .bind(&body.documento.fecha)
-    .bind(&body.documento.fecha_valida)
+    .bind(&body.documento.fecha_documento)
     .bind(&body.documento.descripcion)
     .execute(&mut *tx)
     .await
@@ -511,7 +510,7 @@ pub async fn renuncia_por_vinculo(
         .map_err(|e| ApiError::InternalError(format!("DB transaction begin error: {}", e)))?;
     let insert_result = sqlx::query(
         r#"
-        INSERT INTO documento (tipo_documento_id, area_id, numero, year, fecha, fecha_valida, descripcion)
+        INSERT INTO documento (tipo_documento_id, area_id, numero, year, fecha, fecha_documento, descripcion)
         VALUES (?, ?, ?, ?, ?, ?, ?)
         "#,
     )
@@ -520,7 +519,7 @@ pub async fn renuncia_por_vinculo(
     .bind(doc.numero)
     .bind(doc.año)
     .bind(&doc.fecha)
-    .bind(&doc.fecha_valida)
+    .bind(&doc.fecha_documento)
     .bind(&doc.descripcion)
     .execute(&mut *tx)
     .await
@@ -676,7 +675,7 @@ pub async fn upsert_evento_vinculo(
     if let Some(ref doc_inicio) = payload.documento_inicio {
         let doc_id = sqlx::query(
             r#"
-            INSERT INTO documento (tipo_documento_id, area_id, numero, year, fecha, fecha_valida, descripcion)
+            INSERT INTO documento (tipo_documento_id, area_id, numero, year, fecha, fecha_documento, descripcion)
             VALUES (?, ?, ?, ?, ?, ?, ?)
             "#,
         )
@@ -685,7 +684,7 @@ pub async fn upsert_evento_vinculo(
         .bind(doc_inicio.numero)
         .bind(doc_inicio.año)
         .bind(&doc_inicio.fecha)
-        .bind(&doc_inicio.fecha_valida)
+        .bind(&doc_inicio.fecha_documento)
         .bind(&doc_inicio.descripcion)
         .execute(&mut *tx)
         .await
@@ -744,7 +743,7 @@ pub async fn upsert_evento_vinculo(
         let doc_salida_id = if let Some(ref doc_salida) = payload.documento_salida {
             sqlx::query(
                 r#"
-                INSERT INTO documento (tipo_documento_id, area_id, numero, year, fecha, fecha_valida, descripcion)
+                INSERT INTO documento (tipo_documento_id, area_id, numero, year, fecha, fecha_documento, descripcion)
                 VALUES (?, ?, ?, ?, ?, ?, ?)
                 "#,
             )
@@ -753,7 +752,7 @@ pub async fn upsert_evento_vinculo(
             .bind(doc_salida.numero)
             .bind(doc_salida.año)
             .bind(&doc_salida.fecha)
-            .bind(&doc_salida.fecha_valida)
+            .bind(&doc_salida.fecha_documento)
             .bind(&doc_salida.descripcion)
             .execute(&mut *tx)
             .await
@@ -1025,7 +1024,7 @@ pub async fn registrar_cambio_area(
     }
     let documento_id = sqlx::query(
         r#"
-        INSERT INTO documento (tipo_documento_id, area_id, numero, year, fecha, fecha_valida, descripcion)
+        INSERT INTO documento (tipo_documento_id, area_id, numero, year, fecha, fecha_documento, descripcion)
         VALUES (?, ?, ?, ?, ?, ?, ?)
         "#,
     )
@@ -1034,7 +1033,7 @@ pub async fn registrar_cambio_area(
     .bind(payload.documento.numero)
     .bind(payload.documento.año)
     .bind(&payload.documento.fecha)
-    .bind(&payload.documento.fecha_valida)
+    .bind(&payload.documento.fecha_documento)
     .bind(&payload.documento.descripcion)
     .execute(&mut *tx)
     .await
@@ -1093,6 +1092,7 @@ pub struct Vacante {
     pub dni: Option<String>,
     pub nombre: Option<String>,
     pub fecha: Option<NaiveDate>,
+    #[serde(alias = "fechadocumento", alias = "fechaDocumento")]
     pub fechavalida: Option<NaiveDate>,
     pub area: Option<String>,
     pub cargo: Option<String>,
@@ -1111,7 +1111,7 @@ pub async fn buscar_vacantes(data: web::Data<AppState>) -> Result<impl Responder
         v.dni,
         CONCAT_WS(' ', pe.apaterno, pe.amaterno, pe.nombre) AS nombre,
         d.fecha,
-        d.fecha_valida AS fechavalida,
+        d.fecha_documento AS fechavalida,
         ar.nombre AS area,
         ar.id as area_id,
         cr.nombre AS cargo,

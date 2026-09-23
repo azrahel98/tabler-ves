@@ -308,9 +308,7 @@ const regimenBadgeVariant = (regimen: string): 'primary' | 'success' | 'warning'
                   <Badge :variant="regimenBadgeVariant(t.regimen)" size="xs">
                     {{ t.regimen }}
                   </Badge>
-                  <span class="font-mono text-[11px] text-muted-foreground" :title="'Plaza Presupuestada: ' + t.plaza">
-                    Plaza: {{ t.plaza }}
-                  </span>
+
                 </div>
               </td>
               <td class="px-5 py-3.5">

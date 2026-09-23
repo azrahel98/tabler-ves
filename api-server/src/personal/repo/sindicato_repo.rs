@@ -69,17 +69,17 @@ pub async fn registrar_desafiliacion(
     numero: Option<i32>,
     year: Option<i32>,
     fecha: &str,
-    fecha_valida: Option<&str>,
+    fecha_documento: Option<&str>,
     descripcion: &str,
 ) -> Result<u64, sqlx::Error> {
     let doc_result = sqlx::query(
-        "INSERT INTO documento (tipo_documento_id, numero, year, fecha, fecha_valida, descripcion) VALUES (?, ?, ?, ?, ?, ?)"
+        "INSERT INTO documento (tipo_documento_id, numero, year, fecha, fecha_documento, descripcion) VALUES (?, ?, ?, ?, ?, ?)"
     )
     .bind(tipo)
     .bind(numero)
     .bind(year)
     .bind(fecha)
-    .bind(fecha_valida)
+    .bind(fecha_documento)
     .bind(descripcion)
     .execute(&mut **tx)
     .await?;

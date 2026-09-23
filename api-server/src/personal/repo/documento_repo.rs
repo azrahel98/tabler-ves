@@ -14,7 +14,7 @@ pub async fn obtener_documento_por_id(
             d.numero,
             d.year as año,
             cast(d.fecha as char) as fecha,
-            cast(d.fecha_valida as char) as fecha_valida,
+            cast(d.fecha_documento as char) as fecha_documento,
             d.conv,
             d.descripcion
         FROM
@@ -35,7 +35,10 @@ pub async fn obtener_documento_por_id(
         numero: r.try_get("numero").ok(),
         año: r.try_get("año").ok(),
         fecha: r.try_get::<String, _>("fecha").unwrap_or_default(),
-        fecha_valida: r.try_get("fecha_valida").ok(),
+        fecha_documento: r
+            .try_get("fecha_documento")
+            .ok()
+            .or_else(|| r.try_get("fecha_valida").ok()),
         conv: r.try_get::<Option<i32>, _>("conv").ok().flatten().map(|v| v as i64),
         descripcion: r.try_get::<String, _>("descripcion").unwrap_or_default(),
         funcion: None,
@@ -57,7 +60,7 @@ pub async fn actualizar_documento(
             numero = ?,
             year = ?,
             fecha = ?,
-            fecha_valida = ?,
+            fecha_documento = ?,
             conv = ?,
             descripcion = ?
         WHERE id = ?
@@ -68,7 +71,7 @@ pub async fn actualizar_documento(
     .bind(doc.numero)
     .bind(doc.año)
     .bind(&doc.fecha)
-    .bind(&doc.fecha_valida)
+    .bind(&doc.fecha_documento)
     .bind(doc.conv)
     .bind(&doc.descripcion)
     .bind(id)
@@ -83,7 +86,7 @@ pub async fn crear_documento(
 ) -> Result<u64, sqlx::Error> {
     let result = sqlx::query(
         r#"
-        INSERT INTO documento (tipo_documento_id, area_id, numero, year, fecha, fecha_valida, conv, descripcion)
+        INSERT INTO documento (tipo_documento_id, area_id, numero, year, fecha, fecha_documento, conv, descripcion)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         "#,
     )
@@ -92,7 +95,7 @@ pub async fn crear_documento(
     .bind(doc.numero)
     .bind(doc.año)
     .bind(&doc.fecha)
-    .bind(&doc.fecha_valida)
+    .bind(&doc.fecha_documento)
     .bind(doc.conv)
     .bind(&doc.descripcion)
     .execute(db)

@@ -89,10 +89,10 @@ pub async fn editar_documento(
                 json!({"antes": antiguo.fecha, "despues": doc.fecha}),
             );
         }
-        if antiguo.fecha_valida != doc.fecha_valida {
+        if antiguo.fecha_documento != doc.fecha_documento {
             diff.insert(
-                "fecha_valida".to_string(),
-                json!({"antes": antiguo.fecha_valida, "despues": doc.fecha_valida}),
+                "fecha_documento".to_string(),
+                json!({"antes": antiguo.fecha_documento, "despues": doc.fecha_documento}),
             );
         }
         if antiguo.conv != doc.conv {

@@ -30,7 +30,7 @@ pub async fn eliminar_sindicato(
     numero: Option<i32>,
     year: Option<i32>,
     fecha: &str,
-    fecha_valida: Option<&str>,
+    fecha_documento: Option<&str>,
     descripcion: &str,
 ) -> Result<(Option<Value>, &'static str, String), ApiError> {
     let info = sindicato_repo::obtener_info_sindicato(db, vinculo_id)
@@ -38,7 +38,7 @@ pub async fn eliminar_sindicato(
         .map_err(|e| ApiError::InternalError(format!("Error al capturar afiliación: {}", e)))?;
     let mut tx = db.begin().await
         .map_err(|e| ApiError::InternalError(format!("Error iniciando transacción: {}", e)))?;
-    sindicato_repo::registrar_desafiliacion(&mut tx, vinculo_id, tipo, numero, year, fecha, fecha_valida, descripcion)
+    sindicato_repo::registrar_desafiliacion(&mut tx, vinculo_id, tipo, numero, year, fecha, fecha_documento, descripcion)
         .await
         .map_err(|e| ApiError::InternalError(format!("Error al desafiliar: {}", e)))?;
     tx.commit().await

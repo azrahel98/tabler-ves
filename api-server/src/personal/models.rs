@@ -85,8 +85,8 @@ pub struct Documento {
     pub año: Option<i32>,
     #[validate(length(min = 1, message = "La fecha es requerida"))]
     pub fecha: String,
-    #[serde(rename = "fechaValida")]
-    pub fecha_valida: Option<String>,
+    #[serde(rename = "fechaDocumento", alias = "fechaValida", alias = "fecha_documento", alias = "fecha_valida")]
+    pub fecha_documento: Option<String>,
     pub conv: Option<i64>,
     #[validate(length(min = 1, message = "La descripción es requerida"))]
     pub descripcion: String,
@@ -154,8 +154,8 @@ pub struct DocumentoSindicato {
     pub año: Option<i32>,
     #[validate(length(min = 1, message = "La fecha es requerida"))]
     pub fecha: String,
-    #[serde(rename = "fechaValida")]
-    pub fecha_valida: Option<String>,
+    #[serde(rename = "fechaDocumento", alias = "fechaValida", alias = "fecha_documento", alias = "fecha_valida")]
+    pub fecha_documento: Option<String>,
     #[validate(length(min = 1, message = "La descripción es requerida"))]
     pub descripcion: String,
     pub sindicato: i32,
@@ -234,12 +234,14 @@ pub struct EventoVinculoDetalle {
     pub tipo_doc_inicio: Option<String>,
     pub numero_doc_inicio: Option<String>,
     pub fecha_inicio: Option<NaiveDate>,
-    pub fecha_valida_inicio: Option<String>,
+    #[serde(alias = "fecha_valida_inicio")]
+    pub fecha_documento_inicio: Option<String>,
     pub descrip_inicio: Option<String>,
     pub doc_salida_id: Option<i32>,
     pub tipo_doc_salida: Option<String>,
     pub numero_doc_salida: Option<String>,
     pub fecha_salida: Option<NaiveDate>,
-    pub fecha_valida_salida: Option<String>,
+    #[serde(alias = "fecha_valida_salida")]
+    pub fecha_documento_salida: Option<String>,
     pub descrip_salida: Option<String>,
 }

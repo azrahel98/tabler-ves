@@ -354,7 +354,7 @@ pub async fn upload_batch(
     let mut numero: Option<String> = None;
     let mut year: Option<i32> = None;
     let mut fecha: Option<String> = None;
-    let mut fecha_valida: Option<String> = None;
+    let mut fecha_documento: Option<String> = None;
     let mut descripcion: Option<String> = None;
     let mut nombre_archivo: Option<String> = None;
     let mut dnis: Vec<String> = Vec::new();
@@ -412,8 +412,8 @@ pub async fn upload_batch(
             "fecha" => {
                 fecha = String::from_utf8(val).ok();
             }
-            "fecha_valida" => {
-                fecha_valida = String::from_utf8(val).ok();
+            "fecha_valida" | "fecha_documento" => {
+                fecha_documento = String::from_utf8(val).ok();
             }
             "descripcion" => {
                 descripcion = String::from_utf8(val).ok();
@@ -498,7 +498,7 @@ pub async fn upload_batch(
         .map_err(|e| ApiError::InternalError(format!("Transaction error: {}", e)))?;
     let doc_result = sqlx::query(
         r#"
-        INSERT INTO documento (tipo_documento_id, area_id, numero, year, fecha, fecha_valida, descripcion)
+        INSERT INTO documento (tipo_documento_id, area_id, numero, year, fecha, fecha_documento, descripcion)
         VALUES (?, ?, ?, ?, ?, ?, ?)
         "#,
     )
@@ -507,7 +507,7 @@ pub async fn upload_batch(
     .bind(numero.as_deref().and_then(|n| n.parse::<i32>().ok()))
     .bind(year)
     .bind(&fecha)
-    .bind(&fecha_valida)
+    .bind(&fecha_documento)
     .bind(&descripcion)
     .execute(&mut *tx)
     .await

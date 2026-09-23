@@ -183,7 +183,7 @@ pub async fn get_eventos_by_vinculo_id(
                 if(ai_ini.sigla IS NOT NULL, concat('-', ai_ini.sigla), '')
             ) AS numero_doc_inicio,
             di.fecha AS fecha_inicio,
-            cast(di.fecha_valida as char) AS fecha_valida_inicio,
+            cast(di.fecha_documento as char) AS fecha_documento_inicio,
             di.descripcion AS descrip_inicio,
             ev.documento_salida AS doc_salida_id,
             ti_sal.nombre AS tipo_doc_salida,
@@ -194,7 +194,7 @@ pub async fn get_eventos_by_vinculo_id(
                 if(ai_sal.sigla IS NOT NULL, concat('-', ai_sal.sigla), '')
             ) AS numero_doc_salida,
             ds.fecha AS fecha_salida,
-            cast(ds.fecha_valida as char) AS fecha_valida_salida,
+            cast(ds.fecha_documento as char) AS fecha_documento_salida,
             ds.descripcion AS descrip_salida
         FROM eventovinculo ev
         LEFT JOIN area ar_nueva ON ev.nueva_area_id = ar_nueva.id

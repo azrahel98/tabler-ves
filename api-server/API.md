@@ -801,7 +801,7 @@ Afiliar vínculos a un sindicato.
   "numeroDocumento": 123,
   "añoDocumento": 2024,
   "fecha": "2024-01-15",
-  "fechaValida": null,
+  "fechaDocumento": null,
   "descripcion": "Afiliación",
   "sindicato": 1,
   "vinculos": [{ "id_vinculo": 1, "dni": "12345678" }]
@@ -828,7 +828,7 @@ Desafiliar un vínculo de su sindicato.
   "numeroDocumento": 123,
   "añoDocumento": 2024,
   "fecha": "2024-01-15",
-  "fechaValida": null,
+  "fechaDocumento": null,
   "descripcion": "Desafiliación"
 }
 ```
@@ -851,7 +851,7 @@ Obtener un documento de legajo por su ID.
   "numeroDocumento": 123,
   "añoDocumento": 2024,
   "fecha": "2024-01-15",
-  "fechaValida": null,
+  "fechaDocumento": null,
   "conv": null,
   "descripcion": "Descripción del documento",
   "funcion": null
@@ -875,11 +875,23 @@ Crear un nuevo documento de legajo asociado opcionalmente al DNI para auditoría
     "numeroDocumento": 123,
     "añoDocumento": 2024,
     "fecha": "2024-01-15",
-    "fechaValida": null,
+    "fechaDocumento": null,
     "descripcion": "Resolución de designación"
   }
 }
 ```
+
+**Campos del objeto `documento`:**
+
+| Campo | Tipo | Requerido | Descripción |
+| :--- | :--- | :--- | :--- |
+| `tipoDocumento` | string \| number | sí | Tipo de documento o código del tipo. |
+| `areaId` | number? | no | ID del área emisora. |
+| `numeroDocumento` | number | sí | Número correlativo del documento. |
+| `añoDocumento` | number | sí | Año de emisión del documento. |
+| `fecha` | string | sí | Fecha principal del documento / vigencia (`YYYY-MM-DD`). |
+| `fechaDocumento` | string? | no | Fecha de documento complementaria (`YYYY-MM-DD`). Reemplaza al campo anterior `fechaValida` (acepta alias `fechaDocumento`, `fechaValida`, `fecha_documento`, `fecha_valida`). |
+| `descripcion` | string | sí | Asunto o descripción del documento. |
 
 **Respuesta:**
 
@@ -908,7 +920,7 @@ Editar un documento existente.
     "numeroDocumento": 123,
     "añoDocumento": 2024,
     "fecha": "2024-01-15",
-    "fechaValida": null,
+    "fechaDocumento": null,
     "descripcion": "Descripción del documento"
   }
 }
@@ -1008,7 +1020,7 @@ Registrar un nuevo trabajador en el sistema. Realiza las siguientes operaciones 
     "numeroDocumento": 123,
     "añoDocumento": 2024,
     "fecha": "2024-01-15",
-    "fechaValida": null,
+    "fechaDocumento": null,
     "descripcion": "Contratación"
   },
   "regimen": 1,
@@ -1043,7 +1055,7 @@ Registrar renuncia de un vínculo. El campo `id` del body es el ID del vínculo.
   "numeroDocumento": 456,
   "añoDocumento": 2024,
   "fecha": "2024-06-15",
-  "fechaValida": null,
+  "fechaDocumento": null,
   "descripcion": "Renuncia voluntaria"
 }
 ```
@@ -1089,7 +1101,7 @@ Agregar o cerrar un evento de vínculo laboral (`rotacion`, `encargo_puesto`, `e
     "numeroDocumento": 789,
     "añoDocumento": 2024,
     "fecha": "2024-03-01",
-    "fechaValida": "2024-06-30",
+    "fechaDocumento": "2024-06-30",
     "descripcion": "Resolución de encargo de puesto de Subgerente"
   },
   "documento_salida": null,
@@ -1113,7 +1125,7 @@ Agregar o cerrar un evento de vínculo laboral (`rotacion`, `encargo_puesto`, `e
     "numeroDocumento": 999,
     "añoDocumento": 2024,
     "fecha": "2024-06-01",
-    "fechaValida": null,
+    "fechaDocumento": null,
     "descripcion": "Resolución de destitución por abandono de cargo"
   },
   "estado": null
@@ -1177,17 +1189,23 @@ Obtiene la lista de todos los eventos registrados en la tabla `eventovinculo` pa
     "tipo_doc_inicio": "RESOLUCION DE ALCALDIA",
     "numero_doc_inicio": "789-2024-ALC",
     "fecha_inicio": "2024-03-01",
-    "fecha_valida_inicio": "2024-06-30",
+    "fecha_documento_inicio": "2024-06-30",
     "descrip_inicio": "Resolución de encargo de puesto de Subgerente",
     "doc_salida_id": null,
     "tipo_doc_salida": null,
     "numero_doc_salida": null,
     "fecha_salida": null,
-    "fecha_valida_salida": null,
+    "fecha_documento_salida": null,
     "descrip_salida": null
   }
 ]
 ```
+
+> **Nota sobre campos de fechas en eventos:**
+> - `fecha_inicio`: Fecha de inicio efectiva del evento.
+> - `fecha_documento_inicio`: Fecha de emisión del documento de inicio (anteriormente denominado `fecha_valida_inicio`).
+> - `fecha_salida`: Fecha de término o cese efectivo del evento.
+> - `fecha_documento_salida`: Fecha de emisión del documento de salida (anteriormente denominado `fecha_valida_salida`).
 
 ---
 
@@ -1214,7 +1232,7 @@ Registra un **cambio definitivo** de área de un vínculo. Distinto a una rotaci
     "numeroDocumento": 789,
     "añoDocumento": 2024,
     "fecha": "2024-03-01",
-    "fechaValida": null,
+    "fechaDocumento": null,
     "descripcion": "Cambio de área"
   }
 }
@@ -1457,7 +1475,7 @@ Sube un archivo PDF (máx. 20 MB) y lo vincula a múltiples trabajadores creando
 | `numero`            | string  | sí                                         |
 | `year`              | number  | sí                                         |
 | `fecha`             | string  | sí                                         |
-| `fecha_valida`      | string? | no                                         |
+| `fecha_documento`   | string? | no (acepta también `fecha_valida`)         |
 | `descripcion`       | string  | sí                                         |
 | `nombre_archivo`    | string? | no                                         |
 | `dnis`              | string  | sí (lista separada por comas o JSON array) |
@@ -1698,7 +1716,7 @@ Obtener un documento por su ID.
   "numeroDocumento": 123,
   "añoDocumento": 2026,
   "fecha": "2026-01-15",
-  "fechaValida": "2026-12-31",
+  "fechaDocumento": "2026-12-31",
   "conv": null,
   "descripcion": "Resolución de nombramiento",
   "funcion": null
@@ -1722,7 +1740,7 @@ Crear un nuevo documento.
     "numeroDocumento": 123,
     "añoDocumento": 2026,
     "fecha": "2026-01-15",
-    "fechaValida": "2026-12-31",
+    "fechaDocumento": "2026-12-31",
     "descripcion": "Resolución de nombramiento"
   }
 }
@@ -1755,7 +1773,7 @@ Editar un documento existente.
     "numeroDocumento": 124,
     "añoDocumento": 2026,
     "fecha": "2026-01-15",
-    "fechaValida": "2026-12-31",
+    "fechaDocumento": "2026-12-31",
     "descripcion": "Resolución corregida"
   }
 }
@@ -1963,13 +1981,13 @@ Obtiene el historial consolidado de vínculos laborales de un trabajador por su 
         "tipo_doc_inicio": "MEMORANDO",
         "numero_doc_inicio": "080-2024-MDEV",
         "fecha_inicio": "2024-06-01",
-        "fecha_valida_inicio": "2024-06-01",
+        "fecha_documento_inicio": "2024-06-01",
         "descrip_inicio": "Rotación por necesidad de servicio",
         "doc_salida_id": null,
         "tipo_doc_salida": null,
         "numero_doc_salida": null,
         "fecha_salida": null,
-        "fecha_valida_salida": null,
+        "fecha_documento_salida": null,
         "descrip_salida": null
       }
     ],
