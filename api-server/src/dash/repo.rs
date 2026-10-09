@@ -1098,17 +1098,24 @@ pub async fn get_alerta_70_anos(pool: &MySqlPool) -> Result<Vec<Alerta70Anos>, A
 
             let estado = match edad_actual {
                 69 => {
-                    if hoy.month() == nacimiento.month() {
-                        let dias_restantes = nacimiento.day() as i64 - hoy.day() as i64;
-                        if dias_restantes > 15 {
-                            Alertas::Atiempo
-                        } else if dias_restantes > 5 {
-                            Alertas::AlLimite
-                        } else {
-                            Alertas::Excedido
-                        }
-                    } else {
+                    let cumple_70 = NaiveDate::from_ymd_opt(
+                        nacimiento.year() + 70,
+                        nacimiento.month(),
+                        nacimiento.day(),
+                    )
+                    .unwrap_or_else(|| {
+                        NaiveDate::from_ymd_opt(nacimiento.year() + 70, nacimiento.month(), 28)
+                            .unwrap_or(nacimiento)
+                    });
+
+                    let dias_restantes = (cumple_70 - hoy).num_days();
+
+                    if dias_restantes > 15 {
                         Alertas::Atiempo
+                    } else if dias_restantes > 5 {
+                        Alertas::AlLimite
+                    } else {
+                        Alertas::Excedido
                     }
                 }
                 edad if edad >= 70 => {

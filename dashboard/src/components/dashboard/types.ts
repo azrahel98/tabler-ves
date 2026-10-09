@@ -52,10 +52,9 @@ export interface TrabajadorRenuncia {
   avatar?: string
 }
 
-export function resolveAvatarUrl(avatar?: string | null): string | null {
-  if (!avatar) return null
-  if (avatar.startsWith('http://') || avatar.startsWith('https://')) return avatar
+export function resolveAvatarUrl(dni?: string | null): string | null {
+  if (!dni) return null
   const baseUrl = getApiBaseUrl()
-  const cleanPath = avatar.startsWith('/') ? avatar : `/${avatar}`
-  return `${baseUrl}${cleanPath}`
+ return `${baseUrl}/personal/avatar/${dni}`
 }
+

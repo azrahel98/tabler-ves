@@ -25,3 +25,6 @@ dist-ssr
 *.md
 .agents
 .vscode
+
+graphify-out
+.impeccable

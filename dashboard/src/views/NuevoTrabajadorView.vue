@@ -30,10 +30,7 @@ import {
   type NuevoTrabajadorPayload,
 } from '@/services/personal'
 import {
-  IconUserPlus,
   IconArrowLeft,
-  IconLoader2,
-  IconCheck,
 } from '@tabler/icons-vue'
 
 const router = useRouter()
@@ -290,6 +287,16 @@ const retrocederPaso = () => {
   }
 }
 
+const onSelectStep = (step: 1 | 2 | 3) => {
+  if (step === 1) {
+    currentStep.value = 1
+  } else if (step === 2 && isStep1Valid.value) {
+    currentStep.value = 2
+  } else if (step === 3 && isStep1Valid.value && isStep2Valid.value) {
+    currentStep.value = 3
+  }
+}
+
 const onSubmitRegistro = async () => {
   if (!isStep1Valid.value) {
     currentStep.value = 1
@@ -358,128 +365,78 @@ const onSubmitRegistro = async () => {
 </script>
 
 <template>
-  <div class="space-y-6 max-w-7xl mx-auto pb-16">
-    <div
-      v-if="toastMessage"
-      class="fixed bottom-5 right-5 z-50 transition-all duration-300 transform translate-y-0"
-    >
-      <div
-        class="flex items-center gap-3 px-4 py-3 rounded-xl shadow-lg border text-xs font-medium backdrop-blur-md"
-        :class="toastMessage.type === 'success' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-600 dark:text-emerald-400' : 'bg-rose-500/10 border-rose-500/20 text-rose-600 dark:text-rose-400'"
-      >
-        <span
-          class="size-2 rounded-full shrink-0"
-          :class="toastMessage.type === 'success' ? 'bg-emerald-500' : 'bg-rose-500'"
-        ></span>
+  <div class="space-y-6 max-w-7xl mx-auto pb-[calc(4rem+env(safe-area-inset-bottom))]">
+    <div v-if="toastMessage" role="status" aria-live="polite"
+      class="fixed bottom-5 right-5 z-50 transition-all duration-300 transform translate-y-0">
+      <div class="flex items-center gap-3 px-4 py-3 rounded-xl shadow-lg border text-xs font-medium backdrop-blur-md"
+        :class="toastMessage.type === 'success' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-600 dark:text-emerald-400' : 'bg-rose-500/10 border-rose-500/20 text-rose-600 dark:text-rose-400'">
+        <span class="size-2 rounded-full shrink-0"
+          :class="toastMessage.type === 'success' ? 'bg-emerald-500' : 'bg-rose-500'"></span>
         <span>{{ toastMessage.text }}</span>
       </div>
     </div>
 
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-border pb-4">
-      <div class="space-y-1">
-        <div class="flex items-center gap-2">
-          <button
-            type="button"
-            class="p-1.5 rounded-lg border border-border bg-card text-muted-foreground hover:text-foreground hover:bg-muted transition-colors cursor-pointer"
-            title="Volver"
-            @click="router.back()"
-          >
-            <IconArrowLeft class="size-4" />
-          </button>
-          <h1 class="text-xl font-bold tracking-tight text-foreground flex items-center gap-2">
-            <IconUserPlus class="size-5 text-primary shrink-0" />
+    <div class="flex items-center justify-between gap-4 border-b border-border/70 pb-3">
+      <div class="flex items-center gap-2.5 min-w-0">
+        <button
+          type="button"
+          class="size-8 inline-flex items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-colors cursor-pointer shrink-0"
+          title="Volver"
+          aria-label="Volver a la página anterior"
+          @click="router.back()"
+        >
+          <IconArrowLeft class="size-4" aria-hidden="true" />
+        </button>
+        <div class="h-4 w-px bg-border shrink-0" aria-hidden="true"></div>
+        <div class="min-w-0">
+          <h1 class="text-sm sm:text-base font-semibold tracking-tight text-foreground truncate">
             Alta de Nuevo Servidor Público
           </h1>
+          <p class="text-xs text-muted-foreground truncate hidden sm:block">
+            Registro de identidad, vínculo laboral y sustento
+          </p>
         </div>
-        <p class="text-xs text-muted-foreground pl-8">
-          Registro integral de identidad, vínculo laboral y documento de ingreso.
-        </p>
       </div>
 
-      <div class="flex items-center gap-2">
-        <Button variant="outline" size="sm" class="gap-1.5 text-xs cursor-pointer" @click="router.push('/panel')">
-          Cancelar
-        </Button>
+      <div class="flex items-center gap-2 shrink-0">
         <Button
-          variant="primary"
+          variant="ghost"
           size="sm"
-          class="gap-1.5 text-xs cursor-pointer"
-          :disabled="isSubmitting || !isFormValid"
-          @click="onSubmitRegistro"
+          class="text-xs text-muted-foreground hover:text-foreground cursor-pointer"
+          @click="router.push('/panel')"
         >
-          <IconLoader2 v-if="isSubmitting" class="size-3.5 animate-spin" />
-          <IconCheck v-else class="size-3.5" />
-          <span>{{ isSubmitting ? 'Guardando...' : 'Finalizar Registro' }}</span>
+          Cancelar
         </Button>
       </div>
     </div>
 
-    <NuevoTrabajadorStepper
-      :current-step="currentStep"
-      :is-step1-valid="isStep1Valid"
-      :is-step2-valid="isStep2Valid"
-      :is-step3-valid="isStep3Valid"
-      @select-step="(s) => (currentStep = s)"
-    />
+    <NuevoTrabajadorStepper :current-step="currentStep" :is-step1-valid="isStep1Valid" :is-step2-valid="isStep2Valid"
+      :is-step3-valid="isStep3Valid" @select-step="onSelectStep" />
 
     <div class="grid grid-cols-1 xl:grid-cols-12 gap-6 items-start">
       <div class="xl:col-span-8 space-y-6">
-        <StepIdentidad
-          v-show="currentStep === 1"
-          :personal="formData.personal"
-          :is-consultando-reniec="isConsultandoReniec"
-          :reniec-success="reniecSuccess"
-          :reniec-error="reniecError"
-          :is-valid="isStep1Valid"
-          @consultar-reniec="onConsultarReniec"
-          @siguiente="avanzarPaso"
-        />
+        <StepIdentidad v-show="currentStep === 1" :personal="formData.personal"
+          :is-consultando-reniec="isConsultandoReniec" :reniec-success="reniecSuccess" :reniec-error="reniecError"
+          :is-valid="isStep1Valid" @consultar-reniec="onConsultarReniec" @siguiente="avanzarPaso" />
 
-        <StepVinculoLaboral
-          v-show="currentStep === 2"
-          :plaza="formData.plaza"
-          :areas="areas"
-          :cargos="cargos"
-          :regimenes="regímenesDisponibles"
-          :total-vacantes="plazasVacantes.length"
-          :is-valid="isStep2Valid"
-          @abrir-vacantes="isVacantesModalOpen = true"
-          @cambio-codigo-plaza="onCambioCodigoPlazaManual"
-          @regimen-change="onRegimenChange"
-          @anterior="retrocederPaso"
-          @siguiente="avanzarPaso"
-        />
+        <StepVinculoLaboral v-show="currentStep === 2" :plaza="formData.plaza" :areas="areas" :cargos="cargos"
+          :regimenes="regímenesDisponibles" :total-vacantes="plazasVacantes.length" :is-valid="isStep2Valid"
+          @abrir-vacantes="isVacantesModalOpen = true" @cambio-codigo-plaza="onCambioCodigoPlazaManual"
+          @regimen-change="onRegimenChange" @anterior="retrocederPaso" @siguiente="avanzarPaso" />
 
-        <StepDocumentoSustento
-          v-show="currentStep === 3"
-          :documento="formData.documento"
-          :tipos-documento="tiposDocumento"
-          :is-submitting="isSubmitting"
-          :can-submit="isFormValid"
-          @anterior="retrocederPaso"
-          @submit="onSubmitRegistro"
-        />
+        <StepDocumentoSustento v-show="currentStep === 3" :documento="formData.documento"
+          :tipos-documento="tiposDocumento" :is-submitting="isSubmitting" :can-submit="isFormValid"
+          @anterior="retrocederPaso" @submit="onSubmitRegistro" />
       </div>
 
       <div class="xl:col-span-4 space-y-4 sticky top-6">
-        <FichaResumen
-          :personal="formData.personal"
-          :plaza="formData.plaza"
-          :documento="formData.documento"
-          :cargo-nombre="cargoSeleccionadoNombre"
-          :area-nombre="areaSeleccionadaNombre"
-          :tipo-doc-nombre="tipoDocSeleccionadoNombre"
-          :nombre-completo="nombreCompleto"
-          :is-form-valid="isFormValid"
-        />
+        <FichaResumen :personal="formData.personal" :plaza="formData.plaza" :documento="formData.documento"
+          :cargo-nombre="cargoSeleccionadoNombre" :area-nombre="areaSeleccionadaNombre"
+          :tipo-doc-nombre="tipoDocSeleccionadoNombre" :nombre-completo="nombreCompleto" :is-form-valid="isFormValid" />
       </div>
     </div>
 
-    <ModalVacantes
-      :is-open="isVacantesModalOpen"
-      :vacantes="plazasVacantes"
-      @update:is-open="(val) => (isVacantesModalOpen = val)"
-      @seleccionar="seleccionarPlazaVacante"
-    />
+    <ModalVacantes :is-open="isVacantesModalOpen" :vacantes="plazasVacantes"
+      @update:is-open="(val) => (isVacantesModalOpen = val)" @seleccionar="seleccionarPlazaVacante" />
   </div>
 </template>

@@ -30,6 +30,7 @@ export interface DataTableColumn {
   visible?: boolean
   filterable?: boolean
   filterPlaceholder?: string
+  sortFn?: (a: any, b: any, direction: 'asc' | 'desc') => number
 }
 
 interface Props {
@@ -53,6 +54,8 @@ interface Props {
   exportable?: boolean
   exportFilename?: string
   paginationVariant?: 'simple' | 'numbered'
+  defaultSortColumn?: string
+  defaultSortDirection?: 'asc' | 'desc'
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -73,6 +76,8 @@ const props = withDefaults(defineProps<Props>(), {
   exportable: false,
   exportFilename: 'export',
   paginationVariant: 'numbered',
+  defaultSortColumn: undefined,
+  defaultSortDirection: 'asc',
 })
 
 const emit = defineEmits<{
@@ -81,8 +86,8 @@ const emit = defineEmits<{
 }>()
 
 const searchQuery = ref('')
-const sortColumn = ref<string | null>(null)
-const sortDirection = ref<'asc' | 'desc'>('asc')
+const sortColumn = ref<string | null>(props.defaultSortColumn ?? null)
+const sortDirection = ref<'asc' | 'desc'>(props.defaultSortDirection ?? 'asc')
 const currentPage = ref(1)
 const currentPageSize = ref(props.pageSize)
 const isColumnsMenuOpen = ref(false)
@@ -169,8 +174,13 @@ const sortedData = computed(() => {
 
   const colKey = sortColumn.value
   const dir = sortDirection.value === 'asc' ? 1 : -1
+  const colDef = props.columns.find((c) => c.key === colKey)
 
   return [...filteredData.value].sort((a, b) => {
+    if (colDef?.sortFn) {
+      return colDef.sortFn(a, b, sortDirection.value)
+    }
+
     const aVal = a[colKey]
     const bVal = b[colKey]
 
@@ -320,27 +330,18 @@ const totalColumnsCount = computed(() => {
 
 <template>
   <div class="space-y-3 w-full">
-    <div
-      v-if="searchable || showColumnVisibility || exportable || $slots.toolbar"
-      class="flex flex-col sm:flex-row sm:items-center justify-between gap-3"
-    >
+    <div v-if="searchable || showColumnVisibility || exportable || $slots.toolbar"
+      class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
       <div class="flex items-center gap-2 flex-1 max-w-sm">
         <div v-if="searchable" class="relative w-full">
           <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-muted-foreground">
             <IconSearch class="size-4" :stroke-width="2" />
           </div>
-          <input
-            v-model="searchQuery"
-            type="text"
-            :placeholder="searchPlaceholder"
-            class="w-full bg-card border border-border text-foreground placeholder:text-muted-foreground/70 pl-9 pr-8 py-1.5 text-xs sm:text-sm rounded-lg outline-none focus:border-primary focus:ring-1 focus:ring-primary transition"
-          />
-          <button
-            v-if="searchQuery"
-            type="button"
+          <input v-model="searchQuery" type="text" :placeholder="searchPlaceholder"
+            class="w-full bg-card border border-border text-foreground placeholder:text-muted-foreground/70 pl-9 pr-8 py-1.5 text-xs sm:text-sm rounded-lg outline-none focus:border-primary focus:ring-1 focus:ring-primary transition" />
+          <button v-if="searchQuery" type="button"
             class="absolute inset-y-0 right-0 pr-2.5 flex items-center text-muted-foreground hover:text-foreground cursor-pointer"
-            @click="searchQuery = ''"
-          >
+            @click="searchQuery = ''">
             <IconX class="size-3.5" :stroke-width="2" />
           </button>
         </div>
@@ -348,62 +349,44 @@ const totalColumnsCount = computed(() => {
 
       <div class="flex items-center gap-2 self-end sm:self-auto shrink-0">
         <div v-if="showColumnVisibility" class="relative">
-          <button
-            type="button"
+          <button type="button"
             class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-foreground bg-card border border-border rounded-lg hover:bg-muted focus:outline-hidden transition cursor-pointer"
-            @click="isColumnsMenuOpen = !isColumnsMenuOpen"
-          >
+            @click="isColumnsMenuOpen = !isColumnsMenuOpen">
             <IconColumns class="size-3.5 text-muted-foreground" :stroke-width="2" />
             <span>Columnas</span>
-            <IconChevronDown class="size-3 text-muted-foreground transition-transform" :class="isColumnsMenuOpen ? 'rotate-180' : ''" :stroke-width="2" />
+            <IconChevronDown class="size-3 text-muted-foreground transition-transform"
+              :class="isColumnsMenuOpen ? 'rotate-180' : ''" :stroke-width="2" />
           </button>
 
-          <div
-            v-if="isColumnsMenuOpen"
-            class="fixed inset-0 z-20"
-            @click="isColumnsMenuOpen = false"
-          ></div>
+          <div v-if="isColumnsMenuOpen" class="fixed inset-0 z-20" @click="isColumnsMenuOpen = false"></div>
 
-          <div
-            v-if="isColumnsMenuOpen"
-            class="absolute right-0 mt-1.5 w-48 bg-card border border-border rounded-xl shadow-lg p-2 z-30 text-xs space-y-1"
-          >
-            <div class="px-2 py-1 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider border-b border-border">
+          <div v-if="isColumnsMenuOpen"
+            class="absolute right-0 mt-1.5 w-48 bg-card border border-border rounded-xl shadow-lg p-2 z-30 text-xs space-y-1">
+            <div
+              class="px-2 py-1 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider border-b border-border">
               Visibilidad de columnas
             </div>
             <div class="max-h-48 overflow-y-auto py-1 space-y-1">
-              <label
-                v-for="col in columns"
-                :key="col.key"
-                class="flex items-center gap-2 px-2 py-1 rounded hover:bg-muted cursor-pointer select-none text-foreground"
-              >
-                <input
-                  type="checkbox"
-                  :checked="columnVisibilityMap[col.key] !== false"
+              <label v-for="col in columns" :key="col.key"
+                class="flex items-center gap-2 px-2 py-1 rounded hover:bg-muted cursor-pointer select-none text-foreground">
+                <input type="checkbox" :checked="columnVisibilityMap[col.key] !== false"
                   class="size-3.5 rounded border-border text-primary focus:ring-primary/20"
-                  @change="toggleColumnVisibility(col.key)"
-                />
+                  @change="toggleColumnVisibility(col.key)" />
                 <span class="truncate">{{ col.label }}</span>
               </label>
             </div>
           </div>
         </div>
 
-        <DataTableExport
-          v-if="exportable"
-          :data="sortedData"
-          :columns="visibleColumns.map(c => ({ key: c.key, label: c.label }))"
-          :filename="exportFilename"
-        />
+        <DataTableExport v-if="exportable" :data="sortedData"
+          :columns="visibleColumns.map(c => ({ key: c.key, label: c.label }))" :filename="exportFilename" />
 
         <slot name="toolbar" />
       </div>
     </div>
 
-    <div
-      v-if="selectable && selectedKeys.length > 0"
-      class="flex items-center justify-between px-3 py-2 bg-primary/5 border border-primary/20 rounded-lg text-xs"
-    >
+    <div v-if="selectable && selectedKeys.length > 0"
+      class="flex items-center justify-between px-3 py-2 bg-primary/5 border border-primary/20 rounded-lg text-xs">
       <span class="font-medium text-primary">
         {{ selectedKeys.length }} {{ selectedKeys.length === 1 ? 'registro seleccionado' : 'registros seleccionados' }}
       </span>
@@ -412,55 +395,32 @@ const totalColumnsCount = computed(() => {
       </div>
     </div>
 
-    <div
-      class="bg-card rounded-xl border border-border overflow-hidden"
-      :class="maxHeight ? 'overflow-y-auto' : ''"
-      :style="maxHeight ? { maxHeight: maxHeight } : undefined"
-    >
+    <div class="bg-card rounded-xl border border-border overflow-hidden" :class="maxHeight ? 'overflow-y-auto' : ''"
+      :style="maxHeight ? { maxHeight: maxHeight } : undefined">
       <Table>
         <TableHeader :class="stickyHeader ? 'sticky top-0 z-10 bg-card shadow-xs' : ''">
           <TableRow :hoverable="false">
             <TableHead v-if="selectable" class="w-10 px-4">
               <div class="relative flex items-center justify-center">
-                <input
-                  type="checkbox"
-                  :checked="isAllSelected"
-                  :indeterminate="isSomeSelected"
+                <input type="checkbox" :checked="isAllSelected" :indeterminate="isSomeSelected"
                   class="size-4 rounded border-border text-primary focus:ring-primary/30 cursor-pointer"
-                  @change="handleSelectAll"
-                />
+                  @change="handleSelectAll" />
               </div>
             </TableHead>
 
-            <TableHead
-              v-for="col in visibleColumns"
-              :key="col.key"
-              :align="col.align"
+            <TableHead v-for="col in visibleColumns" :key="col.key" :align="col.align"
               :style="col.width ? { width: col.width } : undefined"
               :class="[col.sortable ? 'cursor-pointer select-none hover:text-foreground' : '']"
-              @click="handleSort(col)"
-            >
-              <div
-                class="inline-flex items-center gap-1.5"
-                :class="col.align === 'right' ? 'justify-end w-full' : col.align === 'center' ? 'justify-center w-full' : ''"
-              >
+              @click="handleSort(col)">
+              <div class="inline-flex items-center gap-1.5"
+                :class="col.align === 'right' ? 'justify-end w-full' : col.align === 'center' ? 'justify-center w-full' : ''">
                 <span>{{ col.label }}</span>
                 <span v-if="col.sortable" class="text-muted-foreground/70">
-                  <IconChevronUp
-                    v-if="sortColumn === col.key && sortDirection === 'asc'"
-                    class="size-3.5 text-primary"
-                    :stroke-width="2.5"
-                  />
-                  <IconChevronDown
-                    v-else-if="sortColumn === col.key && sortDirection === 'desc'"
-                    class="size-3.5 text-primary"
-                    :stroke-width="2.5"
-                  />
-                  <IconSelector
-                    v-else
-                    class="size-3.5 opacity-40 hover:opacity-100"
-                    :stroke-width="2"
-                  />
+                  <IconChevronUp v-if="sortColumn === col.key && sortDirection === 'asc'" class="size-3.5 text-primary"
+                    :stroke-width="2.5" />
+                  <IconChevronDown v-else-if="sortColumn === col.key && sortDirection === 'desc'"
+                    class="size-3.5 text-primary" :stroke-width="2.5" />
+                  <IconSelector v-else class="size-3.5 opacity-40 hover:opacity-100" :stroke-width="2" />
                 </span>
               </div>
             </TableHead>
@@ -468,70 +428,39 @@ const totalColumnsCount = computed(() => {
 
           <TableRow v-if="columnFilters" :hoverable="false" class="bg-muted/20 border-t border-border">
             <TableHead v-if="selectable" class="w-10 px-4" />
-            <TableHead
-              v-for="col in visibleColumns"
-              :key="`filter-${col.key}`"
-              class="px-3 py-1.5"
-            >
-              <input
-                v-if="col.filterable !== false"
-                v-model="columnFiltersMap[col.key]"
-                type="text"
+            <TableHead v-for="col in visibleColumns" :key="`filter-${col.key}`" class="px-3 py-1.5">
+              <input v-if="col.filterable !== false" v-model="columnFiltersMap[col.key]" type="text"
                 :placeholder="col.filterPlaceholder || `Filtrar ${col.label.toLowerCase()}...`"
                 class="w-full bg-card border border-border text-foreground placeholder:text-muted-foreground/60 px-2 py-1 text-xs rounded outline-none focus:border-primary"
-                @click.stop
-              />
+                @click.stop />
             </TableHead>
           </TableRow>
         </TableHeader>
 
         <TableBody>
-          <TableEmpty
-            v-if="loading"
-            :colspan="totalColumnsCount"
-          >
+          <TableEmpty v-if="loading" :colspan="totalColumnsCount">
             <div class="flex items-center justify-center gap-2 py-6">
               <IconLoader2 class="animate-spin size-5 text-primary" :stroke-width="2" />
               <span class="text-sm font-medium text-foreground">Cargando registros...</span>
             </div>
           </TableEmpty>
 
-          <TableEmpty
-            v-else-if="!paginatedData.length"
-            :colspan="totalColumnsCount"
-            :message="emptyMessage"
-          >
+          <TableEmpty v-else-if="!paginatedData.length" :colspan="totalColumnsCount" :message="emptyMessage">
             <slot name="empty" />
           </TableEmpty>
 
-          <TableRow
-            v-for="(row, idx) in paginatedData"
-            :key="String(getRowId(row))"
-            :selected="isRowSelected(row)"
-            @click="emit('row-click', row)"
-          >
+          <TableRow v-for="(row, idx) in paginatedData" :key="String(getRowId(row))" :selected="isRowSelected(row)"
+            @click="emit('row-click', row)">
             <TableCell v-if="selectable" class="w-10 px-4" @click.stop>
               <div class="relative flex items-center justify-center">
-                <input
-                  type="checkbox"
-                  :checked="isRowSelected(row)"
+                <input type="checkbox" :checked="isRowSelected(row)"
                   class="size-4 rounded border-border text-primary focus:ring-primary/30 cursor-pointer"
-                  @change="toggleRowSelection(row)"
-                />
+                  @change="toggleRowSelection(row)" />
               </div>
             </TableCell>
 
-            <TableCell
-              v-for="col in visibleColumns"
-              :key="col.key"
-              :align="col.align"
-            >
-              <slot
-                :name="`cell-${col.key}`"
-                :row="row"
-                :value="row[col.key]"
-                :index="idx"
-              >
+            <TableCell v-for="col in visibleColumns" :key="col.key" :align="col.align">
+              <slot :name="`cell-${col.key}`" :row="row" :value="row[col.key]" :index="idx">
                 {{ row[col.key] }}
               </slot>
             </TableCell>
@@ -539,20 +468,18 @@ const totalColumnsCount = computed(() => {
         </TableBody>
       </Table>
 
-      <div
-        v-if="paginated && sortedData.length > 0"
-        class="p-3 sm:p-4 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-3 bg-muted/10 text-xs text-muted-foreground"
-      >
+      <div v-if="paginated && sortedData.length > 0"
+        class="p-3 sm:p-4 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-3 bg-muted/10 text-xs text-muted-foreground">
         <div class="flex items-center gap-3">
           <span>
-            Mostrando <strong class="text-foreground font-semibold">{{ startRecord }}</strong> a <strong class="text-foreground font-semibold">{{ endRecord }}</strong> de <strong class="text-foreground font-semibold">{{ sortedData.length }}</strong> resultados
+            Mostrando <strong class="text-foreground font-semibold">{{ startRecord }}</strong> a <strong
+              class="text-foreground font-semibold">{{ endRecord }}</strong> de <strong
+              class="text-foreground font-semibold">{{ sortedData.length }}</strong> resultados
           </span>
 
           <div class="flex items-center gap-1.5">
-            <select
-              v-model.number="currentPageSize"
-              class="bg-card border border-border rounded-lg px-2 py-1 text-foreground text-xs outline-none focus:border-primary"
-            >
+            <select v-model.number="currentPageSize"
+              class="bg-card border border-border rounded-lg px-2 py-1 text-foreground text-xs outline-none focus:border-primary">
               <option v-for="size in pageSizeOptions" :key="size" :value="size">
                 {{ size }} por pág.
               </option>
@@ -561,47 +488,30 @@ const totalColumnsCount = computed(() => {
         </div>
 
         <div v-if="paginationVariant === 'numbered'" class="flex items-center gap-1">
-          <button
-            type="button"
+          <button type="button"
             class="p-1.5 rounded-lg border border-border bg-card text-foreground hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed transition"
-            :disabled="currentPage <= 1"
-            aria-label="Página anterior"
-            @click="prevPage"
-          >
+            :disabled="currentPage <= 1" aria-label="Página anterior" @click="prevPage">
             <IconChevronLeft class="size-4" :stroke-width="2" />
           </button>
 
           <template v-for="(p, i) in visiblePages" :key="i">
             <span v-if="p === '...'" class="px-2 text-muted-foreground">...</span>
-            <button
-              v-else
-              type="button"
-              class="min-w-8 h-8 px-2 rounded-lg text-xs font-semibold transition"
+            <button v-else type="button" class="min-w-8 h-8 px-2 rounded-lg text-xs font-semibold transition"
               :class="currentPage === p ? 'bg-primary text-primary-foreground' : 'bg-card border border-border text-foreground hover:bg-muted'"
-              @click="goToPage(Number(p))"
-            >
+              @click="goToPage(Number(p))">
               {{ p }}
             </button>
           </template>
 
-          <button
-            type="button"
+          <button type="button"
             class="p-1.5 rounded-lg border border-border bg-card text-foreground hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed transition"
-            :disabled="currentPage >= totalPages"
-            aria-label="Página siguiente"
-            @click="nextPage"
-          >
+            :disabled="currentPage >= totalPages" aria-label="Página siguiente" @click="nextPage">
             <IconChevronRight class="size-4" :stroke-width="2" />
           </button>
         </div>
 
         <div v-else class="flex items-center gap-1">
-          <Button
-            variant="outline"
-            size="xs"
-            :disabled="currentPage <= 1"
-            @click="prevPage"
-          >
+          <Button variant="outline" size="xs" :disabled="currentPage <= 1" @click="prevPage">
             Anterior
           </Button>
 
@@ -609,12 +519,7 @@ const totalColumnsCount = computed(() => {
             {{ currentPage }} / {{ totalPages }}
           </span>
 
-          <Button
-            variant="outline"
-            size="xs"
-            :disabled="currentPage >= totalPages"
-            @click="nextPage"
-          >
+          <Button variant="outline" size="xs" :disabled="currentPage >= totalPages" @click="nextPage">
             Siguiente
           </Button>
         </div>

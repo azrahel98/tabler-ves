@@ -25,23 +25,46 @@ const searchQuery = ref<string>('')
 const searchResults = ref<PersonalSearchResult[]>([])
 const isSearching = ref<boolean>(false)
 
+let currentAbortController: AbortController | null = null
+
 watch(
   () => props.isOpen,
   (open) => {
     if (!open) {
+      if (currentAbortController) {
+        currentAbortController.abort()
+        currentAbortController = null
+      }
       searchQuery.value = ''
       searchResults.value = []
+      isSearching.value = false
     }
   },
 )
 
 const handleSearch = async () => {
-  if (!searchQuery.value.trim()) return
+  const query = searchQuery.value.trim()
+  if (query.length < 3) return
+
+  if (currentAbortController) {
+    currentAbortController.abort()
+  }
+  const controller = new AbortController()
+  currentAbortController = controller
+
   isSearching.value = true
   try {
-    searchResults.value = await buscarTrabajadores(searchQuery.value.trim())
+    const data = await buscarTrabajadores(query, controller.signal)
+    if (controller.signal.aborted) return
+    searchResults.value = data
+  } catch {
+    if (controller.signal.aborted) return
+    searchResults.value = []
   } finally {
-    isSearching.value = false
+    if (currentAbortController === controller) {
+      isSearching.value = false
+      currentAbortController = null
+    }
   }
 }
 
@@ -82,7 +105,7 @@ const irANuevoTrabajador = () => {
             aria-label="Término de búsqueda de servidor"
             class="flex-1 h-9 px-3 text-xs rounded-lg border border-border bg-background-1 text-foreground placeholder:text-muted-foreground focus:outline-hidden focus:border-primary"
             @keyup.enter="handleSearch" />
-          <Button size="sm" variant="primary" :disabled="isSearching" @click="handleSearch">
+          <Button size="sm" variant="primary" :disabled="isSearching || searchQuery.trim().length < 3" @click="handleSearch">
             <span>{{ isSearching ? 'Buscando...' : 'Buscar' }}</span>
           </Button>
         </div>

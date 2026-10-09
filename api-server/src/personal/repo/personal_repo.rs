@@ -5,26 +5,65 @@ use crate::personal::models::{
 use sqlx::MySqlPool;
 pub async fn buscar_por_nombre(
     db: &MySqlPool,
-    nombre_like: &str,
+    query_str: &str,
 ) -> Result<Vec<Persona>, sqlx::Error> {
+    let ft_tokens: Vec<String> = query_str
+        .split_whitespace()
+        .map(|w| {
+            let clean: String = w.chars().filter(|c| c.is_alphanumeric()).collect();
+            format!("+{}*", clean)
+        })
+        .filter(|w| w.len() > 2)
+        .collect();
+
+    if !ft_tokens.is_empty() {
+        let ft_query = ft_tokens.join(" ");
+        let results = sqlx::query_as!(
+            Persona,
+            r#"
+            SELECT
+                concat_ws(" ", dg.nombre, dg.apaterno, dg.amaterno) AS nombre,
+                v.dni,
+                MIN(v.estado) AS estado,
+                dg.sexo AS sexo,
+                MAX(dg.avatar) AS avatar
+            FROM persona dg
+            INNER JOIN vinculo v ON dg.dni = v.dni
+            WHERE MATCH(dg.nombre, dg.apaterno, dg.amaterno) AGAINST(? IN BOOLEAN MODE)
+            GROUP BY v.dni
+            ORDER BY v.estado ASC, concat_ws(" ", dg.nombre, dg.apaterno, dg.amaterno) DESC
+            LIMIT 50
+            "#,
+            ft_query
+        )
+        .fetch_all(db)
+        .await?;
+
+        if !results.is_empty() {
+            return Ok(results);
+        }
+    }
+
+    let nombre_like = format!("%{}%", query_str.trim());
     sqlx::query_as!(
         Persona,
         r#"
-        select
-        concat_ws(" ",dg.nombre,dg.apaterno,dg.amaterno) nombre,
-        v.dni,
-        MIN(v.estado) AS estado,
-        dg.sexo sexo,
-        MAX(dg.avatar) AS avatar
-        from
-        persona dg
-        inner join vinculo v on dg.dni = v.dni
+        SELECT
+            concat_ws(" ", dg.nombre, dg.apaterno, dg.amaterno) AS nombre,
+            v.dni,
+            MIN(v.estado) AS estado,
+            dg.sexo AS sexo,
+            MAX(dg.avatar) AS avatar
+        FROM persona dg
+        INNER JOIN vinculo v ON dg.dni = v.dni
         WHERE
-        concat_ws(" ",dg.nombre,dg.apaterno,dg.amaterno) LIKE ?
-        GROUP BY
-        v.dni
-        order by v.estado asc,concat_ws(" ",dg.nombre,dg.apaterno,dg.amaterno)  desc
+            concat_ws(" ", dg.nombre, dg.apaterno, dg.amaterno) LIKE ?
+            OR concat_ws(" ", dg.apaterno, dg.amaterno, dg.nombre) LIKE ?
+        GROUP BY v.dni
+        ORDER BY v.estado ASC, concat_ws(" ", dg.nombre, dg.apaterno, dg.amaterno) DESC
+        LIMIT 50
         "#,
+        nombre_like,
         nombre_like
     )
     .fetch_all(db)
@@ -149,13 +188,9 @@ pub async fn consultar_dni_local(
     .await
 }
 pub async fn actualizar_avatar(db: &MySqlPool, dni: &str, url: &str) -> Result<u64, sqlx::Error> {
-    let result = sqlx::query!(
-        "UPDATE persona SET avatar = ? WHERE dni = ?",
-        url,
-        dni
-    )
-    .execute(db)
-    .await?;
+    let result = sqlx::query!("UPDATE persona SET avatar = ? WHERE dni = ?", url, dni)
+        .execute(db)
+        .await?;
     Ok(result.rows_affected())
 }
 
@@ -232,17 +267,17 @@ mod tests {
         // Crear la tabla si aún no existe
         sqlx::query(
             r#"
-            CREATE TABLE IF NOT EXISTS `sunat_vinculo` ( 
-              `id` INT AUTO_INCREMENT NOT NULL,
-              `dni` VARCHAR(15) NOT NULL,
-              `fecha_inicio` DATE NOT NULL,
-              `fecha_cese` DATE NULL DEFAULT NULL,
-              `created_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
-              PRIMARY KEY (`id`),
-              INDEX `idx_sunat_dni` (`dni` ASC),
-              INDEX `idx_sunat_fechas` (`fecha_inicio` ASC, `fecha_cese` ASC)
-            ) ENGINE = InnoDB;
-            "#,
+                CREATE TABLE IF NOT EXISTS `sunat_vinculo` ( 
+                  `id` INT AUTO_INCREMENT NOT NULL,
+                  `dni` VARCHAR(15) NOT NULL,
+                  `fecha_inicio` DATE NOT NULL,
+                  `fecha_cese` DATE NULL DEFAULT NULL,
+                  `created_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+                  PRIMARY KEY (`id`),
+                  INDEX `idx_sunat_dni` (`dni` ASC),
+                  INDEX `idx_sunat_fechas` (`fecha_inicio` ASC, `fecha_cese` ASC)
+                ) ENGINE = InnoDB;
+                "#,
         )
         .execute(&pool)
         .await
@@ -250,6 +285,10 @@ mod tests {
 
         // Probar la consulta
         let res = get_sunat_vinculos_by_dni(&pool, "12345678").await;
-        assert!(res.is_ok(), "Query to sunat_vinculo failed: {:?}", res.err());
+        assert!(
+            res.is_ok(),
+            "Query to sunat_vinculo failed: {:?}",
+            res.err()
+        );
     }
 }

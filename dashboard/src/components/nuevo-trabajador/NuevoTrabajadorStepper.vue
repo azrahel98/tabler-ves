@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { IconCheck } from '@tabler/icons-vue'
 
-defineProps<{
+const props = defineProps<{
   currentStep: 1 | 2 | 3
   isStep1Valid: boolean
   isStep2Valid: boolean
@@ -11,21 +11,43 @@ defineProps<{
 const emit = defineEmits<{
   (e: 'selectStep', step: 1 | 2 | 3): void
 }>()
+
+const canNavigateTo = (step: 1 | 2 | 3): boolean => {
+  if (step === 1) return true
+  if (step === 2) return props.isStep1Valid
+  if (step === 3) return props.isStep1Valid && props.isStep2Valid
+  return false
+}
+
+const handleSelect = (step: 1 | 2 | 3) => {
+  if (canNavigateTo(step)) {
+    emit('selectStep', step)
+  }
+}
 </script>
 
 <template>
-  <div class="grid grid-cols-3 gap-2 sm:gap-4 select-none">
+  <nav class="grid grid-cols-3 gap-2 sm:gap-4 select-none" aria-label="Etapas de registro del trabajador">
     <button
       type="button"
-      class="flex items-center gap-2 sm:gap-3 p-2.5 sm:p-3 rounded-xl border text-left transition-all cursor-pointer"
-      :class="currentStep === 1 ? 'border-primary bg-primary/5 text-primary shadow-xs' : isStep1Valid ? 'border-border bg-card text-foreground' : 'border-border/60 bg-muted/20 text-muted-foreground'"
-      @click="emit('selectStep', 1)"
+      class="flex items-center gap-2 sm:gap-3 p-2.5 sm:p-3 rounded-xl border text-left transition-all"
+      :class="[
+        currentStep === 1
+          ? 'border-primary bg-primary/5 text-primary shadow-xs'
+          : isStep1Valid
+            ? 'border-border bg-card text-foreground cursor-pointer'
+            : 'border-border/60 bg-muted/20 text-muted-foreground',
+        !canNavigateTo(1) ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'
+      ]"
+      :aria-current="currentStep === 1 ? 'step' : undefined"
+      :disabled="!canNavigateTo(1)"
+      @click="handleSelect(1)"
     >
       <div
         class="size-7 rounded-lg flex items-center justify-center font-bold text-xs shrink-0"
         :class="currentStep === 1 ? 'bg-primary text-primary-foreground' : isStep1Valid ? 'bg-emerald-500/10 text-emerald-600 border border-emerald-500/20' : 'bg-muted text-muted-foreground'"
       >
-        <IconCheck v-if="isStep1Valid && currentStep !== 1" class="size-4" />
+        <IconCheck v-if="isStep1Valid && currentStep !== 1" class="size-4" aria-hidden="true" />
         <span v-else>1</span>
       </div>
       <div class="min-w-0 flex-1">
@@ -36,15 +58,25 @@ const emit = defineEmits<{
 
     <button
       type="button"
-      class="flex items-center gap-2 sm:gap-3 p-2.5 sm:p-3 rounded-xl border text-left transition-all cursor-pointer"
-      :class="currentStep === 2 ? 'border-primary bg-primary/5 text-primary shadow-xs' : isStep2Valid ? 'border-border bg-card text-foreground' : 'border-border/60 bg-muted/20 text-muted-foreground'"
-      @click="emit('selectStep', 2)"
+      class="flex items-center gap-2 sm:gap-3 p-2.5 sm:p-3 rounded-xl border text-left transition-all"
+      :class="[
+        currentStep === 2
+          ? 'border-primary bg-primary/5 text-primary shadow-xs'
+          : isStep2Valid
+            ? 'border-border bg-card text-foreground'
+            : 'border-border/60 bg-muted/20 text-muted-foreground',
+        !canNavigateTo(2) ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'
+      ]"
+      :aria-current="currentStep === 2 ? 'step' : undefined"
+      :aria-disabled="!canNavigateTo(2)"
+      :disabled="!canNavigateTo(2)"
+      @click="handleSelect(2)"
     >
       <div
         class="size-7 rounded-lg flex items-center justify-center font-bold text-xs shrink-0"
         :class="currentStep === 2 ? 'bg-primary text-primary-foreground' : isStep2Valid ? 'bg-emerald-500/10 text-emerald-600 border border-emerald-500/20' : 'bg-muted text-muted-foreground'"
       >
-        <IconCheck v-if="isStep2Valid && currentStep !== 2" class="size-4" />
+        <IconCheck v-if="isStep2Valid && currentStep !== 2" class="size-4" aria-hidden="true" />
         <span v-else>2</span>
       </div>
       <div class="min-w-0 flex-1">
@@ -55,15 +87,25 @@ const emit = defineEmits<{
 
     <button
       type="button"
-      class="flex items-center gap-2 sm:gap-3 p-2.5 sm:p-3 rounded-xl border text-left transition-all cursor-pointer"
-      :class="currentStep === 3 ? 'border-primary bg-primary/5 text-primary shadow-xs' : isStep3Valid ? 'border-border bg-card text-foreground' : 'border-border/60 bg-muted/20 text-muted-foreground'"
-      @click="emit('selectStep', 3)"
+      class="flex items-center gap-2 sm:gap-3 p-2.5 sm:p-3 rounded-xl border text-left transition-all"
+      :class="[
+        currentStep === 3
+          ? 'border-primary bg-primary/5 text-primary shadow-xs'
+          : isStep3Valid
+            ? 'border-border bg-card text-foreground'
+            : 'border-border/60 bg-muted/20 text-muted-foreground',
+        !canNavigateTo(3) ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'
+      ]"
+      :aria-current="currentStep === 3 ? 'step' : undefined"
+      :aria-disabled="!canNavigateTo(3)"
+      :disabled="!canNavigateTo(3)"
+      @click="handleSelect(3)"
     >
       <div
         class="size-7 rounded-lg flex items-center justify-center font-bold text-xs shrink-0"
         :class="currentStep === 3 ? 'bg-primary text-primary-foreground' : isStep3Valid ? 'bg-emerald-500/10 text-emerald-600 border border-emerald-500/20' : 'bg-muted text-muted-foreground'"
       >
-        <IconCheck v-if="isStep3Valid && currentStep !== 3" class="size-4" />
+        <IconCheck v-if="isStep3Valid && currentStep !== 3" class="size-4" aria-hidden="true" />
         <span v-else>3</span>
       </div>
       <div class="min-w-0 flex-1">
@@ -71,5 +113,5 @@ const emit = defineEmits<{
         <p class="text-[10px] text-muted-foreground truncate hidden sm:block">Resolución o contrato de inicio</p>
       </div>
     </button>
-  </div>
+  </nav>
 </template>

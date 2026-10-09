@@ -197,12 +197,19 @@ export async function fetchPersonalDocumentos(dni: string): Promise<PersonalDocu
   }
 }
 
-export async function buscarTrabajadores(nombre: string): Promise<PersonalSearchResult[]> {
+export async function buscarTrabajadores(
+  nombre: string,
+  signal?: AbortSignal,
+): Promise<PersonalSearchResult[]> {
   try {
     return await api<PersonalSearchResult[]>('/personal/buscar', {
       query: { nombre },
+      signal,
     })
-  } catch {
+  } catch (err: unknown) {
+    if (signal?.aborted) {
+      throw err
+    }
     return []
   }
 }

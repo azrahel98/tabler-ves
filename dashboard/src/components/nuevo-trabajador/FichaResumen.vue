@@ -19,14 +19,14 @@ defineProps<{
 </script>
 
 <template>
-  <Card class="space-y-3.5 border-primary/20 bg-primary/2">
+  <Card class="space-y-3.5 border-primary/20 bg-primary/5">
     <div class="flex items-center justify-between border-b border-border pb-2.5">
       <span class="text-xs font-bold uppercase tracking-wider text-foreground flex items-center gap-1.5">
-        <IconId class="size-3.5 text-primary" />
+        <IconId class="size-3.5 text-primary" aria-hidden="true" />
         Ficha Previa del Servidor
       </span>
       <Badge variant="outline" size="xs" class="font-mono text-[10px] uppercase">
-        {{ personal.dni || 'Sin DNI' }}
+        {{ personal.dni || 'DNI no registrado' }}
       </Badge>
     </div>
 
@@ -53,35 +53,35 @@ defineProps<{
         </div>
       </div>
 
-      <div>
+      <div class="min-w-0">
         <span class="text-[10px] uppercase font-bold text-muted-foreground tracking-wider block">Cargo Asignado</span>
         <p class="font-semibold text-foreground truncate">{{ cargoNombre }}</p>
         <p class="text-[11px] text-primary truncate">{{ areaNombre }}</p>
       </div>
 
       <div class="grid grid-cols-2 gap-2 border-y border-border/60 py-2">
-        <div>
+        <div class="min-w-0">
           <span class="text-[10px] text-muted-foreground uppercase font-bold block">Régimen</span>
           <span class="font-medium text-foreground truncate block">
             {{ plaza.regimenNombre || '-' }}
           </span>
         </div>
-        <div>
+        <div class="min-w-0">
           <span class="text-[10px] text-muted-foreground uppercase font-bold block">Sueldo</span>
-          <span class="font-mono font-bold text-foreground">
+          <span class="font-mono font-bold text-foreground truncate block">
             {{ formatMoneda(plaza.sueldo) }}
           </span>
         </div>
       </div>
 
-      <div>
+      <div class="min-w-0">
         <span class="text-[10px] uppercase font-bold text-muted-foreground tracking-wider block">
           Documento de Sustento
         </span>
         <p class="font-medium text-foreground truncate">
           {{ tipoDocNombre }} N° {{ documento.numeroDocumento }}-{{ documento.añoDocumento }}
         </p>
-        <p class="text-[11px] text-muted-foreground font-mono">
+        <p class="text-[11px] text-muted-foreground font-mono truncate">
           Fecha: {{ documento.fecha ? formatDate(documento.fecha) : '-' }}
         </p>
       </div>
@@ -97,7 +97,7 @@ defineProps<{
           class="text-[11px] font-medium"
           :class="isFormValid ? 'text-emerald-600 dark:text-emerald-400' : 'text-amber-600 dark:text-amber-400'"
         >
-          {{ isFormValid ? 'Formulario completo y listo para registrar' : 'Completa todos los campos obligatorios' }}
+          {{ isFormValid ? 'Formulario completo y listo para registrar' : 'Complete todos los campos obligatorios (*)' }}
         </span>
       </div>
     </div>

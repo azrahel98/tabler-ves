@@ -22,6 +22,7 @@ import {
   IconChevronDown,
   IconChevronUp,
   IconFocus2,
+  IconPrinter,
 } from '@tabler/icons-vue'
 
 const router = useRouter()
@@ -301,6 +302,76 @@ const toggleFullscreen = () => {
   }
 }
 
+// Área imprimible de A4 horizontal con márgenes de 10mm, en px CSS (96dpi)
+const PRINT_WIDTH_PX = 1046
+const PRINT_HEIGHT_PX = 718
+
+const printOrganigrama = () => {
+  const content = organigramaContent.value
+  if (!content) return
+
+  const currentZoom = zoomLevel.value || 1
+  const rect = content.getBoundingClientRect()
+  const naturalWidth = rect.width / currentZoom || 1
+  const naturalHeight = rect.height / currentZoom || 1
+  const printScale = Math.min(1, PRINT_WIDTH_PX / naturalWidth, PRINT_HEIGHT_PX / naturalHeight)
+
+  const clone = content.cloneNode(true) as HTMLElement
+  clone.style.zoom = String(printScale)
+
+  const styles = Array.from(document.querySelectorAll('style, link[rel="stylesheet"]'))
+    .map((el) => el.outerHTML)
+    .join('\n')
+
+  const iframe = document.createElement('iframe')
+  iframe.setAttribute('aria-hidden', 'true')
+  iframe.style.cssText = 'position:fixed;right:0;bottom:0;width:0;height:0;border:0;visibility:hidden'
+  document.body.appendChild(iframe)
+
+  const doc = iframe.contentDocument
+  if (!doc) {
+    iframe.remove()
+    return
+  }
+
+  doc.open()
+  doc.write(`<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <base href="${document.baseURI}">
+  <title>Organigrama Institucional - MDVES</title>
+  ${styles}
+  <style>
+    @page { size: A4 landscape; margin: 10mm; }
+    html, body { margin: 0; background: #fff; }
+    * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    button { display: none !important; }
+    .print-root { display: flex; justify-content: center; }
+  </style>
+</head>
+<body><div class="print-root">${clone.outerHTML}</div></body>
+</html>`)
+  doc.close()
+
+  const win = iframe.contentWindow
+  if (!win) {
+    iframe.remove()
+    return
+  }
+
+  const cleanup = () => setTimeout(() => iframe.remove(), 0)
+  win.addEventListener('afterprint', cleanup, { once: true })
+
+  // Espera a que carguen estilos e imágenes (avatares) antes de abrir el diálogo
+  const print = () => {
+    win.focus()
+    win.print()
+  }
+  if (doc.readyState === 'complete') print()
+  else win.addEventListener('load', print, { once: true })
+}
+
 const allStaffNodes = computed(() => {
   const list: { node: CardNodeData; variant: 'cyan' | 'yellow' | 'purple' | 'green'; category: string }[] = []
   for (const n of controlNodes.value) {
@@ -480,6 +551,12 @@ const closeNodeDetail = () => {
             </button>
           </div>
 
+          <Button variant="outline" size="xs" title="Imprimir organigrama" :disabled="!organigramaContent"
+            @click="printOrganigrama">
+            <IconPrinter class="size-3.5" />
+            <span class="hidden sm:inline">Imprimir</span>
+          </Button>
+
           <Button variant="outline" size="xs" title="Pantalla completa" @click="toggleFullscreen">
             <IconMaximize v-if="!isFullscreen" class="size-3.5" />
             <IconMinimize v-else class="size-3.5" />
@@ -552,6 +629,9 @@ const closeNodeDetail = () => {
           </Button>
           <Button variant="outline" size="xs" @click="resetZoom">
             100%
+          </Button>
+          <Button variant="outline" size="xs" title="Imprimir organigrama" @click="printOrganigrama">
+            <IconPrinter class="size-3.5" />
           </Button>
           <Button variant="outline" size="xs" @click="toggleFullscreen">
             <IconMinimize class="size-3.5" />

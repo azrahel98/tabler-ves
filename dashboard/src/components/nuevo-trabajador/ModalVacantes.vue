@@ -38,23 +38,32 @@ const onSeleccionar = (vacante: VacanteOption) => {
 </script>
 
 <template>
-  <div v-if="isOpen" class="fixed inset-0 z-50 overflow-y-auto" role="dialog" aria-modal="true">
+  <div
+    v-if="isOpen"
+    class="fixed inset-0 z-50 overflow-y-auto"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="modal-vacantes-title"
+    aria-describedby="modal-vacantes-desc"
+    @keydown.escape.window="cerrarModal"
+  >
     <div class="fixed inset-0 bg-neutral-900/60 backdrop-blur-xs" @click="cerrarModal"></div>
     <div class="flex min-h-full items-center justify-center p-4">
       <div class="relative w-full max-w-2xl rounded-2xl bg-card border border-border shadow-2xl p-5 space-y-4">
         <div class="flex items-center justify-between border-b border-border pb-3">
           <div class="space-y-0.5">
-            <h3 class="font-bold text-foreground text-sm tracking-tight flex items-center gap-2">
-              <IconBriefcase class="size-4 text-primary shrink-0" />
+            <h3 id="modal-vacantes-title" class="font-bold text-foreground text-sm tracking-tight flex items-center gap-2">
+              <IconBriefcase class="size-4 text-primary shrink-0" aria-hidden="true" />
               Plazas Vacantes Disponibles
             </h3>
-            <p class="text-xs text-muted-foreground">
+            <p id="modal-vacantes-desc" class="text-xs text-muted-foreground">
               Selecciona una plaza vacante para autocompletar el vínculo laboral.
             </p>
           </div>
           <button
             type="button"
-            class="text-muted-foreground hover:text-foreground text-xs p-1 rounded-md cursor-pointer"
+            class="text-muted-foreground hover:text-foreground text-xs p-2 rounded-lg hover:bg-muted transition-colors cursor-pointer min-h-[38px] min-w-[38px] flex items-center justify-center"
+            aria-label="Cerrar modal de vacantes"
             @click="cerrarModal"
           >
             Cerrar
@@ -64,21 +73,25 @@ const onSeleccionar = (vacante: VacanteOption) => {
         <div class="relative">
           <IconSearch
             class="size-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none"
+            aria-hidden="true"
           />
           <input
+            id="vacantes-search"
             v-model="filtroVacante"
             type="text"
-            placeholder="Buscar por código de plaza, área o cargo..."
-            class="w-full pl-9 pr-3 py-2 text-xs rounded-xl border border-border bg-card text-foreground focus:outline-hidden focus:border-primary"
+            placeholder="Buscar por código de plaza, unidad orgánica o cargo..."
+            aria-label="Buscar plazas vacantes por código, unidad orgánica o cargo"
+            class="w-full pl-9 pr-3 py-2.5 sm:py-2 text-base sm:text-xs rounded-xl border border-border bg-card text-foreground focus:outline-hidden focus:border-primary"
           />
         </div>
 
-        <div class="max-h-80 overflow-y-auto space-y-2 pr-1">
+        <div class="max-h-80 overflow-y-auto space-y-2 pr-1" role="list">
           <template v-if="plazasVacantesFiltradas.length > 0">
             <div
               v-for="v in plazasVacantesFiltradas"
               :key="v.codigo"
-              class="flex items-center justify-between p-3 rounded-xl border border-border bg-muted/20 hover:bg-muted/50 transition-colors cursor-pointer"
+              role="listitem"
+              class="flex items-center justify-between p-3 rounded-xl border border-border bg-muted/20 hover:bg-muted/50 transition-colors cursor-pointer gap-2"
               @click="onSeleccionar(v)"
             >
               <div class="min-w-0 flex-1 space-y-0.5">
@@ -87,21 +100,21 @@ const onSeleccionar = (vacante: VacanteOption) => {
                   <Badge variant="success" size="xs">Vacante</Badge>
                 </div>
                 <p class="text-xs font-semibold text-foreground truncate">{{ v.cargo || 'Sin cargo asignado' }}</p>
-                <p class="text-[11px] text-muted-foreground truncate">{{ v.area || 'Sin área asignada' }}</p>
+                <p class="text-[11px] text-muted-foreground truncate">{{ v.area || 'Sin unidad orgánica asignada' }}</p>
               </div>
 
-              <div class="text-right shrink-0 pl-3">
+              <div class="text-right shrink-0 pl-2">
                 <span class="font-mono font-bold text-foreground text-xs block">
                   {{ formatMoneda(v.sueldo) }}
                 </span>
-                <Button size="xs" variant="primary" class="mt-1 text-[10px]">
-                  Seleccionar
+                <Button size="xs" variant="primary" class="mt-1 text-[10px] min-h-[32px] sm:min-h-[28px] px-2.5">
+                  Seleccionar Plaza
                 </Button>
               </div>
             </div>
           </template>
           <div v-else class="text-center py-8 text-xs text-muted-foreground">
-            No se encontraron plazas vacantes que coincidan con la búsqueda.
+            No se encontraron plazas vacantes que coincidan con los criterios de búsqueda.
           </div>
         </div>
       </div>

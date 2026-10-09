@@ -36,6 +36,7 @@ pub async fn insertar_vinculo_sindicato(
     Ok(result.rows_affected())
 }
 
+#[allow(dead_code)]
 pub struct InfoSindicato {
     pub vinculo_id: Option<i32>,
     pub sindicato_id: Option<i32>,

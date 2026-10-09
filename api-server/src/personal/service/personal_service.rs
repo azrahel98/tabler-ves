@@ -10,8 +10,7 @@ use reqwest::Client;
 use serde_json::Value;
 use sqlx::MySqlPool;
 pub async fn buscar_por_nombre(db: &MySqlPool, nombre: &str) -> Result<Vec<Persona>, ApiError> {
-    let nombre_like = format!("%{}%", nombre);
-    personal_repo::buscar_por_nombre(db, &nombre_like)
+    personal_repo::buscar_por_nombre(db, nombre)
         .await
         .map_err(|e| {
             eprintln!("Database error: {:?}", e);

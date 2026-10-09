@@ -28,15 +28,27 @@ const inputRef = ref<HTMLInputElement | null>(null)
 const containerRef = ref<HTMLElement | null>(null)
 
 let debounceTimer: ReturnType<typeof setTimeout> | null = null
+let currentAbortController: AbortController | null = null
 
 const executeSearch = async () => {
   const query = searchQuery.value.trim()
-  if (!query) {
+  if (query.length < 3) {
+    if (currentAbortController) {
+      currentAbortController.abort()
+      currentAbortController = null
+    }
     results.value = []
     isOpen.value = false
     hasSearched.value = false
+    isLoading.value = false
     return
   }
+
+  if (currentAbortController) {
+    currentAbortController.abort()
+  }
+  const controller = new AbortController()
+  currentAbortController = controller
 
   isLoading.value = true
   hasSearched.value = true
@@ -44,44 +56,67 @@ const executeSearch = async () => {
   highlightedIndex.value = -1
 
   try {
-    const data = await buscarTrabajadores(query)
+    const data = await buscarTrabajadores(query, controller.signal)
+    if (controller.signal.aborted) return
     results.value = data
   } catch {
+    if (controller.signal.aborted) return
     results.value = []
   } finally {
-    isLoading.value = false
+    if (currentAbortController === controller) {
+      isLoading.value = false
+      currentAbortController = null
+    }
   }
 }
 
 watch(searchQuery, (newVal) => {
   if (debounceTimer) clearTimeout(debounceTimer)
-  if (!newVal.trim()) {
+  const trimmed = newVal.trim()
+  if (trimmed.length < 3) {
+    if (currentAbortController) {
+      currentAbortController.abort()
+      currentAbortController = null
+    }
     results.value = []
-    isOpen.value = false
-    hasSearched.value = false
+    if (!trimmed) {
+      isOpen.value = false
+      hasSearched.value = false
+    }
     isLoading.value = false
     return
   }
   debounceTimer = setTimeout(() => {
     executeSearch()
-  }, 250)
+  }, 350)
 })
 
 const handleFocus = () => {
-  if (searchQuery.value.trim() && results.value.length > 0) {
+  if (searchQuery.value.trim().length >= 3 && results.value.length > 0) {
     isOpen.value = true
   }
 }
 
 const handleClear = () => {
+  if (debounceTimer) clearTimeout(debounceTimer)
+  if (currentAbortController) {
+    currentAbortController.abort()
+    currentAbortController = null
+  }
   searchQuery.value = ''
   results.value = []
   isOpen.value = false
   hasSearched.value = false
+  isLoading.value = false
   inputRef.value?.focus()
 }
 
 const handleSelect = (dni: string) => {
+  if (debounceTimer) clearTimeout(debounceTimer)
+  if (currentAbortController) {
+    currentAbortController.abort()
+    currentAbortController = null
+  }
   isOpen.value = false
   searchQuery.value = ''
   results.value = []
@@ -143,6 +178,10 @@ onMounted(() => {
 
 onUnmounted(() => {
   if (debounceTimer) clearTimeout(debounceTimer)
+  if (currentAbortController) {
+    currentAbortController.abort()
+    currentAbortController = null
+  }
   document.removeEventListener('click', handleClickOutside)
   window.removeEventListener('keydown', handleGlobalKeyDown)
 })
