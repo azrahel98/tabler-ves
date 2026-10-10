@@ -5,7 +5,7 @@ import Button from '@/components/ui/button/Button.vue'
 import {
   type PersonalVinculo,
   type EventoVinculoDetalle,
-} from '@/components/perfil/types'
+} from '@/services/personal'
 import { formatDate } from '@/utils/date'
 import {
   IconX,

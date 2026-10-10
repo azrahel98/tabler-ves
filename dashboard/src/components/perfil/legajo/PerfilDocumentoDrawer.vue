@@ -2,10 +2,8 @@
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import Badge from '@/components/ui/badge/Badge.vue'
 import Button from '@/components/ui/button/Button.vue'
-import {
-  type DocumentoVinculoInfo,
-  type PersonalArchivo,
-} from '@/components/perfil/types'
+import { type DocumentoVinculoInfo } from '@/components/perfil/types'
+import { type PersonalArchivo } from '@/services/personal'
 import { formatDate } from '@/utils/date'
 import {
   IconX,

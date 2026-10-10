@@ -302,7 +302,6 @@ const toggleFullscreen = () => {
   }
 }
 
-// Área imprimible de A4 horizontal con márgenes de 10mm, en px CSS (96dpi)
 const PRINT_WIDTH_PX = 1046
 const PRINT_HEIGHT_PX = 718
 
@@ -363,7 +362,6 @@ const printOrganigrama = () => {
   const cleanup = () => setTimeout(() => iframe.remove(), 0)
   win.addEventListener('afterprint', cleanup, { once: true })
 
-  // Espera a que carguen estilos e imágenes (avatares) antes de abrir el diálogo
   const print = () => {
     win.focus()
     win.print()

@@ -174,8 +174,8 @@ const loadWorkerData = async (dni: string) => {
     } else {
       eventosVinculoActivo.value = []
     }
-  } catch (err: any) {
-    loadError.value = err?.message || 'No se pudo conectar con el servicio de legajo digital. Verifique la conexión con el servidor.'
+  } catch (err) {
+    loadError.value = err instanceof Error ? err.message : 'No se pudo conectar con el servicio de legajo digital. Verifique la conexión con el servidor.'
   } finally {
     isLoading.value = false
   }
@@ -205,8 +205,8 @@ const onSavePerfil = async (form: PersonalPerfil) => {
     } else {
       showToast('error', 'No fue posible guardar los cambios. Intente nuevamente.')
     }
-  } catch (err: any) {
-    showToast('error', err?.message || 'Error al comunicarse con el servicio.')
+  } catch (err) {
+    showToast('error', err instanceof Error ? err.message : 'Error al comunicarse con el servicio.')
   } finally {
     isSaving.value = false
   }
@@ -227,8 +227,8 @@ const onSaveRenuncia = async (payload: RenunciaPayload) => {
       : 'Renuncia del vínculo registrada con éxito.'
     showToast('success', msg)
     await loadWorkerData(currentDni.value)
-  } catch (err: any) {
-    showToast('error', err?.message || 'Error al registrar la renuncia.')
+  } catch (err) {
+    showToast('error', err instanceof Error ? err.message : 'Error al registrar la renuncia.')
   } finally {
     isSavingRenuncia.value = false
   }
@@ -244,8 +244,8 @@ const onSaveDocumento = async (data: DocumentoData) => {
     isDocumentoModalOpen.value = false
     showToast('success', `Documento registrado con éxito (ID ${res.id}).`)
     documentos.value = await fetchPersonalDocumentos(currentDni.value)
-  } catch (err: any) {
-    showToast('error', err?.message || 'Error al registrar el documento.')
+  } catch (err) {
+    showToast('error', err instanceof Error ? err.message : 'Error al registrar el documento.')
   } finally {
     isSavingDocumento.value = false
   }
@@ -263,8 +263,8 @@ const onSaveVincularUrl = async (payload: RegistrarUrlPayload) => {
     isVincularUrlModalOpen.value = false
     showToast('success', 'PDF vinculado exitosamente al documento.')
     archivos.value = await fetchPersonalArchivos(currentDni.value)
-  } catch (err: any) {
-    showToast('error', err?.message || 'Error al vincular el PDF.')
+  } catch (err) {
+    showToast('error', err instanceof Error ? err.message : 'Error al vincular el PDF.')
   } finally {
     isSavingVincular.value = false
   }
@@ -292,8 +292,8 @@ const onUploadFile = async ({
     isSubirArchivoModalOpen.value = false
     showToast('success', 'Archivo PDF subido exitosamente al legajo.')
     archivos.value = await fetchPersonalArchivos(currentDni.value)
-  } catch (err: any) {
-    showToast('error', err?.message || 'Error al subir el archivo PDF.')
+  } catch (err) {
+    showToast('error', err instanceof Error ? err.message : 'Error al subir el archivo PDF.')
   } finally {
     isSavingSubirArchivo.value = false
   }
@@ -306,8 +306,8 @@ const onUploadUrlFromModal = async (payload: RegistrarUrlPayload) => {
     isSubirArchivoModalOpen.value = false
     showToast('success', 'Archivo registrado exitosamente en el legajo.')
     archivos.value = await fetchPersonalArchivos(currentDni.value)
-  } catch (err: any) {
-    showToast('error', err?.message || 'Error al registrar el archivo.')
+  } catch (err) {
+    showToast('error', err instanceof Error ? err.message : 'Error al registrar el archivo.')
   } finally {
     isSavingSubirArchivo.value = false
   }
@@ -326,8 +326,8 @@ const onConfirmarEliminarArchivo = async () => {
     isEliminarArchivoModalOpen.value = false
     showToast('success', 'Archivo eliminado del legajo correctamente.')
     archivos.value = await fetchPersonalArchivos(currentDni.value)
-  } catch (err: any) {
-    showToast('error', err?.message || 'Error al eliminar el archivo.')
+  } catch (err) {
+    showToast('error', err instanceof Error ? err.message : 'Error al eliminar el archivo.')
   } finally {
     isDeletingArchivo.value = false
   }
@@ -386,8 +386,8 @@ const onEliminarEvento = async (eventoId: number) => {
     documentoDrawerInfo.value = null
     showToast('success', 'Evento laboral eliminado exitosamente.')
     await loadWorkerData(currentDni.value)
-  } catch (err: any) {
-    showToast('error', err?.message || 'Error al eliminar el evento de vínculo.')
+  } catch (err) {
+    showToast('error', err instanceof Error ? err.message : 'Error al eliminar el evento de vínculo.')
   } finally {
     isDeletingEvento.value = false
   }
@@ -450,8 +450,8 @@ const onGuardarEvento = async (payload: EventoVinculoPayload) => {
       }
     }
     await loadWorkerData(currentDni.value)
-  } catch (err: any) {
-    showToast('error', err?.message || 'Error al guardar el evento de vínculo.')
+  } catch (err) {
+    showToast('error', err instanceof Error ? err.message : 'Error al guardar el evento de vínculo.')
   } finally {
     isSavingEvento.value = false
   }
@@ -469,8 +469,8 @@ const onEliminarEventoFromList = async (eventoId: number) => {
       }
     }
     await loadWorkerData(currentDni.value)
-  } catch (err: any) {
-    showToast('error', err?.message || 'Error al eliminar el evento de vínculo.')
+  } catch (err) {
+    showToast('error', err instanceof Error ? err.message : 'Error al eliminar el evento de vínculo.')
   } finally {
     isDeletingEvento.value = false
   }

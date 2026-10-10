@@ -2,9 +2,6 @@ import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import DashboardLayout from '@/components/DashboardLayout.vue'
 const DashboardView = () => import('@/views/DashboardView.vue')
-const test = () => import('@/views/dashboard/test.vue')
-const DataTablesGalleryView = () => import('@/views/dashboard/DataTablesGalleryView.vue')
-const CardsGalleryView = () => import('@/views/dashboard/CardsGalleryView.vue')
 const PerfilView = () => import('@/views/PerfilView.vue')
 const OrganigramaView = () => import('@/views/OrganigramaView.vue')
 const LoginView = () => import('@/views/LoginView.vue')
@@ -31,27 +28,6 @@ const routes: RouteRecordRaw[] = [
         alias: 'dashboard',
         name: 'panel',
         component: DashboardView,
-        meta: { requiresAuth: true },
-      },
-      {
-        path: 'pruebas',
-        alias: 'test',
-        name: 'pruebas',
-        component: test,
-        meta: { requiresAuth: true },
-      },
-      {
-        path: 'tablas',
-        alias: 'datatables',
-        name: 'tablas',
-        component: DataTablesGalleryView,
-        meta: { requiresAuth: true },
-      },
-      {
-        path: 'tarjetas',
-        alias: 'cards',
-        name: 'tarjetas',
-        component: CardsGalleryView,
         meta: { requiresAuth: true },
       },
       {

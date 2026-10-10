@@ -4,7 +4,7 @@ import {
   getPersonalAvatarUrl,
   type PersonalPerfil,
   type PersonalVinculo,
-} from '@/components/perfil/types'
+} from '@/services/personal'
 import {
   IconUser,
   IconId,

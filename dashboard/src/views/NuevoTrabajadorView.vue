@@ -355,8 +355,8 @@ const onSubmitRegistro = async () => {
     setTimeout(() => {
       router.push({ name: 'perfil', params: { dni: payload.personal.dni } })
     }, 1200)
-  } catch (err: any) {
-    submitError.value = err?.message || 'Error al procesar el registro del trabajador.'
+  } catch (err) {
+    submitError.value = err instanceof Error ? err.message : 'Error al procesar el registro del trabajador.'
     showToast('error', submitError.value || 'Error al guardar.')
   } finally {
     isSubmitting.value = false

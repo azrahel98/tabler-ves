@@ -415,7 +415,7 @@ export async function fetchEventosVinculo(vinculoId: number): Promise<EventoVinc
   }
 }
 
-export async function upsertEventoVinculo(payload: EventoVinculoPayload): Promise<any> {
+export async function upsertEventoVinculo(payload: EventoVinculoPayload): Promise<unknown> {
   return await api('/personal/upsert_evento_vinculo', {
     method: 'PUT',
     body: payload,

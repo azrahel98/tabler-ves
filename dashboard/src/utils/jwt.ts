@@ -2,7 +2,10 @@ export interface JwtPayload {
   exp?: number
   iat?: number
   sub?: string
-  [key: string]: any
+  email?: string
+  name?: string
+  picture?: string
+  [key: string]: unknown
 }
 
 export function parseJwt(token: string): JwtPayload | null {

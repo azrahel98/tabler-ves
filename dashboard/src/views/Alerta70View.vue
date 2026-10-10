@@ -72,8 +72,8 @@ const columns: DataTableColumn[] = [
     label: 'Edad / Nacimiento',
     sortable: true,
     width: '160px',
-    sortFn: (a: Alerta70Servidor, b: Alerta70Servidor, direction: 'asc' | 'desc') => {
-      return compararPorEdadYMes(a, b, direction)
+    sortFn: (a: unknown, b: unknown, direction: 'asc' | 'desc') => {
+      return compararPorEdadYMes(a as Alerta70Servidor, b as Alerta70Servidor, direction)
     },
   },
   {

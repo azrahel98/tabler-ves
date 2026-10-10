@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import Button from '@/components/ui/button/Button.vue'
-import { type PersonalArchivo, getFileDownloadUrl } from '@/components/perfil/types'
+import { type PersonalArchivo, getFileDownloadUrl } from '@/services/personal'
 import { getApiBaseUrl, fetchAuthBlob } from '@/services/api'
 import {
   IconExternalLink,
@@ -88,9 +88,9 @@ const cargarDocumento = async () => {
         : rawBlob
 
     blobObjectUrl.value = URL.createObjectURL(finalBlob)
-  } catch (err: any) {
+  } catch (err) {
     errorMensaje.value =
-      err?.message || 'No se pudo cargar el documento. Verifique sus permisos o conexión.'
+      err instanceof Error ? err.message : 'No se pudo cargar el documento. Verifique sus permisos o conexión.'
   } finally {
     isLoading.value = false
   }

@@ -8,7 +8,7 @@ import {
   getTipoEventoLabel,
   type PersonalVinculo,
   type EventoVinculoDetalle,
-} from '@/components/perfil/types'
+} from '@/services/personal'
 import { formatDate } from '@/utils/date'
 import {
   IconBriefcase,

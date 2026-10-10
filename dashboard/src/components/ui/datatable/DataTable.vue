@@ -30,7 +30,7 @@ export interface DataTableColumn {
   visible?: boolean
   filterable?: boolean
   filterPlaceholder?: string
-  sortFn?: (a: any, b: any, direction: 'asc' | 'desc') => number
+  sortFn?: (a: unknown, b: unknown, direction: 'asc' | 'desc') => number
 }
 
 interface Props {

@@ -4,7 +4,7 @@ import Button from '@/components/ui/button/Button.vue'
 import {
   type PersonalDocumento,
   type RegistrarUrlPayload,
-} from '@/components/perfil/types'
+} from '@/services/personal'
 import { formatDate } from '@/utils/date'
 import {
   IconLink,

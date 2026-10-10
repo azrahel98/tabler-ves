@@ -39,9 +39,41 @@ const clearMessages = () => {
   successMessage.value = ''
 }
 
+interface GoogleAccountsId {
+  initialize: (config: {
+    client_id: string
+    callback: (response: { credential: string }) => void
+    auto_select?: boolean
+  }) => void
+  renderButton: (
+    parent: HTMLElement,
+    options: {
+      type?: string
+      theme?: string
+      size?: string
+      text?: string
+      shape?: string
+      logo_alignment?: string
+      width?: number
+    },
+  ) => void
+}
+
+interface GoogleApi {
+  accounts?: {
+    id?: GoogleAccountsId
+  }
+}
+
+declare global {
+  interface Window {
+    google?: GoogleApi
+  }
+}
+
 const renderGoogleButton = () => {
   if (typeof window === 'undefined') return
-  const google = (window as any).google
+  const google = window.google
 
   if (google?.accounts?.id) {
     google.accounts.id.initialize({
@@ -70,7 +102,7 @@ onMounted(() => {
   let attempts = 0
   const timer = setInterval(() => {
     attempts++
-    if ((window as any).google?.accounts?.id) {
+    if (window.google?.accounts?.id) {
       renderGoogleButton()
       clearInterval(timer)
     } else if (attempts > 30) {
@@ -103,9 +135,9 @@ const handleGoogleCredentialResponse = async (response: { credential: string }) 
     if (mode.value === 'login') {
       await processLogin(payload.sub, payload.email)
     } else {
-      await processRegister(payload.sub, payload.email, payload.name, payload.picture)
+      await processRegister(payload.sub, payload.email, payload.name || '', payload.picture)
     }
-  } catch (err: any) {
+  } catch (err) {
     handleAuthError(err)
   } finally {
     isLoading.value = false
@@ -124,8 +156,8 @@ const processLogin = async (sub: string, email: string) => {
     } else {
       router.push('/panel')
     }
-  } catch (err: any) {
-    const msg = err.message || ''
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : ''
     if (msg.toLowerCase().includes('no encontrado') || msg.toLowerCase().includes('regístrese') || msg.toLowerCase().includes('registrese')) {
       warningMessage.value = 'No encontramos una cuenta registrada con este correo. Puedes completar tu registro a continuación.'
       mode.value = 'register'
@@ -148,8 +180,8 @@ const processRegister = async (sub: string, email: string, name: string, picture
       picture_url: picture || null,
     })
     successMessage.value = res.message || 'Registro completado con éxito. Tu cuenta está pendiente de aprobación por un administrador.'
-  } catch (err: any) {
-    errorMessage.value = err.message || 'Error al registrar la cuenta con Google.'
+  } catch (err) {
+    errorMessage.value = err instanceof Error ? err.message : 'Error al registrar la cuenta con Google.'
   }
 }
 
@@ -176,15 +208,15 @@ const handleManualSubmit = async () => {
         googleData.value.picture_url || undefined,
       )
     }
-  } catch (err: any) {
+  } catch (err) {
     handleAuthError(err)
   } finally {
     isLoading.value = false
   }
 }
 
-const handleAuthError = (err: any) => {
-  const msg = err.message || ''
+const handleAuthError = (err: unknown) => {
+  const msg = err instanceof Error ? err.message : ''
   if (msg.includes('pendiente')) {
     warningMessage.value = msg
   } else {

@@ -4,7 +4,7 @@ import { format } from 'date-fns'
 import Card from '@/components/ui/card/Card.vue'
 import Badge from '@/components/ui/badge/Badge.vue'
 import Button from '@/components/ui/button/Button.vue'
-import { type PersonalArchivo, type PersonalDocumento } from '@/components/perfil/types'
+import { type PersonalArchivo, type PersonalDocumento } from '@/services/personal'
 import { getApiBaseUrl } from '@/services/api'
 import { parseDateSafe, formatDate } from '@/utils/date'
 import {
