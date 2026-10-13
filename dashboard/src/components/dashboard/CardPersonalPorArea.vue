@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import { useRouter } from 'vue-router'
 import { Bar } from 'vue-chartjs'
 import Card from '@/components/ui/card/Card.vue'
 import Badge from '@/components/ui/badge/Badge.vue'
@@ -10,23 +11,22 @@ import {
   IconBuildingSkyscraper,
   IconChartBar,
   IconList,
-  IconX,
 } from '@tabler/icons-vue'
 
 interface Props {
   areas: AreaReport[]
   isLoading?: boolean
   selectedArea?: string | null
+  chartHeight?: string
 }
 
 const props = withDefaults(defineProps<Props>(), {
   isLoading: false,
   selectedArea: null,
+  chartHeight: 'h-64',
 })
 
-const emit = defineEmits<{
-  (e: 'select-area', area: string | null): void
-}>()
+const router = useRouter()
 
 const activeView = ref<'chart' | 'list'>('chart')
 const themeStore = useThemeStore()
@@ -123,20 +123,26 @@ const chartOptions = computed<ChartOptions<'bar'>>(() => {
         },
       },
     },
+    onHover: (event, elements) => {
+      const target = event.native?.target as HTMLElement | null
+      if (target) {
+        target.style.cursor = elements.length > 0 ? 'pointer' : 'default'
+      }
+    },
     onClick: (_event, elements) => {
       if (elements.length > 0) {
         const index = elements[0].index
         const selected = top5Areas.value[index]?.nombre
         if (selected) {
-          emit('select-area', props.selectedArea === selected ? null : selected)
+          router.push({ path: '/personal/area', query: { area: selected } })
         }
       }
     },
   }
 })
 
-const toggleArea = (nombre: string) => {
-  emit('select-area', props.selectedArea === nombre ? null : nombre)
+const irAArea = (nombre: string) => {
+  router.push({ path: '/personal/area', query: { area: nombre } })
 }
 </script>
 
@@ -156,21 +162,6 @@ const toggleArea = (nombre: string) => {
       </div>
 
       <div class="flex items-center gap-2">
-        <div v-if="selectedArea" class="flex items-center gap-1">
-          <Badge variant="primary" size="sm">
-            {{ selectedArea }}
-          </Badge>
-          <button
-            type="button"
-            class="flex size-6 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-hidden"
-            title="Quitar filtro"
-            aria-label="Quitar filtro de área"
-            @click="emit('select-area', null)"
-          >
-            <IconX class="size-3.5" aria-hidden="true" />
-          </button>
-        </div>
-
         <div class="flex items-center rounded-lg border border-border/60 bg-muted/50 p-0.5" role="group" aria-label="Cambiar vista">
           <button
             type="button"
@@ -222,14 +213,14 @@ const toggleArea = (nombre: string) => {
     </div>
 
     <div class="p-4 sm:p-5">
-      <div v-if="isLoading" class="h-60 bg-muted/60 rounded-xl animate-pulse" aria-busy="true"></div>
+      <div v-if="isLoading" :class="[chartHeight, 'bg-muted/60 rounded-xl animate-pulse']" aria-busy="true"></div>
 
       <div v-else-if="areas.length === 0" class="py-12 text-center text-xs text-muted-foreground">
         No se registran datos de áreas disponibles.
       </div>
 
-      <div v-else-if="activeView === 'chart'" class="min-h-60 flex items-center justify-center w-full">
-        <div class="w-full h-64 relative">
+      <div v-else-if="activeView === 'chart'" class="flex items-center justify-center w-full">
+        <div :class="['w-full relative', chartHeight]">
           <Bar
             :data="chartData"
             :options="chartOptions"
@@ -243,13 +234,9 @@ const toggleArea = (nombre: string) => {
           v-for="(area, idx) in sortedAreas"
           :key="area.nombre"
           type="button"
-          class="w-full rounded-xl border p-3 text-left transition-all flex items-center justify-between gap-3 group focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40 cursor-pointer"
-          :class="[
-            selectedArea === area.nombre
-              ? 'bg-primary/10 border-primary ring-1 ring-primary shadow-2xs'
-              : 'bg-card hover:bg-muted/40 border-border hover:border-primary/40'
-          ]"
-          @click="toggleArea(area.nombre)"
+          class="w-full rounded-xl border p-3 text-left transition-all flex items-center justify-between gap-3 group focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40 cursor-pointer bg-card hover:bg-muted/40 border-border hover:border-primary/40"
+          title="Ver trabajadores del área"
+          @click="irAArea(area.nombre)"
         >
           <div class="min-w-0 flex-1">
             <div class="flex items-center justify-between gap-2 mb-1.5">
@@ -277,8 +264,7 @@ const toggleArea = (nombre: string) => {
 
             <div class="w-full bg-muted/80 rounded-full h-2 overflow-hidden">
               <div
-                class="h-full rounded-full transition-all duration-500"
-                :class="selectedArea === area.nombre ? 'bg-primary' : 'bg-primary/80 group-hover:bg-primary'"
+                class="h-full rounded-full transition-all duration-500 bg-primary/80 group-hover:bg-primary"
                 :style="{ width: `${(area.cantidad / maxCantidad) * 100}%` }"
               ></div>
             </div>

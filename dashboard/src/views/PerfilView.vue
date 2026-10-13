@@ -58,19 +58,18 @@ import {
 import {
   IconUser,
   IconSearch,
-  IconCheck,
-  IconX,
   IconAlertCircle,
   IconRefresh,
 } from '@tabler/icons-vue'
+import { useToastStore } from '@/stores/toast'
 
 const route = useRoute()
 const router = useRouter()
+const toast = useToastStore()
 
 const currentDni = ref<string>('45892134')
 const isLoading = ref<boolean>(true)
 const loadError = ref<string | null>(null)
-const toastMessage = ref<{ type: 'success' | 'error'; text: string } | null>(null)
 const activeTab = ref<'perfil' | 'vinculos' | 'legajo' | 'grados' | 'banco'>('perfil')
 
 const perfil = ref<PersonalPerfil | null>(null)
@@ -137,13 +136,6 @@ const copyToClipboard = async (text: string, fieldId: string) => {
   } catch {}
 }
 
-const showToast = (type: 'success' | 'error', text: string) => {
-  toastMessage.value = { type, text }
-  setTimeout(() => {
-    toastMessage.value = null
-  }, 4000)
-}
-
 const loadWorkerData = async (dni: string) => {
   isLoading.value = true
   loadError.value = null
@@ -201,12 +193,12 @@ const onSavePerfil = async (form: PersonalPerfil) => {
     if (ok) {
       perfil.value = { ...form }
       isEditModalOpen.value = false
-      showToast('success', 'Ficha del servidor actualizada con éxito.')
+      toast.success('Ficha del servidor actualizada con éxito.')
     } else {
-      showToast('error', 'No fue posible guardar los cambios. Intente nuevamente.')
+      toast.error('No fue posible guardar los cambios. Intente nuevamente.')
     }
   } catch (err) {
-    showToast('error', err instanceof Error ? err.message : 'Error al comunicarse con el servicio.')
+    toast.error(err instanceof Error ? err.message : 'Error al comunicarse con el servicio.')
   } finally {
     isSaving.value = false
   }
@@ -225,10 +217,10 @@ const onSaveRenuncia = async (payload: RenunciaPayload) => {
     const msg = res?.documento
       ? `Renuncia registrada con documento ${res.documento}.`
       : 'Renuncia del vínculo registrada con éxito.'
-    showToast('success', msg)
+    toast.success(msg)
     await loadWorkerData(currentDni.value)
   } catch (err) {
-    showToast('error', err instanceof Error ? err.message : 'Error al registrar la renuncia.')
+    toast.error(err instanceof Error ? err.message : 'Error al registrar la renuncia.')
   } finally {
     isSavingRenuncia.value = false
   }
@@ -242,10 +234,10 @@ const onSaveDocumento = async (data: DocumentoData) => {
       documento: data,
     })
     isDocumentoModalOpen.value = false
-    showToast('success', `Documento registrado con éxito (ID ${res.id}).`)
+    toast.success(`Documento registrado con éxito (ID ${res.id}).`)
     documentos.value = await fetchPersonalDocumentos(currentDni.value)
   } catch (err) {
-    showToast('error', err instanceof Error ? err.message : 'Error al registrar el documento.')
+    toast.error(err instanceof Error ? err.message : 'Error al registrar el documento.')
   } finally {
     isSavingDocumento.value = false
   }
@@ -261,10 +253,10 @@ const onSaveVincularUrl = async (payload: RegistrarUrlPayload) => {
   try {
     await registrarUrlArchivo(payload)
     isVincularUrlModalOpen.value = false
-    showToast('success', 'PDF vinculado exitosamente al documento.')
+    toast.success('PDF vinculado exitosamente al documento.')
     archivos.value = await fetchPersonalArchivos(currentDni.value)
   } catch (err) {
-    showToast('error', err instanceof Error ? err.message : 'Error al vincular el PDF.')
+    toast.error(err instanceof Error ? err.message : 'Error al vincular el PDF.')
   } finally {
     isSavingVincular.value = false
   }
@@ -290,10 +282,10 @@ const onUploadFile = async ({
     }
     await uploadArchivoLegajo(formData)
     isSubirArchivoModalOpen.value = false
-    showToast('success', 'Archivo PDF subido exitosamente al legajo.')
+    toast.success('Archivo PDF subido exitosamente al legajo.')
     archivos.value = await fetchPersonalArchivos(currentDni.value)
   } catch (err) {
-    showToast('error', err instanceof Error ? err.message : 'Error al subir el archivo PDF.')
+    toast.error(err instanceof Error ? err.message : 'Error al subir el archivo PDF.')
   } finally {
     isSavingSubirArchivo.value = false
   }
@@ -304,10 +296,10 @@ const onUploadUrlFromModal = async (payload: RegistrarUrlPayload) => {
   try {
     await registrarUrlArchivo(payload)
     isSubirArchivoModalOpen.value = false
-    showToast('success', 'Archivo registrado exitosamente en el legajo.')
+    toast.success('Archivo registrado exitosamente en el legajo.')
     archivos.value = await fetchPersonalArchivos(currentDni.value)
   } catch (err) {
-    showToast('error', err instanceof Error ? err.message : 'Error al registrar el archivo.')
+    toast.error(err instanceof Error ? err.message : 'Error al registrar el archivo.')
   } finally {
     isSavingSubirArchivo.value = false
   }
@@ -324,10 +316,10 @@ const onConfirmarEliminarArchivo = async () => {
   try {
     await eliminarArchivoLegajo(archivoAEliminar.value.id)
     isEliminarArchivoModalOpen.value = false
-    showToast('success', 'Archivo eliminado del legajo correctamente.')
+    toast.success('Archivo eliminado del legajo correctamente.')
     archivos.value = await fetchPersonalArchivos(currentDni.value)
   } catch (err) {
-    showToast('error', err instanceof Error ? err.message : 'Error al eliminar el archivo.')
+    toast.error(err instanceof Error ? err.message : 'Error al eliminar el archivo.')
   } finally {
     isDeletingArchivo.value = false
   }
@@ -384,10 +376,10 @@ const onEliminarEvento = async (eventoId: number) => {
     await eliminarEventoVinculo(eventoId)
     isDocumentoDrawerOpen.value = false
     documentoDrawerInfo.value = null
-    showToast('success', 'Evento laboral eliminado exitosamente.')
+    toast.success('Evento laboral eliminado exitosamente.')
     await loadWorkerData(currentDni.value)
   } catch (err) {
-    showToast('error', err instanceof Error ? err.message : 'Error al eliminar el evento de vínculo.')
+    toast.error(err instanceof Error ? err.message : 'Error al eliminar el evento de vínculo.')
   } finally {
     isDeletingEvento.value = false
   }
@@ -442,7 +434,7 @@ const onGuardarEvento = async (payload: EventoVinculoPayload) => {
     await upsertEventoVinculo(payload)
     isEventoModalOpen.value = false
     eventoAEditar.value = null
-    showToast('success', payload.id ? 'Evento laboral actualizado exitosamente.' : 'Evento laboral registrado exitosamente.')
+    toast.success(payload.id ? 'Evento laboral actualizado exitosamente.' : 'Evento laboral registrado exitosamente.')
     if (vinculoParaEventos.value) {
       eventosVinculoSeleccionado.value = await fetchEventosVinculo(vinculoParaEventos.value.id)
       if (vinculoParaEventos.value.id === vinculoActivo.value?.id) {
@@ -451,7 +443,7 @@ const onGuardarEvento = async (payload: EventoVinculoPayload) => {
     }
     await loadWorkerData(currentDni.value)
   } catch (err) {
-    showToast('error', err instanceof Error ? err.message : 'Error al guardar el evento de vínculo.')
+    toast.error(err instanceof Error ? err.message : 'Error al guardar el evento de vínculo.')
   } finally {
     isSavingEvento.value = false
   }
@@ -461,7 +453,7 @@ const onEliminarEventoFromList = async (eventoId: number) => {
   isDeletingEvento.value = true
   try {
     await eliminarEventoVinculo(eventoId)
-    showToast('success', 'Evento laboral eliminado exitosamente.')
+    toast.success('Evento laboral eliminado exitosamente.')
     if (vinculoParaEventos.value) {
       eventosVinculoSeleccionado.value = await fetchEventosVinculo(vinculoParaEventos.value.id)
       if (vinculoParaEventos.value.id === vinculoActivo.value?.id) {
@@ -470,7 +462,7 @@ const onEliminarEventoFromList = async (eventoId: number) => {
     }
     await loadWorkerData(currentDni.value)
   } catch (err) {
-    showToast('error', err instanceof Error ? err.message : 'Error al eliminar el evento de vínculo.')
+    toast.error(err instanceof Error ? err.message : 'Error al eliminar el evento de vínculo.')
   } finally {
     isDeletingEvento.value = false
   }
@@ -775,41 +767,5 @@ watch(
       :titulo="tituloVisor"
       @close="isVisorOpen = false"
     />
-
-    <transition
-      enter-active-class="transform ease-out duration-200 transition"
-      enter-from-class="translate-y-2 opacity-0"
-      enter-to-class="translate-y-0 opacity-100"
-      leave-active-class="transition ease-in duration-150"
-      leave-from-class="opacity-100"
-      leave-to-class="opacity-0"
-    >
-      <div
-        v-if="toastMessage"
-        class="fixed bottom-5 right-5 z-50 flex items-center gap-3 px-4 py-3 rounded-xl shadow-lg border text-xs bg-card"
-        :class="
-          toastMessage.type === 'success'
-            ? 'border-emerald-500/40 text-foreground'
-            : 'border-rose-500/40 text-foreground'
-        "
-        role="status"
-        aria-live="polite"
-      >
-        <IconCheck
-          v-if="toastMessage.type === 'success'"
-          class="size-4 text-emerald-600 dark:text-emerald-400 shrink-0"
-        />
-        <IconAlertCircle v-else class="size-4 text-rose-600 dark:text-rose-400 shrink-0" />
-        <span class="font-medium">{{ toastMessage.text }}</span>
-        <button
-          type="button"
-          class="text-muted-foreground hover:text-foreground cursor-pointer ml-1"
-          aria-label="Cerrar notificación"
-          @click="toastMessage = null"
-        >
-          <IconX class="size-3.5" />
-        </button>
-      </div>
-    </transition>
   </div>
 </template>

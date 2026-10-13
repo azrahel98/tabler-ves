@@ -47,16 +47,6 @@ export async function marcarTodasNotificacionesLeidas(): Promise<MarcarTodasLeid
   })
 }
 
-
-
-export function resolveNotificationLink(enlace?: string | null): string {
-  if (!enlace) return ''
-  if (enlace.startsWith('/personal/')) {
-    return enlace.replace('/personal/', '/perfil/')
-  }
-  return enlace
-}
-
 export function getNotificationStreamUrl(token?: string | null): string {
   const baseUrl = getApiBaseUrl()
   const baseEndpoint = `${baseUrl}/notificaciones/stream`

@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
 import { useNotificacionesStore } from '@/stores/notificaciones'
-import { resolveNotificationLink } from '@/services/notificaciones'
 import { IconX, IconAlertTriangle } from '@tabler/icons-vue'
 import { getPersonalAvatarUrl } from '@/services/personal'
 
@@ -13,11 +12,10 @@ function handleToastClick() {
   if (!notif) return
 
   notifStore.marcarComoLeida(notif.id)
-  const targetLink = resolveNotificationLink(`/perfil/${notif.dni}`)
   notifStore.descartarToast()
 
-  if (targetLink) {
-    router.push(targetLink)
+  if (notif.dni) {
+    router.push(`/perfil/${notif.dni}`)
   }
 }
 
@@ -35,9 +33,11 @@ function handleClose(e: MouseEvent) {
       leave-active-class="transition ease-in duration-200 transform"
       leave-from-class="opacity-100 translate-y-0 sm:translate-x-0 scale-100"
       leave-to-class="opacity-0 translate-y-2 sm:translate-y-0 sm:translate-x-4 scale-95">
-      <aside v-if="notifStore.activeToast" role="alert" aria-live="assertive"
+      <aside v-if="notifStore.activeToast" role="status" aria-live="polite"
         class="fixed top-20 right-4 z-50 max-w-sm w-full bg-card border border-border shadow-xl rounded-2xl p-4 cursor-pointer hover:border-primary/50 transition duration-200"
-        @click="handleToastClick">
+        @click="handleToastClick"
+        @mouseenter="notifStore.pausarToast()"
+        @mouseleave="notifStore.reanudarToast()">
         <div class="flex items-start gap-3">
           <div class="relative shrink-0">
 

@@ -113,7 +113,7 @@ const calcularEdad = calculateAge
             <IconMail class="size-4 text-muted-foreground" /> Correo:
           </span>
           <a v-if="perfil?.email" :href="'mailto:' + perfil.email"
-            class="font-medium text-primary hover:underline text-xs wrap-break-word max-w-[160px] sm:max-w-[200px]"
+            class="font-medium text-primary hover:underline text-[11.4px] wrap-break-word max-w-[160px] sm:max-w-[200px]"
             :title="perfil.email">
             {{ perfil.email }}
           </a>
@@ -127,7 +127,14 @@ const calcularEdad = calculateAge
             <IconMapPin class="size-4 text-muted-foreground" /> Distrito:
           </span>
           <span class="font-medium text-[11.4px] text-foreground text-right">
-            {{ perfil?.distrito || '-' }} ({{ perfil?.region || 'LIMA' }})
+            <router-link
+              v-if="perfil?.distrito"
+              :to="{ path: '/personal/distrito', query: { distrito: perfil.distrito } }"
+              class="text-primary hover:underline cursor-pointer"
+              title="Ver trabajadores del distrito"
+            >{{ perfil.distrito }}</router-link>
+            <template v-else>-</template>
+            ({{ perfil?.region || 'LIMA' }})
           </span>
         </div>
 

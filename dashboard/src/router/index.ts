@@ -7,6 +7,9 @@ const OrganigramaView = () => import('@/views/OrganigramaView.vue')
 const LoginView = () => import('@/views/LoginView.vue')
 const NuevoTrabajadorView = () => import('@/views/NuevoTrabajadorView.vue')
 const Alerta70View = () => import('@/views/Alerta70View.vue')
+const DistritosView = () => import('@/views/DistritosView.vue')
+const PersonalDistritoView = () => import('@/views/PersonalDistritoView.vue')
+const PersonalAreaView = () => import('@/views/PersonalAreaView.vue')
 
 const routes: RouteRecordRaw[] = [
   {
@@ -44,6 +47,18 @@ const routes: RouteRecordRaw[] = [
         meta: { requiresAuth: true },
       },
       {
+        path: 'personal/distrito',
+        name: 'personal-distrito',
+        component: PersonalDistritoView,
+        meta: { requiresAuth: true },
+      },
+      {
+        path: 'personal/area',
+        name: 'personal-area',
+        component: PersonalAreaView,
+        meta: { requiresAuth: true },
+      },
+      {
         path: 'personal/nuevo',
         alias: 'nuevo-trabajador',
         name: 'nuevo-trabajador',
@@ -55,6 +70,12 @@ const routes: RouteRecordRaw[] = [
         alias: ['jubilacion-70', 'personal/alerta-70'],
         name: 'alerta-70',
         component: Alerta70View,
+        meta: { requiresAuth: true },
+      },
+      {
+        path: 'distritos',
+        name: 'distritos',
+        component: DistritosView,
         meta: { requiresAuth: true },
       },
     ],

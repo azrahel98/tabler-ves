@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
 import Button from '@/components/ui/button/Button.vue'
+import SearchSelect, { type SelectOption } from '@/components/ui/form/SearchSelect.vue'
+import { DISTRITOS_LIMA, REGION_FIJA, resolverDistrito } from '@/constants/distritos'
 import type { PersonalPerfil } from '@/services/personal'
 import { IconEdit, IconX, IconCheck } from '@tabler/icons-vue'
 
@@ -29,15 +31,45 @@ const editForm = ref<PersonalPerfil>({
   ruc: '',
   nacimiento: '',
   sexo: '',
-  region: '',
+  region: REGION_FIJA,
   distrito: '',
 })
+
+const initialDistrito = ref<string>('')
+const initialRegion = ref<string>(REGION_FIJA)
+
+const distritoNoValidoOriginal = computed<string | null>(() => {
+  if (!props.perfil?.distrito) return null
+  const res = resolverDistrito(props.perfil.distrito)
+  if (res === null && props.perfil.distrito.trim().length > 0) {
+    return props.perfil.distrito
+  }
+  return null
+})
+
+const distritoOptions = computed<SelectOption<string>[]>(() =>
+  DISTRITOS_LIMA.map((d) => ({
+    value: d,
+    label: d,
+  }))
+)
+
+function populateFormFromPerfil(p: PersonalPerfil) {
+  const resolved = resolverDistrito(p.distrito) ?? ''
+  editForm.value = {
+    ...p,
+    region: REGION_FIJA,
+    distrito: resolved,
+  }
+  initialDistrito.value = resolved
+  initialRegion.value = REGION_FIJA
+}
 
 watch(
   () => props.perfil,
   (newPerfil) => {
     if (newPerfil) {
-      editForm.value = { ...newPerfil }
+      populateFormFromPerfil(newPerfil)
     }
   },
   { immediate: true },
@@ -47,7 +79,7 @@ watch(
   () => props.isOpen,
   (open) => {
     if (open && props.perfil) {
-      editForm.value = { ...props.perfil }
+      populateFormFromPerfil(props.perfil)
       formErrors.value = {}
       showConfirmDiscard.value = false
     }
@@ -60,8 +92,8 @@ const isFormDirty = computed(() => {
     editForm.value.nombre !== props.perfil.nombre ||
     editForm.value.telf !== (props.perfil.telf || '') ||
     editForm.value.email !== (props.perfil.email || '') ||
-    editForm.value.distrito !== (props.perfil.distrito || '') ||
-    editForm.value.region !== (props.perfil.region || '') ||
+    editForm.value.distrito !== initialDistrito.value ||
+    editForm.value.region !== initialRegion.value ||
     editForm.value.direccion !== (props.perfil.direccion || '')
   )
 })
@@ -106,7 +138,7 @@ const handleRequestClose = () => {
 const confirmDiscardChanges = () => {
   showConfirmDiscard.value = false
   if (props.perfil) {
-    editForm.value = { ...props.perfil }
+    populateFormFromPerfil(props.perfil)
   }
   emit('close')
 }
@@ -192,14 +224,30 @@ const onSubmit = () => {
 
           <div class="space-y-1.5">
             <label class="font-semibold text-foreground">Distrito de Residencia</label>
-            <input v-model="editForm.distrito" type="text" placeholder="Ej. Lima, Miraflores, etc."
-              class="w-full h-9 px-3 text-xs rounded-lg border border-border bg-background-1 text-foreground focus:outline-hidden focus:border-primary" />
+            <SearchSelect
+              id="perfil-edit-distrito"
+              v-model="editForm.distrito"
+              :options="distritoOptions"
+              search-placeholder="Buscar distrito..."
+              size="md"
+              :allow-clear="true"
+            />
+            <p
+              v-if="distritoNoValidoOriginal"
+              class="text-[11px] text-amber-600 dark:text-amber-400 font-medium"
+            >
+              Valor actual "{{ distritoNoValidoOriginal }}" no es un distrito válido; seleccione uno.
+            </p>
           </div>
 
           <div class="space-y-1.5">
             <label class="font-semibold text-foreground">Región / Departamento</label>
-            <input v-model="editForm.region" type="text" placeholder="Ej. Lima"
-              class="w-full h-9 px-3 text-xs rounded-lg border border-border bg-background-1 text-foreground focus:outline-hidden focus:border-primary" />
+            <input
+              :value="editForm.region"
+              type="text"
+              disabled
+              class="w-full h-9 px-3 text-xs rounded-lg border border-border bg-muted text-muted-foreground cursor-not-allowed"
+            />
           </div>
         </div>
 

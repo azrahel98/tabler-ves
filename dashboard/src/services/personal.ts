@@ -559,6 +559,59 @@ export async function fetchAlerta70(): Promise<Alerta70Servidor[]> {
     return []
   }
 }
+export interface DistritoConteo {
+  distrito: string
+  cantidad: number
+}
 
+export async function fetchActivosPorDistrito(): Promise<DistritoConteo[]> {
+  const data = await api<DistritoConteo[]>('/api/dash/activos/distrito')
+  return Array.isArray(data) ? data : []
+}
 
+export interface PersonaDistrito {
+  dni: string
+  nombre: string
+  ingreso: string | null
+  direccion: string | null
+  area: { id: number; nombre: string } | null
+  cargo: { id: number; nombre: string } | null
+  regimen: { id: number; nombre: string } | null
+  sindicato: string | null
+  distrito: string | null
+  avatar: string | null
+}
 
+export interface DetalleDistrito {
+  distrito: string
+  total: number
+  areas: { id: number; nombre: string; cantidad: number }[]
+  rangos_edad: { nombre: string; cantidad: number }[]
+  personas: PersonaDistrito[]
+}
+
+export async function fetchPersonalPorDistrito(distrito: string): Promise<DetalleDistrito> {
+  return await api<DetalleDistrito>(`/personal/activos_por_distrito?distrito=${encodeURIComponent(distrito)}`)
+}
+
+export interface PersonaArea {
+  dni: string
+  nombre: string
+  ingreso: string | null
+  renuncia: string | null
+  area: string | null
+  cargo: string | null
+  sindicato: string | null
+  regimen: string | null
+  avatar: string | null
+}
+
+export async function fetchPersonalPorArea(
+  filtro: { areaId: number } | { area: string }
+): Promise<PersonaArea[]> {
+  const query = 'areaId' in filtro
+    ? `area_id=${filtro.areaId}`
+    : `area=${encodeURIComponent(filtro.area)}`
+  const data = await api<PersonaArea[]>(`/api/dash/activos/area?${query}`)
+  return Array.isArray(data) ? data : []
+}

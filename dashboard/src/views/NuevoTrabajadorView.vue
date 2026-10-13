@@ -32,8 +32,11 @@ import {
 import {
   IconArrowLeft,
 } from '@tabler/icons-vue'
+import { useToastStore } from '@/stores/toast'
+import { REGION_FIJA } from '@/constants/distritos'
 
 const router = useRouter()
+const toast = useToastStore()
 
 const currentStep = ref<1 | 2 | 3>(1)
 const isConsultandoReniec = ref<boolean>(false)
@@ -41,7 +44,6 @@ const reniecSuccess = ref<boolean>(false)
 const reniecError = ref<string | null>(null)
 const isSubmitting = ref<boolean>(false)
 const submitError = ref<string | null>(null)
-const toastMessage = ref<{ type: 'success' | 'error'; text: string } | null>(null)
 
 const areas = ref<AreaOption[]>([])
 const cargos = ref<CargoOption[]>([])
@@ -67,7 +69,7 @@ const formData = reactive<{
     direccion: '',
     email: '',
     ruc: '',
-    region: 'LIMA',
+    region: REGION_FIJA,
     distrito: 'VILLA EL SALVADOR',
   },
   plaza: {
@@ -98,13 +100,6 @@ const regímenesDisponibles: RegimenOption[] = [
   { id: 4, nombre: 'Ley 30057 - Servicio Civil' },
   { id: 5, nombre: 'Designación de Confianza / FAG' },
 ]
-
-const showToast = (type: 'success' | 'error', text: string) => {
-  toastMessage.value = { type, text }
-  setTimeout(() => {
-    toastMessage.value = null
-  }, 4000)
-}
 
 onMounted(async () => {
   isLoadingCatalogos.value = true
@@ -186,7 +181,7 @@ const onConsultarReniec = async () => {
       if (res.email) formData.personal.email = res.email
       if (res.ruc) formData.personal.ruc = res.ruc
       reniecSuccess.value = true
-      showToast('success', 'Datos obtenidos exitosamente de RENIEC / Base local.')
+      toast.success('Datos obtenidos exitosamente de RENIEC / Base local.')
     } else {
       reniecError.value = 'No se encontraron datos automáticos. Puedes completar los campos manualmente.'
     }
@@ -216,7 +211,7 @@ const seleccionarPlazaVacante = async (vacante: VacanteOption) => {
   } catch { }
 
   isVacantesModalOpen.value = false
-  showToast('success', `Plaza ${vacante.codigo} seleccionada correctamente.`)
+  toast.success(`Plaza ${vacante.codigo} seleccionada correctamente.`)
 }
 
 const onCambioCodigoPlazaManual = async () => {
@@ -300,17 +295,17 @@ const onSelectStep = (step: 1 | 2 | 3) => {
 const onSubmitRegistro = async () => {
   if (!isStep1Valid.value) {
     currentStep.value = 1
-    showToast('error', 'Complete los datos obligatorios del servidor (DNI, nombres, apellidos y nacimiento).')
+    toast.error('Complete los datos obligatorios del servidor (DNI, nombres, apellidos y nacimiento).')
     return
   }
   if (!isStep2Valid.value) {
     currentStep.value = 2
-    showToast('error', 'Complete los datos de la plaza y vínculo laboral.')
+    toast.error('Complete los datos de la plaza y vínculo laboral.')
     return
   }
   if (!isStep3Valid.value) {
     currentStep.value = 3
-    showToast('error', 'Complete los datos del documento de sustento.')
+    toast.error('Complete los datos del documento de sustento.')
     return
   }
 
@@ -329,7 +324,7 @@ const onSubmitRegistro = async () => {
       direccion: formData.personal.direccion.trim() || null,
       email: formData.personal.email.trim() || null,
       ruc: formData.personal.ruc.trim() || null,
-      region: formData.personal.region?.trim() || 'LIMA',
+      region: REGION_FIJA,
       distrito: formData.personal.distrito?.trim() || 'VILLA EL SALVADOR',
     },
     documento: {
@@ -351,13 +346,13 @@ const onSubmitRegistro = async () => {
 
   try {
     await registrarNuevoTrabajador(payload)
-    showToast('success', 'Servidor público registrado exitosamente.')
+    toast.success('Servidor público registrado exitosamente.')
     setTimeout(() => {
       router.push({ name: 'perfil', params: { dni: payload.personal.dni } })
     }, 1200)
   } catch (err) {
     submitError.value = err instanceof Error ? err.message : 'Error al procesar el registro del trabajador.'
-    showToast('error', submitError.value || 'Error al guardar.')
+    toast.error(submitError.value || 'Error al guardar.')
   } finally {
     isSubmitting.value = false
   }
@@ -366,16 +361,6 @@ const onSubmitRegistro = async () => {
 
 <template>
   <div class="space-y-6 max-w-7xl mx-auto pb-[calc(4rem+env(safe-area-inset-bottom))]">
-    <div v-if="toastMessage" role="status" aria-live="polite"
-      class="fixed bottom-5 right-5 z-50 transition-all duration-300 transform translate-y-0">
-      <div class="flex items-center gap-3 px-4 py-3 rounded-xl shadow-lg border text-xs font-medium backdrop-blur-md"
-        :class="toastMessage.type === 'success' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-600 dark:text-emerald-400' : 'bg-rose-500/10 border-rose-500/20 text-rose-600 dark:text-rose-400'">
-        <span class="size-2 rounded-full shrink-0"
-          :class="toastMessage.type === 'success' ? 'bg-emerald-500' : 'bg-rose-500'"></span>
-        <span>{{ toastMessage.text }}</span>
-      </div>
-    </div>
-
     <div class="flex items-center justify-between gap-4 border-b border-border/70 pb-3">
       <div class="flex items-center gap-2.5 min-w-0">
         <button

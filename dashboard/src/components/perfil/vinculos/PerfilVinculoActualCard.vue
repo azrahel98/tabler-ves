@@ -71,9 +71,18 @@ const emit = defineEmits<{
       <h5 class="text-xs sm:text-sm font-semibold text-foreground tracking-tight wrap-break-word">
         {{ vinculoEfectivo.cargo }}
       </h5>
-      <div class="flex items-center gap-1.5 text-[11px] text-primary font-medium wrap-break-word">
+      <router-link
+        v-if="vinculoEfectivo.area"
+        :to="{ path: '/personal/area', query: { area: vinculoEfectivo.area } }"
+        class="inline-flex items-center gap-1.5 text-[11px] text-primary font-medium wrap-break-word hover:underline cursor-pointer"
+        title="Ver trabajadores del área"
+      >
         <IconBuildingSkyscraper class="size-3 shrink-0" />
         <span>{{ vinculoEfectivo.area }}</span>
+      </router-link>
+      <div v-else class="flex items-center gap-1.5 text-[11px] text-primary font-medium wrap-break-word">
+        <IconBuildingSkyscraper class="size-3 shrink-0" />
+        <span>-</span>
       </div>
     </div>
 

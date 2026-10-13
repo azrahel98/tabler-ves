@@ -2,6 +2,7 @@
 import { ref, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { useThemeStore } from '@/stores/theme'
 import { parseJwt } from '@/utils/jwt'
 import {
   IconStack2,
@@ -12,6 +13,7 @@ import {
 
 const router = useRouter()
 const authStore = useAuthStore()
+const themeStore = useThemeStore()
 
 const mode = ref<'login' | 'register'>('login')
 const isLoading = ref(false)
@@ -87,7 +89,7 @@ const renderGoogleButton = () => {
       targetEl.innerHTML = ''
       google.accounts.id.renderButton(targetEl, {
         type: 'standard',
-        theme: 'outline',
+        theme: themeStore.isDark ? 'filled_black' : 'outline',
         size: 'large',
         text: mode.value === 'login' ? 'signin_with' : 'signup_with',
         shape: 'rectangular',
@@ -115,6 +117,8 @@ watch(mode, () => {
   clearMessages()
   setTimeout(renderGoogleButton, 50)
 })
+
+watch(() => themeStore.isDark, renderGoogleButton)
 
 const handleGoogleCredentialResponse = async (response: { credential: string }) => {
   clearMessages()

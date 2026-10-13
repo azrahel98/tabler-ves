@@ -205,17 +205,10 @@ const sortedVinculos = computed(() => {
                       class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pb-2.5 border-b border-border/60">
                       <div class="flex items-center gap-2 flex-wrap">
                         <Badge :variant="getBadgeVariant(getVinculoStatusType(v))" size="xs" class="gap-1.5">
-                          <span v-if="getVinculoStatusType(v) === 'success'" class="relative flex size-1.5 shrink-0">
-                            <span
-                              class="absolute inline-flex size-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
-                            <span class="relative inline-flex size-1.5 rounded-full bg-emerald-500"></span>
-                          </span>
+                          <span v-if="getVinculoStatusType(v) === 'success'"
+                            class="relative inline-flex size-1.5 rounded-full bg-emerald-500 shrink-0"></span>
                           <span v-else-if="getVinculoStatusType(v) === 'warning'"
-                            class="relative flex size-1.5 shrink-0">
-                            <span
-                              class="absolute inline-flex size-full animate-ping rounded-full bg-amber-400 opacity-75"></span>
-                            <span class="relative inline-flex size-1.5 rounded-full bg-amber-500"></span>
-                          </span>
+                            class="relative inline-flex size-1.5 rounded-full bg-amber-500 shrink-0"></span>
                           <span v-else class="inline-flex size-1.5 rounded-full bg-muted-foreground/50 shrink-0"></span>
                           {{ getVinculoStatusType(v) === 'warning' ? `${v.estado} (sin doc. salida)` : v.estado }}
                         </Badge>
@@ -225,20 +218,15 @@ const sortedVinculos = computed(() => {
                       </div>
 
                       <div class="flex items-center gap-2 flex-wrap justify-end">
-                        <div class="font-mono text-[11px] text-muted-foreground">
-                          Período: {{ formatDate(v.fecha_ingreso) }} &bull; {{ v.fecha_salida ?
-                            formatDate(v.fecha_salida)
-                            : 'Vigente' }}
-                        </div>
                         <Button v-if="v.origen !== 'SUNAT'" size="xs" variant="outline"
-                          class="text-purple-600 hover:text-purple-700 hover:bg-purple-500/10 border-purple-500/30 gap-1.5 cursor-pointer text-[11px]"
+                          class="gap-1.5 cursor-pointer"
                           @click.stop="emit('crearEvento', v)">
                           <IconCalendarPlus class="size-3.5" />
                           <span>Agregar Evento</span>
                         </Button>
                         <Button v-if="v.estado.toLowerCase() != 'inactivo' && v.origen !== 'SUNAT'" size="xs"
                           variant="outline"
-                          class="text-rose-600 hover:text-rose-700 hover:bg-rose-500/10 border-rose-500/30 gap-1.5 cursor-pointer text-[11px]"
+                          class="gap-1.5 cursor-pointer hover:text-rose-600 dark:hover:text-rose-400 hover:border-rose-500/30 hover:bg-rose-500/5"
                           @click.stop="emit('registrarRenuncia', v)">
                           <IconFileX class="size-3.5" />
                           <span>Registrar Renuncia</span>
@@ -251,7 +239,7 @@ const sortedVinculos = computed(() => {
                         <div
                           class="grid grid-cols-[115px_1fr] sm:grid-cols-[135px_1fr] items-start sm:items-center gap-2">
                           <span class="text-muted-foreground flex items-center gap-1.5 shrink-0">
-                            <IconBuildingSkyscraper class="size-4 text-muted-foreground shrink-0" /> Área:
+                            <IconBuildingSkyscraper class="size-3.5 text-muted-foreground/70 shrink-0" /> Área:
                           </span>
                           <span class="font-medium text-foreground wrap-break-word min-w-0" :title="v.area">
                             {{ v.area || '-' }}
@@ -261,7 +249,7 @@ const sortedVinculos = computed(() => {
                         <div
                           class="grid grid-cols-[115px_1fr] sm:grid-cols-[135px_1fr] items-start sm:items-center gap-2">
                           <span class="text-muted-foreground flex items-center gap-1.5 shrink-0">
-                            <IconCalendar class="size-4 text-muted-foreground shrink-0" /> Fecha Ingreso:
+                            <IconCalendar class="size-3.5 text-muted-foreground/70 shrink-0" /> Fecha Ingreso:
                           </span>
                           <span class="font-mono font-medium text-foreground min-w-0">{{ formatDate(v.fecha_ingreso)
                           }}</span>
@@ -270,7 +258,7 @@ const sortedVinculos = computed(() => {
                         <div
                           class="grid grid-cols-[115px_1fr] sm:grid-cols-[135px_1fr] items-start sm:items-center gap-2">
                           <span class="text-muted-foreground flex items-center gap-1.5 shrink-0">
-                            <IconFileText class="size-4 text-muted-foreground shrink-0" /> Doc. Ingreso:
+                            <IconFileText class="size-3.5 text-muted-foreground/70 shrink-0" /> Doc. Ingreso:
                           </span>
                           <button v-if="v.doc_ingreso || v.numero_doc_ingreso" type="button"
                             class="text-left font-medium text-primary hover:underline truncate min-w-0 inline-flex items-center gap-1 cursor-pointer transition-colors"
@@ -286,7 +274,7 @@ const sortedVinculos = computed(() => {
                         <div
                           class="grid grid-cols-[115px_1fr] sm:grid-cols-[135px_1fr] items-start sm:items-center gap-2">
                           <span class="text-muted-foreground flex items-center gap-1.5 shrink-0">
-                            <IconFileDescription class="size-4 text-muted-foreground shrink-0" /> Ref. Ingreso:
+                            <IconFileDescription class="size-3.5 text-muted-foreground/70 shrink-0" /> Ref. Ingreso:
                           </span>
                           <span class="font-medium text-foreground truncate min-w-0" :title="v.descrip_ingreso || ''">
                             {{ v.descrip_ingreso || '-' }}
@@ -296,7 +284,7 @@ const sortedVinculos = computed(() => {
                         <div
                           class="grid grid-cols-[115px_1fr] sm:grid-cols-[135px_1fr] items-start sm:items-center gap-2">
                           <span class="text-muted-foreground flex items-center gap-1.5 shrink-0">
-                            <IconBriefcase class="size-4 text-muted-foreground shrink-0" /> G. Ocupacional:
+                            <IconBriefcase class="size-3.5 text-muted-foreground/70 shrink-0" /> G. Ocupacional:
                           </span>
                           <span class="font-medium text-foreground capitalize truncate min-w-0">{{ v.grupo_ocupacional
                             || '-' }}</span>
@@ -305,7 +293,7 @@ const sortedVinculos = computed(() => {
                         <div
                           class="grid grid-cols-[115px_1fr] sm:grid-cols-[135px_1fr] items-start sm:items-center gap-2">
                           <span class="text-muted-foreground flex items-center gap-1.5 shrink-0">
-                            <IconId class="size-4 text-muted-foreground shrink-0" /> C. Estructural:
+                            <IconId class="size-3.5 text-muted-foreground/70 shrink-0" /> C. Estructural:
                           </span>
                           <span class="font-medium text-foreground wrap-break-word min-w-0"
                             :title="v.cargo_estructural || ''">
@@ -316,11 +304,11 @@ const sortedVinculos = computed(() => {
                         <div
                           class="grid grid-cols-[115px_1fr] sm:grid-cols-[135px_1fr] items-start sm:items-center gap-2">
                           <span class="text-muted-foreground flex items-center gap-1.5 shrink-0">
-                            <IconShieldCheck class="size-4 text-muted-foreground shrink-0" /> Afiliación:
+                            <IconShieldCheck class="size-3.5 text-muted-foreground/70 shrink-0" /> Afiliación:
                           </span>
                           <div class="flex items-center gap-2 min-w-0">
                             <span
-                              class="size-5 rounded-full bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center text-[10px] font-bold shrink-0">
+                              class="size-5 rounded-full bg-muted text-muted-foreground flex items-center justify-center text-[10px] font-bold shrink-0">
                               {{ (v.sindicato || 'N')[0] }}
                             </span>
                             <span class="font-medium text-foreground truncate min-w-0">{{ v.sindicato || 'No Afiliado'
@@ -333,7 +321,7 @@ const sortedVinculos = computed(() => {
                         <div
                           class="grid grid-cols-[115px_1fr] sm:grid-cols-[135px_1fr] items-start sm:items-center gap-2">
                           <span class="text-muted-foreground flex items-center gap-1.5 shrink-0">
-                            <IconFileCertificate class="size-4 text-muted-foreground shrink-0" /> Régimen:
+                            <IconFileCertificate class="size-3.5 text-muted-foreground/70 shrink-0" /> Régimen:
                           </span>
                           <span class="font-medium text-foreground truncate min-w-0" :title="v.regimen">
                             {{ v.regimen || '-' }}
@@ -343,7 +331,7 @@ const sortedVinculos = computed(() => {
                         <div
                           class="grid grid-cols-[115px_1fr] sm:grid-cols-[135px_1fr] items-start sm:items-center gap-2">
                           <span class="text-muted-foreground flex items-center gap-1.5 shrink-0">
-                            <IconCalendarOff class="size-4 text-muted-foreground shrink-0" /> Fecha Cese:
+                            <IconCalendarOff class="size-3.5 text-muted-foreground/70 shrink-0" /> Fecha Cese:
                           </span>
                           <span class="min-w-0"
                             :class="v.fecha_salida ? 'font-mono text-foreground font-medium' : 'text-emerald-600 dark:text-emerald-400 font-medium'">
@@ -354,7 +342,7 @@ const sortedVinculos = computed(() => {
                         <div
                           class="grid grid-cols-[115px_1fr] sm:grid-cols-[135px_1fr] items-start sm:items-center gap-2">
                           <span class="text-muted-foreground flex items-center gap-1.5 shrink-0">
-                            <IconFileCheck class="size-4 text-muted-foreground shrink-0" /> Doc. Salida:
+                            <IconFileCheck class="size-3.5 text-muted-foreground/70 shrink-0" /> Doc. Salida:
                           </span>
                           <button v-if="v.doc_salida || v.numero_doc_salida" type="button"
                             class="text-left font-medium text-amber-600 dark:text-amber-400 hover:underline truncate min-w-0 inline-flex items-center gap-1 cursor-pointer transition-colors"
@@ -370,7 +358,7 @@ const sortedVinculos = computed(() => {
                         <div
                           class="grid grid-cols-[115px_1fr] sm:grid-cols-[135px_1fr] items-start sm:items-center gap-2">
                           <span class="text-muted-foreground flex items-center gap-1.5 shrink-0">
-                            <IconFileDescription class="size-4 text-muted-foreground shrink-0" /> Ref. Salida:
+                            <IconFileDescription class="size-3.5 text-muted-foreground/70 shrink-0" /> Ref. Salida:
                           </span>
                           <span class="font-medium text-foreground truncate min-w-0" :title="v.descrip_salida || ''">
                             {{ v.descrip_salida || '-' }}
@@ -380,11 +368,11 @@ const sortedVinculos = computed(() => {
                         <div
                           class="grid grid-cols-[115px_1fr] sm:grid-cols-[135px_1fr] items-start sm:items-center gap-2">
                           <span class="text-muted-foreground flex items-center gap-1.5 shrink-0">
-                            <IconAlertCircle class="size-4 text-muted-foreground shrink-0" /> Eventos:
+                            <IconAlertCircle class="size-3.5 text-muted-foreground/70 shrink-0" /> Eventos:
                           </span>
                           <div class="flex items-center gap-2 flex-wrap min-w-0">
                             <button type="button"
-                              class="text-left font-medium text-purple-600 dark:text-purple-400 hover:underline truncate min-w-0 inline-flex items-center gap-1 cursor-pointer transition-colors"
+                              class="text-left font-medium text-primary hover:underline truncate min-w-0 inline-flex items-center gap-1 cursor-pointer transition-colors"
                               @click.stop="emit('verEventos', v)">
                               <span class="truncate">
                                 {{ v.eventos && v.eventos.length > 0 ? `${v.eventos.length} ${v.eventos.length === 1 ?
@@ -392,22 +380,16 @@ const sortedVinculos = computed(() => {
                               </span>
                               <IconExternalLink class="size-3 shrink-0 opacity-70" />
                             </button>
-                            <button v-if="v.origen !== 'SUNAT'" type="button"
-                              class="text-[11px] font-semibold text-purple-600 dark:text-purple-400 hover:text-purple-700 inline-flex items-center gap-1 hover:underline cursor-pointer"
-                              @click.stop="emit('crearEvento', v)">
-                              <IconCalendarPlus class="size-3 shrink-0" />
-                              <span>+ Agregar Evento</span>
-                            </button>
                           </div>
                         </div>
 
                         <div v-if="v.doc_evento_tipo || v.numero_doc_evento"
                           class="grid grid-cols-[115px_1fr] sm:grid-cols-[135px_1fr] items-start sm:items-center gap-2">
                           <span class="text-muted-foreground flex items-center gap-1.5 shrink-0">
-                            <IconFileCode class="size-4 text-muted-foreground shrink-0" /> Doc. Evento:
+                            <IconFileCode class="size-3.5 text-muted-foreground/70 shrink-0" /> Doc. Evento:
                           </span>
                           <button type="button"
-                            class="text-left font-medium text-purple-600 dark:text-purple-400 hover:underline truncate min-w-0 inline-flex items-center gap-1 cursor-pointer transition-colors"
+                            class="text-left font-medium text-primary hover:underline truncate min-w-0 inline-flex items-center gap-1 cursor-pointer transition-colors"
                             :title="[v.doc_evento_tipo, v.numero_doc_evento].filter(Boolean).join(' N° ') || '-'"
                             @click.stop="emit('verDocumento', { tipo: 'evento', vinculo: v })">
                             <span class="truncate">{{
@@ -419,7 +401,7 @@ const sortedVinculos = computed(() => {
                         <div v-if="v.fecha_evento"
                           class="grid grid-cols-[115px_1fr] sm:grid-cols-[135px_1fr] items-start sm:items-center gap-2">
                           <span class="text-muted-foreground flex items-center gap-1.5 shrink-0">
-                            <IconCalendar class="size-4 text-muted-foreground shrink-0" /> Fecha Evento:
+                            <IconCalendar class="size-3.5 text-muted-foreground/70 shrink-0" /> Fecha Evento:
                           </span>
                           <span class="font-medium font-mono text-foreground min-w-0">
                             {{ formatDate(v.fecha_evento) }}
@@ -431,19 +413,13 @@ const sortedVinculos = computed(() => {
                     <div v-if="v.origen !== 'SUNAT' || (v.eventos && v.eventos.length >= 1)"
                       class="pt-2.5 border-t border-border/60 space-y-2">
                       <div class="flex items-center justify-between">
-                        <span class="text-[11px] font-semibold text-foreground flex items-center gap-1.5">
-                          <IconFileCode class="size-3.5 text-purple-600 dark:text-purple-400 shrink-0" />
+                        <span class="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
+                          <IconFileCode class="size-3.5 text-muted-foreground shrink-0" />
                           Eventos Laborales Registrados ({{ v.eventos?.length || 0 }})
                         </span>
                         <div class="flex items-center gap-2">
-                          <Button v-if="v.origen !== 'SUNAT'" size="xs" variant="outline"
-                            class="text-purple-600 hover:text-purple-700 hover:bg-purple-500/10 border-purple-500/30 gap-1 cursor-pointer text-[11px] h-6.5 px-2"
-                            @click.stop="emit('crearEvento', v)">
-                            <IconCalendarPlus class="size-3" />
-                            <span>Agregar Evento</span>
-                          </Button>
                           <button v-if="v.eventos && v.eventos.length > 0" type="button"
-                            class="text-[11px] text-purple-600 dark:text-purple-400 hover:underline font-medium inline-flex items-center gap-1 cursor-pointer"
+                            class="text-[11px] text-primary hover:underline font-medium inline-flex items-center gap-1 cursor-pointer"
                             @click.stop="emit('verEventos', v)">
                             <span>Gestionar eventos</span>
                             <IconExternalLink class="size-3 shrink-0 opacity-70" />
@@ -455,7 +431,7 @@ const sortedVinculos = computed(() => {
                           class="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 p-2 rounded-lg bg-muted/40 border border-border/50 text-[11px]">
                           <div class="flex items-center gap-2 flex-wrap min-w-0">
                             <Badge variant="outline" size="xs"
-                              class="font-semibold border-purple-500/30 text-purple-600 dark:text-purple-400 uppercase text-[9px]">
+                              class="font-semibold uppercase text-[10px]">
                               {{ getTipoEventoLabel(ev.tipo_evento) }}
                             </Badge>
                             <span v-if="ev.estado" class="text-muted-foreground text-[10px] font-medium">

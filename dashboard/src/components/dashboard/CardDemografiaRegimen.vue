@@ -11,11 +11,13 @@ interface Props {
   resumen: ResumenPersonal | null
   isLoading?: boolean
   selectedRegimen?: string | null
+  chartHeight?: string
 }
 
 const props = withDefaults(defineProps<Props>(), {
   isLoading: false,
   selectedRegimen: null,
+  chartHeight: 'h-57.5',
 })
 
 const emit = defineEmits<{
@@ -89,8 +91,8 @@ const chartOptions = computed<ChartOptions<'doughnut'>>(() => {
       </Badge>
     </div>
 
-    <div v-if="isLoading" class="h-56 bg-muted/60 rounded-lg animate-pulse" aria-busy="true"></div>
-    <div v-else class="h-57.5 flex items-center justify-center relative w-full">
+    <div v-if="isLoading" :class="[chartHeight, 'bg-muted/60 rounded-lg animate-pulse']" aria-busy="true"></div>
+    <div v-else :class="[chartHeight, 'flex items-center justify-center relative w-full']">
       <Doughnut
         :data="chartData"
         :options="chartOptions"

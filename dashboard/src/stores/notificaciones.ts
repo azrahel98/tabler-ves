@@ -9,6 +9,8 @@ import {
   getNotificationStreamUrl,
 } from '@/services/notificaciones'
 
+const MAX_NOTIFICACIONES = 30
+
 export const useNotificacionesStore = defineStore('notificaciones', () => {
   const authStore = useAuthStore()
 
@@ -21,6 +23,7 @@ export const useNotificacionesStore = defineStore('notificaciones', () => {
   let eventSourceInstance: EventSource | null = null
   let reconnectTimer: ReturnType<typeof setTimeout> | null = null
   let toastTimer: ReturnType<typeof setTimeout> | null = null
+  let reconnectAttempts = 0
 
   const totalNoLeidas = computed(() => {
     return Math.max(0, noLeidas.value)
@@ -34,6 +37,23 @@ export const useNotificacionesStore = defineStore('notificaciones', () => {
     activeToast.value = null
   }
 
+  function pausarToast() {
+    if (toastTimer) {
+      clearTimeout(toastTimer)
+      toastTimer = null
+    }
+  }
+
+  function reanudarToast() {
+    if (!activeToast.value) return
+    if (toastTimer) {
+      clearTimeout(toastTimer)
+    }
+    toastTimer = setTimeout(() => {
+      descartarToast()
+    }, 4000)
+  }
+
   function mostrarToast(notif: Notificacion) {
     descartarToast()
     activeToast.value = notif
@@ -42,7 +62,7 @@ export const useNotificacionesStore = defineStore('notificaciones', () => {
     }, 6000)
   }
 
-  async function cargarNotificaciones(limit = 30) {
+  async function cargarNotificaciones(limit = MAX_NOTIFICACIONES) {
     if (!authStore.isAuthenticated) return
     isLoading.value = true
     try {
@@ -98,18 +118,26 @@ export const useNotificacionesStore = defineStore('notificaciones', () => {
 
       const existingIndex = notificaciones.value.findIndex((n) => n.id === parsed.id)
       if (existingIndex >= 0) {
+        const anterior = notificaciones.value[existingIndex]
+        if (!anterior.leido && parsed.leido) {
+          noLeidas.value = Math.max(0, noLeidas.value - 1)
+        } else if (anterior.leido && !parsed.leido) {
+          noLeidas.value += 1
+        }
         notificaciones.value[existingIndex] = {
-          ...notificaciones.value[existingIndex],
+          ...anterior,
           ...parsed,
         }
       } else {
         notificaciones.value.unshift(parsed)
         if (!parsed.leido) {
           noLeidas.value += 1
+          mostrarToast(parsed)
+        }
+        if (notificaciones.value.length > MAX_NOTIFICACIONES) {
+          notificaciones.value = notificaciones.value.slice(0, MAX_NOTIFICACIONES)
         }
       }
-
-      mostrarToast(parsed)
     } catch {}
   }
 
@@ -126,6 +154,7 @@ export const useNotificacionesStore = defineStore('notificaciones', () => {
 
       es.onopen = () => {
         isConnected.value = true
+        reconnectAttempts = 0
         if (reconnectTimer) {
           clearTimeout(reconnectTimer)
           reconnectTimer = null
@@ -140,10 +169,12 @@ export const useNotificacionesStore = defineStore('notificaciones', () => {
         isConnected.value = false
         detenerStream()
         if (authStore.isAuthenticated && !reconnectTimer) {
+          const delay = Math.min(60000, 5000 * Math.pow(2, reconnectAttempts))
+          reconnectAttempts++
           reconnectTimer = setTimeout(() => {
             reconnectTimer = null
             iniciarStream()
-          }, 5000)
+          }, delay)
         }
       }
     } catch {
@@ -166,6 +197,7 @@ export const useNotificacionesStore = defineStore('notificaciones', () => {
   function resetear() {
     detenerStream()
     descartarToast()
+    reconnectAttempts = 0
     notificaciones.value = []
     noLeidas.value = 0
     isLoading.value = false
@@ -193,6 +225,8 @@ export const useNotificacionesStore = defineStore('notificaciones', () => {
     iniciarStream,
     detenerStream,
     descartarToast,
+    pausarToast,
+    reanudarToast,
     resetear,
     inicializar,
   }

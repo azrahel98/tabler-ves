@@ -10,10 +10,12 @@ import type { ChartOptions, ChartData } from 'chart.js'
 interface Props {
   rangos: RangoReport[]
   isLoading?: boolean
+  chartHeight?: string
 }
 
 const props = withDefaults(defineProps<Props>(), {
   isLoading: false,
+  chartHeight: 'h-57.5',
 })
 
 const themeStore = useThemeStore()
@@ -87,8 +89,8 @@ const chartOptions = computed<ChartOptions<'bar'>>(() => {
       <Badge variant="outline" size="xs">Pirámide Activa</Badge>
     </div>
 
-    <div v-if="isLoading" class="h-56 bg-muted/60 rounded-lg animate-pulse" aria-busy="true"></div>
-    <div v-else class="h-57.5 relative w-full">
+    <div v-if="isLoading" :class="[chartHeight, 'bg-muted/60 rounded-lg animate-pulse']" aria-busy="true"></div>
+    <div v-else :class="[chartHeight, 'relative w-full']">
       <Bar
         :data="chartData"
         :options="chartOptions"

@@ -11,6 +11,7 @@ import {
   IconUserPlus,
   IconSitemap,
   IconAlertTriangle,
+  IconMap,
 } from '@tabler/icons-vue'
 
 withDefaults(
@@ -94,6 +95,15 @@ const authStore = useAuthStore()
           <IconSitemap class="size-5 shrink-0" :stroke-width="1.3" />
           <span :class="isCollapsed ? 'lg:hidden truncate' : 'truncate'">Organigrama</span>
         </router-link>
+
+        <router-link to="/distritos"
+          class="flex items-center rounded-lg text-sm transition-colors text-sidebar-nav-foreground hover:bg-sidebar-nav-hover"
+          :class="isCollapsed ? 'lg:justify-center lg:px-0 px-3 py-2.5' : 'px-3 py-2 gap-3'"
+          :title="isCollapsed ? 'Mapa de Distritos' : undefined" @click="emit('close')">
+          <IconMap class="size-5 shrink-0" :stroke-width="1.3" />
+          <span :class="isCollapsed ? 'lg:hidden truncate' : 'truncate'">Mapa de Distritos</span>
+        </router-link>
+
 
         <router-link to="/personal/nuevo"
           class="flex items-center rounded-lg text-sm transition-colors text-sidebar-nav-foreground hover:bg-sidebar-nav-hover"

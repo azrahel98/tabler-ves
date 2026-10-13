@@ -1,6 +1,9 @@
 <script setup lang="ts">
+import { computed, onMounted } from 'vue'
 import Card from '@/components/ui/card/Card.vue'
 import Button from '@/components/ui/button/Button.vue'
+import SearchSelect, { type SelectOption } from '@/components/ui/form/SearchSelect.vue'
+import { DISTRITOS_LIMA, REGION_FIJA } from '@/constants/distritos'
 import type { PersonalFormState } from './types'
 import {
   IconId,
@@ -14,7 +17,7 @@ import {
   IconArrowRight,
 } from '@tabler/icons-vue'
 
-defineProps<{
+const props = defineProps<{
   personal: PersonalFormState
   isConsultandoReniec: boolean
   reniecSuccess: boolean
@@ -26,6 +29,17 @@ const emit = defineEmits<{
   (e: 'consultarReniec'): void
   (e: 'siguiente'): void
 }>()
+
+const distritoOptions = computed<SelectOption<string>[]>(() =>
+  DISTRITOS_LIMA.map((d) => ({
+    value: d,
+    label: d,
+  }))
+)
+
+onMounted(() => {
+  props.personal.region = REGION_FIJA
+})
 </script>
 
 <template>
@@ -204,21 +218,22 @@ const emit = defineEmits<{
           <label for="personal-region" class="text-xs font-semibold text-foreground">Región / Dpto.</label>
           <input
             id="personal-region"
-            v-model="personal.region"
+            :value="personal.region"
             type="text"
-            placeholder="Ej. Lima"
-            class="w-full px-3 py-2.5 sm:py-2 text-base sm:text-xs rounded-lg border border-border bg-card text-foreground focus:outline-hidden focus:border-primary"
+            disabled
+            class="w-full px-3 py-2.5 sm:py-2 text-base sm:text-xs rounded-lg border border-border bg-muted text-muted-foreground cursor-not-allowed"
           />
         </div>
 
         <div class="space-y-1">
           <label for="personal-distrito" class="text-xs font-semibold text-foreground">Distrito</label>
-          <input
+          <SearchSelect
             id="personal-distrito"
             v-model="personal.distrito"
-            type="text"
-            placeholder="Ej. Villa El Salvador"
-            class="w-full px-3 py-2.5 sm:py-2 text-base sm:text-xs rounded-lg border border-border bg-card text-foreground focus:outline-hidden focus:border-primary"
+            :options="distritoOptions"
+            search-placeholder="Buscar distrito..."
+            size="md"
+            :allow-clear="true"
           />
         </div>
 

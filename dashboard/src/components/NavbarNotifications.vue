@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { formatDistanceToNow, parseISO } from 'date-fns'
 import { es } from 'date-fns/locale'
 import { useNotificacionesStore } from '@/stores/notificaciones'
-import { resolveNotificationLink } from '@/services/notificaciones'
+import { type Notificacion } from '@/services/notificaciones'
 import {
   IconBell,
   IconChecks,
@@ -22,22 +22,29 @@ const isOpen = ref(false)
 function toggleDropdown() {
   isOpen.value = !isOpen.value
   if (isOpen.value) {
-    notifStore.cargarNotificaciones()
+    if (!notifStore.isConnected || notifStore.notificaciones.length === 0) {
+      notifStore.cargarNotificaciones()
+    }
+    window.addEventListener('keydown', handleKeydown)
+  } else {
+    window.removeEventListener('keydown', handleKeydown)
   }
 }
 
 function closeDropdown() {
-  isOpen.value = false
+  if (isOpen.value) {
+    isOpen.value = false
+    window.removeEventListener('keydown', handleKeydown)
+  }
 }
 
-function handleNotificationClick(notif: { id: number; enlace?: string | null; leido: boolean; dni?: string | null }) {
+function handleNotificationClick(notif: Notificacion) {
   if (!notif.leido) {
     notifStore.marcarComoLeida(notif.id)
   }
   closeDropdown()
-  const targetLink = resolveNotificationLink(`/perfil/${notif.dni}`)
-  if (targetLink) {
-    router.push(targetLink)
+  if (notif.dni) {
+    router.push(`/perfil/${notif.dni}`)
   }
 }
 
@@ -65,10 +72,6 @@ function handleKeydown(e: KeyboardEvent) {
     closeDropdown()
   }
 }
-
-onMounted(() => {
-  window.addEventListener('keydown', handleKeydown)
-})
 
 onUnmounted(() => {
   window.removeEventListener('keydown', handleKeydown)

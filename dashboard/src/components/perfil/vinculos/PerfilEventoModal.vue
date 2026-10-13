@@ -2,7 +2,7 @@
 import { ref, watch, computed } from 'vue'
 import Button from '@/components/ui/button/Button.vue'
 import Badge from '@/components/ui/badge/Badge.vue'
-import SelectModalPicker, { type SelectModalOption } from '@/components/ui/form/SelectModalPicker.vue'
+import SearchSelect, { type SelectOption } from '@/components/ui/form/SearchSelect.vue'
 import {
   fetchTiposDocumentos,
   fetchAreas,
@@ -132,7 +132,7 @@ const necesitaAreaSalida = computed(() => {
   return requiereArea(docSalida.value.tipoDocumento)
 })
 
-const areaOptions = computed<SelectModalOption<number>[]>(() => {
+const areaOptions = computed<SelectOption<number>[]>(() => {
   return areas.value.map((a) => ({
     value: a.id,
     label: a.nombre,
@@ -141,7 +141,7 @@ const areaOptions = computed<SelectModalOption<number>[]>(() => {
   }))
 })
 
-const cargoOptions = computed<SelectModalOption<number>[]>(() => {
+const cargoOptions = computed<SelectOption<number>[]>(() => {
   return cargos.value.map((c) => ({
     value: c.id,
     label: c.nombre,
@@ -600,9 +600,8 @@ const handleSubmit = () => {
                   </div>
 
                   <div v-if="necesitaAreaSalida">
-                    <SelectModalPicker v-model="docSalida.areaId" label="Área Emisora"
-                      placeholder="Seleccione área emisora..." modal-title="Buscar Área Emisora de Cierre"
-                      modal-subtitle="Selecciona el área que emite el documento de cierre."
+                    <SearchSelect v-model="docSalida.areaId" label="Área Emisora"
+                      placeholder="Seleccione área emisora..."
                       search-placeholder="Buscar área por nombre o sigla..." :options="areaOptions" :required="true"
                       :disabled="isLoadingCatalogos || isSaving" :error-message="formErrors.areaSalida" />
                   </div>
@@ -665,17 +664,14 @@ const handleSubmit = () => {
                 <div v-if="requiereMovimiento"
                   class="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3 rounded-xl border border-border/80 bg-muted/10">
                   <div>
-                    <SelectModalPicker v-model="nuevaAreaId" label="Nueva Área Asignada"
-                      placeholder="Mantener área actual" modal-title="Buscar y Seleccionar Área"
-                      modal-subtitle="Selecciona la nueva área o dependencia para el trabajador."
+                    <SearchSelect v-model="nuevaAreaId" label="Nueva Área Asignada"
+                      placeholder="Mantener área actual"
                       search-placeholder="Buscar por nombre o sigla (ej. Gerencia, OGA, etc.)..." :options="areaOptions"
                       :disabled="isLoadingCatalogos || isSaving" />
                   </div>
 
                   <div>
-                    <SelectModalPicker v-model="nuevoCargoId" label="Nuevo Cargo" placeholder="Mantener cargo actual"
-                      modal-title="Buscar y Seleccionar Cargo"
-                      modal-subtitle="Selecciona el nuevo cargo institucional a asignar."
+                    <SearchSelect v-model="nuevoCargoId" label="Nuevo Cargo" placeholder="Mantener cargo actual"
                       search-placeholder="Buscar cargo por nombre..." :options="cargoOptions"
                       :disabled="isLoadingCatalogos || isSaving" />
                   </div>
@@ -703,17 +699,14 @@ const handleSubmit = () => {
               <div v-if="requiereMovimiento"
                 class="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3 rounded-xl border border-border/80 bg-muted/10">
                 <div>
-                  <SelectModalPicker v-model="nuevaAreaId" label="Nueva Área Asignada"
-                    placeholder="Mantener área actual" modal-title="Buscar y Seleccionar Área"
-                    modal-subtitle="Selecciona la nueva área o dependencia para el trabajador."
+                  <SearchSelect v-model="nuevaAreaId" label="Nueva Área Asignada"
+                    placeholder="Mantener área actual"
                     search-placeholder="Buscar por nombre o sigla (ej. Gerencia, OGA, etc.)..." :options="areaOptions"
                     :disabled="isLoadingCatalogos || isSaving" />
                 </div>
 
                 <div>
-                  <SelectModalPicker v-model="nuevoCargoId" label="Nuevo Cargo" placeholder="Mantener cargo actual"
-                    modal-title="Buscar y Seleccionar Cargo"
-                    modal-subtitle="Selecciona el nuevo cargo institucional a asignar."
+                  <SearchSelect v-model="nuevoCargoId" label="Nuevo Cargo" placeholder="Mantener cargo actual"
                     search-placeholder="Buscar cargo por nombre..." :options="cargoOptions"
                     :disabled="isLoadingCatalogos || isSaving" />
                 </div>
@@ -782,9 +775,8 @@ const handleSubmit = () => {
                 </div>
 
                 <div v-if="necesitaAreaInicio">
-                  <SelectModalPicker v-model="docInicio.areaId" label="Área Emisora del Documento"
-                    placeholder="Seleccione área emisora..." modal-title="Buscar Área Emisora"
-                    modal-subtitle="Selecciona el área o dependencia emisora del documento."
+                  <SearchSelect v-model="docInicio.areaId" label="Área Emisora del Documento"
+                    placeholder="Seleccione área emisora..."
                     search-placeholder="Buscar área por nombre o sigla..." :options="areaOptions" :required="true"
                     :disabled="isLoadingCatalogos || isSaving" :error-message="formErrors.areaInicio" />
                 </div>

@@ -1,6 +1,8 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import Card from '@/components/ui/card/Card.vue'
 import Button from '@/components/ui/button/Button.vue'
+import SearchSelect, { type SelectOption } from '@/components/ui/form/SearchSelect.vue'
 import type { PlazaFormState, RegimenOption } from './types'
 import type { AreaOption, CargoOption } from '@/services/personal'
 import {
@@ -12,7 +14,7 @@ import {
   IconArrowRight,
 } from '@tabler/icons-vue'
 
-defineProps<{
+const props = defineProps<{
   plaza: PlazaFormState
   areas: AreaOption[]
   cargos: CargoOption[]
@@ -28,6 +30,21 @@ const emit = defineEmits<{
   (e: 'anterior'): void
   (e: 'siguiente'): void
 }>()
+
+const areaOptions = computed<SelectOption<number>[]>(() =>
+  props.areas.map((a) => ({
+    value: a.id,
+    label: a.nombre,
+    badge: a.sigla || undefined,
+  }))
+)
+
+const cargoOptions = computed<SelectOption<number>[]>(() =>
+  props.cargos.map((c) => ({
+    value: c.id,
+    label: c.nombre,
+  }))
+)
 </script>
 
 <template>
@@ -102,16 +119,15 @@ const emit = defineEmits<{
           <IconBuildingSkyscraper class="size-3.5 text-muted-foreground" aria-hidden="true" />
           Área de Adscripción *
         </label>
-        <select
+        <SearchSelect
           id="plaza-area"
           v-model="plaza.areaId"
-          required
-          class="w-full px-3 py-2.5 sm:py-2 text-base sm:text-xs rounded-lg border border-border bg-card text-foreground focus:outline-hidden focus:border-primary"
-        >
-          <option v-for="a in areas" :key="a.id" :value="a.id">
-            {{ a.nombre }} ({{ a.sigla || 'N/A' }})
-          </option>
-        </select>
+          :options="areaOptions"
+          search-placeholder="Buscar área por nombre o sigla..."
+          size="md"
+          :required="true"
+          :allow-clear="false"
+        />
       </div>
 
       <div class="space-y-1">
@@ -119,16 +135,15 @@ const emit = defineEmits<{
           <IconBriefcase class="size-3.5 text-muted-foreground" aria-hidden="true" />
           Cargo Institucional *
         </label>
-        <select
+        <SearchSelect
           id="plaza-cargo"
           v-model="plaza.cargoId"
-          required
-          class="w-full px-3 py-2.5 sm:py-2 text-base sm:text-xs rounded-lg border border-border bg-card text-foreground focus:outline-hidden focus:border-primary"
-        >
-          <option v-for="c in cargos" :key="c.id" :value="c.id">
-            {{ c.nombre }}
-          </option>
-        </select>
+          :options="cargoOptions"
+          search-placeholder="Buscar cargo..."
+          size="md"
+          :required="true"
+          :allow-clear="false"
+        />
       </div>
     </div>
 

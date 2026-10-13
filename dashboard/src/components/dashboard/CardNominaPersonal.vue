@@ -291,9 +291,13 @@ const regimenBadgeVariant = (regimen: string): 'primary' | 'success' | 'warning'
             </td>
 
             <td class="px-5 py-3.5">
-              <div class="text-xs font-medium text-foreground wrap-break-word" :title="t.area">
+              <router-link
+                :to="{ path: '/personal/area', query: { area: t.area } }"
+                class="text-xs font-medium text-foreground wrap-break-word hover:underline"
+                :title="t.area"
+              >
                 {{ t.area }}
-              </div>
+              </router-link>
             </td>
 
             <td class="px-5 py-3.5">
