@@ -16,7 +16,7 @@ fn verificar_admin(req: &HttpRequest) -> Result<(), ApiError> {
         .map(|c| c.role.clone())
         .unwrap_or_default();
     if role.to_uppercase() != "ADMIN" {
-        return Err(ApiError::Unauthorized(
+        return Err(ApiError::Forbidden(
             "Acceso restringido a administradores".into(),
         ));
     }
@@ -28,8 +28,14 @@ pub async fn login(
     login_req: web::Json<LoginRequest>,
 ) -> Result<impl Responder, ApiError> {
     validar(&login_req.0)?;
+    if login_req.credential.trim().is_empty() {
+        return Err(ApiError::BadRequest("credential es requerido".into()));
+    }
+    let identidad =
+        crate::auth::google::verificar_id_token(&data.cliente_http, &login_req.credential, &data.google_client_id)
+            .await?;
     let auth_result =
-        service::authenticate_google(&data.db, &login_req.google_sub, &login_req.email).await?;
+        service::authenticate_google(&data.db, &identidad.sub, &identidad.email).await?;
     let user = match auth_result {
         LoginResult::Success(u) => u,
         LoginResult::UserNotFound => {
@@ -55,7 +61,7 @@ pub async fn login(
         user.email.clone(),
         user.full_name.clone(),
         user.picture_url.clone(),
-    );
+    )?;
 
     let json_response = serde_json::json!({
         "token": token,
@@ -69,12 +75,41 @@ pub async fn register(
     reg_req: web::Json<RegisterRequest>,
 ) -> Result<impl Responder, ApiError> {
     validar(&reg_req.0)?;
+    if reg_req.credential.trim().is_empty() {
+        return Err(ApiError::BadRequest("credential es requerido".into()));
+    }
+    let identidad =
+        crate::auth::google::verificar_id_token(&data.cliente_http, &reg_req.credential, &data.google_client_id)
+            .await?;
+
+    let full_name = match reg_req
+        .full_name
+        .as_deref()
+        .map(|s| s.trim())
+        .filter(|s| !s.is_empty())
+    {
+        Some(name) => name.to_string(),
+        None => match identidad
+            .name
+            .as_deref()
+            .map(|s| s.trim())
+            .filter(|s| !s.is_empty())
+        {
+            Some(name) => name.to_string(),
+            None => {
+                return Err(ApiError::BadRequest(
+                    "El nombre completo es requerido".into(),
+                ));
+            }
+        },
+    };
+
     let user_id = service::register_google(
         &data.db,
-        &reg_req.google_sub,
-        &reg_req.email,
-        &reg_req.full_name,
-        reg_req.picture_url.as_deref(),
+        &identidad.sub,
+        &identidad.email,
+        &full_name,
+        identidad.picture.as_deref(),
     )
     .await?;
 
@@ -148,17 +183,29 @@ pub async fn editar_usuario(
         None => return Err(ApiError::BadRequest("Usuario no encontrado".into())),
     };
 
+    let caller_id = req
+        .extensions()
+        .get::<Claims>()
+        .map(|c| c.id)
+        .unwrap_or(0);
+
     let role_upper = body.role.to_uppercase();
     let status_upper = body.status.to_uppercase();
 
-    if role_upper != "ADMIN" && role_upper != "USER" {
+    if role_upper != "ADMIN" && role_upper != "USER" && role_upper != "EDITOR" {
         return Err(ApiError::BadRequest(
-            "Rol inválido (debe ser ADMIN o USER)".into(),
+            "Rol inválido (debe ser ADMIN, EDITOR o USER)".into(),
         ));
     }
     if status_upper != "PENDING" && status_upper != "APPROVED" && status_upper != "REJECTED" {
         return Err(ApiError::BadRequest(
             "Estado inválido (debe ser PENDING, APPROVED o REJECTED)".into(),
+        ));
+    }
+
+    if caller_id == body.id && (user_actual.role != role_upper || user_actual.status != status_upper) {
+        return Err(ApiError::BadRequest(
+            "No puedes cambiar tu propio rol o estado".into(),
         ));
     }
 

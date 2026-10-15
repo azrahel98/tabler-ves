@@ -4,12 +4,14 @@ pub mod repo;
 pub mod service;
 
 use crate::common::middleware::JWT;
+use crate::common::roles::RequiereEditor;
 use actix_web::web;
 
 pub fn configure(cfg: &mut web::ServiceConfig) {
     cfg.service(
         web::scope("/personal").service(
             web::scope("")
+                .wrap(RequiereEditor)
                 .wrap(JWT)
                 .route("/avatar/{dni}", web::get().to(handlers::ver_avatar))
                 .route(
@@ -83,6 +85,10 @@ pub fn configure(cfg: &mut web::ServiceConfig) {
                 )
                 .route("/buscar_areas", web::get().to(handlers::buscar_areas))
                 .route("/buscar_cargos", web::get().to(handlers::buscar_cargos))
+                .route(
+                    "/buscar_regimenes",
+                    web::get().to(handlers::buscar_regimenes),
+                )
                 .route(
                     "/upsert_evento_vinculo",
                     web::put().to(handlers::upsert_evento_vinculo),

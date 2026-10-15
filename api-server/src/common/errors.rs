@@ -12,7 +12,7 @@ pub struct ErrorResponse {
 pub enum ApiError {
     BadRequest(String),
     Unauthorized(String),
-    #[allow(dead_code)]
+    Forbidden(String),
     NotFound(String),
     InternalError(String),
 }
@@ -22,6 +22,7 @@ impl fmt::Display for ApiError {
         match self {
             ApiError::BadRequest(msg) => write!(f, "Bad Request: {}", msg),
             ApiError::Unauthorized(msg) => write!(f, "Unauthorized: {}", msg),
+            ApiError::Forbidden(msg) => write!(f, "Forbidden: {}", msg),
             ApiError::NotFound(msg) => write!(f, "Not Found: {}", msg),
             ApiError::InternalError(msg) => write!(f, "Internal Server Error: {}", msg),
         }
@@ -39,14 +40,19 @@ impl ResponseError for ApiError {
                 code: 401,
                 error: msg.clone(),
             }),
+            ApiError::Forbidden(msg) => HttpResponse::Forbidden().json(ErrorResponse {
+                code: 403,
+                error: msg.clone(),
+            }),
             ApiError::NotFound(msg) => HttpResponse::NotFound().json(ErrorResponse {
                 code: 404,
                 error: msg.clone(),
             }),
             ApiError::InternalError(msg) => {
+                log::error!("Internal server error: {}", msg);
                 HttpResponse::InternalServerError().json(ErrorResponse {
                     code: 500,
-                    error: msg.clone(),
+                    error: "Error interno del servidor".to_string(),
                 })
             }
         }

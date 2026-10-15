@@ -12,11 +12,79 @@ use sqlx::Row;
 use std::io::Write;
 use std::path::PathBuf;
 use uuid::Uuid;
+async fn guardar_archivo_pdf_multipart(
+    field: &mut actix_multipart::Field,
+    upload_dir: &std::path::Path,
+    max_file_size: usize,
+) -> Result<(String, String, String, std::path::PathBuf), ApiError> {
+    let content_disposition = field.content_disposition();
+    let original_name = content_disposition
+        .and_then(|cd| cd.get_filename())
+        .unwrap_or("unknown")
+        .to_string();
+    let extension = std::path::Path::new(&original_name)
+        .extension()
+        .and_then(std::ffi::OsStr::to_str)
+        .unwrap_or("bin")
+        .to_string();
+    if extension.to_lowercase() != "pdf" {
+        return Err(ApiError::BadRequest(
+            "Solo se permiten archivos PDF".to_string(),
+        ));
+    }
+    let file_hash = Uuid::new_v4().to_string();
+    let mut file_path = upload_dir.to_path_buf();
+    file_path.push(format!("{}.{}", file_hash, extension));
+    let mut f = std::fs::File::create(&file_path).map_err(|e| {
+        ApiError::InternalError(format!("Error creating file on disk: {}", e))
+    })?;
+    let mut current_size: usize = 0;
+    while let Some(chunk) = field
+        .try_next()
+        .await
+        .map_err(|e| ApiError::InternalError(format!("Error reading file chunk: {}", e)))?
+    {
+        current_size += chunk.len();
+        if current_size > max_file_size {
+            let _ = std::fs::remove_file(&file_path);
+            let mb = max_file_size / (1024 * 1024);
+            return Err(ApiError::BadRequest(format!(
+                "El archivo no debe pesar más de {} MB",
+                mb
+            )));
+        }
+        f = web::block(move || f.write_all(&chunk).map(|_| f))
+            .await
+            .map_err(|e| ApiError::InternalError(format!("Blocking thread error: {}", e)))?
+            .map_err(|e| ApiError::InternalError(format!("Error writing to file: {}", e)))?;
+    }
+    Ok((original_name, file_hash, extension, file_path))
+}
+
 pub async fn upload_file(
+    data: web::Data<AppState>,
+    payload: Multipart,
+    req: HttpRequest,
+) -> Result<HttpResponse, ApiError> {
+    let mut pending_disk_files: Vec<std::path::PathBuf> = Vec::new();
+
+    let res = upload_file_inner(data, payload, req, &mut pending_disk_files).await;
+
+    if res.is_err() {
+        for path in pending_disk_files {
+            let _ = std::fs::remove_file(path);
+        }
+    }
+
+    res
+}
+
+async fn upload_file_inner(
     data: web::Data<AppState>,
     mut payload: Multipart,
     req: HttpRequest,
-) -> Result<impl Responder, ApiError> {
+    pending_disk_files: &mut Vec<std::path::PathBuf>,
+) -> Result<HttpResponse, ApiError> {
     let mut documento_id: Option<i32> = None;
     let mut dni_asociado: Option<String> = None;
     let claims = req.extensions().get::<Claims>().cloned();
@@ -65,55 +133,18 @@ pub async fn upload_file(
                 dni_asociado = Some(s);
             }
         } else if field_name == "file" || field_name == "archivo" {
-            let original_name = content_disposition
-                .and_then(|cd| cd.get_filename())
-                .unwrap_or("unknown")
-                .to_string();
-            let extension = std::path::Path::new(&original_name)
-                .extension()
-                .and_then(std::ffi::OsStr::to_str)
-                .unwrap_or("bin")
-                .to_string();
-            if extension.to_lowercase() != "pdf" {
-                return Err(ApiError::InternalError(
-                    "Solo se permiten archivos PDF".to_string(),
-                ));
-            }
-            let file_hash = Uuid::new_v4().to_string();
-            let mut file_path = upload_dir.clone();
-            file_path.push(format!("{}.{}", file_hash, extension));
-            let mut f = std::fs::File::create(&file_path).map_err(|e| {
-                ApiError::InternalError(format!("Error creating file on disk: {}", e))
-            })?;
-            let mut current_size: usize = 0;
             let max_file_size: usize = 10 * 1024 * 1024;
-            while let Some(chunk) = field
-                .try_next()
-                .await
-                .map_err(|e| ApiError::InternalError(format!("Error reading file chunk: {}", e)))?
-            {
-                current_size += chunk.len();
-                if current_size > max_file_size {
-                    let _ = std::fs::remove_file(&file_path);
-                    return Err(ApiError::InternalError(
-                        "El archivo no debe pesar más de 10 MB".to_string(),
-                    ));
-                }
-                f = web::block(move || f.write_all(&chunk).map(|_| f))
-                    .await
-                    .map_err(|e| ApiError::InternalError(format!("Blocking thread error: {}", e)))?
-                    .map_err(|e| {
-                        ApiError::InternalError(format!("Error writing to file: {}", e))
-                    })?;
-            }
-            saved_files.push((original_name, file_hash, extension));
+            let file_info =
+                guardar_archivo_pdf_multipart(&mut field, &upload_dir, max_file_size).await?;
+            pending_disk_files.push(file_info.3.clone());
+            saved_files.push(file_info);
         }
     }
     let dni_asoc = dni_asociado.ok_or_else(|| {
-        ApiError::InternalError("El campo dni_asociado es obligatorio.".to_string())
+        ApiError::BadRequest("El campo dni_asociado es obligatorio.".to_string())
     })?;
     let mut results = Vec::new();
-    for (orig_name, hash, ext) in saved_files {
+    for (orig_name, hash, ext, path) in saved_files {
         let insert_result = sqlx::query!(
             r#"
             INSERT INTO fileserver (documento_id, dni_asociado, original_name, file_hash, extension, usuario_subida)
@@ -127,8 +158,11 @@ pub async fn upload_file(
             usuario_subida
         )
         .execute(&data.db)
-        .await
-        .map_err(|e| ApiError::InternalError(format!("Database error: {}", e)))?;
+        .await?;
+
+        // Al haberse registrado exitosamente en la BD, lo quitamos de la lista pendiente de limpieza
+        pending_disk_files.retain(|p| p != &path);
+
         results.push(json!({
             "id": insert_result.last_insert_id(),
             "original_name": orig_name,
@@ -197,31 +231,50 @@ pub async fn eliminar_archivo(
     .fetch_optional(&state.db)
     .await
     .map_err(|e| ApiError::InternalError(format!("Database error: {}", e)))?;
-    if let Some(record) = file_record {
-        if record.external_url.is_none() {
-            let upload_dir_str =
-                std::env::var("UPLOAD_DIR").unwrap_or_else(|_| "./uploads".to_string());
-            let mut file_path = std::path::PathBuf::from(upload_dir_str);
-            let file_hash_str = record.file_hash.unwrap_or_else(|| "unknown".to_string());
-            let extension = record.extension.unwrap_or_else(|| "pdf".to_string());
-            file_path.push(format!("{}.{}", file_hash_str, extension));
-            if file_path.exists() {
-                let _ = std::fs::remove_file(&file_path);
+
+    let record = match file_record {
+        Some(r) => r,
+        None => return Err(ApiError::NotFound("Archivo no encontrado".to_string())),
+    };
+
+    // Primero borra la fila en la BD
+    sqlx::query!(
+        r#"
+        DELETE FROM fileserver WHERE id = ?
+        "#,
+        id
+    )
+    .execute(&state.db)
+    .await
+    .map_err(|e| ApiError::InternalError(format!("Database error: {}", e)))?;
+
+    // Solo borra el archivo físico si no es externo y ya no queda ninguna otra fila con ese file_hash
+    if let (true, Some(file_hash_str)) = (record.external_url.is_none(), &record.file_hash) {
+        let count_record = sqlx::query!(
+                r#"
+                SELECT COUNT(*) as count
+                FROM fileserver
+                WHERE CAST(file_hash AS CHAR) = ?
+                "#,
+                file_hash_str
+            )
+            .fetch_one(&state.db)
+            .await;
+
+            let remaining_count = count_record.map(|r| r.count).unwrap_or(1);
+            if remaining_count == 0 {
+                let upload_dir_str =
+                    std::env::var("UPLOAD_DIR").unwrap_or_else(|_| "./uploads".to_string());
+                let mut file_path = std::path::PathBuf::from(upload_dir_str);
+                let extension = record.extension.unwrap_or_else(|| "pdf".to_string());
+                file_path.push(format!("{}.{}", file_hash_str, extension));
+                if file_path.exists() {
+                    let _ = std::fs::remove_file(&file_path);
+                }
             }
-        }
-        sqlx::query!(
-            r#"
-            DELETE FROM fileserver WHERE id = ?
-            "#,
-            id
-        )
-        .execute(&state.db)
-        .await
-        .map_err(|e| ApiError::InternalError(format!("Database error: {}", e)))?;
-        Ok(HttpResponse::Ok().json("Archivo eliminado correctamente"))
-    } else {
-        Err(ApiError::InternalError("Archivo no encontrado".to_string()))
     }
+
+    Ok(HttpResponse::Ok().json("Archivo eliminado correctamente"))
 }
 #[derive(Deserialize)]
 pub struct AsignarDocumentoInput {
@@ -362,7 +415,7 @@ pub async fn upload_batch(
     let usuario_subida = claims
         .map(|c| c.full_name.clone())
         .unwrap_or_else(|| "Desconocido".to_string());
-    let mut saved_file: Option<(String, String, String)> = None;
+    let mut saved_file: Option<(String, String, String, std::path::PathBuf)> = None;
     let upload_dir_str = std::env::var("UPLOAD_DIR").unwrap_or_else(|_| "./uploads".to_string());
     let upload_dir = std::path::PathBuf::from(upload_dir_str);
     if !upload_dir.exists() {
@@ -437,65 +490,38 @@ pub async fn upload_batch(
                 }
             }
             "file" | "archivo" => {
-                let original_name = field
-                    .content_disposition()
-                    .and_then(|cd| cd.get_filename())
-                    .unwrap_or("unknown")
-                    .to_string();
-                let extension = std::path::Path::new(&original_name)
-                    .extension()
-                    .and_then(std::ffi::OsStr::to_str)
-                    .unwrap_or("bin")
-                    .to_string();
-                if extension.to_lowercase() != "pdf" {
-                    return Err(ApiError::InternalError(
-                        "Solo se permiten archivos PDF".to_string(),
-                    ));
-                }
-                let file_hash = Uuid::new_v4().to_string();
-                let mut file_path = upload_dir.clone();
-                file_path.push(format!("{}.{}", file_hash, extension));
-                let mut f = std::fs::File::create(&file_path).map_err(|e| {
-                    ApiError::InternalError(format!("Error creating file on disk: {}", e))
-                })?;
-                let mut current_size: usize = 0;
                 let max_file_size: usize = 20 * 1024 * 1024;
-                while let Some(chunk) = field.try_next().await.map_err(|e| {
-                    ApiError::InternalError(format!("Error reading file chunk: {}", e))
-                })? {
-                    current_size += chunk.len();
-                    if current_size > max_file_size {
-                        let _ = std::fs::remove_file(&file_path);
-                        return Err(ApiError::InternalError(
-                            "El archivo no debe pesar más de 20 MB".to_string(),
-                        ));
-                    }
-                    f.write_all(&chunk).map_err(|e| {
-                        ApiError::InternalError(format!("Error writing chunk to file: {}", e))
-                    })?;
-                }
-                saved_file = Some((original_name, file_hash, extension));
+                let file_info =
+                    guardar_archivo_pdf_multipart(&mut field, &upload_dir, max_file_size).await?;
+                saved_file = Some(file_info);
             }
             _ => {}
         }
     }
-    let (orig_name, hash, ext) = saved_file
-        .ok_or_else(|| ApiError::InternalError("No se recibió ningún archivo".to_string()))?;
+    let (orig_name, hash, ext, file_path) = match saved_file {
+        Some(sf) => sf,
+        None => {
+            return Err(ApiError::BadRequest("No se recibió ningún archivo".to_string()));
+        }
+    };
     let mut nombre_final = nombre_archivo.unwrap_or(orig_name);
     if !nombre_final.to_lowercase().ends_with(".pdf") {
         nombre_final = format!("{}.pdf", nombre_final);
     }
     let dnis_count = dnis.len();
     if dnis_count == 0 {
-        return Err(ApiError::InternalError(
+        let _ = std::fs::remove_file(&file_path);
+        return Err(ApiError::BadRequest(
             "Debe proporcionar al menos un DNI".to_string(),
         ));
     }
-    let mut tx = data
-        .db
-        .begin()
-        .await
-        .map_err(|e| ApiError::InternalError(format!("Transaction error: {}", e)))?;
+    let mut tx = match data.db.begin().await {
+        Ok(t) => t,
+        Err(e) => {
+            let _ = std::fs::remove_file(&file_path);
+            return Err(ApiError::from(e));
+        }
+    };
     let doc_result = sqlx::query(
         r#"
         INSERT INTO documento (tipo_documento_id, area_id, numero, year, fecha, fecha_documento, descripcion)
@@ -510,11 +536,18 @@ pub async fn upload_batch(
     .bind(&fecha_documento)
     .bind(&descripcion)
     .execute(&mut *tx)
-    .await
-    .map_err(|e| ApiError::InternalError(format!("Database error creating documento: {}", e)))?;
+    .await;
+
+    let doc_result = match doc_result {
+        Ok(r) => r,
+        Err(e) => {
+            let _ = std::fs::remove_file(&file_path);
+            return Err(ApiError::from(e));
+        }
+    };
     let new_documento_id = doc_result.last_insert_id() as i32;
     for dni in &dnis {
-        sqlx::query!(
+        let insert_res = sqlx::query!(
             r#"
             INSERT INTO fileserver (documento_id, dni_asociado, original_name, file_hash, extension, usuario_subida)
             VALUES (?, ?, ?, ?, ?, ?)
@@ -527,12 +560,17 @@ pub async fn upload_batch(
             usuario_subida
         )
         .execute(&mut *tx)
-        .await
-        .map_err(|e| ApiError::InternalError(format!("Database error linking DNI {}: {}", dni, e)))?;
+        .await;
+
+        if let Err(e) = insert_res {
+            let _ = std::fs::remove_file(&file_path);
+            return Err(ApiError::from(e));
+        }
     }
-    tx.commit()
-        .await
-        .map_err(|e| ApiError::InternalError(format!("Transaction commit error: {}", e)))?;
+    if let Err(e) = tx.commit().await {
+        let _ = std::fs::remove_file(&file_path);
+        return Err(ApiError::from(e));
+    }
     Ok(HttpResponse::Ok().json(json!({
         "message": "Documento registrado y vinculado correctamente a todos los trabajadores",
         "documento_id": new_documento_id,

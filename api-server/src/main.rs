@@ -17,6 +17,7 @@ pub struct AppState {
     pub cliente_http: reqwest::Client,
     pub notificaciones_tx:
         tokio::sync::broadcast::Sender<crate::notificaciones::models::NotificacionEvento>,
+    pub google_client_id: String,
 }
 
 #[actix_web::main]
@@ -31,6 +32,13 @@ async fn main() -> std::io::Result<()> {
         .unwrap_or_else(|_| "4010".to_string())
         .parse()
         .expect("PORT must be a number");
+    let google_client_id =
+        std::env::var("GOOGLE_CLIENT_ID").expect("GOOGLE_CLIENT_ID must be set");
+    let cors_origins_env = std::env::var("CORS_ORIGINS").ok();
+    if cors_origins_env.is_none() {
+        log::warn!("CORS_ORIGINS no está configurado; permitiendo cualquier origen");
+    }
+
     let pool = match MySqlPoolOptions::new()
         .max_connections(10)
         .min_connections(5)
@@ -57,20 +65,34 @@ async fn main() -> std::io::Result<()> {
         }
     };
     let (notificaciones_tx, _notificaciones_rx) = tokio::sync::broadcast::channel(100);
+
+    let cliente_http = reqwest::Client::new();
+    let app_state = web::Data::new(AppState {
+        db: pool,
+        cliente_http,
+        notificaciones_tx,
+        google_client_id,
+    });
+
     HttpServer::new(move || {
-        let cors = Cors::default()
-            .supports_credentials()
-            .allow_any_origin()
-            .allow_any_header()
-            .allow_any_method();
+        let mut cors = Cors::default();
+        if let Some(ref origins) = cors_origins_env {
+            for origin in origins.split(',').map(|s| s.trim()).filter(|s| !s.is_empty()) {
+                cors = cors.allowed_origin(origin);
+            }
+        } else {
+            cors = cors.allow_any_origin();
+        }
+        cors = cors
+            .allowed_methods(vec!["GET", "POST", "PUT", "DELETE", "OPTIONS"])
+            .allowed_headers(vec![
+                actix_web::http::header::HeaderName::from_static("token"),
+                actix_web::http::header::CONTENT_TYPE,
+            ]);
 
         App::new()
-            .app_data(web::Data::new(AppState {
-                db: pool.clone(),
-                cliente_http: reqwest::Client::new(),
-                notificaciones_tx: notificaciones_tx.clone(),
-            }))
-            .app_data(web::Data::new(pool.clone()))
+            .app_data(app_state.clone())
+            .app_data(web::JsonConfig::default().limit(4 * 1024 * 1024))
             .configure(auth::configure)
             .configure(personal::configure)
             .configure(dash::configure)

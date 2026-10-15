@@ -12,6 +12,7 @@ import {
   IconSitemap,
   IconAlertTriangle,
   IconMap,
+  IconFileSpreadsheet,
 } from '@tabler/icons-vue'
 
 withDefaults(
@@ -119,6 +120,14 @@ const authStore = useAuthStore()
           :title="isCollapsed ? 'Alerta 70 Años' : undefined" @click="emit('close')">
           <IconAlertTriangle class="size-5 shrink-0 text-amber-500" :stroke-width="1.3" />
           <span :class="isCollapsed ? 'lg:hidden truncate' : 'truncate'">Alerta 70 Años</span>
+        </router-link>
+
+        <router-link to="/airhsp"
+          class="flex items-center rounded-lg text-sm transition-colors text-sidebar-nav-foreground hover:bg-sidebar-nav-hover"
+          :class="isCollapsed ? 'lg:justify-center lg:px-0 px-3 py-2.5' : 'px-3 py-2 gap-3'"
+          :title="isCollapsed ? 'Comparar AIRHSP' : undefined" @click="emit('close')">
+          <IconFileSpreadsheet class="size-5 shrink-0" :stroke-width="1.3" />
+          <span :class="isCollapsed ? 'lg:hidden truncate' : 'truncate'">Comparar AIRHSP</span>
         </router-link>
 
         <router-link :to="route.fullPath" v-if="route.path.startsWith('/perfil')"

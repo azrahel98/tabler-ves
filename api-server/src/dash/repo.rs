@@ -1,7 +1,8 @@
 use crate::common::errors::ApiError;
 use crate::dash::models::{
-    Alerta70Anos, Alertas, BancosReport, Cumpleaños, DataResumen, DbOrgani, ReporteDocumento,
-    ReporteRenuncias,
+    AirhspCampoCambio, AirhspPersonaCambio, Alerta70Anos, Alertas, BancosReport,
+    CatalogosValidacion, Cumpleaños, DataResumen, DatosMef, DatosSistema, DbOrgani,
+    ReporteDocumento, ReporteRenuncias,
 };
 use chrono::{Datelike, NaiveDate, NaiveDateTime};
 use serde_json::{Value, json};
@@ -1011,8 +1012,8 @@ pub async fn get_comparar_mef_data(
           d.fecha AS fecha_ingreso,
           b.codigo AS banco,
           CASE
-            WHEN cb.tipo_cuenta = 'AHORRO' THEN 'CUENTA DE AHORRO'
-            WHEN cb.tipo_cuenta = 'CORRIENTE' THEN 'CUENTA CORRIENTE'
+            WHEN UPPER(cb.tipo_cuenta) = 'AHORRO' THEN 'CUENTA DE AHORRO'
+            WHEN UPPER(cb.tipo_cuenta) = 'CORRIENTE' THEN 'CUENTA CORRIENTE'
             ELSE cb.tipo_cuenta
           END AS tipo_cuenta,
           cb.numero_cuenta, cb.cci,
@@ -1023,7 +1024,10 @@ pub async fn get_comparar_mef_data(
             ELSE upper(r.decreto)
           END AS regimen_sistema,
           COALESCE(ce.codigo, '') AS codigo_cargo_estructural,
-          COALESCE(go.codigo, '') AS codigo_grupo_ocupacional
+          COALESCE(go.codigo, '') AS codigo_grupo_ocupacional,
+          v.id AS vinculo_id,
+          cb.id AS cuenta_id,
+          v.regimen AS regimen_id
         FROM vinculo v
           INNER JOIN persona p ON v.dni = p.dni
           INNER JOIN documento d ON v.doc_ingreso_id = d.id
@@ -1043,6 +1047,469 @@ pub async fn get_comparar_mef_data(
         eprintln!("Database error comparar_mef: {:?}", e);
         ApiError::InternalError("Error al consultar datos propios".into())
     })
+}
+
+pub fn row_to_datos_sistema(fila: &sqlx::mysql::MySqlRow) -> DatosSistema {
+    DatosSistema {
+        vinculo_id: fila.try_get("vinculo_id").unwrap_or(0),
+        dni: fila.get("dni"),
+        plaza_id: fila.try_get("plaza_id").ok(),
+        nombre: fila.get("nombre"),
+        apaterno: fila.get("apaterno"),
+        amaterno: fila.get("amaterno"),
+        fecha_nacimiento: fila.try_get("fecha_nacimiento").ok(),
+        fecha_ingreso: fila.try_get("fecha_ingreso").ok(),
+        banco: fila.try_get("banco").ok(),
+        tipo_cuenta: fila.try_get("tipo_cuenta").ok(),
+        numero_cuenta: fila.try_get("numero_cuenta").ok(),
+        cci: fila.try_get("cci").ok(),
+        codigo_cargo_estructural: fila.try_get("codigo_cargo_estructural").unwrap_or_default(),
+        codigo_grupo_ocupacional: fila.try_get("codigo_grupo_ocupacional").unwrap_or_default(),
+        cuenta_id: fila.try_get("cuenta_id").ok(),
+    }
+}
+
+pub async fn get_catalogos_airhsp(
+    pool: &MySqlPool,
+) -> Result<(CatalogosValidacion, std::collections::HashMap<String, i32>), ApiError> {
+    use std::collections::HashMap;
+
+    let mut catalogos = CatalogosValidacion::default();
+    let mut banco_id_por_codigo: HashMap<String, i32> = HashMap::new();
+
+    // 1. Bancos
+    let bancos_rows = sqlx::query("SELECT id, UPPER(TRIM(codigo)) as codigo FROM banco")
+        .fetch_all(pool)
+        .await
+        .map_err(|e| {
+            eprintln!("Database error catalogos bancos: {:?}", e);
+            ApiError::InternalError("Error al consultar catálogo de bancos".into())
+        })?;
+    for r in bancos_rows {
+        let id: i32 = r.get("id");
+        let cod: String = r.get("codigo");
+        if !cod.is_empty() {
+            catalogos.bancos.insert(cod.clone());
+            banco_id_por_codigo.insert(cod, id);
+        }
+    }
+
+    // 2. Cargo estructural
+    let cargos_rows = sqlx::query("SELECT UPPER(TRIM(codigo)) as codigo FROM cargoestructural")
+        .fetch_all(pool)
+        .await
+        .map_err(|e| {
+            eprintln!("Database error catalogos cargos: {:?}", e);
+            ApiError::InternalError("Error al consultar catálogo de cargos".into())
+        })?;
+    for r in cargos_rows {
+        let cod: String = r.get("codigo");
+        if !cod.is_empty() {
+            catalogos.cargos_estructurales.insert(cod);
+        }
+    }
+
+    // 3. Grupos ocupacionales
+    let grupos_rows = sqlx::query("SELECT UPPER(TRIM(codigo)) as codigo FROM gruposocupacionales")
+        .fetch_all(pool)
+        .await
+        .map_err(|e| {
+            eprintln!("Database error catalogos grupos: {:?}", e);
+            ApiError::InternalError("Error al consultar catálogo de grupos ocupacionales".into())
+        })?;
+    for r in grupos_rows {
+        let cod: String = r.get("codigo");
+        if !cod.is_empty() {
+            catalogos.grupos_ocupacionales.insert(cod);
+        }
+    }
+
+    // 4. Plazas existentes
+    let plazas_rows = sqlx::query("SELECT UPPER(TRIM(codigo)) as codigo FROM plaza")
+        .fetch_all(pool)
+        .await
+        .map_err(|e| {
+            eprintln!("Database error catalogos plazas: {:?}", e);
+            ApiError::InternalError("Error al consultar catálogo de plazas".into())
+        })?;
+    for r in plazas_rows {
+        let cod: String = r.get("codigo");
+        if !cod.is_empty() {
+            catalogos.plazas_existentes.insert(cod);
+        }
+    }
+
+    // 5. Plazas ocupadas por vínculos activos/pendientes
+    let plazas_ocupadas_rows = sqlx::query(
+        r#"
+        SELECT UPPER(TRIM(v.plaza_id)) as plaza_id, v.dni
+        FROM vinculo v
+        WHERE v.plaza_id IS NOT NULL AND (v.estado = 'activo' OR v.estado = 'pendiente')
+        "#,
+    )
+    .fetch_all(pool)
+    .await
+    .map_err(|e| {
+        eprintln!("Database error catalogos plazas ocupadas: {:?}", e);
+        ApiError::InternalError("Error al consultar plazas ocupadas".into())
+    })?;
+    for r in plazas_ocupadas_rows {
+        let pl: String = r.get("plaza_id");
+        let dni: String = r.get("dni");
+        if !pl.is_empty() {
+            catalogos.plazas_ocupadas.insert(pl, dni);
+        }
+    }
+
+    // 6. Cuentas bancarias para unicidad (todos los registros para respetar índices UNIQUE)
+    let cuentas_rows = sqlx::query(
+        "SELECT dni_persona, UPPER(TRIM(numero_cuenta)) as numero_cuenta, UPPER(TRIM(COALESCE(cci, ''))) as cci FROM cuentabancaria",
+    )
+    .fetch_all(pool)
+    .await
+    .map_err(|e| {
+        eprintln!("Database error catalogos cuentas: {:?}", e);
+        ApiError::InternalError("Error al consultar cuentas bancarias".into())
+    })?;
+    for r in cuentas_rows {
+        let dni: String = r.get("dni_persona");
+        let num: String = r.get("numero_cuenta");
+        let cci: String = r.get("cci");
+        if !num.is_empty() {
+            catalogos.cuentas_por_numero.insert(num, dni.clone());
+        }
+        if !cci.is_empty() {
+            catalogos.cuentas_por_cci.insert(cci, dni);
+        }
+    }
+
+    Ok((catalogos, banco_id_por_codigo))
+}
+
+pub async fn aplicar_cambios_persona_tx(
+    pool: &MySqlPool,
+    sistema: &DatosSistema,
+    cambio: &AirhspPersonaCambio,
+    mef: &DatosMef,
+    banco_id_por_codigo: &std::collections::HashMap<String, i32>,
+) -> Result<Vec<AirhspCampoCambio>, String> {
+    let campos_validos: Vec<&AirhspCampoCambio> = cambio
+        .campos
+        .iter()
+        .filter(|c| c.error.is_none())
+        .collect();
+
+    if campos_validos.is_empty() {
+        return Ok(Vec::new());
+    }
+
+    let mut tx = pool
+        .begin()
+        .await
+        .map_err(|e| format!("Error iniciando transacción: {}", e))?;
+
+    // 1. Cambios en persona
+    let nuevo_apaterno = campos_validos
+        .iter()
+        .find(|c| c.campo == "APELLIDO_PATERNO")
+        .map(|c| c.despues.as_str())
+        .unwrap_or(&sistema.apaterno);
+    let nuevo_amaterno = campos_validos
+        .iter()
+        .find(|c| c.campo == "APELLIDO_MATERNO")
+        .map(|c| c.despues.as_str())
+        .unwrap_or(&sistema.amaterno);
+    let nuevo_nombre = campos_validos
+        .iter()
+        .find(|c| c.campo == "NOMBRES")
+        .map(|c| c.despues.as_str())
+        .unwrap_or(&sistema.nombre);
+    let nueva_fnac = match campos_validos.iter().find(|c| c.campo == "FECHA_NACIMIENTO") {
+        Some(c) => NaiveDate::parse_from_str(&c.despues, "%d/%m/%Y").ok(),
+        None => sistema.fecha_nacimiento,
+    };
+
+    let hay_cambio_persona = campos_validos.iter().any(|c| {
+        c.campo == "APELLIDO_PATERNO"
+            || c.campo == "APELLIDO_MATERNO"
+            || c.campo == "NOMBRES"
+            || c.campo == "FECHA_NACIMIENTO"
+    });
+
+    if hay_cambio_persona {
+        let res_per = sqlx::query(
+            r#"
+            UPDATE persona
+            SET apaterno = ?, amaterno = ?, nombre = ?, fecha_nacimiento = ?
+            WHERE dni = ?
+            "#,
+        )
+        .bind(nuevo_apaterno)
+        .bind(nuevo_amaterno)
+        .bind(nuevo_nombre)
+        .bind(nueva_fnac)
+        .bind(&sistema.dni)
+        .execute(&mut *tx)
+        .await
+        .map_err(|e| format!("Error actualizando persona: {}", e))?;
+
+        if res_per.rows_affected() == 0 {
+            return Err(format!(
+                "No se encontró a la persona con DNI {} para actualizar",
+                sistema.dni
+            ));
+        }
+    }
+
+    // 2. Plaza y vínculo
+    let mut plaza_final = sistema.plaza_id.clone().unwrap_or_default();
+    let cambio_plaza = campos_validos.iter().find(|c| c.campo == "CODIGO_REGISTRO");
+    if let Some(cp) = cambio_plaza {
+        let nueva_plaza = cp.despues.trim().to_uppercase();
+
+        // Revalidar que la plaza no esté ocupada por otro vínculo activo/pendiente
+        let ocupante_opt = sqlx::query_scalar::<_, Option<String>>(
+            r#"
+            SELECT dni FROM vinculo
+            WHERE plaza_id = ? AND estado IN ('activo', 'pendiente') AND dni != ?
+            LIMIT 1
+            "#,
+        )
+        .bind(&nueva_plaza)
+        .bind(&sistema.dni)
+        .fetch_optional(&mut *tx)
+        .await
+        .map_err(|e| format!("Error verificando si plaza {} está ocupada: {}", nueva_plaza, e))?;
+
+        if let Some(Some(otro_dni)) = ocupante_opt {
+            return Err(format!(
+                "La plaza {} ya está asignada al DNI {}",
+                nueva_plaza, otro_dni
+            ));
+        }
+
+        if let Some(ref plaza_ant) = sistema.plaza_id {
+            if !plaza_ant.is_empty() && plaza_ant != &nueva_plaza {
+                let usos_count = sqlx::query_scalar::<_, i64>(
+                    r#"
+                    SELECT COUNT(*) FROM vinculo
+                    WHERE plaza_id = ? AND estado IN ('activo', 'pendiente') AND id != ?
+                    "#,
+                )
+                .bind(plaza_ant)
+                .bind(sistema.vinculo_id)
+                .fetch_one(&mut *tx)
+                .await
+                .map_err(|e| format!("Error verificando usos de plaza anterior {}: {}", plaza_ant, e))?;
+
+                if usos_count == 0 {
+                    let _ = sqlx::query("UPDATE plaza SET estado = 'vacante' WHERE codigo = ?")
+                        .bind(plaza_ant)
+                        .execute(&mut *tx)
+                        .await;
+                }
+            }
+        }
+
+        let res_v = sqlx::query("UPDATE vinculo SET plaza_id = ? WHERE id = ?")
+            .bind(&nueva_plaza)
+            .bind(sistema.vinculo_id)
+            .execute(&mut *tx)
+            .await
+            .map_err(|e| format!("Error asignando nueva plaza al vínculo: {}", e))?;
+
+        if res_v.rows_affected() == 0 {
+            return Err(format!(
+                "No se encontró el vínculo ID {} para asignar plaza",
+                sistema.vinculo_id
+            ));
+        }
+
+        plaza_final = nueva_plaza;
+    }
+
+    let mut plaza_creada = false;
+    if !plaza_final.is_empty() {
+        let row_plaza = sqlx::query("SELECT codigo FROM plaza WHERE codigo = ?")
+            .bind(&plaza_final)
+            .fetch_optional(&mut *tx)
+            .await
+            .map_err(|e| format!("Error consultando plaza {}: {}", plaza_final, e))?;
+
+        if row_plaza.is_none() {
+            let cargo_mef = mef.codigo_cargo_estructural.trim().to_uppercase();
+            let grupo_mef = mef.codigo_grupo_ocupacional.trim().to_uppercase();
+            if cargo_mef.is_empty() || grupo_mef.is_empty() {
+                return Err(format!(
+                    "La plaza {} no existe en el sistema y AIRHSP no trae cargo/grupo válidos para crearla",
+                    plaza_final
+                ));
+            }
+            let res_p = sqlx::query(
+                r#"
+                INSERT INTO plaza (codigo, estado, cargoestructural, grupoocupacional, condicion, regimen)
+                VALUES (?, 'ocupado', ?, ?, NULL, NULL)
+                "#,
+            )
+            .bind(&plaza_final)
+            .bind(&cargo_mef)
+            .bind(&grupo_mef)
+            .execute(&mut *tx)
+            .await
+            .map_err(|e| format!("Error insertando nueva plaza {}: {}", plaza_final, e))?;
+
+            if res_p.rows_affected() == 0 {
+                return Err(format!("No se pudo crear la plaza {}", plaza_final));
+            }
+            plaza_creada = true;
+        } else if cambio_plaza.is_some() {
+            let res_p = sqlx::query("UPDATE plaza SET estado = 'ocupado' WHERE codigo = ?")
+                .bind(&plaza_final)
+                .execute(&mut *tx)
+                .await
+                .map_err(|e| format!("Error actualizando plaza a ocupado: {}", e))?;
+
+            if res_p.rows_affected() == 0 {
+                return Err(format!(
+                    "No se encontró la plaza {} para actualizar estado a ocupado",
+                    plaza_final
+                ));
+            }
+        }
+    }
+
+    let cambio_cargo = campos_validos.iter().find(|c| c.campo == "CODIGO_CARGO_ESTRUCTURAL");
+    let cambio_grupo = campos_validos.iter().find(|c| c.campo == "CODIGO_GRUPO_OCUPACIONAL");
+
+    if (cambio_cargo.is_some() || cambio_grupo.is_some()) && !plaza_final.is_empty() && !plaza_creada {
+        let cargo_val = cambio_cargo
+            .map(|c| c.despues.as_str())
+            .unwrap_or(&sistema.codigo_cargo_estructural);
+        let grupo_val = cambio_grupo
+            .map(|c| c.despues.as_str())
+            .unwrap_or(&sistema.codigo_grupo_ocupacional);
+
+        let res_cg = sqlx::query("UPDATE plaza SET cargoestructural = ?, grupoocupacional = ? WHERE codigo = ?")
+            .bind(cargo_val)
+            .bind(grupo_val)
+            .bind(&plaza_final)
+            .execute(&mut *tx)
+            .await
+            .map_err(|e| format!("Error actualizando cargo/grupo de plaza {}: {}", plaza_final, e))?;
+
+        if res_cg.rows_affected() == 0 {
+            return Err(format!(
+                "No se encontró la plaza {} para actualizar cargo/grupo",
+                plaza_final
+            ));
+        }
+    }
+
+    // 3. Cuenta bancaria
+    let cambio_banco = campos_validos.iter().find(|c| c.campo == "CODIGO_ENTIDAD_FINANCIERA");
+    let cambio_tipo = campos_validos.iter().find(|c| c.campo == "TIPO_CUENTA_FINANCIERA");
+    let cambio_num = campos_validos.iter().find(|c| c.campo == "NUMERO_CUENTA_FINANCIERA");
+    let cambio_cci = campos_validos.iter().find(|c| c.campo == "CODIGO_CUENTA_INTERBANCARIA");
+
+    let hay_cambio_banco =
+        cambio_banco.is_some() || cambio_tipo.is_some() || cambio_num.is_some() || cambio_cci.is_some();
+
+    if hay_cambio_banco {
+        let cod_banco = cambio_banco
+            .map(|c| c.despues.as_str())
+            .or(sistema.banco.as_deref())
+            .unwrap_or("");
+        let b_id = match banco_id_por_codigo.get(cod_banco).copied() {
+            Some(id) => id,
+            None => {
+                return Err(format!(
+                    "No se pudo resolver el ID de la entidad financiera '{}'",
+                    cod_banco
+                ));
+            }
+        };
+
+        let tipo_str = cambio_tipo
+            .map(|c| c.despues.as_str())
+            .or(sistema.tipo_cuenta.as_deref())
+            .unwrap_or("");
+        let t_enum = match crate::dash::service::mapear_tipo_cuenta_bd(tipo_str) {
+            Some(t) => t,
+            None => {
+                return Err(format!(
+                    "Tipo de cuenta '{}' no es compatible para guardar en base de datos",
+                    tipo_str
+                ));
+            }
+        };
+
+        let num_cuenta = cambio_num
+            .map(|c| c.despues.as_str())
+            .or(sistema.numero_cuenta.as_deref())
+            .unwrap_or("");
+        if num_cuenta.trim().is_empty() {
+            return Err("El número de cuenta bancaria no puede estar vacío".to_string());
+        }
+
+        let cci_val = cambio_cci
+            .map(|c| c.despues.as_str())
+            .or(sistema.cci.as_deref());
+        let cci_opt = cci_val.and_then(|s| {
+            let t = s.trim();
+            if t.is_empty() { None } else { Some(t) }
+        });
+
+        if let Some(cta_id) = sistema.cuenta_id {
+            let res_cta = sqlx::query(
+                r#"
+                UPDATE cuentabancaria
+                SET banco_id = ?, tipo_cuenta = ?, numero_cuenta = ?, cci = ?
+                WHERE id = ?
+                "#,
+            )
+            .bind(b_id)
+            .bind(t_enum)
+            .bind(num_cuenta)
+            .bind(cci_opt)
+            .bind(cta_id)
+            .execute(&mut *tx)
+            .await
+            .map_err(|e| format!("Error actualizando cuenta bancaria: {}", e))?;
+
+            if res_cta.rows_affected() == 0 {
+                return Err(format!(
+                    "No se encontró la cuenta bancaria ID {} para actualizar",
+                    cta_id
+                ));
+            }
+        } else {
+            let res_ins = sqlx::query(
+                r#"
+                INSERT INTO cuentabancaria (dni_persona, numero_cuenta, tipo_cuenta, banco_id, cci, estado)
+                VALUES (?, ?, ?, ?, ?, 1)
+                "#,
+            )
+            .bind(&sistema.dni)
+            .bind(num_cuenta)
+            .bind(t_enum)
+            .bind(b_id)
+            .bind(cci_opt)
+            .execute(&mut *tx)
+            .await
+            .map_err(|e| format!("Error insertando cuenta bancaria: {}", e))?;
+
+            if res_ins.rows_affected() == 0 {
+                return Err("No se pudo insertar la cuenta bancaria".to_string());
+            }
+        }
+    }
+
+    tx.commit()
+        .await
+        .map_err(|e| format!("Error confirmando transacción: {}", e))?;
+
+    let aplicados: Vec<AirhspCampoCambio> = campos_validos.into_iter().cloned().collect();
+    Ok(aplicados)
 }
 
 pub async fn get_alerta_70_anos(pool: &MySqlPool) -> Result<Vec<Alerta70Anos>, ApiError> {
@@ -1150,3 +1617,4 @@ pub async fn get_alerta_70_anos(pool: &MySqlPool) -> Result<Vec<Alerta70Anos>, A
 
     Ok(resultado)
 }
+

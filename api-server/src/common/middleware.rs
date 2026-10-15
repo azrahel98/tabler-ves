@@ -1,14 +1,10 @@
 use crate::common::errors::ApiError;
-use crate::common::jwt::Claims;
 use actix_web::{
     body::EitherBody,
     dev::{Service, ServiceRequest, ServiceResponse, Transform},
     Error, HttpMessage, ResponseError,
 };
-use chrono::{TimeZone, Utc};
-use chrono_tz::Tz;
 use futures_util::future::LocalBoxFuture;
-use jsonwebtoken::{decode, DecodingKey, Validation};
 use std::{
     future::{ready, Ready},
     rc::Rc,
@@ -52,59 +48,37 @@ where
     actix_web::dev::forward_ready!(service);
 
     fn call(&self, request: ServiceRequest) -> Self::Future {
-        let headers = request.headers().clone();
+        let headers = request.headers();
         let token_header = headers.get("token");
-        if token_header.is_none() {
-            let (req, _) = request.into_parts();
-            let res = ApiError::Unauthorized("Token no encontrado".to_string())
-                .error_response()
-                .map_into_right_body();
-            return Box::pin(async { Ok(ServiceResponse::new(req, res)) });
-        }
-        let token = match token_header.unwrap().to_str() {
-            Ok(tok) => tok,
-            Err(_) => {
+        let token = match token_header {
+            Some(tok_val) => match tok_val.to_str() {
+                Ok(t) => t,
+                Err(_) => {
+                    let (req, _) = request.into_parts();
+                    let res = ApiError::Unauthorized("Formato del token inválido".to_string())
+                        .error_response()
+                        .map_into_right_body();
+                    return Box::pin(async { Ok(ServiceResponse::new(req, res)) });
+                }
+            },
+            None => {
                 let (req, _) = request.into_parts();
-                let res = ApiError::Unauthorized("Formato del token inválido".to_string())
+                let res = ApiError::Unauthorized("Token no encontrado".to_string())
                     .error_response()
                     .map_into_right_body();
                 return Box::pin(async { Ok(ServiceResponse::new(req, res)) });
             }
         };
-        let secret_key = std::env::var("JWT_KEY").expect("JWT_KEY must be set");
-        let decoding_key = DecodingKey::from_secret(secret_key.as_ref());
-        match decode::<Claims>(token, &decoding_key, &Validation::default()) {
-            Ok(claim) => {
-                let claims = claim.claims;
-                let exp_ts = claims.exp as i64;
-                let exp = chrono::DateTime::from_timestamp(exp_ts, 0).map(|dt| dt.naive_utc());
-                let timezone: Tz = "America/Lima".parse().unwrap();
-                let now = Utc::now().with_timezone(&timezone);
-                if let Some(exp) = exp {
-                    let exp_aware = Utc.from_utc_datetime(&exp).with_timezone(&timezone);
-                    if now >= exp_aware {
-                        let (req, _) = request.into_parts();
-                        let res = ApiError::Unauthorized("El token ha expirado".to_string())
-                            .error_response()
-                            .map_into_right_body();
-                        return Box::pin(async { Ok(ServiceResponse::new(req, res)) });
-                    }
-                } else {
-                    let (req, _) = request.into_parts();
-                    let res = ApiError::Unauthorized("Fecha de expiración inválida".to_string())
-                        .error_response()
-                        .map_into_right_body();
-                    return Box::pin(async { Ok(ServiceResponse::new(req, res)) });
-                }
+
+        match crate::common::jwt::decodificar_token(token) {
+            Ok(claims) => {
                 request.extensions_mut().insert(claims);
                 let fut = self.service.call(request);
                 Box::pin(async move { fut.await.map(|res| res.map_into_left_body()) })
             }
-            Err(_) => {
+            Err(err) => {
                 let (req, _) = request.into_parts();
-                let res = ApiError::Unauthorized("Token inválido".to_string())
-                    .error_response()
-                    .map_into_right_body();
+                let res = err.error_response().map_into_right_body();
                 Box::pin(async { Ok(ServiceResponse::new(req, res)) })
             }
         }

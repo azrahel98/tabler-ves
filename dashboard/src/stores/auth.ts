@@ -70,20 +70,18 @@ export const useAuthStore = defineStore('auth', () => {
     localStorage.setItem('crm_user', JSON.stringify(normalizedUser))
   }
 
-  async function loginWithGoogle(google_sub: string, email: string): Promise<LoginResponse> {
+  async function loginWithGoogle(credential: string): Promise<LoginResponse> {
     const res = await api<LoginResponse>('/login/', {
       method: 'POST',
-      body: { google_sub, email },
+      body: { credential },
     })
     setAuth(res.token, res.user)
     return res
   }
 
   async function registerWithGoogle(payload: {
-    google_sub: string
-    email: string
+    credential: string
     full_name: string
-    picture_url?: string | null
   }): Promise<RegisterResponse> {
     return await api<RegisterResponse>('/login/register', {
       method: 'POST',

@@ -23,13 +23,13 @@ const successMessage = ref('')
 
 const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || '163863703315-ammfkqnmpei56umftmvtotqmdm20ao7u.apps.googleusercontent.com'
 
+const googleCredential = ref('')
+
 const googleData = ref<{
-  google_sub: string
   email: string
   full_name: string
   picture_url: string
 }>({
-  google_sub: '',
   email: '',
   full_name: '',
   picture_url: '',
@@ -125,21 +125,23 @@ const handleGoogleCredentialResponse = async (response: { credential: string }) 
   isLoading.value = true
 
   try {
+    if (!response?.credential) {
+      throw new Error('Credencial de Google no válida')
+    }
+    googleCredential.value = response.credential
+
     const payload = parseJwt(response.credential)
-    if (!payload?.sub || !payload?.email) {
+    if (!payload?.email) {
       throw new Error('Credencial de Google no válida')
     }
     googleData.value = {
-      google_sub: payload.sub,
       email: payload.email,
       full_name: payload.name || '',
       picture_url: payload.picture || '',
     }
 
     if (mode.value === 'login') {
-      await processLogin(payload.sub, payload.email)
-    } else {
-      await processRegister(payload.sub, payload.email, payload.name || '', payload.picture)
+      await processLogin(response.credential)
     }
   } catch (err) {
     handleAuthError(err)
@@ -148,9 +150,9 @@ const handleGoogleCredentialResponse = async (response: { credential: string }) 
   }
 }
 
-const processLogin = async (sub: string, email: string) => {
+const processLogin = async (credential: string) => {
   try {
-    const res = await authStore.loginWithGoogle(sub, email)
+    const res = await authStore.loginWithGoogle(credential)
     if (res.user.status === 'APPROVED') {
       router.push('/panel')
     } else if (res.user.status === 'PENDING') {
@@ -163,8 +165,12 @@ const processLogin = async (sub: string, email: string) => {
   } catch (err) {
     const msg = err instanceof Error ? err.message : ''
     if (msg.toLowerCase().includes('no encontrado') || msg.toLowerCase().includes('regístrese') || msg.toLowerCase().includes('registrese')) {
-      warningMessage.value = 'No encontramos una cuenta registrada con este correo. Puedes completar tu registro a continuación.'
+      const aviso = 'No encontramos una cuenta registrada con este correo. Puedes completar tu registro a continuación.'
+      warningMessage.value = aviso
       mode.value = 'register'
+      setTimeout(() => {
+        warningMessage.value = aviso
+      }, 0)
     } else if (msg.toLowerCase().includes('pendiente de aprobación')) {
       warningMessage.value = 'Tu cuenta está pendiente de aprobación por un administrador.'
     } else if (msg.toLowerCase().includes('rechazada')) {
@@ -175,45 +181,26 @@ const processLogin = async (sub: string, email: string) => {
   }
 }
 
-const processRegister = async (sub: string, email: string, name: string, picture?: string) => {
-  try {
-    const res = await authStore.registerWithGoogle({
-      google_sub: sub,
-      email,
-      full_name: name,
-      picture_url: picture || null,
-    })
-    successMessage.value = res.message || 'Registro completado con éxito. Tu cuenta está pendiente de aprobación por un administrador.'
-  } catch (err) {
-    errorMessage.value = err instanceof Error ? err.message : 'Error al registrar la cuenta con Google.'
-  }
-}
-
-const handleManualSubmit = async () => {
+const confirmarRegistro = async () => {
   clearMessages()
-  if (!googleData.value.google_sub || !googleData.value.email) {
-    errorMessage.value = 'Por favor completa el ID de Google (sub) y el correo electrónico.'
+  if (!googleCredential.value) {
+    errorMessage.value = 'Vuelve a iniciar con Google para continuar.'
+    return
+  }
+  if (!googleData.value.full_name?.trim()) {
+    errorMessage.value = 'El nombre completo es requerido para el registro.'
     return
   }
 
   isLoading.value = true
   try {
-    if (mode.value === 'login') {
-      await processLogin(googleData.value.google_sub, googleData.value.email)
-    } else {
-      if (!googleData.value.full_name) {
-        errorMessage.value = 'El nombre completo es requerido para el registro.'
-        return
-      }
-      await processRegister(
-        googleData.value.google_sub,
-        googleData.value.email,
-        googleData.value.full_name,
-        googleData.value.picture_url || undefined,
-      )
-    }
+    const res = await authStore.registerWithGoogle({
+      credential: googleCredential.value,
+      full_name: googleData.value.full_name.trim(),
+    })
+    successMessage.value = res.message || 'Registro completado con éxito. Tu cuenta está pendiente de aprobación por un administrador.'
   } catch (err) {
-    handleAuthError(err)
+    errorMessage.value = err instanceof Error ? err.message : 'Error al registrar la cuenta con Google.'
   } finally {
     isLoading.value = false
   }
@@ -338,7 +325,7 @@ const handleAuthError = (err: unknown) => {
 
             <button type="button" :disabled="isLoading"
               class="w-full h-9 px-4 text-xs font-semibold rounded-lg text-primary-foreground bg-primary hover:bg-primary-hover disabled:opacity-50 transition flex items-center justify-center gap-2 cursor-pointer shadow-xs"
-              @click="handleManualSubmit">
+              @click="confirmarRegistro">
               <IconLoader2 v-if="isLoading" class="animate-spin size-3.5" />
               <span>Confirmar y Enviar Solicitud</span>
             </button>

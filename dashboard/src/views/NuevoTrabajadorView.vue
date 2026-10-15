@@ -20,6 +20,7 @@ import {
   fetchTiposDocumentos,
   fetchPlazasVacantes,
   fetchPlazaDetalle,
+  fetchRegimenes,
   consultarDniReniec,
   registrarNuevoTrabajador,
   requiereArea,
@@ -93,27 +94,47 @@ const formData = reactive<{
   },
 })
 
-const regímenesDisponibles: RegimenOption[] = [
+const regimenesDisponibles = ref<RegimenOption[]>([
   { id: 1, nombre: 'D.L. 276 - Carrera Administrativa' },
   { id: 2, nombre: 'D.L. 728 - Régimen Privado' },
   { id: 3, nombre: 'D.L. 1057 - Contrato Administrativo de Servicios (CAS)' },
   { id: 4, nombre: 'Ley 30057 - Servicio Civil' },
   { id: 5, nombre: 'Designación de Confianza / FAG' },
-]
+])
 
 onMounted(async () => {
   isLoadingCatalogos.value = true
   try {
-    const [ar, cr, docs, vac] = await Promise.all([
+    const [ar, cr, docs, vac, regs] = await Promise.all([
       fetchAreas(),
       fetchCargos(),
       fetchTiposDocumentos(),
       fetchPlazasVacantes(),
+      fetchRegimenes(),
     ])
     areas.value = ar
     cargos.value = cr
     tiposDocumento.value = docs
     plazasVacantes.value = vac
+
+    if (regs && regs.length > 0) {
+      regimenesDisponibles.value = regs.map((r) => ({
+        id: r.id,
+        nombre: r.decreto ? `${r.decreto} - ${r.nombre}` : r.nombre,
+      }))
+    }
+
+    if (regimenesDisponibles.value.length > 0) {
+      const regPorDefecto = regimenesDisponibles.value.find(
+        (r) => r.id === formData.plaza.regimen
+      )
+      if (regPorDefecto) {
+        formData.plaza.regimenNombre = regPorDefecto.nombre
+      } else {
+        formData.plaza.regimen = regimenesDisponibles.value[0].id
+        formData.plaza.regimenNombre = regimenesDisponibles.value[0].nombre
+      }
+    }
 
     if (ar.length > 0 && !formData.plaza.areaId) {
       formData.plaza.areaId = ar[0].id
@@ -229,7 +250,7 @@ const onCambioCodigoPlazaManual = async () => {
 }
 
 const onRegimenChange = () => {
-  const r = regímenesDisponibles.find((item) => item.id === Number(formData.plaza.regimen))
+  const r = regimenesDisponibles.value.find((item) => item.id === Number(formData.plaza.regimen))
   if (r) {
     formData.plaza.regimenNombre = r.nombre
   }
@@ -405,7 +426,7 @@ const onSubmitRegistro = async () => {
           :is-valid="isStep1Valid" @consultar-reniec="onConsultarReniec" @siguiente="avanzarPaso" />
 
         <StepVinculoLaboral v-show="currentStep === 2" :plaza="formData.plaza" :areas="areas" :cargos="cargos"
-          :regimenes="regímenesDisponibles" :total-vacantes="plazasVacantes.length" :is-valid="isStep2Valid"
+          :regimenes="regimenesDisponibles" :total-vacantes="plazasVacantes.length" :is-valid="isStep2Valid"
           @abrir-vacantes="isVacantesModalOpen = true" @cambio-codigo-plaza="onCambioCodigoPlazaManual"
           @regimen-change="onRegimenChange" @anterior="retrocederPaso" @siguiente="avanzarPaso" />
 

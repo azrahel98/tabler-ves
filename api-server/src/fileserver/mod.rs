@@ -1,12 +1,14 @@
 pub mod handlers;
 
 use crate::common::middleware::JWT;
+use crate::common::roles::RequiereEditor;
 use actix_web::web;
 
 pub fn configure(cfg: &mut web::ServiceConfig) {
     cfg.service(
         web::scope("/fileserver").service(
             web::scope("")
+                .wrap(RequiereEditor)
                 .wrap(JWT)
                 .route("/{hash}", web::get().to(handlers::ver_archivo))
                 .route("/upload", web::post().to(handlers::upload_file))

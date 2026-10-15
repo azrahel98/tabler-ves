@@ -10,6 +10,7 @@ const Alerta70View = () => import('@/views/Alerta70View.vue')
 const DistritosView = () => import('@/views/DistritosView.vue')
 const PersonalDistritoView = () => import('@/views/PersonalDistritoView.vue')
 const PersonalAreaView = () => import('@/views/PersonalAreaView.vue')
+const ComparacionAirhspView = () => import('@/views/ComparacionAirhspView.vue')
 
 const routes: RouteRecordRaw[] = [
   {
@@ -76,6 +77,13 @@ const routes: RouteRecordRaw[] = [
         path: 'distritos',
         name: 'distritos',
         component: DistritosView,
+        meta: { requiresAuth: true },
+      },
+      {
+        path: 'airhsp',
+        alias: 'comparar-airhsp',
+        name: 'comparar-airhsp',
+        component: ComparacionAirhspView,
         meta: { requiresAuth: true },
       },
     ],

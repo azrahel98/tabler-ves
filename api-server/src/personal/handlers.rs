@@ -595,7 +595,10 @@ pub async fn renuncia_por_vinculo(
         &req,
         &data.db,
         "registro de renuncia",
-        json_value.get("dni").unwrap().as_str().unwrap(),
+        json_value
+            .get("dni")
+            .and_then(|v| v.as_str())
+            .unwrap_or_default(),
         Some(json_value.clone()),
     )
     .await
@@ -640,7 +643,7 @@ pub async fn renuncia_por_vinculo(
             "RENUNCIA",
             &titulo,
             &mensaje,
-            Some(json_value.get("dni").unwrap().as_str().unwrap().to_string()),
+            Some(dni_str.to_string()),
             Some(&metadata_obj),
         )
         .await
@@ -651,7 +654,7 @@ pub async fn renuncia_por_vinculo(
             tipo: "RENUNCIA".to_string(),
             titulo,
             mensaje,
-            dni: Some(json_value.get("dni").unwrap().as_str().unwrap().to_string()),
+            dni: Some(dni_str.to_string()),
             leido: false,
             metadata: Some(metadata_obj),
             created_at: chrono::Local::now().to_rfc3339(),
@@ -1230,6 +1233,28 @@ pub async fn buscar_cargos(data: web::Data<AppState>) -> Result<impl Responder, 
                 "id": row.get::<i32, _>("id"),
                 "nombre": row.get::<String, _>("nombre"),
                 "activo": row.get::<bool, _>("activo"),
+            })
+        })
+        .collect();
+    Ok(HttpResponse::Ok().json(resultado))
+}
+pub async fn buscar_regimenes(data: web::Data<AppState>) -> Result<impl Responder, ApiError> {
+    let regimenes =
+        sqlx::query("SELECT id, nombre, decreto FROM regimen ORDER BY id")
+            .fetch_all(&data.db)
+            .await
+            .map_err(|e| {
+                eprintln!("Database error: {:?}", e);
+                ApiError::InternalError("Error al obtener regímenes".into())
+            })?;
+    let resultado: Vec<Value> = regimenes
+        .iter()
+        .map(|row| {
+            let decreto: Option<String> = row.try_get("decreto").unwrap_or(None);
+            json!({
+                "id": row.get::<i32, _>("id"),
+                "nombre": row.get::<String, _>("nombre"),
+                "decreto": decreto,
             })
         })
         .collect();

@@ -106,3 +106,102 @@ pub struct Alerta70Anos {
     pub avatar: Option<String>,
     pub estado: Option<Alertas>,
 }
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct DatosMef {
+    pub codigo_registro: String,
+    #[allow(dead_code)]
+    pub codigo_puesto: String,
+    pub apepat: String,
+    pub apemat: String,
+    pub nom: String,
+    pub fnac: String,
+    pub fingreso: String,
+    pub banco: String,
+    pub tipo_cuenta: String,
+    pub num_cuenta: String,
+    pub cci: String,
+    pub regimen: String,
+    pub codigo_grupo_ocupacional: String,
+    pub codigo_cargo_estructural: String,
+}
+
+#[derive(Debug, Clone, Default)]
+pub struct DatosSistema {
+    pub vinculo_id: i32,
+    pub dni: String,
+    pub plaza_id: Option<String>,
+    pub nombre: String,
+    pub apaterno: String,
+    pub amaterno: String,
+    pub fecha_nacimiento: Option<NaiveDate>,
+    pub fecha_ingreso: Option<NaiveDate>,
+    pub banco: Option<String>,
+    pub tipo_cuenta: Option<String>,
+    pub numero_cuenta: Option<String>,
+    pub cci: Option<String>,
+    pub codigo_cargo_estructural: String,
+    pub codigo_grupo_ocupacional: String,
+    pub cuenta_id: Option<i32>,
+}
+
+#[derive(Debug, Clone, Default)]
+pub struct CatalogosValidacion {
+    pub bancos: std::collections::HashSet<String>,
+    pub cargos_estructurales: std::collections::HashSet<String>,
+    pub grupos_ocupacionales: std::collections::HashSet<String>,
+    pub plazas_existentes: std::collections::HashSet<String>,
+    pub plazas_ocupadas: std::collections::HashMap<String, String>,
+    pub cuentas_por_numero: std::collections::HashMap<String, String>,
+    pub cuentas_por_cci: std::collections::HashMap<String, String>,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq)]
+pub struct AirhspCampoCambio {
+    pub campo: String,
+    pub antes: String,
+    pub despues: String,
+    pub error: Option<String>,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq)]
+pub struct AirhspPersonaCambio {
+    pub dni: String,
+    pub nombre: String,
+    pub campos: Vec<AirhspCampoCambio>,
+    pub error: Option<String>,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq)]
+pub struct AirhspPersonaOmitida {
+    pub dni: String,
+    pub nombre: String,
+    pub fecha_ingreso_sistema: String,
+    pub fecha_ingreso_airhsp: String,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone, Default, PartialEq, Eq)]
+pub struct AirhspResumen {
+    pub en_airhsp: usize,
+    pub coincidencias: usize,
+    pub con_cambios: usize,
+    pub sin_cambios: usize,
+    pub omitidos_fecha_ingreso: usize,
+    pub errores: usize,
+    pub actualizados: usize,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq)]
+pub struct AplicarAirhspResponse {
+    pub aplicado: bool,
+    pub resumen: AirhspResumen,
+    pub cambios: Vec<AirhspPersonaCambio>,
+    pub omitidos: Vec<AirhspPersonaOmitida>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum ResultadoEvaluacionPersona {
+    OmitidoFechaIngreso(AirhspPersonaOmitida),
+    Evaluado(AirhspPersonaCambio),
+    SinCambios,
+}

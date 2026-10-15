@@ -32,6 +32,7 @@ pub fn configure(cfg: &mut web::ServiceConfig) {
             .service(handlers::reporte_eventos)
             .service(handlers::comparar_mef)
             .service(handlers::generar_mef)
-            .service(handlers::alerta_70_anos),
+            .service(handlers::alerta_70_anos)
+            .service(handlers::aplicar_airhsp),
     );
 }

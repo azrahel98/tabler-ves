@@ -23,10 +23,19 @@ export async function fetchAuthBlob(url: string): Promise<Blob> {
   }
   const res = await fetch(url, { headers })
   if (!res.ok) {
-    if (res.status === 401 || res.status === 403) {
+    if (res.status === 401) {
       handleUnauthorized()
     }
-    throw new Error(`Error HTTP ${res.status}`)
+    let message = `Error HTTP ${res.status}`
+    try {
+      const errorData = await res.json()
+      if (errorData?.error || errorData?.message) {
+        message = errorData.error || errorData.message
+      }
+    } catch {
+      // Si la respuesta no es JSON, se mantiene el mensaje por defecto
+    }
+    throw new Error(message)
   }
   return await res.blob()
 }
@@ -98,7 +107,7 @@ export const api = ofetch.create({
   },
   onResponseError({ response }) {
     const errorData = response._data
-    if (response.status === 401 || response.status === 403 || errorData?.code === 401) {
+    if (response.status === 401 || errorData?.code === 401) {
       handleUnauthorized()
     }
     const message = errorData?.error || errorData?.message || response.statusText || 'Error en la petición'

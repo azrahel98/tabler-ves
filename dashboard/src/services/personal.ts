@@ -431,6 +431,21 @@ export async function fetchCargos(): Promise<CargoOption[]> {
   }
 }
 
+export interface RegimenCatalogo {
+  id: number
+  nombre: string
+  decreto?: string | null
+}
+
+export async function fetchRegimenes(): Promise<RegimenCatalogo[]> {
+  try {
+    const data = await api<RegimenCatalogo[]>('/personal/buscar_regimenes')
+    return Array.isArray(data) ? data : []
+  } catch {
+    return []
+  }
+}
+
 export interface NuevoTrabajadorPersonal {
   dni: string
   nombre: string

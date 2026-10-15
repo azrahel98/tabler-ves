@@ -1,11 +1,9 @@
 use crate::AppState;
 use crate::common::errors::ApiError;
-use crate::common::jwt::Claims;
 use crate::notificaciones::models::{ListarNotificacionesResponse, ListarQuery};
 use crate::notificaciones::repo as notificacion_repo;
 use actix_web::{HttpRequest, HttpResponse, Responder, web};
 use futures_util::stream;
-use jsonwebtoken::{DecodingKey, Validation, decode};
 use serde::Deserialize;
 use std::time::Duration;
 
@@ -19,21 +17,15 @@ pub async fn stream_notificaciones(
     data: web::Data<AppState>,
     query: web::Query<StreamQuery>,
 ) -> Result<HttpResponse, ApiError> {
-    let token_opt = req
+    let token = req
         .headers()
         .get("token")
         .and_then(|h| h.to_str().ok())
         .map(|s| s.to_string())
-        .or_else(|| query.token.clone());
+        .or_else(|| query.token.clone())
+        .ok_or_else(|| ApiError::Unauthorized("Token no proporcionado".into()))?;
 
-    if let Some(token) = token_opt {
-        if let Ok(secret_key) = std::env::var("JWT_KEY") {
-            let decoding_key = DecodingKey::from_secret(secret_key.as_ref());
-            if decode::<Claims>(&token, &decoding_key, &Validation::default()).is_err() {
-                return Err(ApiError::Unauthorized("Token inválido o expirado".into()));
-            }
-        }
-    }
+    crate::common::jwt::decodificar_token(&token)?;
 
     let mut rx_broadcast = data.notificaciones_tx.subscribe();
     let (tx_client, rx_client) = tokio::sync::mpsc::channel::<web::Bytes>(20);
@@ -87,7 +79,7 @@ pub async fn listar_notificaciones(
     data: web::Data<AppState>,
     query: web::Query<ListarQuery>,
 ) -> Result<impl Responder, ApiError> {
-    let limit = query.limit.unwrap_or(30);
+    let limit = query.limit.unwrap_or(30).clamp(1, 100);
     let (items, no_leidas) = notificacion_repo::listar_recientes(&data.db, limit)
         .await
         .map_err(|e| ApiError::InternalError(format!("Error al listar notificaciones: {}", e)))?;

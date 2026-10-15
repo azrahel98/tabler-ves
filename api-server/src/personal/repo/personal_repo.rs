@@ -256,6 +256,7 @@ mod tests {
     use sqlx::mysql::MySqlPoolOptions;
 
     #[tokio::test]
+    #[ignore = "requiere base de datos real"]
     async fn test_sunat_vinculo_query() {
         from_filename(".env").ok();
         let database_url = std::env::var("DATABASE_URL").expect("DATABASE_URL not set");
@@ -263,25 +264,6 @@ mod tests {
             .connect(&database_url)
             .await
             .expect("Failed to connect to DB");
-
-        // Crear la tabla si aún no existe
-        sqlx::query(
-            r#"
-                CREATE TABLE IF NOT EXISTS `sunat_vinculo` ( 
-                  `id` INT AUTO_INCREMENT NOT NULL,
-                  `dni` VARCHAR(15) NOT NULL,
-                  `fecha_inicio` DATE NOT NULL,
-                  `fecha_cese` DATE NULL DEFAULT NULL,
-                  `created_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
-                  PRIMARY KEY (`id`),
-                  INDEX `idx_sunat_dni` (`dni` ASC),
-                  INDEX `idx_sunat_fechas` (`fecha_inicio` ASC, `fecha_cese` ASC)
-                ) ENGINE = InnoDB;
-                "#,
-        )
-        .execute(&pool)
-        .await
-        .expect("Failed to create table sunat_vinculo if not exists");
 
         // Probar la consulta
         let res = get_sunat_vinculos_by_dni(&pool, "12345678").await;

@@ -1,7 +1,9 @@
 use crate::common::errors::ApiError;
 use crate::dash::models::{
-    Alerta70Anos, BancosReport, Cumpleaños, DataResumen, HistorialPaginado, Organigrama,
-    ReporteRenuncias, ResumenResponse, TipoDocumentoItem,
+    AirhspCampoCambio, AirhspPersonaCambio, AirhspPersonaOmitida, AirhspResumen,
+    Alerta70Anos, AplicarAirhspResponse, BancosReport, CatalogosValidacion, Cumpleaños,
+    DataResumen, DatosMef, DatosSistema, HistorialPaginado, Organigrama, ReporteRenuncias,
+    ResultadoEvaluacionPersona, ResumenResponse, TipoDocumentoItem,
 };
 use crate::dash::repo as dash_repo;
 use serde_json::{Value, json};
@@ -291,24 +293,6 @@ pub async fn reporte_eventos(pool: &MySqlPool) -> Result<Vec<Value>, ApiError> {
     dash_repo::get_reporte_eventos(pool).await
 }
 
-struct DatosMef {
-    codigo_registro: String,
-    #[allow(dead_code)]
-    codigo_puesto: String,
-    apepat: String,
-    apemat: String,
-    nom: String,
-    fnac: String,
-    fingreso: String,
-    banco: String,
-    tipo_cuenta: String,
-    num_cuenta: String,
-    cci: String,
-    regimen: String,
-    codigo_grupo_ocupacional: String,
-    codigo_cargo_estructural: String,
-}
-
 fn mef_celda_texto(cell: &calamine::Data) -> String {
     use calamine::Data;
     match cell {
@@ -475,14 +459,14 @@ fn mef_parsear_hoja(
     Ok(dict)
 }
 
-pub async fn comparar_mef(
-    pool: &MySqlPool,
-    bytes_cas: Vec<u8>,
-    bytes_otros: Vec<u8>,
-) -> Result<Value, ApiError> {
+pub fn parsear_archivos_mef(
+    bytes_cas: &[u8],
+    bytes_otros: &[u8],
+) -> Result<std::collections::HashMap<String, DatosMef>, ApiError> {
     use calamine::{Reader, Xlsx, open_workbook_from_rs};
     use std::collections::HashMap;
     use std::io::Cursor;
+
     let mut dict_mef: HashMap<String, DatosMef> = HashMap::new();
     if !bytes_cas.is_empty() {
         let cursor = Cursor::new(bytes_cas);
@@ -491,7 +475,7 @@ pub async fn comparar_mef(
         let sheet = wb
             .sheet_names()
             .first()
-            .ok_or_else(|| ApiError::InternalError("El archivo CAS no tiene hojas".to_string()))?
+            .ok_or_else(|| ApiError::BadRequest("El archivo CAS no tiene hojas".to_string()))?
             .clone();
         let range = wb
             .worksheet_range(&sheet)
@@ -506,7 +490,7 @@ pub async fn comparar_mef(
             .sheet_names()
             .first()
             .ok_or_else(|| {
-                ApiError::InternalError("El archivo 276/728 no tiene hojas".to_string())
+                ApiError::BadRequest("El archivo 276/728 no tiene hojas".to_string())
             })?
             .clone();
         let range = wb
@@ -516,6 +500,15 @@ pub async fn comparar_mef(
             dict_mef.entry(dni).or_insert(datos);
         }
     }
+    Ok(dict_mef)
+}
+
+pub async fn comparar_mef(
+    pool: &MySqlPool,
+    bytes_cas: Vec<u8>,
+    bytes_otros: Vec<u8>,
+) -> Result<Value, ApiError> {
+    let dict_mef = parsear_archivos_mef(&bytes_cas, &bytes_otros)?;
     use sqlx::Row;
     let filas_bd = dash_repo::get_comparar_mef_data(pool).await?;
 
@@ -572,6 +565,18 @@ pub async fn comparar_mef(
         let cpp_str = plaza_id.unwrap_or_default().trim().to_uppercase();
         counter += 1;
         if let Some(mef) = dict_mef.get(&dni) {
+            let num_mef_raw = mef.num_cuenta.trim();
+            let es_cci_en_num =
+                num_mef_raw.len() == 20 && num_mef_raw.chars().all(|c| c.is_ascii_digit());
+            let cci_propio = mef.cci.trim().to_uppercase();
+            let cci_efectivo_mef = if !cci_propio.is_empty() {
+                cci_propio
+            } else if es_cci_en_num {
+                num_mef_raw.to_uppercase()
+            } else {
+                "".to_string()
+            };
+
             let valores_propios = [
                 cpp_str.clone(),
                 apaterno.trim().to_uppercase(),
@@ -603,9 +608,21 @@ pub async fn comparar_mef(
                 mef.cci.clone(),
             ];
             for i in 0..etiquetas.len() {
+                let etiqueta = etiquetas[i];
                 let vp = &valores_propios[i];
-                let vm = &valores_mef[i];
-                let igual = vp == vm || (vp.is_empty() && vm.is_empty());
+                let mut vm = valores_mef[i].clone();
+
+                let igual = if etiqueta == "NUMERO_CUENTA_FINANCIERA" && es_cci_en_num {
+                    num_mef_raw.eq_ignore_ascii_case(&num_cta_str)
+                        || num_mef_raw.eq_ignore_ascii_case(&cci_str)
+                } else if etiqueta == "CODIGO_CUENTA_INTERBANCARIA" {
+                    vm = cci_efectivo_mef.clone();
+                    vp.eq_ignore_ascii_case(&cci_efectivo_mef)
+                        || (vp.is_empty() && cci_efectivo_mef.is_empty())
+                } else {
+                    vp == &vm || (vp.is_empty() && vm.is_empty())
+                };
+
                 if igual {
                     total_ok += 1;
                 } else {
@@ -619,7 +636,7 @@ pub async fn comparar_mef(
                     "regimen_mef": mef.regimen,
                     "codigo_registro": mef.codigo_registro,
                     "codigo_puesto_cpe": cpp_str,
-                    "campo": etiquetas[i],
+                    "campo": etiqueta,
                     "valor_propio": vp,
                     "valor_mef": vm,
                     "resultado": if igual { "OK" } else { "DIFERENCIA" }
@@ -795,3 +812,1102 @@ pub fn exportar_comparacion_mef(comparaciones: &[Value]) -> Result<Vec<u8>, ApiE
 pub async fn alerta_70_anos(pool: &MySqlPool) -> Result<Vec<Alerta70Anos>, ApiError> {
     dash_repo::get_alerta_70_anos(pool).await
 }
+
+pub fn mapear_tipo_cuenta_bd(tipo_airhsp: &str) -> Option<&'static str> {
+    match tipo_airhsp.trim().to_uppercase().as_str() {
+        "CUENTA DE AHORRO" | "AHORRO" => Some("Ahorro"),
+        "CUENTA CORRIENTE" | "CORRIENTE" => Some("Corriente"),
+        _ => None,
+    }
+}
+
+pub fn evaluar_persona_airhsp(
+    sistema: &DatosSistema,
+    mef: &DatosMef,
+    catalogos: &CatalogosValidacion,
+) -> ResultadoEvaluacionPersona {
+    let nombre_completo = format!(
+        "{} {}, {}",
+        sistema.apaterno.trim().to_uppercase(),
+        sistema.amaterno.trim().to_uppercase(),
+        sistema.nombre.trim().to_uppercase()
+    );
+
+    // 1. Coincidencia = mismo DNI y misma fecha de ingreso
+    let fingreso_mef_res = chrono::NaiveDate::parse_from_str(mef.fingreso.trim(), "%d/%m/%Y");
+    let coincide_ingreso = match (&sistema.fecha_ingreso, fingreso_mef_res) {
+        (Some(f_sis), Ok(f_mef)) => *f_sis == f_mef,
+        _ => false,
+    };
+
+    if !coincide_ingreso {
+        return ResultadoEvaluacionPersona::OmitidoFechaIngreso(AirhspPersonaOmitida {
+            dni: sistema.dni.clone(),
+            nombre: nombre_completo,
+            fecha_ingreso_sistema: sistema
+                .fecha_ingreso
+                .map(|d| d.format("%d/%m/%Y").to_string())
+                .unwrap_or_default(),
+            fecha_ingreso_airhsp: mef.fingreso.trim().to_string(),
+        });
+    }
+
+    let mut campos: Vec<AirhspCampoCambio> = Vec::new();
+
+    // 2. APELLIDO_PATERNO
+    let apepat_mef = mef.apepat.trim().to_uppercase();
+    let apepat_sis = sistema.apaterno.trim().to_uppercase();
+    if !apepat_mef.is_empty() && apepat_mef != apepat_sis {
+        campos.push(AirhspCampoCambio {
+            campo: "APELLIDO_PATERNO".to_string(),
+            antes: apepat_sis,
+            despues: apepat_mef,
+            error: None,
+        });
+    }
+
+    // 3. APELLIDO_MATERNO
+    let apemat_mef = mef.apemat.trim().to_uppercase();
+    let apemat_sis = sistema.amaterno.trim().to_uppercase();
+    if !apemat_mef.is_empty() && apemat_mef != apemat_sis {
+        campos.push(AirhspCampoCambio {
+            campo: "APELLIDO_MATERNO".to_string(),
+            antes: apemat_sis,
+            despues: apemat_mef,
+            error: None,
+        });
+    }
+
+    // 4. NOMBRES
+    let nom_mef = mef.nom.trim().to_uppercase();
+    let nom_sis = sistema.nombre.trim().to_uppercase();
+    if !nom_mef.is_empty() && nom_mef != nom_sis {
+        campos.push(AirhspCampoCambio {
+            campo: "NOMBRES".to_string(),
+            antes: nom_sis,
+            despues: nom_mef,
+            error: None,
+        });
+    }
+
+    // 5. FECHA_NACIMIENTO
+    let fnac_sis = sistema
+        .fecha_nacimiento
+        .map(|d| d.format("%d/%m/%Y").to_string())
+        .unwrap_or_default();
+    let fnac_mef_raw = mef.fnac.trim();
+    if !fnac_mef_raw.is_empty() {
+        match chrono::NaiveDate::parse_from_str(fnac_mef_raw, "%d/%m/%Y") {
+            Ok(fnac_mef) => {
+                let fnac_mef_fmt = fnac_mef.format("%d/%m/%Y").to_string();
+                if fnac_mef_fmt != fnac_sis {
+                    campos.push(AirhspCampoCambio {
+                        campo: "FECHA_NACIMIENTO".to_string(),
+                        antes: fnac_sis,
+                        despues: fnac_mef_fmt,
+                        error: None,
+                    });
+                }
+            }
+            Err(_) => {
+                campos.push(AirhspCampoCambio {
+                    campo: "FECHA_NACIMIENTO".to_string(),
+                    antes: fnac_sis,
+                    despues: fnac_mef_raw.to_string(),
+                    error: Some(
+                        "Formato de fecha de nacimiento inválido (se esperaba dd/mm/yyyy)"
+                            .to_string(),
+                    ),
+                });
+            }
+        }
+    }
+
+    // 6. CODIGO_REGISTRO (plaza)
+    let plaza_sis = sistema
+        .plaza_id
+        .as_deref()
+        .unwrap_or("")
+        .trim()
+        .to_uppercase();
+    let plaza_mef = mef.codigo_registro.trim().to_uppercase();
+    let mut plaza_final = plaza_sis.clone();
+
+    if !plaza_mef.is_empty() {
+        if plaza_mef.chars().count() != 6 {
+            campos.push(AirhspCampoCambio {
+                campo: "CODIGO_REGISTRO".to_string(),
+                antes: plaza_sis.clone(),
+                despues: plaza_mef.clone(),
+                error: Some(
+                    "El código de registro debe tener exactamente 6 caracteres".to_string(),
+                ),
+            });
+        } else if plaza_mef != plaza_sis {
+            let asignada_a_otro = match catalogos.plazas_ocupadas.get(&plaza_mef) {
+                Some(otro_dni) => otro_dni != &sistema.dni,
+                None => false,
+            };
+
+            if asignada_a_otro {
+                let otro_dni = catalogos.plazas_ocupadas.get(&plaza_mef).unwrap();
+                campos.push(AirhspCampoCambio {
+                    campo: "CODIGO_REGISTRO".to_string(),
+                    antes: plaza_sis.clone(),
+                    despues: plaza_mef.clone(),
+                    error: Some(format!(
+                        "La plaza {} ya está asignada al DNI {}",
+                        plaza_mef, otro_dni
+                    )),
+                });
+            } else {
+                let plaza_existe = catalogos.plazas_existentes.is_empty()
+                    || catalogos.plazas_existentes.contains(&plaza_mef);
+                if !plaza_existe {
+                    let cargo_mef = mef.codigo_cargo_estructural.trim().to_uppercase();
+                    let grupo_mef = mef.codigo_grupo_ocupacional.trim().to_uppercase();
+                    let cargo_ok = !cargo_mef.is_empty()
+                        && (catalogos.cargos_estructurales.is_empty()
+                            || catalogos.cargos_estructurales.contains(&cargo_mef));
+                    let grupo_ok = !grupo_mef.is_empty()
+                        && (catalogos.grupos_ocupacionales.is_empty()
+                            || catalogos.grupos_ocupacionales.contains(&grupo_mef));
+
+                    if !cargo_ok || !grupo_ok {
+                        campos.push(AirhspCampoCambio {
+                            campo: "CODIGO_REGISTRO".to_string(),
+                            antes: plaza_sis.clone(),
+                            despues: plaza_mef.clone(),
+                            error: Some(format!(
+                                "La plaza {} no existe en el sistema y AIRHSP no trae cargo/grupo válidos para crearla",
+                                plaza_mef
+                            )),
+                        });
+                    } else {
+                        campos.push(AirhspCampoCambio {
+                            campo: "CODIGO_REGISTRO".to_string(),
+                            antes: plaza_sis.clone(),
+                            despues: plaza_mef.clone(),
+                            error: None,
+                        });
+                        plaza_final = plaza_mef;
+                    }
+                } else {
+                    campos.push(AirhspCampoCambio {
+                        campo: "CODIGO_REGISTRO".to_string(),
+                        antes: plaza_sis.clone(),
+                        despues: plaza_mef.clone(),
+                        error: None,
+                    });
+                    plaza_final = plaza_mef;
+                }
+            }
+        }
+    }
+
+    let plaza_final_existe = plaza_final.is_empty()
+        || catalogos.plazas_existentes.is_empty()
+        || catalogos.plazas_existentes.contains(&plaza_final);
+
+    let cargo_sis = sistema
+        .codigo_cargo_estructural
+        .trim()
+        .to_uppercase();
+    let cargo_mef = mef.codigo_cargo_estructural.trim().to_uppercase();
+    let grupo_sis = sistema
+        .codigo_grupo_ocupacional
+        .trim()
+        .to_uppercase();
+    let grupo_mef = mef.codigo_grupo_ocupacional.trim().to_uppercase();
+
+    if !plaza_final_existe {
+        let cargo_valido = !cargo_mef.is_empty()
+            && (catalogos.cargos_estructurales.is_empty()
+                || catalogos.cargos_estructurales.contains(&cargo_mef));
+        let grupo_valido = !grupo_mef.is_empty()
+            && (catalogos.grupos_ocupacionales.is_empty()
+                || catalogos.grupos_ocupacionales.contains(&grupo_mef));
+
+        // 7. CODIGO_CARGO_ESTRUCTURAL
+        if !cargo_valido {
+            campos.push(AirhspCampoCambio {
+                campo: "CODIGO_CARGO_ESTRUCTURAL".to_string(),
+                antes: cargo_sis,
+                despues: cargo_mef,
+                error: Some(format!(
+                    "La plaza {} no existe en el sistema y AIRHSP no trae cargo/grupo válidos para crearla",
+                    plaza_final
+                )),
+            });
+        } else if cargo_mef != cargo_sis {
+            campos.push(AirhspCampoCambio {
+                campo: "CODIGO_CARGO_ESTRUCTURAL".to_string(),
+                antes: cargo_sis,
+                despues: cargo_mef,
+                error: None,
+            });
+        }
+
+        // 8. CODIGO_GRUPO_OCUPACIONAL
+        if !grupo_valido {
+            campos.push(AirhspCampoCambio {
+                campo: "CODIGO_GRUPO_OCUPACIONAL".to_string(),
+                antes: grupo_sis,
+                despues: grupo_mef,
+                error: Some(format!(
+                    "La plaza {} no existe en el sistema y AIRHSP no trae cargo/grupo válidos para crearla",
+                    plaza_final
+                )),
+            });
+        } else if grupo_mef != grupo_sis {
+            campos.push(AirhspCampoCambio {
+                campo: "CODIGO_GRUPO_OCUPACIONAL".to_string(),
+                antes: grupo_sis,
+                despues: grupo_mef,
+                error: None,
+            });
+        }
+    } else {
+        // 7. CODIGO_CARGO_ESTRUCTURAL
+        if !cargo_mef.is_empty() {
+            let cargo_valido = catalogos.cargos_estructurales.is_empty()
+                || catalogos.cargos_estructurales.contains(&cargo_mef);
+            if !cargo_valido {
+                campos.push(AirhspCampoCambio {
+                    campo: "CODIGO_CARGO_ESTRUCTURAL".to_string(),
+                    antes: cargo_sis,
+                    despues: cargo_mef,
+                    error: Some("Código de cargo estructural no existe en el catálogo".to_string()),
+                });
+            } else if cargo_mef != cargo_sis {
+                campos.push(AirhspCampoCambio {
+                    campo: "CODIGO_CARGO_ESTRUCTURAL".to_string(),
+                    antes: cargo_sis,
+                    despues: cargo_mef,
+                    error: None,
+                });
+            }
+        }
+
+        // 8. CODIGO_GRUPO_OCUPACIONAL
+        if !grupo_mef.is_empty() {
+            let grupo_valido = catalogos.grupos_ocupacionales.is_empty()
+                || catalogos.grupos_ocupacionales.contains(&grupo_mef);
+            if !grupo_valido {
+                campos.push(AirhspCampoCambio {
+                    campo: "CODIGO_GRUPO_OCUPACIONAL".to_string(),
+                    antes: grupo_sis,
+                    despues: grupo_mef,
+                    error: Some("Código de grupo ocupacional no existe en el catálogo".to_string()),
+                });
+            } else if grupo_mef != grupo_sis {
+                campos.push(AirhspCampoCambio {
+                    campo: "CODIGO_GRUPO_OCUPACIONAL".to_string(),
+                    antes: grupo_sis,
+                    despues: grupo_mef,
+                    error: None,
+                });
+            }
+        }
+    }
+
+    // 9. BANCA
+    let antes_banco = sistema.banco.as_deref().unwrap_or("").trim().to_uppercase();
+    let despues_banco = mef.banco.trim().to_uppercase();
+    if !despues_banco.is_empty() {
+        let banco_existe =
+            catalogos.bancos.is_empty() || catalogos.bancos.contains(&despues_banco);
+        if !banco_existe {
+            campos.push(AirhspCampoCambio {
+                campo: "CODIGO_ENTIDAD_FINANCIERA".to_string(),
+                antes: antes_banco,
+                despues: despues_banco,
+                error: Some("Código de entidad financiera no existe en el catálogo".to_string()),
+            });
+        } else if despues_banco != antes_banco {
+            campos.push(AirhspCampoCambio {
+                campo: "CODIGO_ENTIDAD_FINANCIERA".to_string(),
+                antes: antes_banco,
+                despues: despues_banco,
+                error: None,
+            });
+        }
+    }
+
+    let antes_tipo = sistema
+        .tipo_cuenta
+        .as_deref()
+        .unwrap_or("")
+        .trim()
+        .to_uppercase();
+    let despues_tipo_raw = mef.tipo_cuenta.trim().to_uppercase();
+    if !despues_tipo_raw.is_empty() {
+        let (tipo_norm, err_tipo) = match mapear_tipo_cuenta_bd(&despues_tipo_raw) {
+            Some("Ahorro") => ("CUENTA DE AHORRO".to_string(), None),
+            Some("Corriente") => ("CUENTA CORRIENTE".to_string(), None),
+            _ => (
+                despues_tipo_raw.clone(),
+                Some(format!(
+                    "Tipo de cuenta '{}' no es compatible (solo se permite Ahorro o Corriente)",
+                    despues_tipo_raw
+                )),
+            ),
+        };
+
+        if err_tipo.is_some() {
+            campos.push(AirhspCampoCambio {
+                campo: "TIPO_CUENTA_FINANCIERA".to_string(),
+                antes: antes_tipo,
+                despues: tipo_norm,
+                error: err_tipo,
+            });
+        } else if tipo_norm != antes_tipo {
+            campos.push(AirhspCampoCambio {
+                campo: "TIPO_CUENTA_FINANCIERA".to_string(),
+                antes: antes_tipo,
+                despues: tipo_norm,
+                error: None,
+            });
+        }
+    }
+
+    let antes_num = sistema
+        .numero_cuenta
+        .as_deref()
+        .unwrap_or("")
+        .trim()
+        .to_uppercase();
+    let despues_num_raw = mef.num_cuenta.trim();
+    let es_cci_en_num =
+        despues_num_raw.len() == 20 && despues_num_raw.chars().all(|c| c.is_ascii_digit());
+    let despues_num = despues_num_raw.to_uppercase();
+
+    if !despues_num.is_empty() && !es_cci_en_num {
+        let err_num = if let Some(owner_dni) = catalogos.cuentas_por_numero.get(&despues_num) {
+            if owner_dni != &sistema.dni {
+                Some("El número de cuenta ya pertenece a otra persona".to_string())
+            } else {
+                None
+            }
+        } else {
+            None
+        };
+
+        if err_num.is_some() {
+            campos.push(AirhspCampoCambio {
+                campo: "NUMERO_CUENTA_FINANCIERA".to_string(),
+                antes: antes_num,
+                despues: despues_num.clone(),
+                error: err_num,
+            });
+        } else if despues_num != antes_num {
+            campos.push(AirhspCampoCambio {
+                campo: "NUMERO_CUENTA_FINANCIERA".to_string(),
+                antes: antes_num,
+                despues: despues_num.clone(),
+                error: None,
+            });
+        }
+    }
+
+    let antes_cci = sistema.cci.as_deref().unwrap_or("").trim().to_uppercase();
+    let cci_propio = mef.cci.trim().to_uppercase();
+
+    if es_cci_en_num {
+        let cci_efectivo = despues_num.clone();
+        if !cci_propio.is_empty() && cci_propio != cci_efectivo {
+            campos.push(AirhspCampoCambio {
+                campo: "CODIGO_CUENTA_INTERBANCARIA".to_string(),
+                antes: antes_cci,
+                despues: cci_propio,
+                error: Some("AIRHSP trae dos CCI distintos".to_string()),
+            });
+        } else {
+            let err_cci = if let Some(owner_dni) = catalogos.cuentas_por_cci.get(&cci_efectivo) {
+                if owner_dni != &sistema.dni {
+                    Some(
+                        "El código de cuenta interbancaria (CCI) ya pertenece a otra persona"
+                            .to_string(),
+                    )
+                } else {
+                    None
+                }
+            } else {
+                None
+            };
+
+            if err_cci.is_some() {
+                campos.push(AirhspCampoCambio {
+                    campo: "CODIGO_CUENTA_INTERBANCARIA".to_string(),
+                    antes: antes_cci,
+                    despues: cci_efectivo,
+                    error: err_cci,
+                });
+            } else if cci_efectivo != antes_cci {
+                campos.push(AirhspCampoCambio {
+                    campo: "CODIGO_CUENTA_INTERBANCARIA".to_string(),
+                    antes: antes_cci,
+                    despues: cci_efectivo,
+                    error: None,
+                });
+            }
+        }
+    } else if !cci_propio.is_empty() {
+        let err_cci = if let Some(owner_dni) = catalogos.cuentas_por_cci.get(&cci_propio) {
+            if owner_dni != &sistema.dni {
+                Some(
+                    "El código de cuenta interbancaria (CCI) ya pertenece a otra persona"
+                        .to_string(),
+                )
+            } else {
+                None
+            }
+        } else {
+            None
+        };
+
+        if err_cci.is_some() {
+            campos.push(AirhspCampoCambio {
+                campo: "CODIGO_CUENTA_INTERBANCARIA".to_string(),
+                antes: antes_cci,
+                despues: cci_propio,
+                error: err_cci,
+            });
+        } else if cci_propio != antes_cci {
+            campos.push(AirhspCampoCambio {
+                campo: "CODIGO_CUENTA_INTERBANCARIA".to_string(),
+                antes: antes_cci,
+                despues: cci_propio,
+                error: None,
+            });
+        }
+    }
+
+    // Validación de consistencia para datos bancarios
+    let hay_campo_bancario = campos.iter().any(|c| {
+        c.campo == "CODIGO_ENTIDAD_FINANCIERA"
+            || c.campo == "TIPO_CUENTA_FINANCIERA"
+            || c.campo == "NUMERO_CUENTA_FINANCIERA"
+            || c.campo == "CODIGO_CUENTA_INTERBANCARIA"
+    });
+
+    if hay_campo_bancario {
+        let banco_final = campos
+            .iter()
+            .find(|c| c.campo == "CODIGO_ENTIDAD_FINANCIERA")
+            .map(|c| c.despues.clone())
+            .or_else(|| sistema.banco.clone())
+            .unwrap_or_default();
+        let banco_invalido = banco_final.trim().is_empty()
+            || (!catalogos.bancos.is_empty()
+                && !catalogos.bancos.contains(&banco_final.trim().to_uppercase()));
+
+        let tipo_final = campos
+            .iter()
+            .find(|c| c.campo == "TIPO_CUENTA_FINANCIERA")
+            .map(|c| c.despues.clone())
+            .or_else(|| sistema.tipo_cuenta.clone())
+            .unwrap_or_default();
+        let tipo_invalido = mapear_tipo_cuenta_bd(&tipo_final).is_none();
+
+        let num_final = campos
+            .iter()
+            .find(|c| c.campo == "NUMERO_CUENTA_FINANCIERA")
+            .map(|c| c.despues.clone())
+            .or_else(|| sistema.numero_cuenta.clone())
+            .unwrap_or_default();
+        let num_invalido = num_final.trim().is_empty();
+
+        let no_tiene_cuenta = sistema.cuenta_id.is_none()
+            || sistema
+                .numero_cuenta
+                .as_deref()
+                .unwrap_or("")
+                .trim()
+                .is_empty();
+
+        if banco_invalido || tipo_invalido || num_invalido {
+            for c in campos.iter_mut() {
+                if (c.campo == "CODIGO_ENTIDAD_FINANCIERA"
+                    || c.campo == "TIPO_CUENTA_FINANCIERA"
+                    || c.campo == "NUMERO_CUENTA_FINANCIERA"
+                    || c.campo == "CODIGO_CUENTA_INTERBANCARIA")
+                    && c.error.is_none()
+                {
+                    if no_tiene_cuenta && es_cci_en_num {
+                        c.error = Some(
+                            "AIRHSP solo trae CCI; se requiere el número de cuenta para crear la cuenta"
+                                .to_string(),
+                        );
+                    } else if banco_invalido {
+                        c.error = Some(
+                            "No se puede registrar o actualizar la cuenta bancaria sin entidad financiera válida en el catálogo"
+                                .to_string(),
+                        );
+                    } else if tipo_invalido {
+                        c.error = Some(format!(
+                            "Tipo de cuenta '{}' no es compatible (solo se permite Ahorro o Corriente)",
+                            tipo_final
+                        ));
+                    } else if num_invalido {
+                        c.error = Some(
+                            "No se puede registrar o actualizar la cuenta bancaria con número de cuenta vacío"
+                                .to_string(),
+                        );
+                    }
+                }
+            }
+        }
+    }
+
+
+    if campos.is_empty() {
+        ResultadoEvaluacionPersona::SinCambios
+    } else {
+        ResultadoEvaluacionPersona::Evaluado(AirhspPersonaCambio {
+            dni: sistema.dni.clone(),
+            nombre: nombre_completo,
+            campos,
+            error: None,
+        })
+    }
+}
+
+pub async fn aplicar_airhsp(
+    pool: &MySqlPool,
+    req: &actix_web::HttpRequest,
+    bytes_cas: Vec<u8>,
+    bytes_otros: Vec<u8>,
+    confirmar: bool,
+) -> Result<AplicarAirhspResponse, ApiError> {
+    use sqlx::Row;
+
+    let dict_mef = parsear_archivos_mef(&bytes_cas, &bytes_otros)?;
+    let filas_bd = dash_repo::get_comparar_mef_data(pool).await?;
+    let (catalogos, banco_id_por_codigo) = dash_repo::get_catalogos_airhsp(pool).await?;
+
+    let mut resumen = AirhspResumen::default();
+    let mut cambios: Vec<AirhspPersonaCambio> = Vec::new();
+    let mut omitidos: Vec<AirhspPersonaOmitida> = Vec::new();
+
+    for fila in &filas_bd {
+        let dni: String = fila.get("dni");
+        if let Some(mef) = dict_mef.get(&dni) {
+            resumen.en_airhsp += 1;
+            let sistema = dash_repo::row_to_datos_sistema(fila);
+
+            match evaluar_persona_airhsp(&sistema, mef, &catalogos) {
+                ResultadoEvaluacionPersona::OmitidoFechaIngreso(om) => {
+                    resumen.omitidos_fecha_ingreso += 1;
+                    omitidos.push(om);
+                }
+                ResultadoEvaluacionPersona::SinCambios => {
+                    resumen.coincidencias += 1;
+                    resumen.sin_cambios += 1;
+                }
+                ResultadoEvaluacionPersona::Evaluado(mut per_cambio) => {
+                    resumen.coincidencias += 1;
+                    resumen.con_cambios += 1;
+
+                    let tiene_error_campo = per_cambio.campos.iter().any(|c| c.error.is_some());
+
+                    if confirmar {
+                        match dash_repo::aplicar_cambios_persona_tx(
+                            pool,
+                            &sistema,
+                            &per_cambio,
+                            mef,
+                            &banco_id_por_codigo,
+                        )
+                        .await
+                        {
+                            Ok(campos_aplicados) => {
+                                if !campos_aplicados.is_empty() {
+                                    resumen.actualizados += 1;
+                                    let campos_json: Vec<Value> = campos_aplicados
+                                        .iter()
+                                        .map(|c| {
+                                            serde_json::json!({
+                                                "campo": c.campo,
+                                                "antes": c.antes,
+                                                "despues": c.despues,
+                                            })
+                                        })
+                                        .collect();
+
+                                    let _ = crate::common::audit::registrar_historial(
+                                        req,
+                                        pool,
+                                        "actualizacion airhsp",
+                                        &sistema.dni,
+                                        Some(serde_json::json!({ "campos": campos_json })),
+                                    )
+                                    .await;
+                                }
+                                if tiene_error_campo {
+                                    resumen.errores += 1;
+                                }
+                            }
+                            Err(e) => {
+                                per_cambio.error = Some(e);
+                                resumen.errores += 1;
+                            }
+                        }
+                    } else if tiene_error_campo {
+                        resumen.errores += 1;
+                    }
+
+                    cambios.push(per_cambio);
+                }
+            }
+        }
+    }
+
+    Ok(AplicarAirhspResponse {
+        aplicado: confirmar,
+        resumen,
+        cambios,
+        omitidos,
+    })
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use chrono::NaiveDate;
+
+    fn datos_sistema_base() -> DatosSistema {
+        DatosSistema {
+            vinculo_id: 10,
+            dni: "12345678".to_string(),
+            plaza_id: Some("000100".to_string()),
+            nombre: "JUAN".to_string(),
+            apaterno: "PEREZ".to_string(),
+            amaterno: "LOPEZ".to_string(),
+            fecha_nacimiento: Some(NaiveDate::from_ymd_opt(1990, 5, 15).unwrap()),
+            fecha_ingreso: Some(NaiveDate::from_ymd_opt(2022, 1, 1).unwrap()),
+            banco: Some("001".to_string()),
+            tipo_cuenta: Some("CUENTA DE AHORRO".to_string()),
+            numero_cuenta: Some("111122223333".to_string()),
+            cci: Some("00111122223333444455".to_string()),
+            codigo_cargo_estructural: "C001".to_string(),
+            codigo_grupo_ocupacional: "G1".to_string(),
+            cuenta_id: Some(5),
+        }
+    }
+
+    fn datos_mef_base() -> DatosMef {
+        DatosMef {
+            codigo_registro: "000100".to_string(),
+            codigo_puesto: "".to_string(),
+            apepat: "PEREZ".to_string(),
+            apemat: "LOPEZ".to_string(),
+            nom: "JUAN".to_string(),
+            fnac: "15/05/1990".to_string(),
+            fingreso: "01/01/2022".to_string(),
+            banco: "001".to_string(),
+            tipo_cuenta: "CUENTA DE AHORRO".to_string(),
+            num_cuenta: "111122223333".to_string(),
+            cci: "00111122223333444455".to_string(),
+            regimen: "CAS".to_string(),
+            codigo_grupo_ocupacional: "G1".to_string(),
+            codigo_cargo_estructural: "C001".to_string(),
+        }
+    }
+
+    #[test]
+    fn test_evaluar_coincide_fecha_genera_cambios() {
+        let sistema = datos_sistema_base();
+        let mut mef = datos_mef_base();
+        mef.nom = "JUAN CARLOS".to_string();
+
+        let catalogos = CatalogosValidacion::default();
+        let res = evaluar_persona_airhsp(&sistema, &mef, &catalogos);
+
+        match res {
+            ResultadoEvaluacionPersona::Evaluado(cambio) => {
+                assert_eq!(cambio.dni, "12345678");
+                assert_eq!(cambio.campos.len(), 1);
+                assert_eq!(cambio.campos[0].campo, "NOMBRES");
+                assert_eq!(cambio.campos[0].antes, "JUAN");
+                assert_eq!(cambio.campos[0].despues, "JUAN CARLOS");
+                assert!(cambio.campos[0].error.is_none());
+            }
+            _ => panic!("Se esperaba Evaluado con cambios"),
+        }
+    }
+
+    #[test]
+    fn test_evaluar_fecha_distinta_omitido() {
+        let sistema = datos_sistema_base();
+        let mut mef = datos_mef_base();
+        mef.fingreso = "02/01/2022".to_string(); // Fecha diferente
+
+        let catalogos = CatalogosValidacion::default();
+        let res = evaluar_persona_airhsp(&sistema, &mef, &catalogos);
+
+        match res {
+            ResultadoEvaluacionPersona::OmitidoFechaIngreso(omitido) => {
+                assert_eq!(omitido.dni, "12345678");
+                assert_eq!(omitido.fecha_ingreso_sistema, "01/01/2022");
+                assert_eq!(omitido.fecha_ingreso_airhsp, "02/01/2022");
+            }
+            _ => panic!("Se esperaba OmitidoFechaIngreso"),
+        }
+    }
+
+    #[test]
+    fn test_evaluar_valor_vacio_en_airhsp_no_genera_cambio() {
+        let sistema = datos_sistema_base();
+        let mut mef = datos_mef_base();
+        // Ponemos campos vacíos en AIRHSP
+        mef.apepat = "".to_string();
+        mef.apemat = "   ".to_string();
+        mef.nom = "".to_string();
+        mef.fnac = "".to_string();
+        mef.banco = "".to_string();
+        mef.tipo_cuenta = "".to_string();
+        mef.num_cuenta = "".to_string();
+        mef.cci = "".to_string();
+
+        let catalogos = CatalogosValidacion::default();
+        let res = evaluar_persona_airhsp(&sistema, &mef, &catalogos);
+
+        assert_eq!(res, ResultadoEvaluacionPersona::SinCambios);
+    }
+
+    #[test]
+    fn test_mapear_tipo_cuenta() {
+        assert_eq!(mapear_tipo_cuenta_bd("CUENTA DE AHORRO"), Some("Ahorro"));
+        assert_eq!(mapear_tipo_cuenta_bd("ahorro"), Some("Ahorro"));
+        assert_eq!(mapear_tipo_cuenta_bd("CUENTA CORRIENTE"), Some("Corriente"));
+        assert_eq!(mapear_tipo_cuenta_bd("corriente"), Some("Corriente"));
+        assert_eq!(mapear_tipo_cuenta_bd("OTRA CUENTA"), None);
+
+        // En evaluar_persona_airhsp con tipo no reconocido genera error de campo
+        let sistema = datos_sistema_base();
+        let mut mef = datos_mef_base();
+        mef.tipo_cuenta = "FONDOS MUTUOS".to_string();
+
+        let catalogos = CatalogosValidacion::default();
+        let res = evaluar_persona_airhsp(&sistema, &mef, &catalogos);
+        match res {
+            ResultadoEvaluacionPersona::Evaluado(cambio) => {
+                let campo = cambio.campos.iter().find(|c| c.campo == "TIPO_CUENTA_FINANCIERA");
+                assert!(campo.is_some());
+                assert!(campo.unwrap().error.is_some());
+            }
+            _ => panic!("Se esperaba Evaluado con error en tipo de cuenta"),
+        }
+    }
+
+    #[test]
+    fn test_evaluar_fecha_nacimiento_invalida_genera_error_de_campo() {
+        let sistema = datos_sistema_base();
+        let mut mef = datos_mef_base();
+        mef.fnac = "99/99/9999".to_string(); // Fecha inválida
+
+        let catalogos = CatalogosValidacion::default();
+        let res = evaluar_persona_airhsp(&sistema, &mef, &catalogos);
+
+        match res {
+            ResultadoEvaluacionPersona::Evaluado(cambio) => {
+                let campo_fnac = cambio.campos.iter().find(|c| c.campo == "FECHA_NACIMIENTO");
+                assert!(campo_fnac.is_some());
+                let c = campo_fnac.unwrap();
+                assert!(c.error.is_some());
+                assert_eq!(c.despues, "99/99/9999");
+            }
+            _ => panic!("Se esperaba Evaluado con error en FECHA_NACIMIENTO"),
+        }
+    }
+
+    #[test]
+    fn test_evaluar_plaza_ya_ocupada_por_otro_dni() {
+        let sistema = datos_sistema_base();
+        let mut mef = datos_mef_base();
+        mef.codigo_registro = "000200".to_string(); // Intenta asignar plaza 000200
+        mef.codigo_cargo_estructural = "C002".to_string();
+
+        let mut catalogos = CatalogosValidacion::default();
+        catalogos.cargos_estructurales.insert("C001".to_string());
+        catalogos.cargos_estructurales.insert("C002".to_string());
+        catalogos.plazas_existentes.insert("000100".to_string());
+        catalogos.plazas_existentes.insert("000200".to_string());
+        // La plaza 000200 está ocupada por el DNI 87654321
+        catalogos
+            .plazas_ocupadas
+            .insert("000200".to_string(), "87654321".to_string());
+
+        let res = evaluar_persona_airhsp(&sistema, &mef, &catalogos);
+        match res {
+            ResultadoEvaluacionPersona::Evaluado(cambio) => {
+                let campo_reg = cambio
+                    .campos
+                    .iter()
+                    .find(|c| c.campo == "CODIGO_REGISTRO")
+                    .expect("Debe existir campo CODIGO_REGISTRO");
+                assert_eq!(
+                    campo_reg.error.as_deref(),
+                    Some("La plaza 000200 ya está asignada al DNI 87654321")
+                );
+
+                // Cargo estructural debe evaluarse contra la plaza actual del sistema (C001 -> C002)
+                let campo_cargo = cambio
+                    .campos
+                    .iter()
+                    .find(|c| c.campo == "CODIGO_CARGO_ESTRUCTURAL")
+                    .expect("Debe existir campo CODIGO_CARGO_ESTRUCTURAL evaluado contra plaza actual");
+                assert_eq!(campo_cargo.antes, "C001");
+                assert_eq!(campo_cargo.despues, "C002");
+                assert!(campo_cargo.error.is_none());
+            }
+            _ => panic!("Se esperaba Evaluado con error en CODIGO_REGISTRO"),
+        }
+    }
+
+    #[test]
+    fn test_evaluar_banca_tipo_incompatible() {
+        let sistema = datos_sistema_base();
+        let mut mef = datos_mef_base();
+        mef.tipo_cuenta = "CUENTA SUELDO".to_string();
+
+        let catalogos = CatalogosValidacion::default();
+        let res = evaluar_persona_airhsp(&sistema, &mef, &catalogos);
+        match res {
+            ResultadoEvaluacionPersona::Evaluado(cambio) => {
+                let campo_tipo = cambio
+                    .campos
+                    .iter()
+                    .find(|c| c.campo == "TIPO_CUENTA_FINANCIERA")
+                    .expect("Debe existir campo TIPO_CUENTA_FINANCIERA");
+                assert!(campo_tipo.error.is_some());
+                assert!(
+                    campo_tipo
+                        .error
+                        .as_ref()
+                        .unwrap()
+                        .contains("no es compatible")
+                );
+            }
+            _ => panic!("Se esperaba Evaluado con error en tipo de cuenta incompatible"),
+        }
+    }
+
+    #[test]
+    fn test_evaluar_banca_numero_vacio_genera_error() {
+        let mut sistema = datos_sistema_base();
+        sistema.numero_cuenta = None;
+        sistema.banco = None;
+        sistema.tipo_cuenta = None;
+        sistema.cuenta_id = None;
+
+        let mut mef = datos_mef_base();
+        mef.banco = "001".to_string();
+        mef.tipo_cuenta = "CUENTA DE AHORRO".to_string();
+        mef.num_cuenta = "".to_string(); // Número vacío
+        mef.cci = "00111122223333444455".to_string();
+
+        let mut catalogos = CatalogosValidacion::default();
+        catalogos.bancos.insert("001".to_string());
+
+        let res = evaluar_persona_airhsp(&sistema, &mef, &catalogos);
+        match res {
+            ResultadoEvaluacionPersona::Evaluado(cambio) => {
+                let campo_banco = cambio
+                    .campos
+                    .iter()
+                    .find(|c| c.campo == "CODIGO_ENTIDAD_FINANCIERA");
+                assert!(campo_banco.is_some());
+                assert!(
+                    campo_banco
+                        .unwrap()
+                        .error
+                        .as_ref()
+                        .unwrap()
+                        .contains("número de cuenta")
+                );
+            }
+            _ => panic!("Se esperaba Evaluado con error de cuenta bancaria"),
+        }
+    }
+
+    #[test]
+    fn test_evaluar_plaza_inexistente_con_cargo_grupo_validos_genera_cambios() {
+        let mut sistema = datos_sistema_base();
+        sistema.plaza_id = Some("000722".to_string());
+        sistema.codigo_cargo_estructural = "".to_string();
+        sistema.codigo_grupo_ocupacional = "".to_string();
+
+        let mut mef = datos_mef_base();
+        mef.codigo_registro = "000722".to_string();
+        mef.codigo_cargo_estructural = "C001".to_string();
+        mef.codigo_grupo_ocupacional = "G1".to_string();
+
+        let mut catalogos = CatalogosValidacion::default();
+        catalogos.plazas_existentes.insert("000100".to_string()); // 000722 no existe en plaza
+        catalogos.cargos_estructurales.insert("C001".to_string());
+        catalogos.grupos_ocupacionales.insert("G1".to_string());
+
+        let res = evaluar_persona_airhsp(&sistema, &mef, &catalogos);
+        match res {
+            ResultadoEvaluacionPersona::Evaluado(cambio) => {
+                let campo_cargo = cambio
+                    .campos
+                    .iter()
+                    .find(|c| c.campo == "CODIGO_CARGO_ESTRUCTURAL")
+                    .expect("Debe existir CODIGO_CARGO_ESTRUCTURAL");
+                assert_eq!(campo_cargo.antes, "");
+                assert_eq!(campo_cargo.despues, "C001");
+                assert!(campo_cargo.error.is_none());
+
+                let campo_grupo = cambio
+                    .campos
+                    .iter()
+                    .find(|c| c.campo == "CODIGO_GRUPO_OCUPACIONAL")
+                    .expect("Debe existir CODIGO_GRUPO_OCUPACIONAL");
+                assert_eq!(campo_grupo.antes, "");
+                assert_eq!(campo_grupo.despues, "G1");
+                assert!(campo_grupo.error.is_none());
+            }
+            _ => panic!("Se esperaba Evaluado con cambios aplicables"),
+        }
+    }
+
+    #[test]
+    fn test_evaluar_plaza_inexistente_sin_cargo_genera_error() {
+        let mut sistema = datos_sistema_base();
+        sistema.plaza_id = Some("000722".to_string());
+        sistema.codigo_cargo_estructural = "".to_string();
+        sistema.codigo_grupo_ocupacional = "".to_string();
+
+        let mut mef = datos_mef_base();
+        mef.codigo_registro = "000722".to_string();
+        mef.codigo_cargo_estructural = "".to_string(); // Falta cargo
+        mef.codigo_grupo_ocupacional = "G1".to_string();
+
+        let mut catalogos = CatalogosValidacion::default();
+        catalogos.plazas_existentes.insert("000100".to_string());
+        catalogos.grupos_ocupacionales.insert("G1".to_string());
+
+        let res = evaluar_persona_airhsp(&sistema, &mef, &catalogos);
+        match res {
+            ResultadoEvaluacionPersona::Evaluado(cambio) => {
+                let campo_cargo = cambio
+                    .campos
+                    .iter()
+                    .find(|c| c.campo == "CODIGO_CARGO_ESTRUCTURAL")
+                    .expect("Debe existir CODIGO_CARGO_ESTRUCTURAL con error");
+                assert_eq!(
+                    campo_cargo.error.as_deref(),
+                    Some("La plaza 000722 no existe en el sistema y AIRHSP no trae cargo/grupo válidos para crearla")
+                );
+            }
+            _ => panic!("Se esperaba Evaluado con error en cargo"),
+        }
+    }
+
+    #[test]
+    fn test_evaluar_numero_cuenta_20_digitos_tratado_como_cci_sin_cambio_en_numero() {
+        let mut sistema = datos_sistema_base();
+        sistema.numero_cuenta = Some("12345678901234".to_string());
+        sistema.cci = Some("00219400000000000000".to_string());
+
+        let mut mef = datos_mef_base();
+        mef.num_cuenta = "00219412078940509790".to_string(); // 20 dígitos: CCI de BCP
+        mef.cci = "".to_string(); // Vacío en AIRHSP
+
+        let catalogos = CatalogosValidacion::default();
+        let res = evaluar_persona_airhsp(&sistema, &mef, &catalogos);
+        match res {
+            ResultadoEvaluacionPersona::Evaluado(cambio) => {
+                // NO se debe generar cambio en NUMERO_CUENTA_FINANCIERA
+                let tiene_cambio_num = cambio
+                    .campos
+                    .iter()
+                    .any(|c| c.campo == "NUMERO_CUENTA_FINANCIERA");
+                assert!(!tiene_cambio_num, "No debe generarse cambio en NUMERO_CUENTA_FINANCIERA");
+
+                // Se genera cambio en CODIGO_CUENTA_INTERBANCARIA usando el valor de 20 dígitos
+                let campo_cci = cambio
+                    .campos
+                    .iter()
+                    .find(|c| c.campo == "CODIGO_CUENTA_INTERBANCARIA")
+                    .expect("Debe existir cambio en CODIGO_CUENTA_INTERBANCARIA");
+                assert_eq!(campo_cci.antes, "00219400000000000000");
+                assert_eq!(campo_cci.despues, "00219412078940509790");
+                assert!(campo_cci.error.is_none());
+            }
+            _ => panic!("Se esperaba Evaluado con cambio en CCI y sin cambio en número"),
+        }
+    }
+
+    #[test]
+    fn test_evaluar_dos_cci_distintos_genera_error() {
+        let mut sistema = datos_sistema_base();
+        sistema.numero_cuenta = Some("12345678901234".to_string());
+        sistema.cci = Some("00219400000000000000".to_string());
+
+        let mut mef = datos_mef_base();
+        mef.num_cuenta = "00219412078940509790".to_string(); // 20 dígitos
+        mef.cci = "00219499999999999999".to_string(); // Otro CCI distinto
+
+        let catalogos = CatalogosValidacion::default();
+        let res = evaluar_persona_airhsp(&sistema, &mef, &catalogos);
+        match res {
+            ResultadoEvaluacionPersona::Evaluado(cambio) => {
+                let tiene_cambio_num = cambio
+                    .campos
+                    .iter()
+                    .any(|c| c.campo == "NUMERO_CUENTA_FINANCIERA");
+                assert!(!tiene_cambio_num, "No debe generarse cambio en NUMERO_CUENTA_FINANCIERA");
+
+                let campo_cci = cambio
+                    .campos
+                    .iter()
+                    .find(|c| c.campo == "CODIGO_CUENTA_INTERBANCARIA")
+                    .expect("Debe existir CODIGO_CUENTA_INTERBANCARIA con error");
+                assert_eq!(
+                    campo_cci.error.as_deref(),
+                    Some("AIRHSP trae dos CCI distintos")
+                );
+            }
+            _ => panic!("Se esperaba Evaluado con error de dos CCI distintos"),
+        }
+    }
+
+    #[test]
+    fn test_evaluar_persona_sin_cuenta_solo_cci_genera_error() {
+        let mut sistema = datos_sistema_base();
+        sistema.numero_cuenta = None;
+        sistema.banco = None;
+        sistema.tipo_cuenta = None;
+        sistema.cuenta_id = None;
+        sistema.cci = None;
+
+        let mut mef = datos_mef_base();
+        mef.banco = "001".to_string();
+        mef.tipo_cuenta = "CUENTA DE AHORRO".to_string();
+        mef.num_cuenta = "00219412078940509790".to_string(); // 20 dígitos
+        mef.cci = "".to_string();
+
+        let mut catalogos = CatalogosValidacion::default();
+        catalogos.bancos.insert("001".to_string());
+
+        let res = evaluar_persona_airhsp(&sistema, &mef, &catalogos);
+        match res {
+            ResultadoEvaluacionPersona::Evaluado(cambio) => {
+                for c in &cambio.campos {
+                    if c.campo == "CODIGO_CUENTA_INTERBANCARIA" || c.campo == "CODIGO_ENTIDAD_FINANCIERA" {
+                        assert_eq!(
+                            c.error.as_deref(),
+                            Some("AIRHSP solo trae CCI; se requiere el número de cuenta para crear la cuenta")
+                        );
+                    }
+                }
+            }
+            _ => panic!("Se esperaba Evaluado con error de falta de número de cuenta"),
+        }
+    }
+}
+
