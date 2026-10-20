@@ -218,6 +218,9 @@ pub struct EventoVinculoPayload {
     pub documento_salida: Option<Documento>,
     pub mismo_documento: Option<bool>,
     pub estado: Option<String>,
+    pub fecha_desde: Option<String>,
+    pub fecha_hasta: Option<String>,
+    pub encargado_dni: Option<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize, FromRow, Clone)]
@@ -244,4 +247,7 @@ pub struct EventoVinculoDetalle {
     #[serde(alias = "fecha_valida_salida")]
     pub fecha_documento_salida: Option<String>,
     pub descrip_salida: Option<String>,
+    pub fecha_desde: Option<NaiveDate>,
+    pub fecha_hasta: Option<NaiveDate>,
 }
+

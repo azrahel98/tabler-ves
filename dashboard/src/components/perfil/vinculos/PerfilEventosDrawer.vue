@@ -81,9 +81,48 @@ const getTipoEventoLabel = (tipo: string): string => {
     abandono: 'Abandono de Cargo',
     suspension: 'Suspensión',
     licencia: 'Licencia',
+    vacaciones: 'Vacaciones',
     otro: 'Otro Evento',
   }
   return map[tipo.toLowerCase()] || tipo
+}
+
+const esEncargo = (tipo: string | undefined): boolean => {
+  if (!tipo) return false
+  return ['encargatura', 'encargo_puesto', 'encargo_funciones'].includes(tipo.toLowerCase())
+}
+
+const getHoyDateString = (): string => {
+  const now = new Date()
+  const year = now.getFullYear()
+  const month = String(now.getMonth() + 1).padStart(2, '0')
+  const day = String(now.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
+
+const esEncargoVigenteHoy = (ev: EventoVinculoDetalle): boolean => {
+  if (!ev.fecha_desde) return false
+  const hoy = getHoyDateString()
+  const desde = ev.fecha_desde.substring(0, 10)
+  if (hoy < desde) return false
+  if (ev.fecha_hasta) {
+    const hasta = ev.fecha_hasta.substring(0, 10)
+    if (hoy > hasta) return false
+  }
+  return true
+}
+
+const esEncargoVencido = (ev: EventoVinculoDetalle): boolean => {
+  if (!ev.fecha_hasta) return false
+  const hoy = getHoyDateString()
+  const hasta = ev.fecha_hasta.substring(0, 10)
+  return hoy > hasta
+}
+
+const esEstadoActivo = (estado?: string | null): boolean => {
+  const est = estado?.toLowerCase()
+  if (est === 'desactivado' || est === 'finalizado') return false
+  return est === 'activo'
 }
 
 const handleConfirmarEliminar = (eventoId: number) => {
@@ -177,7 +216,14 @@ const handleConfirmarEliminar = (eventoId: number) => {
                       {{ getTipoEventoLabel(ev.tipo_evento) }}
                     </Badge>
 
-                    <span v-if="ev.estado?.toLowerCase() === 'activo'"
+                    <Badge v-if="esEncargo(ev.tipo_evento) && esEncargoVigenteHoy(ev)" size="xs" variant="warning">
+                      Vigente
+                    </Badge>
+                    <span v-else-if="esEncargo(ev.tipo_evento) && esEncargoVencido(ev)" class="text-[10px] text-muted-foreground font-medium">
+                      Vencido
+                    </span>
+
+                    <span v-if="esEstadoActivo(ev.estado)"
                       class="inline-flex items-center gap-1.5 text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-md">
                       <span class="size-1.5 rounded-full bg-emerald-500"></span>
                       Activo
@@ -191,6 +237,17 @@ const handleConfirmarEliminar = (eventoId: number) => {
                   <span class="font-mono text-[10px] text-muted-foreground">
                     #{{ ev.id }}
                   </span>
+                </div>
+
+                <!-- Detalle de encargo (periodo) -->
+                <div v-if="esEncargo(ev.tipo_evento) && ev.fecha_desde"
+                  class="p-2.5 rounded-lg border border-amber-500/30 bg-amber-500/5 space-y-1">
+                  <div class="text-xs text-foreground font-medium">
+                    <span class="text-muted-foreground text-[11px] font-normal">Periodo: </span>
+                    <span>del {{ formatDate(ev.fecha_desde) }}</span>
+                    <span v-if="ev.fecha_hasta"> al {{ formatDate(ev.fecha_hasta) }}</span>
+                    <span v-else> en adelante</span>
+                  </div>
                 </div>
 
                 <div v-if="ev.nueva_area || ev.nuevo_cargo"
@@ -251,7 +308,7 @@ const handleConfirmarEliminar = (eventoId: number) => {
                   <Button size="xs" variant="outline" class="gap-1.5 cursor-pointer text-[11px]" :disabled="isDeleting"
                     @click="emit('editarEvento', ev)">
                     <IconEdit class="size-3" />
-                    <span>{{ ev.estado?.toLowerCase() === 'activo' ? 'Cerrar / Editar' : 'Detalles' }}</span>
+                    <span>{{ esEstadoActivo(ev.estado) ? 'Cerrar / Editar' : 'Detalles' }}</span>
                   </Button>
 
                   <Button size="xs" variant="outline"

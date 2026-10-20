@@ -230,7 +230,9 @@ pub async fn get_eventos_by_vinculo_id(
             ) AS numero_doc_salida,
             ds.fecha AS fecha_salida,
             cast(ds.fecha_documento as char) AS fecha_documento_salida,
-            ds.descripcion AS descrip_salida
+            ds.descripcion AS descrip_salida,
+            ev.fecha_desde,
+            ev.fecha_hasta
         FROM eventovinculo ev
         LEFT JOIN area ar_nueva ON ev.nueva_area_id = ar_nueva.id
         LEFT JOIN cargo cr_nuevo ON ev.nuevo_cargo_id = cr_nuevo.id

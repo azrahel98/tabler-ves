@@ -61,6 +61,8 @@ export interface EventoVinculoDetalle {
   fecha_salida?: string | null
   fecha_valida_salida?: string | null
   descrip_salida?: string | null
+  fecha_desde?: string | null
+  fecha_hasta?: string | null
 }
 
 export function getTipoEventoLabel(tipo: string | null | undefined): string {
@@ -73,6 +75,8 @@ export function getTipoEventoLabel(tipo: string | null | undefined): string {
     abandono: 'Abandono de Cargo',
     suspension: 'Suspensión',
     licencia: 'Licencia',
+    vacaciones: 'Vacaciones',
+    encargatura: 'Encargatura',
     otro: 'Otro Evento',
   }
   return map[tipo.toLowerCase()] || tipo
@@ -404,6 +408,35 @@ export interface EventoVinculoPayload {
   documento_salida?: DocumentoData | null
   mismo_documento?: boolean | null
   estado?: string | null
+  fecha_desde?: string | null
+  fecha_hasta?: string | null
+  encargado_dni?: string | null
+}
+
+export interface EncargoVigente {
+  id: number
+  tipo_evento: string
+  fecha_desde: string | null
+  fecha_hasta: string | null
+  vinculo_id: number
+  titular_dni: string | null
+  titular_nombre: string | null
+  encargado_dni: string | null
+  encargado_nombre: string | null
+  area_encargada: string | null
+  cargo_encargado: string | null
+  documento_numero: number | null
+  documento_year: number | null
+  documento_tipo: string | null
+}
+
+export async function fetchEncargosVigentes(): Promise<EncargoVigente[]> {
+  try {
+    const data = await api<EncargoVigente[]>('/personal/encargos_vigentes')
+    return Array.isArray(data) ? data : []
+  } catch {
+    return []
+  }
 }
 
 export async function fetchEventosVinculo(vinculoId: number): Promise<EventoVinculoDetalle[]> {

@@ -90,6 +90,10 @@ pub fn configure(cfg: &mut web::ServiceConfig) {
                     web::get().to(handlers::buscar_regimenes),
                 )
                 .route(
+                    "/encargos_vigentes",
+                    web::get().to(handlers::listar_encargos_vigentes),
+                )
+                .route(
                     "/upsert_evento_vinculo",
                     web::put().to(handlers::upsert_evento_vinculo),
                 )

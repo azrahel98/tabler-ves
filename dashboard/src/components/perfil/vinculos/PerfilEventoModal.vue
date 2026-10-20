@@ -3,7 +3,9 @@ import { ref, watch, computed } from 'vue'
 import Button from '@/components/ui/button/Button.vue'
 import Badge from '@/components/ui/badge/Badge.vue'
 import SearchSelect, { type SelectOption } from '@/components/ui/form/SearchSelect.vue'
+import { useToastStore } from '@/stores/toast'
 import {
+  buscarTrabajadores,
   fetchTiposDocumentos,
   fetchAreas,
   fetchCargos,
@@ -16,6 +18,7 @@ import {
   type AreaOption,
   type CargoOption,
   type DocumentoData,
+  type PersonalSearchResult,
 } from '@/services/personal'
 import { formatDate } from '@/utils/date'
 import {
@@ -25,6 +28,8 @@ import {
   IconFileCode,
   IconFileCheck,
   IconEdit,
+  IconUser,
+  IconSearch,
 } from '@tabler/icons-vue'
 
 interface Props {
@@ -49,6 +54,7 @@ const tiposEvento = [
   { value: 'destaque', label: 'Destaque' },
   { value: 'encargo_puesto', label: 'Encargo de Puesto' },
   { value: 'encargo_funciones', label: 'Encargo de Funciones' },
+  { value: 'vacaciones', label: 'Vacaciones' },
   { value: 'abandono', label: 'Abandono de Cargo' },
   { value: 'suspension', label: 'Suspensión' },
   { value: 'licencia', label: 'Licencia' },
@@ -69,12 +75,18 @@ const getTodayDateString = (): string => {
   return `${year}-${month}-${day}`
 }
 
+const toast = useToastStore()
+
 const tabModoEvento = ref<'cierre' | 'editar'>('cierre')
 const tipoEvento = ref<string>('rotacion')
 const nuevaAreaId = ref<number | ''>('')
 const nuevoCargoId = ref<number | ''>('')
 const mismoDocumento = ref<boolean>(false)
 const accionCierre = ref<'salida' | 'mismo'>('salida')
+
+// Encargaturas / vigencia
+const fechaDesde = ref<string>('')
+const fechaHasta = ref<string>('')
 
 const docInicio = ref<{
   tipoDocumento: number | string
@@ -112,10 +124,91 @@ const docSalida = ref<{
   descripcion: '',
 })
 
+const esEncargo = computed(() => {
+  return ['encargatura', 'encargo_puesto', 'encargo_funciones'].includes(tipoEvento.value)
+})
+
+const esVacaciones = computed(() => tipoEvento.value === 'vacaciones')
+const requiereVigencia = computed(() => esEncargo.value || esVacaciones.value)
+
+// Buscador de encargado temporal para vacaciones
+const encargadoSearchQuery = ref<string>('')
+const encargadoSearchResults = ref<PersonalSearchResult[]>([])
+const isSearchingEncargado = ref<boolean>(false)
+const encargadoSeleccionado = ref<{ dni: string; nombre: string } | null>(null)
+const encargadoError = ref<string>('')
+
+let currentEncargadoAbortController: AbortController | null = null
+let debounceEncargadoTimer: ReturnType<typeof setTimeout> | null = null
+
+const handleSearchEncargado = async () => {
+  const query = encargadoSearchQuery.value.trim()
+  if (query.length < 3) {
+    if (currentEncargadoAbortController) {
+      currentEncargadoAbortController.abort()
+      currentEncargadoAbortController = null
+    }
+    encargadoSearchResults.value = []
+    isSearchingEncargado.value = false
+    return
+  }
+
+  if (currentEncargadoAbortController) {
+    currentEncargadoAbortController.abort()
+  }
+  const controller = new AbortController()
+  currentEncargadoAbortController = controller
+
+  isSearchingEncargado.value = true
+  try {
+    const data = await buscarTrabajadores(query, controller.signal)
+    if (controller.signal.aborted) return
+    encargadoSearchResults.value = data
+  } catch {
+    if (controller.signal.aborted) return
+    encargadoSearchResults.value = []
+  } finally {
+    if (currentEncargadoAbortController === controller) {
+      isSearchingEncargado.value = false
+      currentEncargadoAbortController = null
+    }
+  }
+}
+
+const onSearchEncargadoInput = () => {
+  encargadoError.value = ''
+  if (debounceEncargadoTimer) {
+    clearTimeout(debounceEncargadoTimer)
+  }
+  debounceEncargadoTimer = setTimeout(() => {
+    handleSearchEncargado()
+  }, 350)
+}
+
+const seleccionarEncargado = (trabajador: PersonalSearchResult) => {
+  if (props.vinculo && trabajador.dni === props.vinculo.dni) {
+    encargadoError.value = 'El encargado no puede ser el propio titular'
+    return
+  }
+  encargadoError.value = ''
+  encargadoSeleccionado.value = {
+    dni: trabajador.dni,
+    nombre: trabajador.nombre,
+  }
+  encargadoSearchQuery.value = ''
+  encargadoSearchResults.value = []
+}
+
+const limpiarEncargado = () => {
+  encargadoSeleccionado.value = null
+  encargadoError.value = ''
+}
+
 const esModoExistente = computed(() => Boolean(props.evento && props.evento.id > 0))
 const esEventoFinalizado = computed(() => {
   if (!props.evento) return false
-  return props.evento.estado?.toLowerCase() === 'finalizado' || Boolean(props.evento.doc_salida_id || props.evento.fecha_salida)
+  const est = props.evento.estado?.toLowerCase()
+  return est === 'desactivado' || est === 'finalizado' || Boolean(props.evento.doc_salida_id || props.evento.fecha_salida)
 })
 
 const requiereMovimiento = computed(() => {
@@ -207,13 +300,38 @@ const resetForm = () => {
   formErrors.value = {}
   mismoDocumento.value = false
   accionCierre.value = 'salida'
+  fechaDesde.value = ''
+  fechaHasta.value = ''
+
+  if (debounceEncargadoTimer) {
+    clearTimeout(debounceEncargadoTimer)
+    debounceEncargadoTimer = null
+  }
+  if (currentEncargadoAbortController) {
+    currentEncargadoAbortController.abort()
+    currentEncargadoAbortController = null
+  }
+  encargadoSearchQuery.value = ''
+  encargadoSearchResults.value = []
+  isSearchingEncargado.value = false
+  encargadoSeleccionado.value = null
+  encargadoError.value = ''
 
   if (props.evento) {
     tipoEvento.value = props.evento.tipo_evento || 'rotacion'
     nuevaAreaId.value = props.evento.nueva_area_id || ''
     nuevoCargoId.value = props.evento.nuevo_cargo_id || ''
 
-    if (props.evento.estado?.toLowerCase() === 'activo' && !props.evento.fecha_salida) {
+    if (props.evento.fecha_desde) {
+      fechaDesde.value = props.evento.fecha_desde.substring(0, 10)
+    }
+    if (props.evento.fecha_hasta) {
+      fechaHasta.value = props.evento.fecha_hasta.substring(0, 10)
+    }
+
+    const estado = props.evento.estado?.toLowerCase()
+    const estaFinalizado = estado === 'desactivado' || estado === 'finalizado' || Boolean(props.evento.fecha_salida)
+    if (!estaFinalizado && estado === 'activo') {
       tabModoEvento.value = 'cierre'
     } else {
       tabModoEvento.value = 'editar'
@@ -260,6 +378,15 @@ watch(
     if (val) {
       resetForm()
       await cargarCatalogos()
+    } else {
+      if (debounceEncargadoTimer) {
+        clearTimeout(debounceEncargadoTimer)
+        debounceEncargadoTimer = null
+      }
+      if (currentEncargadoAbortController) {
+        currentEncargadoAbortController.abort()
+        currentEncargadoAbortController = null
+      }
     }
   },
   { immediate: true }
@@ -276,6 +403,23 @@ watch(
 
 const validarFormulario = (): boolean => {
   const errors: Record<string, string> = {}
+
+  if (requiereVigencia.value) {
+    if (!fechaDesde.value) {
+      errors.fechaDesde = esVacaciones.value
+        ? 'La fecha de inicio de vacaciones es obligatoria.'
+        : 'La fecha de vigencia desde es obligatoria.'
+    }
+    if (esVacaciones.value && !fechaHasta.value) {
+      errors.fechaHasta = 'La fecha de fin de vacaciones es obligatoria.'
+    }
+    if (fechaDesde.value && fechaHasta.value) {
+      if (fechaHasta.value < fechaDesde.value) {
+        toast.error('La fecha de vigencia hasta no puede ser anterior a la fecha desde.')
+        errors.fechaHasta = 'La fecha hasta no puede ser anterior a la fecha desde.'
+      }
+    }
+  }
 
   if (!esModoExistente.value) {
     if (!tipoEvento.value) {
@@ -357,7 +501,9 @@ const handleSubmit = () => {
               descripcion: docSalida.value.descripcion.trim(),
             }
             : null,
-        estado: 'finalizado',
+        estado: 'desactivado',
+        fecha_desde: requiereVigencia.value && fechaDesde.value ? fechaDesde.value : null,
+        fecha_hasta: requiereVigencia.value && fechaHasta.value ? fechaHasta.value : null,
       }
       emit('save', payload)
     } else {
@@ -368,6 +514,8 @@ const handleSubmit = () => {
         nueva_area_id: nuevaAreaId.value ? Number(nuevaAreaId.value) : null,
         nuevo_cargo_id: nuevoCargoId.value ? Number(nuevoCargoId.value) : null,
         estado: props.evento.estado || 'activo',
+        fecha_desde: requiereVigencia.value && fechaDesde.value ? fechaDesde.value : null,
+        fecha_hasta: requiereVigencia.value && fechaHasta.value ? fechaHasta.value : null,
       }
       emit('save', payload)
     }
@@ -389,7 +537,10 @@ const handleSubmit = () => {
       nuevo_cargo_id: nuevoCargoId.value ? Number(nuevoCargoId.value) : null,
       documento_inicio: payloadDocumentoInicio,
       mismo_documento: mismoDocumento.value,
-      estado: mismoDocumento.value ? 'finalizado' : 'activo',
+      estado: mismoDocumento.value ? 'desactivado' : 'activo',
+      fecha_desde: requiereVigencia.value && fechaDesde.value ? fechaDesde.value : null,
+      fecha_hasta: requiereVigencia.value && fechaHasta.value ? fechaHasta.value : null,
+      encargado_dni: esVacaciones.value && encargadoSeleccionado.value ? encargadoSeleccionado.value.dni : null,
     }
     emit('save', payload)
   }
@@ -480,6 +631,12 @@ const handleSubmit = () => {
                   <div v-if="evento.nuevo_cargo" class="col-span-2">
                     <span class="text-muted-foreground block text-[11px]">Cargo Asignado:</span>
                     <span class="font-medium text-foreground block">{{ evento.nuevo_cargo }}</span>
+                  </div>
+                  <div v-if="evento.fecha_desde" class="col-span-2">
+                    <span class="text-muted-foreground block text-[11px]">Vigencia de Encargo:</span>
+                    <span class="font-mono text-foreground font-medium block">
+                      Del {{ formatDate(evento.fecha_desde) }}{{ evento.fecha_hasta ? ` al ${formatDate(evento.fecha_hasta)}` : ' en adelante' }}
+                    </span>
                   </div>
                 </div>
 
@@ -710,6 +867,111 @@ const handleSubmit = () => {
                     search-placeholder="Buscar cargo por nombre..." :options="cargoOptions"
                     :disabled="isLoadingCatalogos || isSaving" />
                 </div>
+              </div>
+
+              <!-- Campos específicos para vigencia (encargaturas y vacaciones) -->
+              <div v-if="requiereVigencia" class="p-3.5 rounded-xl border border-amber-500/30 bg-amber-500/5 space-y-3">
+                <div class="flex items-center gap-2 text-amber-600 dark:text-amber-400 font-semibold text-xs">
+                  <IconUser class="size-4" />
+                  <span>{{ esVacaciones ? 'Periodo de Vacaciones' : 'Datos de la Encargatura' }}</span>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label class="block font-medium text-foreground mb-1 text-xs">
+                      {{ esVacaciones ? 'Fecha de inicio' : 'Vigencia desde' }} <span class="text-rose-500">*</span>
+                    </label>
+                    <input v-model="fechaDesde" type="date"
+                      class="w-full rounded-lg border bg-background px-3 py-2 text-xs focus:ring-2 focus:ring-primary focus:outline-hidden font-mono"
+                      :class="formErrors.fechaDesde ? 'border-rose-500 ring-rose-500' : 'border-border'" />
+                    <p v-if="formErrors.fechaDesde" class="text-rose-500 text-[11px] mt-1">
+                      {{ formErrors.fechaDesde }}
+                    </p>
+                  </div>
+
+                  <div>
+                    <label class="block font-medium text-foreground mb-1 text-xs">
+                      {{ esVacaciones ? 'Fecha de fin' : 'Vigencia hasta' }} <span v-if="esVacaciones" class="text-rose-500">*</span>
+                    </label>
+                    <input v-model="fechaHasta" type="date"
+                      class="w-full rounded-lg border bg-background px-3 py-2 text-xs focus:ring-2 focus:ring-primary focus:outline-hidden font-mono"
+                      :class="formErrors.fechaHasta ? 'border-rose-500 ring-rose-500' : 'border-border'" />
+                    <p v-if="formErrors.fechaHasta" class="text-rose-500 text-[11px] mt-1">
+                      {{ formErrors.fechaHasta }}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Encargo temporal del puesto (opcional) -->
+              <div v-if="esVacaciones && !esModoExistente"
+                class="p-3.5 rounded-xl border border-sky-500/30 bg-sky-500/5 space-y-3">
+                <div class="flex items-center gap-2 text-sky-600 dark:text-sky-400 font-semibold text-xs">
+                  <IconUser class="size-4" />
+                  <span>Encargo temporal del puesto (opcional)</span>
+                </div>
+
+                <!-- Si ya hay encargado seleccionado: mostrar como chip -->
+                <div v-if="encargadoSeleccionado"
+                  class="flex items-center justify-between p-2.5 rounded-lg bg-card border border-border">
+                  <div class="flex items-center gap-2">
+                    <div class="size-7 rounded-md bg-primary/10 text-primary flex items-center justify-center font-bold text-xs">
+                      <IconUser class="size-4" />
+                    </div>
+                    <div>
+                      <p class="font-semibold text-foreground text-xs">{{ encargadoSeleccionado.nombre }}</p>
+                      <p class="text-[11px] font-mono text-muted-foreground">DNI: {{ encargadoSeleccionado.dni }}</p>
+                    </div>
+                  </div>
+                  <button type="button"
+                    class="p-1 text-muted-foreground hover:text-rose-500 rounded-md transition-colors cursor-pointer"
+                    title="Quitar encargado" @click="limpiarEncargado">
+                    <IconX class="size-4" />
+                  </button>
+                </div>
+
+                <!-- Si no hay encargado seleccionado: buscador -->
+                <div v-else class="space-y-2">
+                  <div class="relative">
+                    <input v-model="encargadoSearchQuery" type="text"
+                      placeholder="Buscar trabajador por nombres o apellidos..."
+                      class="w-full rounded-lg border border-border bg-background px-3 py-2 pl-8 text-xs focus:ring-2 focus:ring-primary focus:outline-hidden"
+                      @input="onSearchEncargadoInput" />
+                    <IconSearch class="size-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                    <span v-if="isSearchingEncargado" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] text-muted-foreground">
+                      Buscando...
+                    </span>
+                  </div>
+
+                  <!-- Error inline si intenta elegir al propio titular u otro error -->
+                  <p v-if="encargadoError" class="text-rose-500 text-[11px]">
+                    {{ encargadoError }}
+                  </p>
+
+                  <!-- Lista de resultados -->
+                  <div v-if="encargadoSearchResults.length > 0"
+                    class="max-h-40 overflow-y-auto divide-y divide-border border border-border rounded-lg bg-card shadow-xs">
+                    <button v-for="res in encargadoSearchResults" :key="res.dni" type="button"
+                      class="w-full p-2 text-left hover:bg-muted/50 flex items-center justify-between cursor-pointer transition text-xs"
+                      @click="seleccionarEncargado(res)">
+                      <div>
+                        <p class="font-medium text-foreground">{{ res.nombre }}</p>
+                        <p class="text-[11px] font-mono text-muted-foreground">DNI: {{ res.dni }}</p>
+                      </div>
+                      <Badge :variant="res.estado === 'activo' ? 'success' : 'secondary'" size="xs">
+                        {{ res.estado }}
+                      </Badge>
+                    </button>
+                  </div>
+                  <div v-else-if="encargadoSearchQuery.trim().length >= 3 && !isSearchingEncargado"
+                    class="py-2 text-center text-[11px] text-muted-foreground">
+                    No se encontraron trabajadores.
+                  </div>
+                </div>
+
+                <p class="text-[11px] text-muted-foreground">
+                  Se registrará un encargo de puesto con el mismo documento y el mismo periodo, heredando el área y el cargo del titular.
+                </p>
               </div>
 
               <div class="space-y-3 pt-2 border-t border-border/70">

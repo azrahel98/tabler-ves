@@ -1,6 +1,6 @@
 use crate::AppState;
 use crate::common::audit::registrar_historial;
-use crate::common::errors::{ApiError, validar};
+use crate::common::errors::{ApiError, db_error, validar};
 use crate::common::jwt::Claims;
 use crate::personal::models::{
     ContactoEmergencia, DatosBancarios, DatosBancariosResponse, Documento, DocumentoSindicato,
@@ -346,7 +346,7 @@ pub async fn registrar_trabajador(
     .bind(&body.documento.descripcion)
     .execute(&mut *tx)
     .await
-    .map_err(|e| ApiError::InternalError(format!("Insert Documento error: {}", e)))?;
+    .map_err(|e| db_error("el documento de inicio", e))?;
     let doc_id = doc_result.last_insert_id();
     sqlx::query(
         r#"
@@ -362,7 +362,7 @@ pub async fn registrar_trabajador(
     .bind(body.regimen)
     .execute(&mut *tx)
     .await
-    .map_err(|e| ApiError::InternalError(format!("Insert Vinculo error: {}", e)))?;
+    .map_err(|e| db_error("el vínculo del trabajador", e))?;
 
     tx.commit().await?;
     let _ = registrar_historial(
@@ -459,9 +459,7 @@ pub async fn eliminar_vinculo(
     let vinculo_full = sqlx::query!("SELECT * FROM vinculo WHERE id = ?", id)
         .fetch_one(&mut *tx)
         .await
-        .map_err(|e| {
-            ApiError::InternalError(format!("Error al capturar foto del vínculo: {}", e))
-        })?;
+        .map_err(|e| db_error("el vínculo del trabajador", e))?;
     let dni: String = vinculo_full.dni.clone();
     let _doc_ingreso_id: Option<i64> = vinculo_full.doc_ingreso_id.map(|id| id as i64);
     let _doc_salida_id: Option<i64> = vinculo_full.doc_salida_id.map(|id| id as i64);
@@ -470,12 +468,12 @@ pub async fn eliminar_vinculo(
         .bind(id)
         .execute(&mut *tx)
         .await
-        .map_err(|e| ApiError::InternalError(format!("Error al eliminar sindicato: {}", e)))?;
+        .map_err(|e| db_error("la afiliación sindical", e))?;
     sqlx::query("DELETE FROM vinculo WHERE id = ?")
         .bind(id)
         .execute(&mut *tx)
         .await
-        .map_err(|e| ApiError::InternalError(format!("Error al eliminar vínculo: {}", e)))?;
+        .map_err(|e| db_error("el vínculo del trabajador", e))?;
     tx.commit().await?;
     let _ = registrar_historial(
         &req,
@@ -523,7 +521,7 @@ pub async fn renuncia_por_vinculo(
     .bind(&doc.descripcion)
     .execute(&mut *tx)
     .await
-    .map_err(|e| ApiError::InternalError(format!("Insert Documento error: {}", e)))?;
+    .map_err(|e| db_error("el documento de término", e))?;
     let new_doc_id = insert_result.last_insert_id();
     sqlx::query(
         r#"
@@ -536,12 +534,12 @@ pub async fn renuncia_por_vinculo(
     .bind(doc.id)
     .execute(&mut *tx)
     .await
-    .map_err(|e| ApiError::InternalError(format!("Update Vinculo error: {}", e)))?;
+    .map_err(|e| db_error("el vínculo del trabajador", e))?;
     sqlx::query("DELETE FROM vinculo_sindicato WHERE vinculo_id = ?")
         .bind(doc.id)
         .execute(&mut *tx)
         .await
-        .map_err(|e| ApiError::InternalError(format!("Error al limpiar sindicato: {}", e)))?;
+        .map_err(|e| db_error("la afiliación sindical", e))?;
     sqlx::query(
         r#"
         UPDATE plaza p
@@ -572,7 +570,7 @@ pub async fn renuncia_por_vinculo(
     .bind(doc.id)
     .fetch_one(&mut *tx)
     .await
-    .map_err(|e| ApiError::InternalError(format!("Select after update error: {}", e)))?;
+    .map_err(|e| db_error("el vínculo del trabajador", e))?;
     tx.commit()
         .await
         .map_err(|e| ApiError::InternalError(format!("Commit error: {}", e)))?;
@@ -664,12 +662,75 @@ pub async fn renuncia_por_vinculo(
     }
     Ok(HttpResponse::Ok().json(json_value))
 }
+fn parse_fecha_opcional(valor: &Option<String>, campo: &str) -> Result<Option<NaiveDate>, ApiError> {
+    match valor.as_deref().map(str::trim).filter(|s| !s.is_empty()) {
+        None => Ok(None),
+        Some(s) => NaiveDate::parse_from_str(s, "%Y-%m-%d")
+            .map(Some)
+            .map_err(|_| ApiError::BadRequest(format!("{} inválida (formato AAAA-MM-DD)", campo))),
+    }
+}
+fn normalizar_estado_evento(estado: Option<&str>, default: &'static str) -> Result<&'static str, ApiError> {
+    match estado.map(str::trim).filter(|s| !s.is_empty()) {
+        None => Ok(default),
+        Some(s) if s.eq_ignore_ascii_case("activo") => Ok("activo"),
+        Some(s) if s.eq_ignore_ascii_case("desactivado") || s.eq_ignore_ascii_case("finalizado") => {
+            Ok("desactivado")
+        }
+        Some(s) => Err(ApiError::BadRequest(format!(
+            "Estado '{}' inválido para el evento. Debe ser 'activo', 'desactivado' o 'finalizado'.",
+            s
+        ))),
+    }
+}
 pub async fn upsert_evento_vinculo(
     data: web::Data<AppState>,
     payload: web::Json<EventoVinculoPayload>,
     req: HttpRequest,
 ) -> Result<impl Responder, ApiError> {
     validar(&payload.0)?;
+    if let Some(ref st) = payload.estado {
+        normalizar_estado_evento(Some(st), "activo")?;
+    }
+    let es_encargo = matches!(
+        payload.tipo_evento.as_str(),
+        "encargatura" | "encargo_puesto" | "encargo_funciones"
+    );
+    let fecha_desde = parse_fecha_opcional(&payload.fecha_desde, "Fecha de vigencia desde")?;
+    let fecha_hasta = parse_fecha_opcional(&payload.fecha_hasta, "Fecha de vigencia hasta")?;
+
+    if es_encargo && payload.documento_inicio.is_some() && fecha_desde.is_none() {
+        return Err(ApiError::BadRequest(
+            "Un encargo requiere la fecha de vigencia desde".into(),
+        ));
+    }
+    if let (Some(desde), Some(hasta)) = (fecha_desde, fecha_hasta) {
+        if hasta < desde {
+            return Err(ApiError::BadRequest(
+                "La fecha de vigencia hasta no puede ser anterior a la fecha desde".into(),
+            ));
+        }
+    }
+    let es_vacaciones = payload.tipo_evento.as_str() == "vacaciones";
+    if es_vacaciones
+        && payload.documento_inicio.is_some()
+        && (fecha_desde.is_none() || fecha_hasta.is_none())
+    {
+        return Err(ApiError::BadRequest(
+            "Las vacaciones requieren fecha de inicio y fecha de fin".into(),
+        ));
+    }
+    let encargado_dni_clean = payload
+        .encargado_dni
+        .as_deref()
+        .map(str::trim)
+        .filter(|s| !s.is_empty());
+    if encargado_dni_clean.is_some() && !es_vacaciones {
+        return Err(ApiError::BadRequest(
+            "El encargado temporal solo aplica a eventos de vacaciones".into(),
+        ));
+    }
+    let mut encargo_creado_info: Option<(String, i32)> = None;
     let mut tx = data
         .db
         .begin()
@@ -691,7 +752,7 @@ pub async fn upsert_evento_vinculo(
         .bind(&doc_inicio.descripcion)
         .execute(&mut *tx)
         .await
-        .map_err(|e| ApiError::InternalError(format!("Error al insertar documento de inicio: {}", e)))?
+        .map_err(|e| db_error("el documento de inicio", e))?
         .last_insert_id() as i32;
 
         let doc_salida_final = if payload.mismo_documento.unwrap_or(false) {
@@ -700,34 +761,110 @@ pub async fn upsert_evento_vinculo(
             None
         };
 
+        let estado_insert = normalizar_estado_evento(payload.estado.as_deref(), "activo")?;
+
         sqlx::query(
             r#"
-            INSERT INTO eventovinculo (vinculo_id, tipo_evento, nueva_area_id, nuevo_cargo_id, documento_inicio, documento_salida, estado)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO eventovinculo (vinculo_id, tipo_evento, fecha_desde, fecha_hasta, nueva_area_id, nuevo_cargo_id, documento_inicio, documento_salida, estado)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
             "#,
         )
         .bind(payload.vinculo_id)
         .bind(&payload.tipo_evento)
+        .bind(fecha_desde)
+        .bind(fecha_hasta)
         .bind(payload.nueva_area_id)
         .bind(payload.nuevo_cargo_id)
         .bind(doc_id)
         .bind(doc_salida_final)
-        .bind(payload.estado.as_deref().unwrap_or("activo"))
+        .bind(estado_insert)
         .execute(&mut *tx)
         .await
-        .map_err(|e| ApiError::InternalError(format!("Error al insertar evento: {}", e)))?;
+        .map_err(|e| db_error("el evento de vínculo", e))?;
+
+        if let Some(encargado_dni) = encargado_dni_clean {
+            let titular_row = sqlx::query(
+                "SELECT dni, area_id, cargo_id FROM vinculo WHERE id = ?",
+            )
+            .bind(payload.vinculo_id)
+            .fetch_optional(&mut *tx)
+            .await
+            .map_err(|e| db_error("el vínculo del titular", e))?
+            .ok_or_else(|| ApiError::BadRequest("El vinculo del titular no existe".into()))?;
+
+            let titular_dni: String = titular_row
+                .try_get("dni")
+                .map_err(|e| ApiError::InternalError(e.to_string()))?;
+            let titular_area_id: Option<i32> = titular_row.try_get("area_id").ok();
+            let titular_cargo_id: Option<i32> = titular_row.try_get("cargo_id").ok();
+
+            if encargado_dni == titular_dni {
+                return Err(ApiError::BadRequest(
+                    "El encargado temporal no puede ser el propio titular".into(),
+                ));
+            }
+
+            let vinculo_encargado_row = sqlx::query(
+                "SELECT id FROM vinculo WHERE dni = ? AND estado = 'activo' ORDER BY id DESC LIMIT 1",
+            )
+            .bind(encargado_dni)
+            .fetch_optional(&mut *tx)
+            .await
+            .map_err(|e| db_error("el vínculo del encargado", e))?
+            .ok_or_else(|| ApiError::BadRequest("El trabajador designado no tiene un vinculo activo".into()))?;
+
+            let vinculo_encargado_id: i32 = vinculo_encargado_row
+                .try_get("id")
+                .map_err(|e| ApiError::InternalError(e.to_string()))?;
+
+            let encargo_cruce = sqlx::query(
+                r#"
+                SELECT id FROM eventovinculo
+                WHERE vinculo_id = ? AND estado = 'activo'
+                  AND tipo_evento IN ('encargatura','encargo_puesto','encargo_funciones')
+                  AND fecha_desde IS NOT NULL
+                  AND fecha_desde <= ? AND IFNULL(fecha_hasta, '9999-12-31') >= ?
+                "#,
+            )
+            .bind(vinculo_encargado_id)
+            .bind(fecha_hasta)
+            .bind(fecha_desde)
+            .fetch_optional(&mut *tx)
+            .await
+            .map_err(|e| db_error("el evento de encargo", e))?;
+
+            if encargo_cruce.is_some() {
+                return Err(ApiError::BadRequest(
+                    "El trabajador designado ya tiene un encargo vigente que se cruza con ese periodo".into(),
+                ));
+            }
+
+            let insert_encargo_res = sqlx::query(
+                r#"
+                INSERT INTO eventovinculo (vinculo_id, tipo_evento, fecha_desde, fecha_hasta, nueva_area_id, nuevo_cargo_id, documento_inicio, documento_salida, estado)
+                VALUES (?, 'encargo_puesto', ?, ?, ?, ?, ?, NULL, 'activo')
+                "#,
+            )
+            .bind(vinculo_encargado_id)
+            .bind(fecha_desde)
+            .bind(fecha_hasta)
+            .bind(titular_area_id)
+            .bind(titular_cargo_id)
+            .bind(doc_id)
+            .execute(&mut *tx)
+            .await
+            .map_err(|e| db_error("el evento de encargo", e))?;
+
+            let id_evento_encargo = insert_encargo_res.last_insert_id() as i32;
+            encargo_creado_info = Some((encargado_dni.to_string(), id_evento_encargo));
+        }
 
         if payload.tipo_evento == "abandono" || payload.tipo_evento == "destaque" {
             sqlx::query("UPDATE vinculo SET estado = 'pendiente' WHERE id = ?")
                 .bind(payload.vinculo_id)
                 .execute(&mut *tx)
                 .await
-                .map_err(|e| {
-                    ApiError::InternalError(format!(
-                        "Error al actualizar estado del vínculo a pendiente: {}",
-                        e
-                    ))
-                })?;
+                .map_err(|e| db_error("el vínculo del trabajador", e))?;
         }
     } else {
         let evento_id = payload.id.filter(|&id| id > 0).ok_or_else(|| {
@@ -740,7 +877,7 @@ pub async fn upsert_evento_vinculo(
         )
         .fetch_optional(&mut *tx)
         .await
-        .map_err(|e| ApiError::InternalError(format!("Error buscando evento: {}", e)))?
+        .map_err(|e| db_error("el evento de vínculo", e))?
         .ok_or_else(|| ApiError::NotFound("Evento de vínculo no encontrado".into()))?;
 
         let doc_salida_id = if let Some(ref doc_salida) = payload.documento_salida {
@@ -759,7 +896,7 @@ pub async fn upsert_evento_vinculo(
             .bind(&doc_salida.descripcion)
             .execute(&mut *tx)
             .await
-            .map_err(|e| ApiError::InternalError(format!("Error al insertar documento de salida: {}", e)))?
+            .map_err(|e| db_error("el documento de término", e))?
             .last_insert_id() as i32
         } else if payload.mismo_documento.unwrap_or(false) {
             ev_row.documento_inicio
@@ -769,18 +906,21 @@ pub async fn upsert_evento_vinculo(
             ));
         };
 
+        let estado_update = normalizar_estado_evento(payload.estado.as_deref(), "desactivado")?;
+
         sqlx::query(
             r#"
             UPDATE eventovinculo
-            SET documento_salida = ?, estado = 'desactivado'
+            SET documento_salida = ?, estado = ?
             WHERE id = ?
             "#,
         )
         .bind(doc_salida_id)
+        .bind(estado_update)
         .bind(evento_id)
         .execute(&mut *tx)
         .await
-        .map_err(|e| ApiError::InternalError(format!("Error al cerrar evento: {}", e)))?;
+        .map_err(|e| db_error("el evento de vínculo", e))?;
 
         let tipo_evento_actual = ev_row.tipo_evento;
         let vinculo_id_actual = ev_row.vinculo_id;
@@ -792,12 +932,7 @@ pub async fn upsert_evento_vinculo(
                 .bind(vinculo_id_actual)
                 .execute(&mut *tx)
                 .await
-                .map_err(|e| {
-                    ApiError::InternalError(format!(
-                        "Error al inactivar vínculo por destitución: {}",
-                        e
-                    ))
-                })?;
+                .map_err(|e| db_error("el vínculo del trabajador", e))?;
 
             let _ = sqlx::query("DELETE FROM vinculo_sindicato WHERE vinculo_id = ?")
                 .bind(vinculo_id_actual)
@@ -821,12 +956,7 @@ pub async fn upsert_evento_vinculo(
                 .bind(vinculo_id_actual)
                 .execute(&mut *tx)
                 .await
-                .map_err(|e| {
-                    ApiError::InternalError(format!(
-                        "Error al reactivar el vínculo tras destaque: {}",
-                        e
-                    ))
-                })?;
+                .map_err(|e| db_error("el vínculo del trabajador", e))?;
         } else {
             // Para otros eventos (rotación, encargo_puesto, encargo_funciones)
             sqlx::query(
@@ -835,9 +965,7 @@ pub async fn upsert_evento_vinculo(
             .bind(vinculo_id_actual)
             .execute(&mut *tx)
             .await
-            .map_err(|e| {
-                ApiError::InternalError(format!("Error al verificar el vínculo: {}", e))
-            })?;
+            .map_err(|e| db_error("el vínculo del trabajador", e))?;
         }
     }
     let row = sqlx::query(
@@ -857,7 +985,7 @@ pub async fn upsert_evento_vinculo(
     .bind(payload.vinculo_id)
     .fetch_one(&mut *tx)
     .await
-    .map_err(|e| ApiError::InternalError(format!("Error fetching vinculo info: {}", e)))?;
+    .map_err(|e| db_error("el vínculo del trabajador", e))?;
     let dni: String = row.try_get("dni").unwrap_or_default();
     let persona_nombre: String = row.try_get("persona_nombre").unwrap_or_default();
     let cargo: String = row.try_get("cargo").unwrap_or_default();
@@ -874,7 +1002,7 @@ pub async fn upsert_evento_vinculo(
     } else {
         format!("cerrar evento {}", payload.tipo_evento)
     };
-    let payload_historico = serde_json::json!({
+    let mut payload_historico = serde_json::json!({
         "dni": dni,
         "nombre": persona_nombre,
         "cargo": cargo,
@@ -882,6 +1010,12 @@ pub async fn upsert_evento_vinculo(
         "tipo_evento": payload.tipo_evento,
         "descripcion": doc_desc,
     });
+    if let Some((ref enc_dni, enc_ev_id)) = encargo_creado_info {
+        if let Some(obj) = payload_historico.as_object_mut() {
+            obj.insert("encargado_dni".to_string(), serde_json::json!(enc_dni));
+            obj.insert("encargo_evento_id".to_string(), serde_json::json!(enc_ev_id));
+        }
+    }
     tx.commit()
         .await
         .map_err(|e| ApiError::InternalError(format!("Commit error: {}", e)))?;
@@ -910,23 +1044,23 @@ pub async fn delete_evento_vinculo(
     )
     .fetch_one(&mut *tx)
     .await
-    .map_err(|e| ApiError::InternalError(format!("Error capturando evento: {}", e)))?;
+    .map_err(|e| db_error("el evento de vínculo", e))?;
     sqlx::query("DELETE FROM eventovinculo WHERE id = ?")
         .bind(id)
         .execute(&mut *tx)
         .await
-        .map_err(|e| ApiError::InternalError(format!("Error eliminando evento: {}", e)))?;
+        .map_err(|e| db_error("el evento de vínculo", e))?;
     sqlx::query("DELETE FROM documento WHERE id = ?")
         .bind(evento_full.documento_inicio)
         .execute(&mut *tx)
         .await
-        .map_err(|e| ApiError::InternalError(format!("Error eliminando documento: {}", e)))?;
+        .map_err(|e| db_error("el documento de inicio", e))?;
     if let Some(ds) = evento_full.documento_salida {
         sqlx::query("DELETE FROM documento WHERE id = ?")
             .bind(ds)
             .execute(&mut *tx)
             .await
-            .map_err(|e| ApiError::InternalError(format!("Error eliminando doc salida: {}", e)))?;
+            .map_err(|e| db_error("el documento de término", e))?;
     }
     let dni = evento_full.dni.clone();
     tx.commit()
@@ -987,7 +1121,7 @@ pub async fn registrar_cambio_area(
     )
     .fetch_optional(&mut *tx)
     .await
-    .map_err(|e| ApiError::InternalError(format!("Error al buscar vínculo: {}", e)))?
+    .map_err(|e| db_error("el vínculo del trabajador", e))?
     .ok_or_else(|| ApiError::NotFound("Vínculo no encontrado".into()))?;
     if vinculo.estado != "activo" {
         return Err(ApiError::BadRequest(format!(
@@ -1018,7 +1152,7 @@ pub async fn registrar_cambio_area(
     )
     .fetch_optional(&mut *tx)
     .await
-    .map_err(|e| ApiError::InternalError(format!("Error al verificar rotación: {}", e)))?;
+    .map_err(|e| db_error("el evento de vínculo", e))?;
     if rotacion_activa.is_some() {
         return Err(ApiError::BadRequest(
             "El vínculo tiene una rotación activa. Cierre la rotación antes de cambiar el área."
@@ -1040,7 +1174,7 @@ pub async fn registrar_cambio_area(
     .bind(&payload.documento.descripcion)
     .execute(&mut *tx)
     .await
-    .map_err(|e| ApiError::InternalError(format!("Error al insertar documento: {}", e)))?
+    .map_err(|e| db_error("el documento de inicio", e))?
     .last_insert_id() as i32;
     sqlx::query(
         r#"
@@ -1063,7 +1197,7 @@ pub async fn registrar_cambio_area(
         .bind(payload.vinculo_id)
         .execute(&mut *tx)
         .await
-        .map_err(|e| ApiError::InternalError(format!("Error al actualizar vínculo: {}", e)))?;
+        .map_err(|e| db_error("el vínculo del trabajador", e))?;
     tx.commit()
         .await
         .map_err(|e| ApiError::InternalError(format!("Commit error: {}", e)))?;
@@ -1612,3 +1746,65 @@ pub async fn eliminar_gradoa(
     }
     Ok(HttpResponse::Ok().json("Grado académico eliminado"))
 }
+
+pub async fn listar_encargos_vigentes(
+    data: web::Data<AppState>,
+) -> Result<impl Responder, ApiError> {
+    let rows = match sqlx::query(
+        r#"
+        SELECT
+            id,
+            tipo_evento,
+            fecha_desde,
+            fecha_hasta,
+            vinculo_id,
+            titular_dni,
+            titular_nombre,
+            encargado_dni,
+            encargado_nombre,
+            area_encargada,
+            cargo_encargado,
+            documento_numero,
+            documento_year,
+            documento_tipo
+        FROM encargos_vigentes
+        ORDER BY fecha_desde DESC, id DESC
+        "#,
+    )
+    .fetch_all(&data.db)
+    .await
+    {
+        Ok(filas) => filas,
+        Err(e) => {
+            eprintln!("Advertencia al consultar vista encargos_vigentes: {:?}", e);
+            return Ok(HttpResponse::Ok().json(Vec::<Value>::new()));
+        }
+    };
+
+    let resultado: Vec<Value> = rows
+        .iter()
+        .map(|row| {
+            let fecha_desde: Option<NaiveDate> = row.try_get("fecha_desde").ok();
+            let fecha_hasta: Option<NaiveDate> = row.try_get("fecha_hasta").ok();
+            json!({
+                "id": row.get::<i32, _>("id"),
+                "tipo_evento": row.get::<String, _>("tipo_evento"),
+                "fecha_desde": fecha_desde,
+                "fecha_hasta": fecha_hasta,
+                "vinculo_id": row.get::<i32, _>("vinculo_id"),
+                "titular_dni": row.try_get::<Option<String>, _>("titular_dni").unwrap_or(None),
+                "titular_nombre": row.try_get::<Option<String>, _>("titular_nombre").unwrap_or(None),
+                "encargado_dni": row.try_get::<Option<String>, _>("encargado_dni").unwrap_or(None),
+                "encargado_nombre": row.try_get::<Option<String>, _>("encargado_nombre").unwrap_or(None),
+                "area_encargada": row.try_get::<Option<String>, _>("area_encargada").unwrap_or(None),
+                "cargo_encargado": row.try_get::<Option<String>, _>("cargo_encargado").unwrap_or(None),
+                "documento_numero": row.try_get::<Option<i32>, _>("documento_numero").unwrap_or(None),
+                "documento_year": row.try_get::<Option<i32>, _>("documento_year").unwrap_or(None),
+                "documento_tipo": row.try_get::<Option<String>, _>("documento_tipo").unwrap_or(None),
+            })
+        })
+        .collect();
+
+    Ok(HttpResponse::Ok().json(resultado))
+}
+
