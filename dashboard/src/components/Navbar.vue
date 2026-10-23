@@ -51,9 +51,7 @@ const handleLogout = () => {
         <IconLayoutSidebarLeftCollapse class="size-5" :stroke-width="2" />
       </button>
 
-      <div class="hidden sm:block">
-        <NavbarSearch />
-      </div>
+      <NavbarSearch />
     </div>
 
     <div class="flex items-center gap-1.5 sm:gap-3">

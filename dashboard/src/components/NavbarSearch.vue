@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch, onMounted, onUnmounted } from 'vue'
+import { ref, watch, onMounted, onUnmounted, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import Badge from '@/components/ui/badge/Badge.vue'
 import {
@@ -21,6 +21,7 @@ const searchQuery = ref('')
 const results = ref<PersonalSearchResult[]>([])
 const isLoading = ref(false)
 const isOpen = ref(false)
+const mobileOpen = ref(false)
 const highlightedIndex = ref(-1)
 const hasSearched = ref(false)
 
@@ -111,6 +112,19 @@ const handleClear = () => {
   inputRef.value?.focus()
 }
 
+const openMobile = () => {
+  mobileOpen.value = true
+  nextTick(() => {
+    inputRef.value?.focus()
+  })
+}
+
+const closeMobile = () => {
+  handleClear()
+  mobileOpen.value = false
+  inputRef.value?.blur()
+}
+
 const handleSelect = (dni: string) => {
   if (debounceTimer) clearTimeout(debounceTimer)
   if (currentAbortController) {
@@ -118,6 +132,7 @@ const handleSelect = (dni: string) => {
     currentAbortController = null
   }
   isOpen.value = false
+  mobileOpen.value = false
   searchQuery.value = ''
   results.value = []
   router.push({ name: 'perfil', params: { dni } })
@@ -153,6 +168,9 @@ const handleKeyDown = (e: KeyboardEvent) => {
     }
   } else if (e.key === 'Escape') {
     isOpen.value = false
+    if (mobileOpen.value) {
+      mobileOpen.value = false
+    }
     inputRef.value?.blur()
   }
 }
@@ -166,8 +184,16 @@ const handleClickOutside = (e: MouseEvent) => {
 const handleGlobalKeyDown = (e: KeyboardEvent) => {
   if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
     e.preventDefault()
-    inputRef.value?.focus()
-    inputRef.value?.select()
+    if (window.innerWidth < 640) {
+      mobileOpen.value = true
+      nextTick(() => {
+        inputRef.value?.focus()
+        inputRef.value?.select()
+      })
+    } else {
+      inputRef.value?.focus()
+      inputRef.value?.select()
+    }
   }
 }
 
@@ -188,8 +214,20 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div ref="containerRef" class="relative w-64 sm:w-72 md:w-84">
-    <div class="relative">
+  <div ref="containerRef" class="relative sm:w-72 md:w-84">
+    <button v-if="!mobileOpen" type="button"
+      class="sm:hidden size-8 flex items-center justify-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted focus:outline-hidden cursor-pointer"
+      aria-label="Buscar servidor publico" @click="openMobile">
+      <IconSearch class="size-4" :stroke-width="2" />
+    </button>
+
+    <div
+      :class="[
+        mobileOpen
+          ? 'fixed inset-x-0 top-0 h-13 z-50 bg-navbar border-b border-navbar-line flex items-center gap-2 px-3 sm:static sm:h-auto sm:z-auto sm:bg-transparent sm:border-0 sm:gap-0 sm:px-0 sm:block'
+          : 'hidden sm:block',
+      ]">
+    <div class="relative flex-1 sm:w-full">
       <div class="absolute inset-y-0 inset-s-0 flex items-center ps-3 pointer-events-none text-muted-foreground">
         <IconLoader2 v-if="isLoading" class="size-4 animate-spin text-primary" />
         <IconSearch v-else class="size-4" :stroke-width="2" />
@@ -213,12 +251,24 @@ onUnmounted(() => {
       </div>
     </div>
 
+      <button type="button"
+        class="sm:hidden size-8 flex items-center justify-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted focus:outline-hidden cursor-pointer shrink-0"
+        aria-label="Cerrar búsqueda" @click="closeMobile">
+        <IconX class="size-5" />
+      </button>
+    </div>
+
     <transition enter-active-class="transition duration-150 ease-out"
       enter-from-class="transform -translate-y-1 opacity-0" enter-to-class="transform translate-y-0 opacity-100"
       leave-active-class="transition duration-100 ease-in" leave-from-class="transform translate-y-0 opacity-100"
       leave-to-class="transform -translate-y-1 opacity-0">
       <div v-if="isOpen"
-        class="absolute top-full start-0 mt-1.5 w-full sm:w-96 max-w-[calc(100vw-2rem)] bg-card border border-border rounded-xl shadow-xl z-50 overflow-hidden text-xs">
+        :class="[
+          mobileOpen
+            ? 'fixed top-13 inset-x-2 w-auto sm:absolute sm:top-full sm:start-0 sm:mt-1.5 sm:w-96 sm:inset-x-auto'
+            : 'absolute top-full start-0 mt-1.5 w-full sm:w-96',
+          'max-w-[calc(100vw-2rem)] bg-card border border-border rounded-xl shadow-xl z-50 overflow-hidden text-xs'
+        ]">
         <div
           class="px-3.5 py-2 border-b border-border/80 bg-muted/20 flex items-center justify-between text-[11px] text-muted-foreground">
           <span class="font-medium">
