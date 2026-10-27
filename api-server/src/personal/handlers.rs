@@ -842,7 +842,7 @@ pub async fn upsert_evento_vinculo(
             let insert_encargo_res = sqlx::query(
                 r#"
                 INSERT INTO eventovinculo (vinculo_id, tipo_evento, fecha_desde, fecha_hasta, nueva_area_id, nuevo_cargo_id, documento_inicio, documento_salida, estado)
-                VALUES (?, 'encargo_puesto', ?, ?, ?, ?, ?, NULL, 'activo')
+                VALUES (?, 'encargo_puesto', ?, ?, ?, ?, ?, ?, ?)
                 "#,
             )
             .bind(vinculo_encargado_id)
@@ -851,6 +851,8 @@ pub async fn upsert_evento_vinculo(
             .bind(titular_area_id)
             .bind(titular_cargo_id)
             .bind(doc_id)
+            .bind(doc_salida_final)
+            .bind(estado_insert)
             .execute(&mut *tx)
             .await
             .map_err(|e| db_error("el evento de encargo", e))?;
@@ -1146,6 +1148,7 @@ pub async fn registrar_cambio_area(
         r#"
         SELECT id FROM eventovinculo
         WHERE vinculo_id = ? AND tipo_evento = 'rotacion' AND estado = 'activo'
+          AND (fecha_hasta IS NULL OR fecha_hasta >= CURDATE())
         LIMIT 1
         "#,
         payload.vinculo_id

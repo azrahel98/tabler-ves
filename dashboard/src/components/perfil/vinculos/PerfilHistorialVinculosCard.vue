@@ -7,6 +7,8 @@ import {
   formatMoneda,
   getVinculoStatusType,
   getTipoEventoLabel,
+  getEstadoVigencia,
+  getEstadoVigenciaLabel,
   type PersonalVinculo,
   type VinculoStatusType,
   type EventoVinculoDetalle,
@@ -39,7 +41,7 @@ const props = defineProps<Props>()
 
 const emit = defineEmits<{
   (e: 'registrarRenuncia', vinculo: PersonalVinculo): void
-  (e: 'verDocumento', payload: { tipo: 'ingreso' | 'salida' | 'evento'; vinculo: PersonalVinculo; evento?: EventoVinculoDetalle }): void
+  (e: 'verDocumento', payload: { tipo: 'ingreso' | 'salida' | 'evento'; vinculo: PersonalVinculo; evento?: EventoVinculoDetalle; doc?: 'inicio' | 'salida' }): void
   (e: 'verEventos', vinculo: PersonalVinculo): void
   (e: 'crearEvento', vinculo: PersonalVinculo): void
 }>()
@@ -434,8 +436,32 @@ const sortedVinculos = computed(() => {
                               class="font-semibold uppercase text-[10px]">
                               {{ getTipoEventoLabel(ev.tipo_evento) }}
                             </Badge>
-                            <span v-if="ev.estado" class="text-muted-foreground text-[10px] font-medium">
-                              ({{ ev.estado }})
+                            <span v-if="getEstadoVigencia(ev) === 'cerrado'"
+                              class="inline-flex items-center gap-1 text-[10px] font-medium text-muted-foreground bg-muted px-1.5 py-0.5 rounded-md">
+                              {{ getEstadoVigenciaLabel('cerrado') }}
+                            </span>
+                            <span v-else-if="getEstadoVigencia(ev) === 'vencido'"
+                              class="inline-flex items-center gap-1 text-[10px] font-semibold text-amber-600 dark:text-amber-400 bg-amber-500/10 px-1.5 py-0.5 rounded-md"
+                              title="El evento sigue abierto en el registro porque no tiene documento de salida">
+                              <span class="size-1 rounded-full bg-amber-500"></span>
+                              {{ getEstadoVigenciaLabel('vencido') }}
+                            </span>
+                            <span v-else-if="getEstadoVigencia(ev) === 'futuro'"
+                              class="inline-flex items-center gap-1 text-[10px] font-medium text-muted-foreground border border-border px-1.5 py-0.5 rounded-md">
+                              {{ getEstadoVigenciaLabel('futuro') }}
+                            </span>
+                            <span v-else-if="getEstadoVigencia(ev) === 'sin_fechas'"
+                              class="inline-flex items-center gap-1 text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded-md">
+                              <span class="size-1 rounded-full bg-emerald-500"></span>
+                              {{ getEstadoVigenciaLabel('sin_fechas') }}
+                            </span>
+                            <span v-else
+                              class="inline-flex items-center gap-1 text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded-md">
+                              <span class="size-1 rounded-full bg-emerald-500"></span>
+                              {{ getEstadoVigenciaLabel('vigente') }}
+                            </span>
+                            <span v-if="ev.fecha_desde" class="text-muted-foreground text-[10px] font-medium">
+                              {{ ev.fecha_hasta ? `Periodo: ${formatDate(ev.fecha_desde)} - ${formatDate(ev.fecha_hasta)}` : `desde ${formatDate(ev.fecha_desde)} (sin término)` }}
                             </span>
                             <span v-if="ev.nueva_area" class="text-foreground text-[11px] truncate"
                               :title="ev.nueva_area">
@@ -454,6 +480,13 @@ const sortedVinculos = computed(() => {
                               class="text-primary hover:underline text-[11px] font-medium inline-flex items-center gap-1 cursor-pointer"
                               @click.stop="emit('verDocumento', { tipo: 'evento', vinculo: v, evento: ev })">
                               <span>{{ [ev.tipo_doc_inicio, ev.numero_doc_inicio].filter(Boolean).join(' N° ') }}</span>
+                              <IconExternalLink class="size-3 shrink-0 opacity-70" />
+                            </button>
+                            <button v-if="ev.doc_salida_id || ev.numero_doc_salida" type="button"
+                              class="text-primary hover:underline text-[11px] font-medium inline-flex items-center gap-1 cursor-pointer"
+                              :title="[ev.tipo_doc_salida, ev.numero_doc_salida].filter(Boolean).join(' N° ') || undefined"
+                              @click.stop="emit('verDocumento', { tipo: 'evento', vinculo: v, evento: ev, doc: 'salida' })">
+                              <span>Doc. cierre</span>
                               <IconExternalLink class="size-3 shrink-0 opacity-70" />
                             </button>
                           </div>

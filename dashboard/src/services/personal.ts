@@ -53,16 +53,94 @@ export interface EventoVinculoDetalle {
   tipo_doc_inicio?: string | null
   numero_doc_inicio?: string | null
   fecha_inicio?: string | null
-  fecha_valida_inicio?: string | null
+  fecha_documento_inicio?: string | null
   descrip_inicio?: string | null
   doc_salida_id?: number | null
   tipo_doc_salida?: string | null
   numero_doc_salida?: string | null
   fecha_salida?: string | null
-  fecha_valida_salida?: string | null
+  fecha_documento_salida?: string | null
   descrip_salida?: string | null
   fecha_desde?: string | null
   fecha_hasta?: string | null
+  estado_vigencia?: string | null
+  dias_para_vencer?: number | null
+}
+
+export type EstadoVigenciaEvento = 'cerrado' | 'sin_fechas' | 'futuro' | 'vencido' | 'vigente'
+
+const ESTADOS_VIGENCIA_VALIDOS = new Set<string>([
+  'cerrado',
+  'sin_fechas',
+  'futuro',
+  'vencido',
+  'vigente',
+])
+
+function getHoyDateString(): string {
+  const now = new Date()
+  const year = now.getFullYear()
+  const month = String(now.getMonth() + 1).padStart(2, '0')
+  const day = String(now.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
+
+export function getEstadoVigencia(ev: EventoVinculoDetalle): EstadoVigenciaEvento {
+  if (ev.estado_vigencia && ESTADOS_VIGENCIA_VALIDOS.has(ev.estado_vigencia)) {
+    return ev.estado_vigencia as EstadoVigenciaEvento
+  }
+  const estadoNormalizado = (ev.estado ?? '').toLowerCase().trim()
+  if (!ev.fecha_desde && !ev.fecha_hasta) {
+    return estadoNormalizado === 'activo' ? 'sin_fechas' : 'cerrado'
+  }
+  const hoy = getHoyDateString()
+  if (ev.fecha_desde && ev.fecha_desde.substring(0, 10) > hoy) {
+    return 'futuro'
+  }
+  if (ev.fecha_hasta && ev.fecha_hasta.substring(0, 10) < hoy) {
+    const tieneDocSalida = Boolean(ev.doc_salida_id || (ev.numero_doc_salida && ev.numero_doc_salida.trim()))
+    if (tieneDocSalida || estadoNormalizado !== 'activo') {
+      return 'cerrado'
+    }
+    return 'vencido'
+  }
+  return 'vigente'
+}
+
+export function getEstadoVigenciaLabel(estado: EstadoVigenciaEvento | string | null | undefined): string {
+  switch (estado) {
+    case 'cerrado':
+      return 'Finalizado'
+    case 'sin_fechas':
+      return 'Activo (sin periodo)'
+    case 'futuro':
+      return 'Programado'
+    case 'vencido':
+      return 'Vencido - pendiente de cierre'
+    case 'vigente':
+      return 'Activo'
+    default:
+      return '-'
+  }
+}
+
+export function getDiasParaVencer(ev: EventoVinculoDetalle): number | null {
+  if (typeof ev.dias_para_vencer === 'number') {
+    return ev.dias_para_vencer
+  }
+  if (!ev.fecha_hasta) return null
+  const hoy = getHoyDateString()
+  const hasta = ev.fecha_hasta.substring(0, 10)
+  const hastaDate = new Date(`${hasta}T00:00:00`)
+  const hoyDate = new Date(`${hoy}T00:00:00`)
+  const diffMs = hastaDate.getTime() - hoyDate.getTime()
+  return Math.round(diffMs / (1000 * 60 * 60 * 24))
+}
+
+export function formatDiasParaVencer(dias: number): string {
+  if (dias === 0) return 'vence hoy'
+  if (dias === 1) return 'vence mañana'
+  return 'vence en ' + dias + ' días'
 }
 
 export function getTipoEventoLabel(tipo: string | null | undefined): string {

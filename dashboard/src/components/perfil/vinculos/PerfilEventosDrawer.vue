@@ -5,6 +5,9 @@ import Button from '@/components/ui/button/Button.vue'
 import {
   type PersonalVinculo,
   type EventoVinculoDetalle,
+  getEstadoVigencia,
+  getDiasParaVencer,
+  formatDiasParaVencer,
 } from '@/services/personal'
 import { formatDate } from '@/utils/date'
 import {
@@ -90,33 +93,6 @@ const getTipoEventoLabel = (tipo: string): string => {
 const esEncargo = (tipo: string | undefined): boolean => {
   if (!tipo) return false
   return ['encargatura', 'encargo_puesto', 'encargo_funciones'].includes(tipo.toLowerCase())
-}
-
-const getHoyDateString = (): string => {
-  const now = new Date()
-  const year = now.getFullYear()
-  const month = String(now.getMonth() + 1).padStart(2, '0')
-  const day = String(now.getDate()).padStart(2, '0')
-  return `${year}-${month}-${day}`
-}
-
-const esEncargoVigenteHoy = (ev: EventoVinculoDetalle): boolean => {
-  if (!ev.fecha_desde) return false
-  const hoy = getHoyDateString()
-  const desde = ev.fecha_desde.substring(0, 10)
-  if (hoy < desde) return false
-  if (ev.fecha_hasta) {
-    const hasta = ev.fecha_hasta.substring(0, 10)
-    if (hoy > hasta) return false
-  }
-  return true
-}
-
-const esEncargoVencido = (ev: EventoVinculoDetalle): boolean => {
-  if (!ev.fecha_hasta) return false
-  const hoy = getHoyDateString()
-  const hasta = ev.fecha_hasta.substring(0, 10)
-  return hoy > hasta
 }
 
 const esEstadoActivo = (estado?: string | null): boolean => {
@@ -216,22 +192,37 @@ const handleConfirmarEliminar = (eventoId: number) => {
                       {{ getTipoEventoLabel(ev.tipo_evento) }}
                     </Badge>
 
-                    <Badge v-if="esEncargo(ev.tipo_evento) && esEncargoVigenteHoy(ev)" size="xs" variant="warning">
-                      Vigente
-                    </Badge>
-                    <span v-else-if="esEncargo(ev.tipo_evento) && esEncargoVencido(ev)" class="text-[10px] text-muted-foreground font-medium">
-                      Vencido
-                    </span>
-
-                    <span v-if="esEstadoActivo(ev.estado)"
-                      class="inline-flex items-center gap-1.5 text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-md">
-                      <span class="size-1.5 rounded-full bg-emerald-500"></span>
-                      Activo
-                    </span>
-                    <span v-else
+                    <!-- Insignia única de estado -->
+                    <span v-if="getEstadoVigencia(ev) === 'cerrado'"
                       class="inline-flex items-center gap-1 text-[10px] font-medium text-muted-foreground bg-muted px-2 py-0.5 rounded-md">
                       Finalizado
                     </span>
+                    <span v-else-if="getEstadoVigencia(ev) === 'vencido'"
+                      class="inline-flex items-center gap-1.5 text-[10px] font-semibold text-amber-600 dark:text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-md"
+                      title="El evento sigue abierto en el registro porque no tiene documento de salida">
+                      <span class="size-1.5 rounded-full bg-amber-500"></span>
+                      Vencido - pendiente de cierre
+                    </span>
+                    <span v-else-if="getEstadoVigencia(ev) === 'futuro'"
+                      class="inline-flex items-center gap-1 text-[10px] font-medium text-muted-foreground border border-border px-2 py-0.5 rounded-md">
+                      Programado
+                    </span>
+                    <span v-else-if="getEstadoVigencia(ev) === 'sin_fechas'"
+                      class="inline-flex items-center gap-1.5 text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-md">
+                      <span class="size-1.5 rounded-full bg-emerald-500"></span>
+                      Activo (sin periodo)
+                    </span>
+                    <template v-else>
+                      <span
+                        class="inline-flex items-center gap-1.5 text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-md">
+                        <span class="size-1.5 rounded-full bg-emerald-500"></span>
+                        Activo
+                      </span>
+                      <span v-if="getDiasParaVencer(ev) !== null && getDiasParaVencer(ev)! >= 0 && getDiasParaVencer(ev)! <= 7"
+                        class="text-[10px] text-amber-600 dark:text-amber-400 font-medium">
+                        {{ formatDiasParaVencer(getDiasParaVencer(ev)!) }}
+                      </span>
+                    </template>
                   </div>
 
                   <span class="font-mono text-[10px] text-muted-foreground">

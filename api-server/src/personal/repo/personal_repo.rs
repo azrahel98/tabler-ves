@@ -232,7 +232,23 @@ pub async fn get_eventos_by_vinculo_id(
             cast(ds.fecha_documento as char) AS fecha_documento_salida,
             ds.descripcion AS descrip_salida,
             ev.fecha_desde,
-            ev.fecha_hasta
+            ev.fecha_hasta,
+            CAST(
+                CASE
+                    WHEN ev.fecha_desde IS NULL AND ev.fecha_hasta IS NULL
+                        THEN CASE WHEN ev.estado = 'activo' THEN 'sin_fechas' ELSE 'cerrado' END
+                    WHEN ev.fecha_desde IS NOT NULL AND ev.fecha_desde > CURDATE() THEN 'futuro'
+                    WHEN ev.fecha_hasta IS NOT NULL AND ev.fecha_hasta < CURDATE()
+                        THEN CASE WHEN ev.documento_salida IS NOT NULL OR ev.estado <> 'activo' THEN 'cerrado' ELSE 'vencido' END
+                    ELSE 'vigente'
+                END AS CHAR
+            ) AS estado_vigencia,
+            CAST(
+                CASE
+                    WHEN ev.fecha_hasta IS NULL THEN NULL
+                    ELSE DATEDIFF(ev.fecha_hasta, CURDATE())
+                END AS SIGNED
+            ) AS dias_para_vencer
         FROM eventovinculo ev
         LEFT JOIN area ar_nueva ON ev.nueva_area_id = ar_nueva.id
         LEFT JOIN cargo cr_nuevo ON ev.nuevo_cargo_id = cr_nuevo.id

@@ -6,6 +6,8 @@ import Button from '@/components/ui/button/Button.vue'
 import {
   formatMoneda,
   getTipoEventoLabel,
+  getEstadoVigencia,
+  getEstadoVigenciaLabel,
   type PersonalVinculo,
   type EventoVinculoDetalle,
 } from '@/services/personal'
@@ -310,8 +312,32 @@ const emit = defineEmits<{
               class="font-semibold border-purple-500/30 text-purple-600 dark:text-purple-400 uppercase text-[10px]">
               {{ getTipoEventoLabel(ev.tipo_evento) }}
             </Badge>
-            <span v-if="ev.estado" class="text-muted-foreground text-[11px] font-medium">
-              ({{ ev.estado }})
+            <span v-if="getEstadoVigencia(ev) === 'cerrado'"
+              class="inline-flex items-center gap-1 text-[10px] font-medium text-muted-foreground bg-muted px-1.5 py-0.5 rounded-md">
+              {{ getEstadoVigenciaLabel('cerrado') }}
+            </span>
+            <span v-else-if="getEstadoVigencia(ev) === 'vencido'"
+              class="inline-flex items-center gap-1 text-[10px] font-semibold text-amber-600 dark:text-amber-400 bg-amber-500/10 px-1.5 py-0.5 rounded-md"
+              title="El evento sigue abierto en el registro porque no tiene documento de salida">
+              <span class="size-1 rounded-full bg-amber-500"></span>
+              {{ getEstadoVigenciaLabel('vencido') }}
+            </span>
+            <span v-else-if="getEstadoVigencia(ev) === 'futuro'"
+              class="inline-flex items-center gap-1 text-[10px] font-medium text-muted-foreground border border-border px-1.5 py-0.5 rounded-md">
+              {{ getEstadoVigenciaLabel('futuro') }}
+            </span>
+            <span v-else-if="getEstadoVigencia(ev) === 'sin_fechas'"
+              class="inline-flex items-center gap-1 text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded-md">
+              <span class="size-1 rounded-full bg-emerald-500"></span>
+              {{ getEstadoVigenciaLabel('sin_fechas') }}
+            </span>
+            <span v-else
+              class="inline-flex items-center gap-1 text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded-md">
+              <span class="size-1 rounded-full bg-emerald-500"></span>
+              {{ getEstadoVigenciaLabel('vigente') }}
+            </span>
+            <span v-if="ev.fecha_desde" class="text-muted-foreground text-[10px] font-medium">
+              {{ ev.fecha_hasta ? `Periodo: ${formatDate(ev.fecha_desde)} - ${formatDate(ev.fecha_hasta)}` : `desde ${formatDate(ev.fecha_desde)} (sin término)` }}
             </span>
             <span v-if="ev.nueva_area" class="text-foreground text-[11px] font-medium truncate" :title="ev.nueva_area">
               Área: {{ ev.nueva_area }}

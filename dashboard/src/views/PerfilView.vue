@@ -325,7 +325,7 @@ const onConfirmarEliminarArchivo = async () => {
   }
 }
 
-const abrirDocumentoDrawer = (payload: { tipo: TipoDocumentoVinculo; vinculo: PersonalVinculo; evento?: EventoVinculoDetalle }) => {
+const abrirDocumentoDrawer = (payload: { tipo: TipoDocumentoVinculo; vinculo: PersonalVinculo; evento?: EventoVinculoDetalle; doc?: 'inicio' | 'salida' }) => {
   const { tipo, vinculo, evento } = payload
   if (tipo === 'ingreso') {
     documentoDrawerInfo.value = {
@@ -352,19 +352,36 @@ const abrirDocumentoDrawer = (payload: { tipo: TipoDocumentoVinculo; vinculo: Pe
       vinculo,
     }
   } else {
-    documentoDrawerInfo.value = {
-      tipo: 'evento',
-      titulo: 'Documento de Evento',
-      subtitulo: evento ? `${evento.tipo_evento} - ${vinculo.cargo}` : vinculo.cargo,
-      tipoDocumentoNombre: evento?.tipo_doc_inicio || vinculo.doc_evento_tipo,
-      numeroDocumento: evento?.numero_doc_inicio || vinculo.numero_doc_evento,
-      documentoId: evento?.doc_inicio_id || vinculo.doc_evento_id,
-      descripcion: evento?.descrip_inicio || (vinculo.tipo_evento ? `${vinculo.tipo_evento}${vinculo.estado_evento ? ` (${vinculo.estado_evento})` : ''}` : null),
-      fecha: evento?.fecha_inicio || vinculo.fecha_evento,
-      eventoId: evento?.id || vinculo.id_evento,
-      tipoEvento: evento?.tipo_evento || vinculo.tipo_evento,
-      estadoEvento: evento?.estado || vinculo.estado_evento,
-      vinculo,
+    if (payload.doc === 'salida') {
+      documentoDrawerInfo.value = {
+        tipo: 'evento',
+        titulo: 'Documento de Cierre del Evento',
+        subtitulo: evento ? `${evento.tipo_evento} - ${vinculo.cargo}` : vinculo.cargo,
+        tipoDocumentoNombre: evento?.tipo_doc_salida,
+        numeroDocumento: evento?.numero_doc_salida,
+        documentoId: evento?.doc_salida_id,
+        descripcion: evento?.descrip_salida,
+        fecha: evento?.fecha_salida,
+        eventoId: evento?.id || vinculo.id_evento,
+        tipoEvento: evento?.tipo_evento || vinculo.tipo_evento,
+        estadoEvento: evento?.estado || vinculo.estado_evento,
+        vinculo,
+      }
+    } else {
+      documentoDrawerInfo.value = {
+        tipo: 'evento',
+        titulo: 'Documento de Evento',
+        subtitulo: evento ? `${evento.tipo_evento} - ${vinculo.cargo}` : vinculo.cargo,
+        tipoDocumentoNombre: evento?.tipo_doc_inicio || vinculo.doc_evento_tipo,
+        numeroDocumento: evento?.numero_doc_inicio || vinculo.numero_doc_evento,
+        documentoId: evento?.doc_inicio_id || vinculo.doc_evento_id,
+        descripcion: evento?.descrip_inicio || (vinculo.tipo_evento ? `${vinculo.tipo_evento}${vinculo.estado_evento ? ` (${vinculo.estado_evento})` : ''}` : null),
+        fecha: evento?.fecha_inicio || vinculo.fecha_evento,
+        eventoId: evento?.id || vinculo.id_evento,
+        tipoEvento: evento?.tipo_evento || vinculo.tipo_evento,
+        estadoEvento: evento?.estado || vinculo.estado_evento,
+        vinculo,
+      }
     }
   }
   isDocumentoDrawerOpen.value = true

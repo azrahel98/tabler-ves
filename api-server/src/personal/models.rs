@@ -249,5 +249,7 @@ pub struct EventoVinculoDetalle {
     pub descrip_salida: Option<String>,
     pub fecha_desde: Option<NaiveDate>,
     pub fecha_hasta: Option<NaiveDate>,
+    pub estado_vigencia: Option<String>,
+    pub dias_para_vencer: Option<i64>,
 }
 

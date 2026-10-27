@@ -609,14 +609,24 @@ pub async fn get_db_organi(pool: &MySqlPool) -> Result<Vec<DbOrgani>, ApiError> 
                     v_sub.dni
                 FROM eventovinculo ev_sub
                 INNER JOIN vinculo v_sub ON ev_sub.vinculo_id = v_sub.id
-                WHERE ev_sub.estado = 'activo'
-                  AND ev_sub.tipo_evento IN ('encargo_puesto', 'encargo_funciones', 'encargatura')
+                WHERE ev_sub.tipo_evento IN ('encargo_puesto', 'encargo_funciones', 'encargatura')
+                  AND (
+                      (ev_sub.fecha_desde IS NOT NULL
+                       AND ev_sub.fecha_desde <= CURDATE()
+                       AND (ev_sub.fecha_hasta IS NULL OR ev_sub.fecha_hasta >= CURDATE()))
+                      OR (ev_sub.fecha_desde IS NULL AND ev_sub.fecha_hasta IS NULL AND ev_sub.estado = 'activo')
+                  )
                   AND ev_sub.id = (
-                      SELECT MAX(ev2.id) 
-                      FROM eventovinculo ev2 
-                      WHERE ev2.nueva_area_id = ev_sub.nueva_area_id 
-                        AND ev2.estado = 'activo' 
+                      SELECT MAX(ev2.id)
+                      FROM eventovinculo ev2
+                      WHERE ev2.nueva_area_id = ev_sub.nueva_area_id
                         AND ev2.tipo_evento IN ('encargo_puesto', 'encargo_funciones', 'encargatura')
+                        AND (
+                            (ev2.fecha_desde IS NOT NULL
+                             AND ev2.fecha_desde <= CURDATE()
+                             AND (ev2.fecha_hasta IS NULL OR ev2.fecha_hasta >= CURDATE()))
+                            OR (ev2.fecha_desde IS NULL AND ev2.fecha_hasta IS NULL AND ev2.estado = 'activo')
+                        )
                   )
             ) ev ON a.id = ev.nueva_area_id
             LEFT JOIN persona p_enc ON ev.dni = p_enc.dni
@@ -955,7 +965,9 @@ pub async fn get_reporte_eventos(pool: &MySqlPool) -> Result<Vec<Value>, ApiErro
             di.descripcion AS descripcion_inicio,
             ds.fecha AS fecha_salida,
             ds.descripcion AS descripcion_salida,
-            p.avatar
+            p.avatar,
+            ev.fecha_desde,
+            ev.fecha_hasta
         FROM eventovinculo ev
         INNER JOIN vinculo v ON ev.vinculo_id = v.id
         INNER JOIN persona p ON v.dni = p.dni
@@ -979,6 +991,8 @@ pub async fn get_reporte_eventos(pool: &MySqlPool) -> Result<Vec<Value>, ApiErro
         .map(|fila| {
             let fecha_inicio: Option<NaiveDate> = fila.try_get("fecha_inicio").ok();
             let fecha_salida: Option<NaiveDate> = fila.try_get("fecha_salida").ok();
+            let fecha_desde: Option<NaiveDate> = fila.try_get("fecha_desde").ok();
+            let fecha_hasta: Option<NaiveDate> = fila.try_get("fecha_hasta").ok();
             json!({
                 "id": fila.get::<i32, _>("id"),
                 "tipo_evento": fila.get::<String, _>("tipo_evento"),
@@ -995,6 +1009,8 @@ pub async fn get_reporte_eventos(pool: &MySqlPool) -> Result<Vec<Value>, ApiErro
                 "fecha_salida": fecha_salida.map(|d| d.to_string()),
                 "descripcion_salida": fila.try_get::<Option<String>, _>("descripcion_salida").unwrap_or(None),
                 "avatar": fila.try_get::<Option<String>, _>("avatar").unwrap_or(None),
+                "fecha_desde": fecha_desde.map(|d| d.to_string()),
+                "fecha_hasta": fecha_hasta.map(|d| d.to_string()),
             })
         })
         .collect();
