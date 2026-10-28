@@ -363,7 +363,7 @@ const totalColumnsCount = computed(() => {
           <div v-if="isColumnsMenuOpen"
             class="absolute right-0 mt-1.5 w-48 bg-card border border-border rounded-xl shadow-lg p-2 z-30 text-xs space-y-1">
             <div
-              class="px-2 py-1 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider border-b border-border">
+              class="px-2 py-1 text-meta font-semibold text-muted-foreground uppercase tracking-wider border-b border-border">
               Visibilidad de columnas
             </div>
             <div class="max-h-48 overflow-y-auto py-1 space-y-1">

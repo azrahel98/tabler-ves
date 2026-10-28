@@ -526,7 +526,7 @@ const restablecerFiltros = () => {
                   <p v-else class="text-xs text-muted-foreground mt-0.5">
                     No se ha seleccionado archivo
                   </p>
-                  <span v-if="fileCas" class="text-[10px] text-muted-foreground">
+                  <span v-if="fileCas" class="text-micro text-muted-foreground">
                     {{ formatoTamano(fileCas.size) }}
                   </span>
                 </div>
@@ -591,7 +591,7 @@ const restablecerFiltros = () => {
                   <p v-else class="text-xs text-muted-foreground mt-0.5">
                     No se ha seleccionado archivo
                   </p>
-                  <span v-if="fileOtros" class="text-[10px] text-muted-foreground">
+                  <span v-if="fileOtros" class="text-micro text-muted-foreground">
                     {{ formatoTamano(fileOtros.size) }}
                   </span>
                 </div>
@@ -625,7 +625,7 @@ const restablecerFiltros = () => {
         <!-- Regla de negocio en una línea -->
         <div class="rounded-xl border border-primary/20 bg-primary/5 p-3 sm:p-4 text-xs flex items-start gap-3">
           <IconInfoCircle class="size-4.5 text-primary shrink-0 mt-0.5" />
-          <p class="leading-relaxed text-muted-foreground text-[11px] sm:text-xs">
+          <p class="leading-relaxed text-muted-foreground text-meta sm:text-xs">
             <strong class="text-foreground font-semibold">Regla de actualización:</strong>
             Solo se actualiza a quien coincide en DNI y fecha de ingreso con AIRHSP. Se actualizan nombres, apellidos, fecha de nacimiento, código AIRHSP (plaza), cargo estructural, grupo ocupacional y datos bancarios. Un dato vacío en AIRHSP no borra el nuestro.
           </p>
@@ -783,7 +783,7 @@ const restablecerFiltros = () => {
               </Button>
             </template>
             <template v-else-if="!previewData.aplicado && previewData.resumen.con_cambios > 0">
-              <div class="text-[11px] text-muted-foreground flex items-center gap-1.5 p-2 rounded-lg bg-muted/40 border border-border">
+              <div class="text-meta text-muted-foreground flex items-center gap-1.5 p-2 rounded-lg bg-muted/40 border border-border">
                 <IconInfoCircle class="size-3.5 text-amber-500" />
                 <span>Se requiere rol ADMIN o EDITOR para aplicar cambios</span>
               </div>
@@ -796,7 +796,7 @@ const restablecerFiltros = () => {
           <!-- Coincidencias -->
           <Card class="p-3.5">
             <div class="flex items-center justify-between gap-2">
-              <span class="text-[11px] font-medium text-muted-foreground truncate">Coincidencias</span>
+              <span class="text-meta font-medium text-muted-foreground truncate">Coincidencias</span>
               <IconUsers class="size-3.5 text-muted-foreground shrink-0" />
             </div>
             <div class="mt-2 flex items-baseline justify-between">
@@ -804,13 +804,13 @@ const restablecerFiltros = () => {
                 {{ previewData.resumen.coincidencias }}
               </span>
             </div>
-            <p class="text-[10px] text-muted-foreground mt-0.5 truncate">DNI y fecha coinciden</p>
+            <p class="text-micro text-muted-foreground mt-0.5 truncate">DNI y fecha coinciden</p>
           </Card>
 
           <!-- Personas con cambios -->
           <Card class="p-3.5" :class="previewData.resumen.con_cambios > 0 ? 'border-primary/40 bg-primary/5' : ''">
             <div class="flex items-center justify-between gap-2">
-              <span class="text-[11px] font-semibold text-primary truncate">Con Cambios</span>
+              <span class="text-meta font-semibold text-primary truncate">Con Cambios</span>
               <span class="size-2 rounded-full bg-primary shrink-0"></span>
             </div>
             <div class="mt-2 flex items-baseline justify-between">
@@ -818,13 +818,13 @@ const restablecerFiltros = () => {
                 {{ previewData.resumen.con_cambios }}
               </span>
             </div>
-            <p class="text-[10px] text-muted-foreground mt-0.5 truncate">Tienen datos nuevos</p>
+            <p class="text-micro text-muted-foreground mt-0.5 truncate">Tienen datos nuevos</p>
           </Card>
 
           <!-- Sin cambios -->
           <Card class="p-3.5">
             <div class="flex items-center justify-between gap-2">
-              <span class="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 truncate">Sin Cambios</span>
+              <span class="text-meta font-semibold text-emerald-600 dark:text-emerald-400 truncate">Sin Cambios</span>
               <IconCheck class="size-3.5 text-emerald-500 shrink-0" />
             </div>
             <div class="mt-2 flex items-baseline justify-between">
@@ -832,13 +832,13 @@ const restablecerFiltros = () => {
                 {{ previewData.resumen.sin_cambios }}
               </span>
             </div>
-            <p class="text-[10px] text-muted-foreground mt-0.5 truncate">Ya sincronizados</p>
+            <p class="text-micro text-muted-foreground mt-0.5 truncate">Ya sincronizados</p>
           </Card>
 
           <!-- Omitidos por fecha de ingreso distinta -->
           <Card class="p-3.5" :class="previewData.resumen.omitidos_fecha_ingreso > 0 ? 'border-amber-500/30 bg-amber-500/5' : ''">
             <div class="flex items-center justify-between gap-2">
-              <span class="text-[11px] font-semibold text-amber-600 dark:text-amber-400 truncate">Omitidos (Fecha)</span>
+              <span class="text-meta font-semibold text-amber-600 dark:text-amber-400 truncate">Omitidos (Fecha)</span>
               <IconAlertTriangle class="size-3.5 text-amber-500 shrink-0" />
             </div>
             <div class="mt-2 flex items-baseline justify-between">
@@ -846,13 +846,13 @@ const restablecerFiltros = () => {
                 {{ previewData.resumen.omitidos_fecha_ingreso }}
               </span>
             </div>
-            <p class="text-[10px] text-muted-foreground mt-0.5 truncate">Fecha distinta</p>
+            <p class="text-micro text-muted-foreground mt-0.5 truncate">Fecha distinta</p>
           </Card>
 
           <!-- Errores -->
           <Card class="p-3.5" :class="previewData.resumen.errores > 0 ? 'border-destructive/30 bg-destructive/5' : ''">
             <div class="flex items-center justify-between gap-2">
-              <span class="text-[11px] font-semibold text-destructive truncate">Con Errores</span>
+              <span class="text-meta font-semibold text-destructive truncate">Con Errores</span>
               <span class="size-2 rounded-full bg-destructive shrink-0"></span>
             </div>
             <div class="mt-2 flex items-baseline justify-between">
@@ -860,13 +860,13 @@ const restablecerFiltros = () => {
                 {{ previewData.resumen.errores }}
               </span>
             </div>
-            <p class="text-[10px] text-muted-foreground mt-0.5 truncate">Errores de validación</p>
+            <p class="text-micro text-muted-foreground mt-0.5 truncate">Errores de validación</p>
           </Card>
 
           <!-- Actualizados (cuando fue aplicado) -->
           <Card class="p-3.5 border-emerald-500/40 bg-emerald-500/10">
             <div class="flex items-center justify-between gap-2">
-              <span class="text-[11px] font-semibold text-emerald-700 dark:text-emerald-300 truncate">Actualizados</span>
+              <span class="text-meta font-semibold text-emerald-700 dark:text-emerald-300 truncate">Actualizados</span>
               <IconCheck class="size-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
             </div>
             <div class="mt-2 flex items-baseline justify-between">
@@ -874,7 +874,7 @@ const restablecerFiltros = () => {
                 {{ previewData.resumen.actualizados }}
               </span>
             </div>
-            <p class="text-[10px] text-emerald-600/80 dark:text-emerald-400/80 mt-0.5 truncate">
+            <p class="text-micro text-emerald-600/80 dark:text-emerald-400/80 mt-0.5 truncate">
               {{ previewData.aplicado ? 'Aplicados en sistema' : 'Pendientes de aplicar' }}
             </p>
           </Card>
@@ -929,7 +929,7 @@ const restablecerFiltros = () => {
                 </p>
                 <div
                   v-if="row.error"
-                  class="p-2 rounded-lg bg-destructive/10 border border-destructive/20 text-destructive text-[11px] flex items-start gap-1.5"
+                  class="p-2 rounded-lg bg-destructive/10 border border-destructive/20 text-destructive text-meta flex items-start gap-1.5"
                 >
                   <IconAlertCircle class="size-3.5 shrink-0 mt-0.5" />
                   <span class="leading-tight">{{ row.error }}</span>
@@ -951,7 +951,7 @@ const restablecerFiltros = () => {
                   "
                 >
                   <div class="flex items-center justify-between gap-2 mb-1.5">
-                    <span class="font-semibold text-foreground text-[11px]">
+                    <span class="font-semibold text-foreground text-meta">
                       {{ obtenerEtiquetaCampo(c.campo) }}
                     </span>
                     <Badge v-if="c.error" variant="danger" size="xs" class="font-medium">
@@ -961,7 +961,7 @@ const restablecerFiltros = () => {
 
                   <div class="flex items-center gap-2 flex-wrap font-mono text-xs">
                     <div class="flex items-center gap-1.5 text-muted-foreground">
-                      <span class="text-[10px] uppercase font-sans tracking-wider text-muted-foreground/70">Antes:</span>
+                      <span class="text-micro uppercase font-sans tracking-wider text-muted-foreground/70">Antes:</span>
                       <span class="line-through decoration-muted-foreground/50 bg-muted/60 px-1.5 py-0.5 rounded">
                         {{ c.antes || '(vacío)' }}
                       </span>
@@ -970,7 +970,7 @@ const restablecerFiltros = () => {
                     <IconArrowRight class="size-3 text-muted-foreground shrink-0" />
 
                     <div class="flex items-center gap-1.5">
-                      <span class="text-[10px] uppercase font-sans tracking-wider text-muted-foreground/70">Después:</span>
+                      <span class="text-micro uppercase font-sans tracking-wider text-muted-foreground/70">Después:</span>
                       <span
                         v-if="!c.error"
                         class="px-1.5 py-0.5 rounded font-semibold text-emerald-700 dark:text-emerald-300 bg-emerald-500/15 border border-emerald-500/30"
@@ -989,7 +989,7 @@ const restablecerFiltros = () => {
                   <!-- Mensaje de error del campo en rojo -->
                   <p
                     v-if="c.error"
-                    class="text-[11px] text-destructive mt-1.5 flex items-center gap-1.5 font-sans"
+                    class="text-meta text-destructive mt-1.5 flex items-center gap-1.5 font-sans"
                   >
                     <IconAlertTriangle class="size-3 shrink-0" />
                     <span>{{ c.error }}</span>
@@ -1144,7 +1144,7 @@ const restablecerFiltros = () => {
         <!-- Procesados -->
         <Card class="p-3.5">
           <div class="flex items-center justify-between gap-2">
-            <span class="text-[11px] font-medium text-muted-foreground truncate">Personas Procesadas</span>
+            <span class="text-meta font-medium text-muted-foreground truncate">Personas Procesadas</span>
             <IconUsers class="size-3.5 text-muted-foreground shrink-0" />
           </div>
           <div class="mt-2 flex items-baseline justify-between">
@@ -1152,13 +1152,13 @@ const restablecerFiltros = () => {
               {{ resumen.procesados }}
             </span>
           </div>
-          <p class="text-[10px] text-muted-foreground mt-0.5 truncate">Total analizados</p>
+          <p class="text-micro text-muted-foreground mt-0.5 truncate">Total analizados</p>
         </Card>
 
         <!-- Encontrados MEF -->
         <Card class="p-3.5">
           <div class="flex items-center justify-between gap-2">
-            <span class="text-[11px] font-medium text-muted-foreground truncate">Encontradas AIRHSP</span>
+            <span class="text-meta font-medium text-muted-foreground truncate">Encontradas AIRHSP</span>
             <span class="size-2 rounded-full bg-primary shrink-0"></span>
           </div>
           <div class="mt-2 flex items-baseline justify-between">
@@ -1166,13 +1166,13 @@ const restablecerFiltros = () => {
               {{ resumen.encontrados_mef }}
             </span>
           </div>
-          <p class="text-[10px] text-muted-foreground mt-0.5 truncate">En planilla MEF</p>
+          <p class="text-micro text-muted-foreground mt-0.5 truncate">En planilla MEF</p>
         </Card>
 
         <!-- Campos OK -->
         <Card class="p-3.5">
           <div class="flex items-center justify-between gap-2">
-            <span class="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 truncate">Campos OK</span>
+            <span class="text-meta font-semibold text-emerald-600 dark:text-emerald-400 truncate">Campos OK</span>
             <IconCheck class="size-3.5 text-emerald-500 shrink-0" />
           </div>
           <div class="mt-2 flex items-baseline justify-between">
@@ -1180,13 +1180,13 @@ const restablecerFiltros = () => {
               {{ resumen.ok }}
             </span>
           </div>
-          <p class="text-[10px] text-muted-foreground mt-0.5 truncate">Sin diferencias</p>
+          <p class="text-micro text-muted-foreground mt-0.5 truncate">Sin diferencias</p>
         </Card>
 
         <!-- Campos con diferencias -->
         <Card class="p-3.5">
           <div class="flex items-center justify-between gap-2">
-            <span class="text-[11px] font-semibold text-amber-600 dark:text-amber-400 truncate">Diferencias</span>
+            <span class="text-meta font-semibold text-amber-600 dark:text-amber-400 truncate">Diferencias</span>
             <span class="size-2 rounded-full bg-amber-500 shrink-0"></span>
           </div>
           <div class="mt-2 flex items-baseline justify-between">
@@ -1194,13 +1194,13 @@ const restablecerFiltros = () => {
               {{ resumen.diferencias }}
             </span>
           </div>
-          <p class="text-[10px] text-muted-foreground mt-0.5 truncate">Campos a revisar</p>
+          <p class="text-micro text-muted-foreground mt-0.5 truncate">Campos a revisar</p>
         </Card>
 
         <!-- Solo en sistema -->
         <Card class="p-3.5">
           <div class="flex items-center justify-between gap-2">
-            <span class="text-[11px] font-semibold text-rose-600 dark:text-rose-400 truncate">Solo en Sistema</span>
+            <span class="text-meta font-semibold text-rose-600 dark:text-rose-400 truncate">Solo en Sistema</span>
             <span class="size-2 rounded-full bg-rose-500 shrink-0"></span>
           </div>
           <div class="mt-2 flex items-baseline justify-between">
@@ -1208,13 +1208,13 @@ const restablecerFiltros = () => {
               {{ resumen.no_encontrados }}
             </span>
           </div>
-          <p class="text-[10px] text-muted-foreground mt-0.5 truncate">No hallados en AIRHSP</p>
+          <p class="text-micro text-muted-foreground mt-0.5 truncate">No hallados en AIRHSP</p>
         </Card>
 
         <!-- Solo en AIRHSP -->
         <Card class="p-3.5">
           <div class="flex items-center justify-between gap-2">
-            <span class="text-[11px] font-semibold text-purple-600 dark:text-purple-400 truncate">Solo en AIRHSP</span>
+            <span class="text-meta font-semibold text-purple-600 dark:text-purple-400 truncate">Solo en AIRHSP</span>
             <span class="size-2 rounded-full bg-purple-500 shrink-0"></span>
           </div>
           <div class="mt-2 flex items-baseline justify-between">
@@ -1222,7 +1222,7 @@ const restablecerFiltros = () => {
               {{ resumen.no_en_sistema }}
             </span>
           </div>
-          <p class="text-[10px] text-muted-foreground mt-0.5 truncate">Faltan en sistema</p>
+          <p class="text-micro text-muted-foreground mt-0.5 truncate">Faltan en sistema</p>
         </Card>
       </div>
 
@@ -1360,7 +1360,7 @@ const restablecerFiltros = () => {
             </p>
             <span
               v-if="row.codigo_registro"
-              class="text-[10px] font-mono text-muted-foreground"
+              class="text-micro font-mono text-muted-foreground"
               :title="`Código Registro: ${row.codigo_registro}`"
             >
               Cód: {{ row.codigo_registro }}
@@ -1376,7 +1376,7 @@ const restablecerFiltros = () => {
             </Badge>
             <p
               v-if="row.regimen_mef && row.regimen_mef !== row.regimen"
-              class="text-[10px] text-amber-600 dark:text-amber-400 font-mono truncate"
+              class="text-micro text-amber-600 dark:text-amber-400 font-mono truncate"
               :title="`Régimen MEF: ${row.regimen_mef}`"
             >
               MEF: {{ row.regimen_mef }}
@@ -1392,7 +1392,7 @@ const restablecerFiltros = () => {
             </span>
             <div v-if="esDatoPersonal(row.campo)" class="flex items-center gap-1">
               <span class="size-1.5 rounded-full bg-amber-500"></span>
-              <span class="text-[10px] text-amber-600 dark:text-amber-400 font-medium">Dato Personal</span>
+              <span class="text-micro text-amber-600 dark:text-amber-400 font-medium">Dato Personal</span>
             </div>
           </div>
         </template>
@@ -1492,7 +1492,7 @@ const restablecerFiltros = () => {
               <h3 id="modal-confirmar-actualizacion-title" class="font-bold text-foreground text-sm tracking-tight truncate">
                 Confirmar Actualización con AIRHSP
               </h3>
-              <p class="text-[11px] text-muted-foreground truncate">
+              <p class="text-meta text-muted-foreground truncate">
                 Modificación en la base de datos del sistema
               </p>
             </div>
@@ -1532,7 +1532,7 @@ const restablecerFiltros = () => {
             </div>
           </div>
 
-          <div class="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-800 dark:text-amber-300 text-[11px] flex items-start gap-2.5">
+          <div class="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-800 dark:text-amber-300 text-meta flex items-start gap-2.5">
             <IconAlertTriangle class="size-4 shrink-0 mt-0.5 text-amber-600 dark:text-amber-400" />
             <div class="space-y-1">
               <p class="font-semibold text-foreground">

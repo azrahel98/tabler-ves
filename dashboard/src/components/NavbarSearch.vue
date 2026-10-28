@@ -245,7 +245,7 @@ onUnmounted(() => {
           <IconX class="size-3.5" />
         </button>
         <kbd
-          class="hidden sm:inline-block px-1.5 py-0.5 text-[10px] font-semibold text-muted-foreground bg-muted border border-border rounded pointer-events-none select-none">
+          class="hidden sm:inline-block px-1.5 py-0.5 text-micro font-semibold text-muted-foreground bg-muted border border-border rounded pointer-events-none select-none">
           ⌘K
         </kbd>
       </div>
@@ -270,12 +270,12 @@ onUnmounted(() => {
           'max-w-[calc(100vw-2rem)] bg-card border border-border rounded-xl shadow-xl z-50 overflow-hidden text-xs'
         ]">
         <div
-          class="px-3.5 py-2 border-b border-border/80 bg-muted/20 flex items-center justify-between text-[11px] text-muted-foreground">
+          class="px-3.5 py-2 border-b border-border/80 bg-muted/20 flex items-center justify-between text-meta text-muted-foreground">
           <span class="font-medium">
             {{ isLoading ? 'Buscando servidores...' : results.length > 0 ? `${results.length} coincidencias encontradas`
               : 'Búsqueda de personal' }}
           </span>
-          <span class="text-[10px] font-mono">Presiona Esc para salir</span>
+          <span class="text-micro font-mono">Presiona Esc para salir</span>
         </div>
 
         <div v-if="isLoading" class="p-6 text-center text-muted-foreground space-y-2">
@@ -301,7 +301,7 @@ onUnmounted(() => {
                 <p class="font-semibold text-foreground truncate text-xs">
                   {{ item.nombre }}
                 </p>
-                <p class="font-mono text-muted-foreground text-[11px]">
+                <p class="font-mono text-muted-foreground text-meta">
                   DNI: {{ item.dni }}
                 </p>
               </div>
@@ -325,7 +325,7 @@ onUnmounted(() => {
         <div v-else-if="hasSearched" class="p-6 text-center text-muted-foreground space-y-2">
           <IconUser class="size-8 mx-auto text-muted-foreground/40" />
           <p class="font-semibold text-foreground text-xs">Sin coincidencias registradas</p>
-          <p class="text-[11px]">No se encontraron servidores públicos con el término "{{ searchQuery }}"</p>
+          <p class="text-meta">No se encontraron servidores públicos con el término "{{ searchQuery }}"</p>
         </div>
       </div>
     </transition>

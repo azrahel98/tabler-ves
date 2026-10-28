@@ -145,7 +145,7 @@ const filteredAndSortedArchivos = computed(() => {
           <IconFileText class="size-3.5 text-primary shrink-0" />
           <h3 class="text-sm font-semibold tracking-tight text-foreground">Archivos Digitales del Legajo</h3>
           <span
-            class="px-2 py-0.5 rounded bg-rose-500/10 text-rose-600 dark:text-rose-400 text-[11px] font-mono font-medium shrink-0">
+            class="px-2 py-0.5 rounded bg-rose-500/10 text-rose-600 dark:text-rose-400 text-meta font-mono font-medium shrink-0">
             {{ filteredAndSortedArchivos.length }} PDF{{ filteredAndSortedArchivos.length === 1 ? '' : 's' }}
           </span>
         </div>
@@ -154,7 +154,7 @@ const filteredAndSortedArchivos = computed(() => {
           <div class="relative">
             <IconSearch class="size-3.5 text-muted-foreground absolute left-2.5 top-1/2 -translate-y-1/2" />
             <input v-model="searchQuery" type="text" placeholder="Buscar archivo PDF..."
-              class="h-7.5 pl-7 pr-2.5 text-[11px] rounded-lg border border-border bg-background/50 focus:bg-background focus:outline-hidden focus:ring-1 focus:ring-primary w-36 sm:w-44 transition" />
+              class="h-7.5 pl-7 pr-2.5 text-meta rounded-lg border border-border bg-background/50 focus:bg-background focus:outline-hidden focus:ring-1 focus:ring-primary w-36 sm:w-44 transition" />
           </div>
 
 
@@ -184,7 +184,7 @@ const filteredAndSortedArchivos = computed(() => {
           <div class="overflow-x-auto">
             <table class="w-full text-left text-xs" aria-label="Tabla de archivos digitales">
               <thead
-                class="border-b border-border bg-muted/30 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground select-none">
+                class="border-b border-border bg-muted/30 text-micro font-semibold uppercase tracking-wider text-muted-foreground select-none">
                 <tr>
                   <th scope="col" class="px-3 sm:px-4 py-2 font-semibold w-[48%]">Nombre</th>
                   <th scope="col" class="px-3 sm:px-4 py-2 font-semibold w-[14%]">Tamaño</th>
@@ -215,14 +215,14 @@ const filteredAndSortedArchivos = computed(() => {
                         </svg>
                       </div>
                       <button type="button" @click="handleOpenFile(archivo)"
-                        class="font-medium text-foreground hover:text-primary transition-colors truncate max-w-sm sm:max-w-md block text-[11px] text-left cursor-pointer"
+                        class="font-medium text-foreground hover:text-primary transition-colors truncate max-w-sm sm:max-w-md block text-meta text-left cursor-pointer"
                         :title="archivo.original_name">
                         {{ archivo.original_name }}
                       </button>
                     </div>
                   </td>
 
-                  <td class="px-3 sm:px-4 py-2 text-muted-foreground font-mono text-[11px] whitespace-nowrap">
+                  <td class="px-3 sm:px-4 py-2 text-muted-foreground font-mono text-meta whitespace-nowrap">
                     {{ archivo.size || '256 KB' }}
                   </td>
 
@@ -233,10 +233,10 @@ const filteredAndSortedArchivos = computed(() => {
                         <IconUser class="size-2.5" />
                       </div>
                       <div v-else
-                        class="size-4 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 text-[9px] font-bold flex items-center justify-center shrink-0">
+                        class="size-4 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 text-nano font-bold flex items-center justify-center shrink-0">
                         {{ getAccessDetails(archivo).initial }}
                       </div>
-                      <span class="text-foreground text-[11px] font-normal">
+                      <span class="text-foreground text-meta font-normal">
                         {{ getAccessDetails(archivo).label }}
                       </span>
                     </div>
@@ -244,7 +244,7 @@ const filteredAndSortedArchivos = computed(() => {
 
                   <td class="px-3 sm:px-4 py-2 text-muted-foreground text-right sm:text-left whitespace-nowrap">
                     <div class="flex items-center justify-between gap-2">
-                      <span class="font-mono text-[11px]">{{ formatFileDate(archivo.fecha_subida) }}</span>
+                      <span class="font-mono text-meta">{{ formatFileDate(archivo.fecha_subida) }}</span>
                       <div class="flex items-center gap-1">
                         <button type="button"
                           class="opacity-0 group-hover:opacity-100 transition p-0.5 text-muted-foreground hover:text-primary rounded hover:bg-muted cursor-pointer"
@@ -304,29 +304,29 @@ const filteredAndSortedArchivos = computed(() => {
 
             <div class="space-y-0.5">
               <button type="button" @click="handleOpenFile(archivo)"
-                class="text-[11px] font-semibold text-foreground hover:text-primary transition line-clamp-2 block text-left cursor-pointer"
+                class="text-meta font-semibold text-foreground hover:text-primary transition line-clamp-2 block text-left cursor-pointer"
                 :title="archivo.original_name">
                 {{ archivo.original_name }}
               </button>
-              <p class="text-[10px] text-muted-foreground font-mono">
+              <p class="text-micro text-muted-foreground font-mono">
                 {{ archivo.size || '256 KB' }}
               </p>
             </div>
 
             <div
-              class="pt-1.5 border-t border-border/50 flex items-center justify-between text-[10px] text-muted-foreground">
+              class="pt-1.5 border-t border-border/50 flex items-center justify-between text-micro text-muted-foreground">
               <div class="flex items-center gap-1">
                 <div v-if="getAccessDetails(archivo).isOnlyYou"
                   class="size-3.5 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 flex items-center justify-center shrink-0">
                   <IconUser class="size-2" />
                 </div>
                 <div v-else
-                  class="size-3.5 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 text-[8px] font-bold flex items-center justify-center shrink-0">
+                  class="size-3.5 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 text-nano font-bold flex items-center justify-center shrink-0">
                   {{ getAccessDetails(archivo).initial }}
                 </div>
                 <span class="truncate max-w-20">{{ getAccessDetails(archivo).label }}</span>
               </div>
-              <span class="font-mono text-[10px]">{{ formatFileDate(archivo.fecha_subida) }}</span>
+              <span class="font-mono text-micro">{{ formatFileDate(archivo.fecha_subida) }}</span>
             </div>
           </div>
         </div>
@@ -358,7 +358,7 @@ const filteredAndSortedArchivos = computed(() => {
         <div class="overflow-x-auto">
           <table class="w-full text-left text-xs" aria-label="Tabla de documentos formales de legajo">
             <thead
-              class="border-b border-border bg-muted/30 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground select-none">
+              class="border-b border-border bg-muted/30 text-micro font-semibold uppercase tracking-wider text-muted-foreground select-none">
               <tr>
                 <th scope="col" class="px-3 sm:px-4 py-2.5 font-semibold">Documento / Sigla</th>
                 <th scope="col" class="px-3 sm:px-4 py-2.5 font-semibold">Descripción</th>
@@ -369,18 +369,18 @@ const filteredAndSortedArchivos = computed(() => {
             <tbody class="divide-y divide-border">
               <tr v-for="doc in documentos" :key="doc.id" class="transition-colors hover:bg-muted/40">
                 <td class="px-3 sm:px-4 py-2.5 whitespace-nowrap align-top">
-                  <span class="font-semibold text-foreground text-[11px] block">{{ doc.sigla }}</span>
+                  <span class="font-semibold text-foreground text-meta block">{{ doc.sigla }}</span>
                 </td>
                 <td class="px-3 sm:px-4 py-2.5 min-w-0 align-top">
-                  <p class="text-[10px] text-muted-foreground leading-relaxed">{{ doc.descripcion }}</p>
+                  <p class="text-micro text-muted-foreground leading-relaxed">{{ doc.descripcion }}</p>
                 </td>
-                <td class="px-3 sm:px-4 py-2.5 font-mono text-[11px] text-muted-foreground whitespace-nowrap align-top">
+                <td class="px-3 sm:px-4 py-2.5 font-mono text-meta text-muted-foreground whitespace-nowrap align-top">
                   {{ formatDate(doc.fecha) }}
                 </td>
                 <td class="px-3 sm:px-4 py-2.5 text-right whitespace-nowrap align-top">
                   <div v-if="getArchivoDeDocumento(doc.id)" class="inline-flex items-center gap-1.5 justify-end">
                     <button type="button" @click="handleOpenFile(getArchivoDeDocumento(doc.id)!)"
-                      class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[11px] font-medium bg-rose-500/10 text-rose-600 dark:text-rose-400 hover:bg-rose-500/20 transition-colors cursor-pointer"
+                      class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-meta font-medium bg-rose-500/10 text-rose-600 dark:text-rose-400 hover:bg-rose-500/20 transition-colors cursor-pointer"
                       :title="getArchivoDeDocumento(doc.id)?.original_name">
                       <IconFileText class="size-3 shrink-0" />
                       <span>Ver PDF</span>
@@ -393,7 +393,7 @@ const filteredAndSortedArchivos = computed(() => {
                     </button>
                   </div>
                   <button v-else type="button"
-                    class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[11px] font-medium text-primary hover:bg-primary/10 border border-primary/20 hover:border-primary/40 transition-colors cursor-pointer"
+                    class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-meta font-medium text-primary hover:bg-primary/10 border border-primary/20 hover:border-primary/40 transition-colors cursor-pointer"
                     title="Vincular URL como PDF a este documento" @click="emit('vincularUrl', doc)">
                     <IconLink class="size-3 shrink-0" />
                     <span>Vincular URL</span>

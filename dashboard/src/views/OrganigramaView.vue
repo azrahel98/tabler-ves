@@ -534,7 +534,7 @@ const closeNodeDetail = () => {
               title="Alejar organigrama" @click="zoomOut">
               <IconZoomOut class="size-3.5" />
             </button>
-            <span class="text-[11px] font-mono px-1.5 font-semibold text-muted-foreground select-none">
+            <span class="text-meta font-mono px-1.5 font-semibold text-muted-foreground select-none">
               {{ Math.round(zoomLevel * 100) }}%
             </span>
             <button type="button"
@@ -543,7 +543,7 @@ const closeNodeDetail = () => {
               <IconZoomIn class="size-3.5" />
             </button>
             <button type="button"
-              class="px-2 py-1 rounded-lg text-[10px] font-semibold text-muted-foreground hover:text-foreground hover:bg-background transition border-s border-border cursor-pointer"
+              class="px-2 py-1 rounded-lg text-micro font-semibold text-muted-foreground hover:text-foreground hover:bg-background transition border-s border-border cursor-pointer"
               title="Restablecer zoom a 100%" @click="resetZoom">
               100%
             </button>
@@ -656,7 +656,7 @@ const closeNodeDetail = () => {
             :style="{ zoom: zoomLevel }">
           <div class="flex flex-col items-center">
             <span
-              class="text-[9px] font-bold uppercase tracking-wider text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-950/70 px-2.5 py-0.5 rounded-full border border-blue-200 dark:border-blue-800 shadow-2xs mb-1">
+              class="text-nano font-bold uppercase tracking-wider text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-950/70 px-2.5 py-0.5 rounded-full border border-blue-200 dark:border-blue-800 shadow-2xs mb-1">
               Alta Dirección
             </span>
 
@@ -676,7 +676,7 @@ const closeNodeDetail = () => {
           <div v-if="allStaffNodes.length > 0" class="flex flex-col items-center w-full mt-0">
             <div class="w-0.5 h-3.5 bg-border"></div>
             <span
-              class="text-[9px] font-bold uppercase tracking-wider text-muted-foreground bg-muted/80 px-2.5 py-0.5 rounded-full border border-border shadow-2xs">
+              class="text-nano font-bold uppercase tracking-wider text-muted-foreground bg-muted/80 px-2.5 py-0.5 rounded-full border border-border shadow-2xs">
               Órganos de Asesoramiento, Apoyo y Control
             </span>
             <div class="w-0.5 h-2.5 bg-border"></div>
@@ -692,7 +692,7 @@ const closeNodeDetail = () => {
                 <div class="w-0.5 h-2.5 bg-border"></div>
 
                 <div class="flex flex-col items-center">
-                  <span class="text-[8px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md border mb-1"
+                  <span class="text-nano font-bold uppercase tracking-wider px-2 py-0.5 rounded-md border mb-1"
                     :class="getCategoryBadgeClass(item.category)">
                     {{ item.category }}
                   </span>
@@ -702,7 +702,7 @@ const closeNodeDetail = () => {
                     @select="openNodeDetail" @profile="goToPerfil" />
 
                   <button v-if="item.node.subgerencias && item.node.subgerencias.length > 0" type="button"
-                    class="mt-1 px-2 py-0.5 rounded-full text-[9px] font-semibold border transition-all flex items-center gap-1 shadow-2xs cursor-pointer"
+                    class="mt-1 px-2 py-0.5 rounded-full text-nano font-semibold border transition-all flex items-center gap-1 shadow-2xs cursor-pointer min-h-8 lg:min-h-0"
                     :class="isNodeExpanded(item.node.id)
                       ? 'bg-muted text-foreground border-border'
                       : 'bg-background hover:bg-muted text-muted-foreground hover:text-foreground border-border'"
@@ -730,7 +730,7 @@ const closeNodeDetail = () => {
           <div v-if="displayedGerenciasLinea.length > 0" class="flex flex-col items-center w-full mt-0">
             <div class="w-0.5 h-3.5 bg-border"></div>
             <span
-              class="text-[9px] font-bold uppercase tracking-wider text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/70 px-2.5 py-0.5 rounded-full border border-amber-200 dark:border-amber-800 shadow-2xs">
+              class="text-nano font-bold uppercase tracking-wider text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/70 px-2.5 py-0.5 rounded-full border border-amber-200 dark:border-amber-800 shadow-2xs">
               Órganos de Línea
             </span>
             <div class="w-0.5 h-2.5 bg-border"></div>
@@ -751,7 +751,7 @@ const closeNodeDetail = () => {
                     @profile="goToPerfil" />
 
                   <button v-if="gerencia.subgerencias && gerencia.subgerencias.length > 0" type="button"
-                    class="mt-1 px-2 py-0.5 rounded-full text-[9px] font-semibold border transition-all flex items-center gap-1 shadow-2xs cursor-pointer"
+                    class="mt-1 px-2 py-0.5 rounded-full text-nano font-semibold border transition-all flex items-center gap-1 shadow-2xs cursor-pointer min-h-8 lg:min-h-0"
                     :class="isNodeExpanded(gerencia.id)
                       ? 'bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-200 border-amber-300 dark:border-amber-700'
                       : 'bg-background hover:bg-muted text-muted-foreground hover:text-foreground border-border'"
@@ -763,7 +763,7 @@ const closeNodeDetail = () => {
                   </button>
 
                   <div v-else
-                    class="mt-1 text-[9px] text-muted-foreground/80 italic text-center px-2 py-0.5 rounded border border-dashed border-border/60">
+                    class="mt-1 text-nano text-muted-foreground/80 italic text-center px-2 py-0.5 rounded border border-dashed border-border/60">
                     Sin subgerencias
                   </div>
 
@@ -796,7 +796,7 @@ const closeNodeDetail = () => {
               <IconBuildingSkyscraper class="size-5" />
             </div>
             <div>
-              <span class="text-[10px] font-mono font-semibold text-primary uppercase tracking-wider">
+              <span class="text-micro font-mono font-semibold text-primary uppercase tracking-wider">
                 Ficha Institucional
               </span>
               <h3 class="text-sm font-bold text-foreground leading-snug">
@@ -843,7 +843,7 @@ const closeNodeDetail = () => {
               <p class="text-xs font-bold text-foreground truncate">
                 {{ selectedNodeDetail.jefe }}
               </p>
-              <p class="text-[11px] text-muted-foreground font-mono mt-0.5">
+              <p class="text-meta text-muted-foreground font-mono mt-0.5">
                 DNI: {{ selectedNodeDetail.dni || 'No registrado' }}
               </p>
             </div>
@@ -869,7 +869,7 @@ const closeNodeDetail = () => {
             <div v-for="(sub, idx) in selectedNodeDetail.subgerencias" :key="sub.id || idx"
               class="p-2.5 flex items-center justify-between gap-2 hover:bg-muted/30 transition">
               <span class="truncate font-medium text-foreground">{{ sub.area }}</span>
-              <span v-if="sub.jefe" class="text-[10px] text-muted-foreground truncate max-w-36 font-mono">
+              <span v-if="sub.jefe" class="text-micro text-muted-foreground truncate max-w-36 font-mono">
                 {{ sub.jefe }}
               </span>
             </div>

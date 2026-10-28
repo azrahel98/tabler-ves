@@ -116,7 +116,7 @@ const chartOptions = computed<ChartOptions<'bar'>>(() => {
     <div class="flex items-center justify-between border-b border-border pb-3 mb-3.5 flex-wrap gap-2">
       <div>
         <h3 class="font-semibold text-foreground tracking-tight text-sm">{{ titulo }}</h3>
-        <p class="text-[11px] text-muted-foreground">{{ subtitulo }}</p>
+        <p class="text-meta text-muted-foreground">{{ subtitulo }}</p>
       </div>
       <Badge v-if="badgeLabel" variant="outline" size="xs">{{ badgeLabel }}</Badge>
     </div>

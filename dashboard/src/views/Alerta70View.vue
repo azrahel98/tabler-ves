@@ -208,7 +208,7 @@ const obtenerConfigEstado = (estado: Alerta70Estado) => {
         badgeVariant: 'primary' as const,
         dotClass: 'bg-primary',
         bgClass: 'bg-primary/10 text-primary border-primary/20',
-        desc: '69 años con más de 15 días o meses previos al cumpleaños 70',
+        desc: 'Cumple 70 este año, con más de 15 días restantes',
       }
     case 'excepcional':
       return {
@@ -275,9 +275,9 @@ const irAlPerfil = (dni: string) => {
           <span class="text-2xl font-bold tracking-tight text-foreground font-mono">
             {{ conteoPorEstado.total }}
           </span>
-          <span class="text-[11px] text-muted-foreground">Servidores</span>
+          <span class="text-meta text-muted-foreground">Servidores</span>
         </div>
-        <p class="text-[10px] text-muted-foreground mt-1 truncate">Edad 69 años o más</p>
+        <p class="text-micro text-muted-foreground mt-1 truncate">Cumplen 70 este año o ya los cumplieron</p>
       </Card>
 
       <Card
@@ -293,9 +293,9 @@ const irAlPerfil = (dni: string) => {
           <span class="text-2xl font-bold tracking-tight text-rose-600 dark:text-rose-400 font-mono">
             {{ conteoPorEstado.excedido }}
           </span>
-          <span class="text-[11px] text-rose-600/70 dark:text-rose-400/70">Urgente</span>
+          <span class="text-meta text-rose-600/70 dark:text-rose-400/70">Urgente</span>
         </div>
-        <p class="text-[10px] text-muted-foreground mt-1 truncate">70+ o cese inminente</p>
+        <p class="text-micro text-muted-foreground mt-1 truncate">70+ o cese inminente</p>
       </Card>
 
       <Card
@@ -311,9 +311,9 @@ const irAlPerfil = (dni: string) => {
           <span class="text-2xl font-bold tracking-tight text-amber-600 dark:text-amber-400 font-mono">
             {{ conteoPorEstado.alLimite }}
           </span>
-          <span class="text-[11px] text-amber-600/70 dark:text-amber-400/70">6 a 15 días</span>
+          <span class="text-meta text-amber-600/70 dark:text-amber-400/70">6 a 15 días</span>
         </div>
-        <p class="text-[10px] text-muted-foreground mt-1 truncate">Mes de cumpleaños</p>
+        <p class="text-micro text-muted-foreground mt-1 truncate">Mes de cumpleaños</p>
       </Card>
 
       <Card
@@ -329,9 +329,9 @@ const irAlPerfil = (dni: string) => {
           <span class="text-2xl font-bold tracking-tight text-primary font-mono">
             {{ conteoPorEstado.atiempo }}
           </span>
-          <span class="text-[11px] text-muted-foreground">Preventivo</span>
+          <span class="text-meta text-muted-foreground">Preventivo</span>
         </div>
-        <p class="text-[10px] text-muted-foreground mt-1 truncate">Más de 15 días</p>
+        <p class="text-micro text-muted-foreground mt-1 truncate">Más de 15 días</p>
       </Card>
 
       <Card
@@ -347,9 +347,9 @@ const irAlPerfil = (dni: string) => {
           <span class="text-2xl font-bold tracking-tight text-purple-600 dark:text-purple-400 font-mono">
             {{ conteoPorEstado.excepcional }}
           </span>
-          <span class="text-[11px] text-purple-600/70 dark:text-purple-400/70">D.L. 1057</span>
+          <span class="text-meta text-purple-600/70 dark:text-purple-400/70">D.L. 1057</span>
         </div>
-        <p class="text-[10px] text-muted-foreground mt-1 truncate">70+ bajo CAS</p>
+        <p class="text-micro text-muted-foreground mt-1 truncate">70+ bajo CAS</p>
       </Card>
     </div>
 
@@ -460,7 +460,7 @@ const irAlPerfil = (dni: string) => {
             >
               {{ row.nombre }}
             </p>
-            <span class="font-mono text-[11px] text-muted-foreground">
+            <span class="font-mono text-meta text-muted-foreground">
               DNI: {{ row.dni }}
             </span>
           </div>
@@ -475,7 +475,7 @@ const irAlPerfil = (dni: string) => {
             </span>
             <span class="text-xs text-muted-foreground">años</span>
           </div>
-          <div class="flex items-center gap-1 text-[11px] text-muted-foreground font-mono">
+          <div class="flex items-center gap-1 text-meta text-muted-foreground font-mono">
             <IconCalendar class="size-3 shrink-0" />
             <span>{{ row.nacimiento ? formatDate(row.nacimiento) : '-' }}</span>
           </div>
@@ -487,7 +487,7 @@ const irAlPerfil = (dni: string) => {
           <Badge variant="secondary" size="xs" class="font-medium truncate max-w-42.5">
             {{ row.regimen || 'Sin régimen' }}
           </Badge>
-          <div v-if="row.plaza" class="text-[11px] font-mono text-muted-foreground">
+          <div v-if="row.plaza" class="text-meta font-mono text-muted-foreground">
             Plaza: <strong class="text-foreground">{{ row.plaza }}</strong>
           </div>
         </div>
@@ -498,7 +498,7 @@ const irAlPerfil = (dni: string) => {
           <p class="font-medium text-foreground text-xs whitespace-normal text-wrap wrap-break-word" :title="row.cargo">
             {{ row.cargo || 'Sin cargo' }}
           </p>
-          <p class="text-[11px] text-muted-foreground whitespace-normal text-wrap wrap-break-word" :title="row.area">
+          <p class="text-meta text-muted-foreground whitespace-normal text-wrap wrap-break-word" :title="row.area">
             {{ row.area || 'Sin área' }}
           </p>
         </div>
@@ -507,13 +507,13 @@ const irAlPerfil = (dni: string) => {
       <template #cell-estado="{ row }">
         <div class="space-y-1">
           <span
-            class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium border"
+            class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-meta font-medium border"
             :class="obtenerConfigEstado(row.estado).bgClass"
           >
             <span class="size-1.5 rounded-full" :class="obtenerConfigEstado(row.estado).dotClass"></span>
             <span>{{ obtenerConfigEstado(row.estado).label }}</span>
           </span>
-          <p class="text-[10px] text-muted-foreground max-w-47.5 leading-tight">
+          <p class="text-micro text-muted-foreground max-w-47.5 leading-tight">
             {{ obtenerConfigEstado(row.estado).desc }}
           </p>
         </div>

@@ -145,7 +145,7 @@ const handleTabKeyDown = (event: KeyboardEvent) => {
             @click="emit('update:activeTab', 'vinculos')">
             <IconBriefcase class="size-4" />
             <span>Vínculos Laborales</span>
-            <span class="px-1.5 py-0.2 text-[10px] rounded-full bg-muted text-foreground">
+            <span class="px-1.5 py-0.2 text-micro rounded-full bg-muted text-foreground">
               {{ vinculosCount }}
             </span>
           </button>
@@ -157,7 +157,7 @@ const handleTabKeyDown = (event: KeyboardEvent) => {
             @click="emit('update:activeTab', 'legajo')">
             <IconFileText class="size-4" />
             <span>Legajo Digital</span>
-            <span class="px-1.5 py-0.2 text-[10px] rounded-full bg-muted text-foreground">
+            <span class="px-1.5 py-0.2 text-micro rounded-full bg-muted text-foreground">
               {{ archivosCount }}
             </span>
           </button>
@@ -169,7 +169,7 @@ const handleTabKeyDown = (event: KeyboardEvent) => {
             @click="emit('update:activeTab', 'grados')">
             <IconSchool class="size-4" />
             <span>Grados Académicos</span>
-            <span class="px-1.5 py-0.2 text-[10px] rounded-full bg-muted text-foreground">
+            <span class="px-1.5 py-0.2 text-micro rounded-full bg-muted text-foreground">
               {{ gradosCount }}
             </span>
           </button>

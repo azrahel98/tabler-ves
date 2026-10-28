@@ -88,7 +88,7 @@ const chartOptions = computed<ChartOptions<'line'>>(() => {
     <div class="flex items-center justify-between border-b border-border pb-3 mb-3.5 flex-wrap gap-2">
       <div>
         <h3 class="font-semibold text-foreground tracking-tight text-sm">Años de Antigüedad</h3>
-        <p class="text-[11px] text-muted-foreground">Retención y permanencia laboral</p>
+        <p class="text-meta text-muted-foreground">Retención y permanencia laboral</p>
       </div>
       <Badge variant="outline" size="xs">Trayectoria</Badge>
     </div>

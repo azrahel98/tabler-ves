@@ -59,7 +59,7 @@ const cardClasses = computed(() => [
           <h3 v-if="props.title" class="font-semibold text-foreground tracking-tight text-sm">
             {{ props.title }}
           </h3>
-          <p v-if="props.description" class="text-[11px] text-muted-foreground">
+          <p v-if="props.description" class="text-meta text-muted-foreground">
             {{ props.description }}
           </p>
         </div>

@@ -55,7 +55,7 @@ const handleClose = (isDeleting: boolean) => {
             <h3 id="modal-eliminar-title" class="font-bold text-foreground text-sm tracking-tight truncate">
               Eliminar Archivo del Legajo
             </h3>
-            <p class="text-[11px] text-muted-foreground truncate">
+            <p class="text-meta text-muted-foreground truncate">
               Esta acción no se puede deshacer
             </p>
           </div>
@@ -80,7 +80,7 @@ const handleClose = (isDeleting: boolean) => {
               {{ archivo.original_name }}
             </span>
           </div>
-          <div class="flex items-center gap-2 text-[11px] text-muted-foreground">
+          <div class="flex items-center gap-2 text-meta text-muted-foreground">
             <span v-if="archivo.external_url" class="inline-flex items-center gap-1 text-primary">
               <IconLink class="size-3" />
               <span>Enlace URL externo</span>
@@ -91,7 +91,7 @@ const handleClose = (isDeleting: boolean) => {
           </div>
         </div>
 
-        <div class="p-3 rounded-xl bg-destructive/10 border border-destructive/20 text-destructive text-[11px] flex items-start gap-2.5">
+        <div class="p-3 rounded-xl bg-destructive/10 border border-destructive/20 text-destructive text-meta flex items-start gap-2.5">
           <IconAlertTriangle class="size-4 shrink-0 mt-0.5" />
           <div class="space-y-1">
             <p class="font-medium text-foreground">

@@ -43,7 +43,7 @@ const sortedGrados = computed(() => {
           <span>{{ sortOrder === 'desc' ? 'Más recientes' : 'Más antiguos' }}</span>
         </button>
 
-        <span class="px-2 py-0.5 rounded bg-muted text-[11px] font-mono text-muted-foreground font-medium shrink-0">
+        <span class="px-2 py-0.5 rounded bg-muted text-meta font-mono text-muted-foreground font-medium shrink-0">
           {{ grados.length }} {{ grados.length === 1 ? 'registro' : 'registros' }}
         </span>
       </div>
@@ -57,7 +57,7 @@ const sortedGrados = computed(() => {
       <div class="overflow-x-auto">
         <table class="w-full text-left text-xs" aria-label="Tabla de formación y grados académicos">
           <thead
-            class="border-b border-border bg-muted/30 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground select-none">
+            class="border-b border-border bg-muted/30 text-micro font-semibold uppercase tracking-wider text-muted-foreground select-none">
             <tr>
               <th scope="col" class="px-3 sm:px-4 py-2.5 font-semibold">Grado / Profesión</th>
               <th scope="col" class="hidden sm:table-cell px-3 sm:px-4 py-2.5 font-semibold">Universidad / Institución
@@ -71,23 +71,23 @@ const sortedGrados = computed(() => {
           <tbody class="divide-y divide-border">
             <tr v-for="grado in sortedGrados" :key="grado.id" class="transition-colors hover:bg-muted/40">
               <td class="px-3 sm:px-4 py-2.5 min-w-0">
-                <span class="font-semibold text-foreground text-[11px] block wrap-break-word break-words"
+                <span class="font-semibold text-foreground text-meta block wrap-break-word break-words"
                   :title="grado.profesion">
                   {{ grado.profesion }}
                 </span>
-                <span class="text-[10px] text-muted-foreground block sm:hidden wrap-break-word break-words mt-0.5"
+                <span class="text-micro text-muted-foreground block sm:hidden wrap-break-word break-words mt-0.5"
                   :title="grado.universidad">
                   {{ grado.universidad }}
                 </span>
                 <div v-if="grado.abrv" class="flex items-center gap-1.5 md:hidden mt-1">
-                  <span class="px-1.5 py-0.2 rounded bg-muted text-[10px] font-mono text-muted-foreground uppercase">
+                  <span class="px-1.5 py-0.2 rounded bg-muted text-micro font-mono text-muted-foreground uppercase">
                     {{ grado.abrv }}
                   </span>
                 </div>
               </td>
 
               <td class="hidden sm:table-cell px-3 sm:px-4 py-2.5 min-w-0">
-                <span class="text-[11px] text-muted-foreground block wrap-break-word break-words"
+                <span class="text-meta text-muted-foreground block wrap-break-word break-words"
                   :title="grado.universidad">
                   {{ grado.universidad }}
                 </span>
@@ -101,13 +101,13 @@ const sortedGrados = computed(() => {
 
               <td class="hidden md:table-cell px-3 sm:px-4 py-2.5 text-center whitespace-nowrap">
                 <span
-                  class="px-2 py-0.5 rounded bg-muted text-[11px] font-mono text-muted-foreground font-medium uppercase">
+                  class="px-2 py-0.5 rounded bg-muted text-meta font-mono text-muted-foreground font-medium uppercase">
                   {{ grado.abrv || '-' }}
                 </span>
               </td>
 
               <td
-                class="px-3 sm:px-4 py-2.5 text-right font-mono font-medium text-foreground tabular-nums text-[11px] whitespace-nowrap">
+                class="px-3 sm:px-4 py-2.5 text-right font-mono font-medium text-foreground tabular-nums text-meta whitespace-nowrap">
                 {{ formatDate(grado.fecha) }}
               </td>
             </tr>

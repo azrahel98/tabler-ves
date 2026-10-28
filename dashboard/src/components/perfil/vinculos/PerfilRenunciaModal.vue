@@ -264,7 +264,7 @@ const handleSubmit = () => {
             <h3 id="modal-renuncia-title" class="font-bold text-foreground text-sm tracking-tight truncate">
               Registrar Renuncia / Cese de Vínculo
             </h3>
-            <p class="text-[11px] text-muted-foreground truncate">
+            <p class="text-meta text-muted-foreground truncate">
               Formalización de la conclusión laboral mediante acto administrativo
             </p>
           </div>
@@ -294,7 +294,7 @@ const handleSubmit = () => {
           <div class="flex flex-wrap items-center justify-between gap-2">
             <div class="flex items-center gap-2 min-w-0">
               <span class="font-bold text-foreground text-xs truncate">{{ servidorNombre || 'Servidor' }}</span>
-              <span v-if="servidorDni" class="font-mono text-muted-foreground text-[11px]">
+              <span v-if="servidorDni" class="font-mono text-muted-foreground text-meta">
                 (DNI {{ servidorDni }})
               </span>
             </div>
@@ -302,7 +302,7 @@ const handleSubmit = () => {
           </div>
 
           <div
-            class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] text-muted-foreground pt-1 border-t border-border/60"
+            class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-meta text-muted-foreground pt-1 border-t border-border/60"
           >
             <div class="flex items-center gap-1.5 truncate">
               <IconBriefcase class="size-3.5 text-muted-foreground shrink-0" />
@@ -343,7 +343,7 @@ const handleSubmit = () => {
                   {{ t.nombre }}
                 </option>
               </select>
-              <p v-if="formErrors.tipoDocumento" class="text-[10px] text-destructive font-medium">
+              <p v-if="formErrors.tipoDocumento" class="text-micro text-destructive font-medium">
                 {{ formErrors.tipoDocumento }}
               </p>
             </div>
@@ -363,7 +363,7 @@ const handleSubmit = () => {
                 class="w-full h-9 px-2.5 rounded-lg border bg-background text-foreground text-xs focus:outline-hidden focus:ring-2 focus:ring-primary focus:border-primary transition font-mono"
                 :class="formErrors.numeroDocumento ? 'border-destructive' : 'border-input'"
               />
-              <p v-if="formErrors.numeroDocumento" class="text-[10px] text-destructive font-medium">
+              <p v-if="formErrors.numeroDocumento" class="text-micro text-destructive font-medium">
                 {{ formErrors.numeroDocumento }}
               </p>
             </div>
@@ -383,7 +383,7 @@ const handleSubmit = () => {
                 class="w-full h-9 px-2.5 rounded-lg border bg-background text-foreground text-xs focus:outline-hidden focus:ring-2 focus:ring-primary focus:border-primary transition font-mono"
                 :class="formErrors.añoDocumento ? 'border-destructive' : 'border-input'"
               />
-              <p v-if="formErrors.añoDocumento" class="text-[10px] text-destructive font-medium">
+              <p v-if="formErrors.añoDocumento" class="text-micro text-destructive font-medium">
                 {{ formErrors.añoDocumento }}
               </p>
             </div>
@@ -391,7 +391,7 @@ const handleSubmit = () => {
 
           <div
             v-if="esSunat"
-            class="p-2.5 rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-700 dark:text-blue-300 text-[11px] flex items-center gap-2"
+            class="p-2.5 rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-700 dark:text-blue-300 text-meta flex items-center gap-2"
           >
             <IconCheck class="size-3.5 text-blue-600 dark:text-blue-400 shrink-0" />
             <span>
@@ -438,7 +438,7 @@ const handleSubmit = () => {
               </option>
             </select>
 
-            <div v-if="areaSeleccionada" class="text-[11px] text-muted-foreground flex items-center gap-1.5">
+            <div v-if="areaSeleccionada" class="text-meta text-muted-foreground flex items-center gap-1.5">
               <IconCheck class="size-3.5 text-emerald-500 shrink-0" />
               <span>
                 Área seleccionada:
@@ -447,14 +447,14 @@ const handleSubmit = () => {
               </span>
             </div>
 
-            <p v-if="formErrors.areaId" class="text-[10px] text-destructive font-medium">
+            <p v-if="formErrors.areaId" class="text-micro text-destructive font-medium">
               {{ formErrors.areaId }}
             </p>
           </div>
 
           <div
             v-else-if="formData.tipoDocumento && !esSunat"
-            class="p-2.5 rounded-lg bg-muted/40 border border-border/60 text-muted-foreground text-[11px] flex items-center gap-2"
+            class="p-2.5 rounded-lg bg-muted/40 border border-border/60 text-muted-foreground text-meta flex items-center gap-2"
           >
             <IconCheck class="size-3.5 text-emerald-500 shrink-0" />
             <span>
@@ -475,7 +475,7 @@ const handleSubmit = () => {
                 class="w-full h-9 px-2.5 rounded-lg border bg-background text-foreground text-xs focus:outline-hidden focus:ring-2 focus:ring-primary focus:border-primary transition font-mono"
                 :class="formErrors.fecha ? 'border-destructive' : 'border-input'"
               />
-              <p v-if="formErrors.fecha" class="text-[10px] text-destructive font-medium">
+              <p v-if="formErrors.fecha" class="text-micro text-destructive font-medium">
                 {{ formErrors.fecha }}
               </p>
             </div>
@@ -499,7 +499,7 @@ const handleSubmit = () => {
               <label for="renuncia-descripcion" class="block font-medium text-foreground text-[11.5px]">
                 Descripción / Motivo <span class="text-rose-500">*</span>
               </label>
-              <span v-if="esSunat" class="text-[10px] text-muted-foreground font-medium">
+              <span v-if="esSunat" class="text-micro text-muted-foreground font-medium">
                 Bloqueado para SUNAT
               </span>
             </div>
@@ -514,7 +514,7 @@ const handleSubmit = () => {
               class="w-full p-2.5 rounded-lg border bg-background text-foreground text-xs focus:outline-hidden focus:ring-2 focus:ring-primary focus:border-primary transition resize-none disabled:bg-muted/50 disabled:text-muted-foreground disabled:cursor-not-allowed"
               :class="formErrors.descripcion ? 'border-destructive' : 'border-input'"
             ></textarea>
-            <p v-if="formErrors.descripcion" class="text-[10px] text-destructive font-medium">
+            <p v-if="formErrors.descripcion" class="text-micro text-destructive font-medium">
               {{ formErrors.descripcion }}
             </p>
           </div>

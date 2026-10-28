@@ -20,6 +20,7 @@ import {
   IconBuildingSkyscraper,
   IconTrash,
   IconEdit,
+  IconArrowRight,
 } from '@tabler/icons-vue'
 
 interface Props {
@@ -105,6 +106,34 @@ const handleConfirmarEliminar = (eventoId: number) => {
   emit('eliminarEvento', eventoId)
   eventoAEliminarId.value = null
 }
+
+const getDocLabel = (tipo?: string | null, num?: string | null): string => {
+  return [tipo, num].filter(Boolean).join(' N° ') || 'Sin número'
+}
+
+const tieneDocCierre = (ev: EventoVinculoDetalle): boolean => {
+  return Boolean(ev.doc_salida_id || ev.numero_doc_salida || ev.fecha_salida)
+}
+
+const mismoDocumento = (ev: EventoVinculoDetalle): boolean => {
+  if (!tieneDocCierre(ev)) return false
+
+  if ((ev.fecha_salida || ev.doc_salida_id) && !ev.numero_doc_salida?.trim()) {
+    return true
+  }
+
+  const norm = (val?: string | null) => (val ?? '').trim().toLowerCase()
+  const tipoInicio = norm(ev.tipo_doc_inicio)
+  const numInicio = norm(ev.numero_doc_inicio)
+  const tipoSalida = norm(ev.tipo_doc_salida)
+  const numSalida = norm(ev.numero_doc_salida)
+
+  return (
+    tipoInicio === tipoSalida &&
+    numInicio === numSalida &&
+    Boolean(numInicio || tipoInicio)
+  )
+}
 </script>
 
 <template>
@@ -139,7 +168,7 @@ const handleConfirmarEliminar = (eventoId: number) => {
                     {{ eventos.length }} {{ eventos.length === 1 ? 'evento' : 'eventos' }}
                   </Badge>
                 </div>
-                <p class="text-[11px] text-muted-foreground truncate mt-0.5">
+                <p class="text-meta text-muted-foreground truncate mt-0.5">
                   {{ vinculo.regimen }} &bull; Plaza {{ vinculo.codigo || '-' }} &bull; {{ vinculo.cargo }}
                 </p>
               </div>
@@ -194,38 +223,38 @@ const handleConfirmarEliminar = (eventoId: number) => {
 
                     <!-- Insignia única de estado -->
                     <span v-if="getEstadoVigencia(ev) === 'cerrado'"
-                      class="inline-flex items-center gap-1 text-[10px] font-medium text-muted-foreground bg-muted px-2 py-0.5 rounded-md">
+                      class="inline-flex items-center gap-1 text-micro font-medium text-muted-foreground bg-muted px-2 py-0.5 rounded-md">
                       Finalizado
                     </span>
                     <span v-else-if="getEstadoVigencia(ev) === 'vencido'"
-                      class="inline-flex items-center gap-1.5 text-[10px] font-semibold text-amber-600 dark:text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-md"
+                      class="inline-flex items-center gap-1.5 text-micro font-semibold text-amber-600 dark:text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-md"
                       title="El evento sigue abierto en el registro porque no tiene documento de salida">
                       <span class="size-1.5 rounded-full bg-amber-500"></span>
                       Vencido - pendiente de cierre
                     </span>
                     <span v-else-if="getEstadoVigencia(ev) === 'futuro'"
-                      class="inline-flex items-center gap-1 text-[10px] font-medium text-muted-foreground border border-border px-2 py-0.5 rounded-md">
+                      class="inline-flex items-center gap-1 text-micro font-medium text-muted-foreground border border-border px-2 py-0.5 rounded-md">
                       Programado
                     </span>
                     <span v-else-if="getEstadoVigencia(ev) === 'sin_fechas'"
-                      class="inline-flex items-center gap-1.5 text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-md">
+                      class="inline-flex items-center gap-1.5 text-micro font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-md">
                       <span class="size-1.5 rounded-full bg-emerald-500"></span>
                       Activo (sin periodo)
                     </span>
                     <template v-else>
                       <span
-                        class="inline-flex items-center gap-1.5 text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-md">
+                        class="inline-flex items-center gap-1.5 text-micro font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-md">
                         <span class="size-1.5 rounded-full bg-emerald-500"></span>
                         Activo
                       </span>
                       <span v-if="getDiasParaVencer(ev) !== null && getDiasParaVencer(ev)! >= 0 && getDiasParaVencer(ev)! <= 7"
-                        class="text-[10px] text-amber-600 dark:text-amber-400 font-medium">
+                        class="text-micro text-amber-600 dark:text-amber-400 font-medium">
                         {{ formatDiasParaVencer(getDiasParaVencer(ev)!) }}
                       </span>
                     </template>
                   </div>
 
-                  <span class="font-mono text-[10px] text-muted-foreground">
+                  <span class="font-mono text-micro text-muted-foreground">
                     #{{ ev.id }}
                   </span>
                 </div>
@@ -234,7 +263,7 @@ const handleConfirmarEliminar = (eventoId: number) => {
                 <div v-if="esEncargo(ev.tipo_evento) && ev.fecha_desde"
                   class="p-2.5 rounded-lg border border-amber-500/30 bg-amber-500/5 space-y-1">
                   <div class="text-xs text-foreground font-medium">
-                    <span class="text-muted-foreground text-[11px] font-normal">Periodo: </span>
+                    <span class="text-muted-foreground text-meta font-normal">Periodo: </span>
                     <span>del {{ formatDate(ev.fecha_desde) }}</span>
                     <span v-if="ev.fecha_hasta"> al {{ formatDate(ev.fecha_hasta) }}</span>
                     <span v-else> en adelante</span>
@@ -247,63 +276,131 @@ const handleConfirmarEliminar = (eventoId: number) => {
                     <IconBuildingSkyscraper class="size-3.5 text-primary shrink-0" />
                     <span class="truncate">{{ ev.nueva_area }}</span>
                   </div>
-                  <div v-if="ev.nuevo_cargo" class="text-muted-foreground text-[11px] truncate pl-5">
+                  <div v-if="ev.nuevo_cargo" class="text-muted-foreground text-meta truncate pl-5">
                     {{ ev.nuevo_cargo }}
                   </div>
                 </div>
 
-                <div class="space-y-2.5 border-t border-border/60 pt-2.5">
-                  <div class="space-y-1">
-                    <div class="flex items-center justify-between text-[11px]">
-                      <span class="text-muted-foreground flex items-center gap-1.5">
-                        <IconFileText class="size-3.5 text-primary shrink-0" /> Doc. Inicio
-                      </span>
-                      <span class="font-mono text-foreground font-medium">
-                        {{ ev.fecha_inicio ? formatDate(ev.fecha_inicio) : '-' }}
+                <div class="space-y-2 border-t border-border/60 pt-2.5">
+                  <!-- Encabezado de sección -->
+                  <div class="flex items-center justify-between text-micro uppercase tracking-wide text-muted-foreground">
+                    <span>Documentos</span>
+                    <span>{{ mismoDocumento(ev) || !tieneDocCierre(ev) ? '1 documento' : '2 documentos' }}</span>
+                  </div>
+
+                  <!-- Caso DOCUMENTO ÚNICO -->
+                  <div v-if="mismoDocumento(ev)"
+                    class="p-2.5 rounded-lg border border-border/70 bg-muted/20 space-y-1.5">
+                    <div class="flex items-center justify-between gap-2">
+                      <p class="font-semibold text-xs text-foreground truncate"
+                        :title="getDocLabel(ev.tipo_doc_inicio || ev.tipo_doc_salida, ev.numero_doc_inicio || ev.numero_doc_salida)">
+                        {{ getDocLabel(ev.tipo_doc_inicio || ev.tipo_doc_salida, ev.numero_doc_inicio || ev.numero_doc_salida) }}
+                      </p>
+                      <span
+                        class="inline-flex items-center px-1.5 py-0.5 rounded text-micro font-medium bg-primary/10 text-primary border border-primary/20 shrink-0">
+                        Inicio y cierre
                       </span>
                     </div>
-                    <p class="font-medium text-foreground text-xs truncate"
-                      :title="[ev.tipo_doc_inicio, ev.numero_doc_inicio].filter(Boolean).join(' N° ')">
-                      {{ [ev.tipo_doc_inicio, ev.numero_doc_inicio].filter(Boolean).join(' N° ') || 'Sin número' }}
-                    </p>
-                    <p v-if="ev.descrip_inicio" class="text-muted-foreground text-[11px] leading-relaxed line-clamp-2"
-                      :title="ev.descrip_inicio">
-                      {{ ev.descrip_inicio }}
+
+                    <div class="flex items-center gap-1.5 text-meta text-muted-foreground">
+                      <span>Inicio {{ ev.fecha_inicio ? formatDate(ev.fecha_inicio) : '-' }}</span>
+                      <IconArrowRight class="size-3 text-muted-foreground shrink-0" />
+                      <span>Cierre {{ ev.fecha_salida ? formatDate(ev.fecha_salida) : '-' }}</span>
+                    </div>
+
+                    <p v-if="ev.descrip_inicio || ev.descrip_salida"
+                      class="text-muted-foreground text-meta leading-relaxed line-clamp-2"
+                      :title="(ev.descrip_inicio || ev.descrip_salida) || undefined">
+                      {{ ev.descrip_inicio || ev.descrip_salida }}
                     </p>
                   </div>
 
-                  <div v-if="ev.doc_salida_id || ev.numero_doc_salida || ev.fecha_salida"
-                    class="space-y-1 pt-2 border-t border-border/40">
-                    <div class="flex items-center justify-between text-[11px]">
-                      <span class="text-muted-foreground flex items-center gap-1.5">
-                        <IconFileCheck class="size-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" /> Doc. Cierre
-                      </span>
-                      <span class="font-mono text-foreground font-medium">
-                        {{ ev.fecha_salida ? formatDate(ev.fecha_salida) : '-' }}
-                      </span>
+                  <!-- Caso DOS DOCUMENTOS distintos o SIN DOCUMENTO DE CIERRE -->
+                  <div v-else class="space-y-0 pt-0.5">
+                    <!-- Nodo 1: Inicio -->
+                    <div class="relative flex items-start gap-2.5">
+                      <div class="relative flex flex-col items-center shrink-0 self-stretch pt-1">
+                        <span class="size-[7px] rounded-full bg-primary shrink-0"></span>
+                        <span class="w-px flex-1 bg-border my-1"></span>
+                      </div>
+
+                      <div class="min-w-0 flex-1 pb-2.5 space-y-0.5">
+                        <div class="flex items-center justify-between gap-2">
+                          <span class="text-micro text-muted-foreground flex items-center gap-1">
+                            <IconFileText class="size-3 text-primary shrink-0" />
+                            <span>Documento de inicio</span>
+                          </span>
+                          <span class="font-mono text-micro text-muted-foreground shrink-0">
+                            {{ ev.fecha_inicio ? formatDate(ev.fecha_inicio) : '-' }}
+                          </span>
+                        </div>
+                        <p class="font-semibold text-xs text-foreground truncate"
+                          :title="getDocLabel(ev.tipo_doc_inicio, ev.numero_doc_inicio)">
+                          {{ getDocLabel(ev.tipo_doc_inicio, ev.numero_doc_inicio) }}
+                        </p>
+                        <p v-if="ev.descrip_inicio" class="text-muted-foreground text-meta leading-relaxed line-clamp-2"
+                          :title="ev.descrip_inicio || undefined">
+                          {{ ev.descrip_inicio }}
+                        </p>
+                      </div>
                     </div>
-                    <p class="font-medium text-foreground text-xs truncate"
-                      :title="[ev.tipo_doc_salida, ev.numero_doc_salida].filter(Boolean).join(' N° ')">
-                      {{ [ev.tipo_doc_salida, ev.numero_doc_salida].filter(Boolean).join(' N° ') ||
-                        'Mismo documento de inicio' }}
-                    </p>
-                    <p v-if="ev.descrip_salida" class="text-muted-foreground text-[11px] leading-relaxed line-clamp-2"
-                      :title="ev.descrip_salida">
-                      {{ ev.descrip_salida }}
-                    </p>
+
+                    <!-- Nodo 2: Cierre (Dos documentos distintos) -->
+                    <div v-if="tieneDocCierre(ev)" class="relative flex items-start gap-2.5">
+                      <div class="flex items-center justify-center shrink-0 pt-1">
+                        <span class="size-[7px] rounded-full bg-emerald-600 dark:bg-emerald-400 shrink-0"></span>
+                      </div>
+
+                      <div class="min-w-0 flex-1 space-y-0.5">
+                        <div class="flex items-center justify-between gap-2">
+                          <span class="text-micro text-muted-foreground flex items-center gap-1">
+                            <IconFileCheck class="size-3 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                            <span>Documento de cierre</span>
+                          </span>
+                          <span class="font-mono text-micro text-muted-foreground shrink-0">
+                            {{ ev.fecha_salida ? formatDate(ev.fecha_salida) : '-' }}
+                          </span>
+                        </div>
+                        <p class="font-semibold text-xs text-foreground truncate"
+                          :title="getDocLabel(ev.tipo_doc_salida, ev.numero_doc_salida)">
+                          {{ getDocLabel(ev.tipo_doc_salida, ev.numero_doc_salida) }}
+                        </p>
+                        <p v-if="ev.descrip_salida" class="text-muted-foreground text-meta leading-relaxed line-clamp-2"
+                          :title="ev.descrip_salida || undefined">
+                          {{ ev.descrip_salida }}
+                        </p>
+                      </div>
+                    </div>
+
+                    <!-- Nodo 2: Cierre pendiente (Sin documento de cierre) -->
+                    <div v-else class="relative flex items-start gap-2.5">
+                      <div class="flex items-center justify-center shrink-0 pt-1">
+                        <span
+                          class="size-[7px] rounded-full border border-dashed border-muted-foreground/60 bg-transparent shrink-0"></span>
+                      </div>
+
+                      <div class="min-w-0 flex-1 space-y-0.5">
+                        <span class="text-micro text-muted-foreground font-medium block">
+                          Cierre pendiente
+                        </span>
+                        <p class="text-meta text-muted-foreground/70 italic">
+                          Sin documento de cierre registrado
+                        </p>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
                 <div v-if="eventoAEliminarId !== ev.id"
                   class="flex items-center justify-end gap-2 pt-2 border-t border-border/60">
-                  <Button size="xs" variant="outline" class="gap-1.5 cursor-pointer text-[11px]" :disabled="isDeleting"
+                  <Button size="xs" variant="outline" class="gap-1.5 cursor-pointer text-meta" :disabled="isDeleting"
                     @click="emit('editarEvento', ev)">
                     <IconEdit class="size-3" />
                     <span>{{ esEstadoActivo(ev.estado) ? 'Cerrar / Editar' : 'Detalles' }}</span>
                   </Button>
 
                   <Button size="xs" variant="outline"
-                    class="gap-1.5 text-destructive hover:text-destructive hover:bg-destructive/10 border-destructive/30 cursor-pointer text-[11px]"
+                    class="gap-1.5 text-destructive hover:text-destructive hover:bg-destructive/10 border-destructive/30 cursor-pointer text-meta"
                     :disabled="isDeleting" @click="eventoAEliminarId = ev.id">
                     <IconTrash class="size-3" />
                     <span>Eliminar</span>
@@ -316,18 +413,18 @@ const handleConfirmarEliminar = (eventoId: number) => {
                       <IconAlertCircle class="size-3.5 shrink-0" />
                       ¿Eliminar evento #{{ ev.id }}?
                     </p>
-                    <p class="text-[11px] text-foreground/90 leading-relaxed">
+                    <p class="text-meta text-foreground/90 leading-relaxed">
                       Se removerá permanentemente el registro de este evento laboral.
                     </p>
                   </div>
 
                   <div class="flex items-center justify-end gap-2 pt-1">
-                    <Button size="xs" variant="outline" class="cursor-pointer text-[11px]" :disabled="isDeleting"
+                    <Button size="xs" variant="outline" class="cursor-pointer text-meta" :disabled="isDeleting"
                       @click="eventoAEliminarId = null">
                       Cancelar
                     </Button>
                     <Button size="xs"
-                      class="bg-destructive hover:bg-destructive/90 text-destructive-foreground gap-1 cursor-pointer text-[11px]"
+                      class="bg-destructive hover:bg-destructive/90 text-destructive-foreground gap-1 cursor-pointer text-meta"
                       :disabled="isDeleting" @click="handleConfirmarEliminar(ev.id)">
                       <IconTrash class="size-3" />
                       <span>{{ isDeleting ? 'Eliminando...' : 'Sí, eliminar' }}</span>

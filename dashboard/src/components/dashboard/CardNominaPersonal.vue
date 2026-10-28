@@ -247,7 +247,7 @@ const regimenBadgeVariant = (regimen: string): 'primary' | 'success' | 'warning'
     <div v-else class="overflow-x-auto">
       <table class="w-full text-left text-xs text-muted-foreground" aria-label="Tabla de movimientos de personal">
         <thead
-          class="border-b border-border bg-muted/30 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+          class="border-b border-border bg-muted/30 text-meta font-semibold uppercase tracking-wider text-muted-foreground">
           <tr v-if="activeTab === 'ingresos'">
             <th scope="col" class="px-5 py-3 font-semibold">Servidor</th>
             <th scope="col" class="px-5 py-3 font-semibold">Área / Gerencia</th>
@@ -283,7 +283,7 @@ const regimenBadgeVariant = (regimen: string): 'primary' | 'success' | 'warning'
                     class="text-xs font-medium text-foreground group-hover:text-primary transition-colors wrap-break-word">
                     {{ t.nombre }}
                   </div>
-                  <div class="font-mono text-[11px] text-muted-foreground">
+                  <div class="font-mono text-meta text-muted-foreground">
                     DNI: {{ t.dni }}
                   </div>
                 </div>
@@ -328,7 +328,7 @@ const regimenBadgeVariant = (regimen: string): 'primary' | 'success' | 'warning'
 
             <template v-else>
               <td class="px-5 py-3.5">
-                <span class="font-mono text-[11px] text-muted-foreground">
+                <span class="font-mono text-meta text-muted-foreground">
                   {{ t.codigo || '-' }}
                 </span>
               </td>

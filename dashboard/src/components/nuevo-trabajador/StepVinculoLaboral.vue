@@ -54,7 +54,7 @@ const cargoOptions = computed<SelectOption<number>[]>(() =>
         <IconBriefcase class="size-4 text-primary shrink-0" aria-hidden="true" />
         Asignación y Vínculo Laboral
       </span>
-      <span class="text-[11px] text-muted-foreground">Paso 2 de 3</span>
+      <span class="text-meta text-muted-foreground">Paso 2 de 3</span>
     </div>
 
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-border">
@@ -63,7 +63,7 @@ const cargoOptions = computed<SelectOption<number>[]>(() =>
           <IconBriefcase class="size-3.5 text-primary" aria-hidden="true" />
           Asistente de Plaza Vacante
         </span>
-        <p class="text-[11px] text-muted-foreground">
+        <p class="text-meta text-muted-foreground">
           Selecciona una plaza presupuestada para autocompletar la adscripción, cargo y remuneración.
         </p>
       </div>
@@ -83,7 +83,7 @@ const cargoOptions = computed<SelectOption<number>[]>(() =>
       <div class="space-y-1">
         <label for="plaza-codigo" class="text-xs font-semibold text-foreground flex items-center justify-between">
           <span>Código de Plaza AIRHSP</span>
-          <span class="text-[10px] font-normal text-muted-foreground">Opcional</span>
+          <span class="text-micro font-normal text-muted-foreground">Opcional</span>
         </label>
         <div class="relative">
           <input

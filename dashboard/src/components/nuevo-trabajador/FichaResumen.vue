@@ -25,14 +25,14 @@ defineProps<{
         <IconId class="size-3.5 text-primary" aria-hidden="true" />
         Ficha Previa del Servidor
       </span>
-      <Badge variant="outline" size="xs" class="font-mono text-[10px] uppercase">
+      <Badge variant="outline" size="xs" class="font-mono text-micro uppercase">
         {{ personal.dni || 'DNI no registrado' }}
       </Badge>
     </div>
 
     <div class="space-y-2 text-xs">
       <div>
-        <span class="text-[10px] uppercase font-bold text-muted-foreground tracking-wider block">Servidor</span>
+        <span class="text-micro uppercase font-bold text-muted-foreground tracking-wider block">Servidor</span>
         <p class="font-semibold text-foreground text-sm truncate" :title="nombreCompleto">
           {{ nombreCompleto }}
         </p>
@@ -40,13 +40,13 @@ defineProps<{
 
       <div class="grid grid-cols-2 gap-2 border-y border-border/60 py-2">
         <div>
-          <span class="text-[10px] text-muted-foreground uppercase font-bold block">Nacimiento</span>
+          <span class="text-micro text-muted-foreground uppercase font-bold block">Nacimiento</span>
           <span class="font-mono text-foreground">
             {{ personal.nacimiento ? formatDate(personal.nacimiento) : '-' }}
           </span>
         </div>
         <div>
-          <span class="text-[10px] text-muted-foreground uppercase font-bold block">Sexo</span>
+          <span class="text-micro text-muted-foreground uppercase font-bold block">Sexo</span>
           <span class="text-foreground">
             {{ personal.sexo === 'M' ? 'Masculino' : 'Femenino' }}
           </span>
@@ -54,20 +54,20 @@ defineProps<{
       </div>
 
       <div class="min-w-0">
-        <span class="text-[10px] uppercase font-bold text-muted-foreground tracking-wider block">Cargo Asignado</span>
+        <span class="text-micro uppercase font-bold text-muted-foreground tracking-wider block">Cargo Asignado</span>
         <p class="font-semibold text-foreground truncate">{{ cargoNombre }}</p>
-        <p class="text-[11px] text-primary truncate">{{ areaNombre }}</p>
+        <p class="text-meta text-primary truncate">{{ areaNombre }}</p>
       </div>
 
       <div class="grid grid-cols-2 gap-2 border-y border-border/60 py-2">
         <div class="min-w-0">
-          <span class="text-[10px] text-muted-foreground uppercase font-bold block">Régimen</span>
+          <span class="text-micro text-muted-foreground uppercase font-bold block">Régimen</span>
           <span class="font-medium text-foreground truncate block">
             {{ plaza.regimenNombre || '-' }}
           </span>
         </div>
         <div class="min-w-0">
-          <span class="text-[10px] text-muted-foreground uppercase font-bold block">Sueldo</span>
+          <span class="text-micro text-muted-foreground uppercase font-bold block">Sueldo</span>
           <span class="font-mono font-bold text-foreground truncate block">
             {{ formatMoneda(plaza.sueldo) }}
           </span>
@@ -75,13 +75,13 @@ defineProps<{
       </div>
 
       <div class="min-w-0">
-        <span class="text-[10px] uppercase font-bold text-muted-foreground tracking-wider block">
+        <span class="text-micro uppercase font-bold text-muted-foreground tracking-wider block">
           Documento de Sustento
         </span>
         <p class="font-medium text-foreground truncate">
           {{ tipoDocNombre }} N° {{ documento.numeroDocumento }}-{{ documento.añoDocumento }}
         </p>
-        <p class="text-[11px] text-muted-foreground font-mono truncate">
+        <p class="text-meta text-muted-foreground font-mono truncate">
           Fecha: {{ documento.fecha ? formatDate(documento.fecha) : '-' }}
         </p>
       </div>
@@ -94,7 +94,7 @@ defineProps<{
           :class="isFormValid ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'"
         ></span>
         <span
-          class="text-[11px] font-medium"
+          class="text-meta font-medium"
           :class="isFormValid ? 'text-emerald-600 dark:text-emerald-400' : 'text-amber-600 dark:text-amber-400'"
         >
           {{ isFormValid ? 'Formulario completo y listo para registrar' : 'Complete todos los campos obligatorios (*)' }}

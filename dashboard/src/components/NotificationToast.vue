@@ -64,7 +64,7 @@ function handleClose(e: MouseEvent) {
             <p class="text-xs text-muted-foreground mt-0.5 line-clamp-2">
               {{ notifStore.activeToast.mensaje }}
             </p>
-            <span class="inline-block mt-1 text-[11px] text-primary font-medium">
+            <span class="inline-block mt-1 text-meta text-primary font-medium">
               Ver detalle &rarr;
             </span>
           </div>

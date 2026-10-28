@@ -154,7 +154,7 @@ const handleAbrirNuevaPestana = () => {
               class="font-bold text-foreground text-sm tracking-tight truncate max-w-xs sm:max-w-md md:max-w-lg">
               {{ tituloMostrado }}
             </h3>
-            <p v-if="archivo" class="text-[11px] text-muted-foreground font-mono truncate">
+            <p v-if="archivo" class="text-meta text-muted-foreground font-mono truncate">
               {{ archivo.original_name }} • {{ archivo.size || 'PDF' }}
             </p>
           </div>
@@ -187,7 +187,7 @@ const handleAbrirNuevaPestana = () => {
           <div class="size-10 rounded-full border-2 border-primary/20 border-t-primary animate-spin"></div>
           <div class="text-center space-y-1">
             <p class="font-semibold text-foreground text-xs">Cargando documento con credenciales...</p>
-            <p class="text-[11px] text-muted-foreground">Validando token de sesión en el servidor de archivos</p>
+            <p class="text-meta text-muted-foreground">Validando token de sesión en el servidor de archivos</p>
           </div>
         </div>
 
@@ -211,7 +211,7 @@ const handleAbrirNuevaPestana = () => {
 
           <div v-if="esUrlExterna"
             class="px-4 py-2 border-t border-border bg-card flex items-center justify-between text-xs shrink-0">
-            <span class="text-muted-foreground text-[11px]">
+            <span class="text-muted-foreground text-meta">
               ¿Problemas para visualizar el enlace externo?
             </span>
             <Button size="xs" variant="outline" class="gap-1 cursor-pointer" @click="handleAbrirNuevaPestana">

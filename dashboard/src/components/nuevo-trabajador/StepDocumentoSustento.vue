@@ -32,7 +32,7 @@ const emit = defineEmits<{
         <IconFileText class="size-4 text-primary shrink-0" aria-hidden="true" />
         Documento de Sustento del Ingreso
       </span>
-      <span class="text-[11px] text-muted-foreground">Paso 3 de 3</span>
+      <span class="text-meta text-muted-foreground">Paso 3 de 3</span>
     </div>
 
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5">

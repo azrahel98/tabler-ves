@@ -692,6 +692,25 @@ pub async fn upsert_evento_vinculo(
     if let Some(ref st) = payload.estado {
         normalizar_estado_evento(Some(st), "activo")?;
     }
+    const TIPOS_EVENTO_VALIDOS: [&str; 11] = [
+        "rotacion",
+        "suspension",
+        "abandono",
+        "encargatura",
+        "encargo_puesto",
+        "encargo_funciones",
+        "destaque",
+        "licencia sin goce",
+        "vacaciones",
+        "licencia",
+        "otro",
+    ];
+    if !TIPOS_EVENTO_VALIDOS.contains(&payload.tipo_evento.as_str()) {
+        return Err(ApiError::BadRequest(format!(
+            "Tipo de evento no valido: {}",
+            payload.tipo_evento
+        )));
+    }
     let es_encargo = matches!(
         payload.tipo_evento.as_str(),
         "encargatura" | "encargo_puesto" | "encargo_funciones"
@@ -736,7 +755,36 @@ pub async fn upsert_evento_vinculo(
         .begin()
         .await
         .map_err(|e| ApiError::InternalError(format!("DB transaction begin error: {}", e)))?;
-    if let Some(ref doc_inicio) = payload.documento_inicio {
+    let es_edicion = payload.solo_datos.unwrap_or(false) && payload.documento_inicio.is_none();
+    if es_edicion {
+        let evento_id = payload.id.filter(|&id| id > 0).ok_or_else(|| {
+            ApiError::BadRequest("Se requiere el id del evento para editarlo".into())
+        })?;
+
+        let _ = sqlx::query("SELECT vinculo_id FROM eventovinculo WHERE id = ?")
+            .bind(evento_id)
+            .fetch_optional(&mut *tx)
+            .await
+            .map_err(|e| db_error("el evento de vínculo", e))?
+            .ok_or_else(|| ApiError::NotFound("Evento de vínculo no encontrado".into()))?;
+
+        sqlx::query(
+            r#"
+            UPDATE eventovinculo
+            SET tipo_evento = ?, fecha_desde = ?, fecha_hasta = ?, nueva_area_id = ?, nuevo_cargo_id = ?
+            WHERE id = ?
+            "#,
+        )
+        .bind(&payload.tipo_evento)
+        .bind(fecha_desde)
+        .bind(fecha_hasta)
+        .bind(payload.nueva_area_id)
+        .bind(payload.nuevo_cargo_id)
+        .bind(evento_id)
+        .execute(&mut *tx)
+        .await
+        .map_err(|e| db_error("el evento de vínculo", e))?;
+    } else if let Some(ref doc_inicio) = payload.documento_inicio {
         let doc_id = sqlx::query(
             r#"
             INSERT INTO documento (tipo_documento_id, area_id, numero, year, fecha, fecha_documento, descripcion)
@@ -999,7 +1047,9 @@ pub async fn upsert_evento_vinculo(
     } else {
         String::new()
     };
-    let accion = if payload.documento_inicio.is_some() {
+    let accion = if es_edicion {
+        format!("editar evento {}", payload.tipo_evento)
+    } else if payload.documento_inicio.is_some() {
         format!("registrar evento {}", payload.tipo_evento)
     } else {
         format!("cerrar evento {}", payload.tipo_evento)

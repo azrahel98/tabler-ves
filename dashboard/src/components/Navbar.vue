@@ -77,7 +77,7 @@ const handleLogout = () => {
             <span class="text-xs font-semibold text-foreground leading-tight">
               {{ authStore.user?.name || 'Administrador' }}
             </span>
-            <span class="text-[10px] text-muted-foreground leading-tight">
+            <span class="text-micro text-muted-foreground leading-tight">
               {{ authStore.user?.role || 'Super Admin' }}
             </span>
           </div>

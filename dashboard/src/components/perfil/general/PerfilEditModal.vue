@@ -160,7 +160,7 @@ const onSubmit = () => {
         class="p-4 bg-amber-500/10 border-b border-amber-500/20 text-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div class="space-y-0.5">
           <p class="font-bold text-amber-700 dark:text-amber-400">¿Desea descartar los cambios no guardados?</p>
-          <p class="text-muted-foreground text-[11px]">Si cierra ahora, perderá las modificaciones realizadas en la
+          <p class="text-muted-foreground text-meta">Si cierra ahora, perderá las modificaciones realizadas en la
             ficha.</p>
         </div>
         <div class="flex items-center gap-2 shrink-0">
@@ -179,7 +179,7 @@ const onSubmit = () => {
             <IconEdit class="size-4 text-primary" />
             <span>Actualizar Ficha del Servidor</span>
           </h3>
-          <p class="text-[11px] text-muted-foreground mt-0.5">
+          <p class="text-meta text-muted-foreground mt-0.5">
             Modifique los datos de contacto y residencia. El DNI es un identificador inmutable.
           </p>
         </div>
@@ -211,7 +211,7 @@ const onSubmit = () => {
             <input v-model="editForm.telf" type="text" placeholder="Ej. 987654321"
               class="w-full h-9 px-3 text-xs rounded-lg border bg-background-1 text-foreground focus:outline-hidden focus:border-primary"
               :class="formErrors.telf ? 'border-rose-500' : 'border-border'" />
-            <p v-if="formErrors.telf" class="text-[11px] text-rose-500 font-medium">{{ formErrors.telf }}</p>
+            <p v-if="formErrors.telf" class="text-meta text-rose-500 font-medium">{{ formErrors.telf }}</p>
           </div>
 
           <div class="space-y-1.5">
@@ -219,7 +219,7 @@ const onSubmit = () => {
             <input v-model="editForm.email" type="email" placeholder="ejemplo@gob.pe"
               class="w-full h-9 px-3 text-xs rounded-lg border bg-background-1 text-foreground focus:outline-hidden focus:border-primary"
               :class="formErrors.email ? 'border-rose-500' : 'border-border'" />
-            <p v-if="formErrors.email" class="text-[11px] text-rose-500 font-medium">{{ formErrors.email }}</p>
+            <p v-if="formErrors.email" class="text-meta text-rose-500 font-medium">{{ formErrors.email }}</p>
           </div>
 
           <div class="space-y-1.5">
@@ -234,7 +234,7 @@ const onSubmit = () => {
             />
             <p
               v-if="distritoNoValidoOriginal"
-              class="text-[11px] text-amber-600 dark:text-amber-400 font-medium"
+              class="text-meta text-amber-600 dark:text-amber-400 font-medium"
             >
               Valor actual "{{ distritoNoValidoOriginal }}" no es un distrito válido; seleccione uno.
             </p>

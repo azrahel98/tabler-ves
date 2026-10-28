@@ -214,7 +214,7 @@ const handleSubmit = () => {
             <h3 id="modal-subir-archivo-title" class="font-bold text-foreground text-sm tracking-tight truncate">
               Subir Archivo al Legajo
             </h3>
-            <p class="text-[11px] text-muted-foreground truncate">
+            <p class="text-meta text-muted-foreground truncate">
               Incorporar nuevo documento PDF al expediente digital
             </p>
           </div>
@@ -286,10 +286,10 @@ const handleSubmit = () => {
               <p class="font-medium text-foreground text-xs truncate max-w-sm">
                 {{ selectedFile.name }}
               </p>
-              <p class="text-[10px] text-muted-foreground font-mono">
+              <p class="text-micro text-muted-foreground font-mono">
                 {{ formatFileSize(selectedFile.size) }}
               </p>
-              <span class="text-[10px] text-primary hover:underline block pt-1">
+              <span class="text-micro text-primary hover:underline block pt-1">
                 Hacer clic para cambiar archivo
               </span>
             </div>
@@ -297,12 +297,12 @@ const handleSubmit = () => {
               <p class="font-medium text-foreground text-xs">
                 Arrastra tu PDF aquí o <span class="text-primary underline">haz clic para examinar</span>
               </p>
-              <p class="text-[10px] text-muted-foreground">
+              <p class="text-micro text-muted-foreground">
                 Documentos PDF de hasta 10 MB
               </p>
             </div>
           </div>
-          <p v-if="formErrors.file" class="text-[11px] text-destructive flex items-center gap-1 mt-1">
+          <p v-if="formErrors.file" class="text-meta text-destructive flex items-center gap-1 mt-1">
             <IconAlertTriangle class="size-3 shrink-0" />
             <span>{{ formErrors.file }}</span>
           </p>
@@ -322,11 +322,11 @@ const handleSubmit = () => {
                 :class="formErrors.fileName ? 'border-destructive focus:ring-destructive' : 'border-border focus:ring-primary'"
               />
             </div>
-            <p v-if="formErrors.fileName" class="text-[11px] text-destructive flex items-center gap-1 mt-1">
+            <p v-if="formErrors.fileName" class="text-meta text-destructive flex items-center gap-1 mt-1">
               <IconAlertTriangle class="size-3 shrink-0" />
               <span>{{ formErrors.fileName }}</span>
             </p>
-            <p v-else class="text-[10px] text-muted-foreground">
+            <p v-else class="text-micro text-muted-foreground">
               Puedes personalizar el nombre con el que se registrará el PDF (debe terminar en .pdf).
             </p>
           </div>
@@ -348,11 +348,11 @@ const handleSubmit = () => {
                 :class="formErrors.url ? 'border-destructive focus:ring-destructive' : 'border-border focus:ring-primary'"
               />
             </div>
-            <p v-if="formErrors.url" class="text-[11px] text-destructive flex items-center gap-1 mt-1">
+            <p v-if="formErrors.url" class="text-meta text-destructive flex items-center gap-1 mt-1">
               <IconAlertTriangle class="size-3 shrink-0" />
               <span>{{ formErrors.url }}</span>
             </p>
-            <p v-else class="text-[10px] text-muted-foreground">
+            <p v-else class="text-micro text-muted-foreground">
               Debe comenzar con https:// (enlace público o institucional).
             </p>
           </div>
@@ -372,7 +372,7 @@ const handleSubmit = () => {
                 :class="formErrors.fileName ? 'border-destructive focus:ring-destructive' : 'border-border focus:ring-primary'"
               />
             </div>
-            <p v-if="formErrors.fileName" class="text-[11px] text-destructive flex items-center gap-1 mt-1">
+            <p v-if="formErrors.fileName" class="text-meta text-destructive flex items-center gap-1 mt-1">
               <IconAlertTriangle class="size-3 shrink-0" />
               <span>{{ formErrors.fileName }}</span>
             </p>
@@ -384,7 +384,7 @@ const handleSubmit = () => {
             <label for="select-doc-vincular" class="block font-medium text-foreground text-xs">
               Vincular a Documento Formal (Opcional)
             </label>
-            <span class="text-[10px] text-muted-foreground">
+            <span class="text-micro text-muted-foreground">
               {{ documentosDisponibles.length }} sin vincular
             </span>
           </div>
@@ -408,7 +408,7 @@ const handleSubmit = () => {
 
           <div
             v-if="documentoSeleccionadoInfo"
-            class="p-2.5 rounded-lg border border-primary/20 bg-primary/5 text-[11px] flex items-center justify-between gap-2"
+            class="p-2.5 rounded-lg border border-primary/20 bg-primary/5 text-meta flex items-center justify-between gap-2"
           >
             <div class="flex items-center gap-2 min-w-0">
               <IconLink class="size-3.5 text-primary shrink-0" />
@@ -421,10 +421,10 @@ const handleSubmit = () => {
             </span>
           </div>
 
-          <p v-else-if="documentosDisponibles.length === 0" class="text-[10px] text-muted-foreground italic">
+          <p v-else-if="documentosDisponibles.length === 0" class="text-micro text-muted-foreground italic">
             No hay documentos formales pendientes de vinculación. El archivo se guardará como documento digital general de legajo.
           </p>
-          <p v-else class="text-[10px] text-muted-foreground">
+          <p v-else class="text-micro text-muted-foreground">
             Si seleccionas un documento, el archivo quedará directamente enlazado a esa resolución o acto administrativo.
           </p>
         </div>

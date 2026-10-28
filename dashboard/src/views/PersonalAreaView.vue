@@ -422,7 +422,7 @@ onMounted(async () => {
             <div class="text-2xl font-bold font-mono tabular-nums text-foreground mt-1">
               {{ personal.length }}
             </div>
-            <p class="text-[11px] text-muted-foreground mt-0.5">
+            <p class="text-meta text-muted-foreground mt-0.5">
               {{ personal.length === 1 ? 'servidor activo' : 'servidores activos' }}
             </p>
           </Card>
@@ -435,7 +435,7 @@ onMounted(async () => {
             >
               {{ regimenPredominante?.nombre || '—' }}
             </div>
-            <p class="text-[11px] text-muted-foreground mt-0.5 truncate">
+            <p class="text-meta text-muted-foreground mt-0.5 truncate">
               {{ regimenPredominanteDetalle }}
             </p>
           </Card>
@@ -445,7 +445,7 @@ onMounted(async () => {
             <div class="text-2xl font-bold font-mono tabular-nums text-foreground mt-1">
               {{ totalSindicalizados }}
             </div>
-            <p class="text-[11px] text-muted-foreground mt-0.5">
+            <p class="text-meta text-muted-foreground mt-0.5">
               {{ porcentajeSindicalizados }}% del total
             </p>
           </Card>

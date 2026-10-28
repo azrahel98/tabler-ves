@@ -91,7 +91,7 @@ const sortedVinculos = computed(() => {
 
     <div class="flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground -mt-1 pb-1">
       <p class="truncate">Registros históricos de vinculación contractual, rotaciones y cambios de área</p>
-      <div class="flex items-center gap-3 text-[11px] shrink-0">
+      <div class="flex items-center gap-3 text-meta shrink-0">
         <span class="inline-flex items-center gap-1.5" title="Vínculo laboral vigente">
           <span class="size-2 rounded-full bg-emerald-500"></span> Activo
         </span>
@@ -108,7 +108,7 @@ const sortedVinculos = computed(() => {
       <div class="overflow-x-auto">
         <table class="w-full text-left text-xs" aria-label="Tabla de historial de vínculos laborales">
           <thead
-            class="border-b border-border bg-muted/30 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground select-none">
+            class="border-b border-border bg-muted/30 text-meta font-semibold uppercase tracking-wider text-muted-foreground select-none">
             <tr>
               <th scope="col" class="px-3 sm:px-4 py-2.5 font-semibold">Cargo</th>
               <th scope="col" class="hidden sm:table-cell px-3 sm:px-4 py-2.5 font-semibold">Ingreso</th>
@@ -148,22 +148,22 @@ const sortedVinculos = computed(() => {
 
                     <div class="min-w-0 flex-1">
                       <div class="flex items-center gap-1.5 flex-wrap">
-                        <span class="font-medium text-foreground text-[11px] block wrap-break-word"
+                        <span class="font-medium text-foreground text-meta block wrap-break-word"
                           :title="v.cargo || (v.origen === 'SUNAT' ? 'Vínculo declarado en SUNAT' : '-')">
                           {{ v.cargo || (v.origen === 'SUNAT' ? 'Vínculo SUNAT (T-Registro)' : '-') }}
                         </span>
                         <Badge v-if="v.origen === 'SUNAT'" variant="outline" size="xs"
-                          class="text-[9px] px-1 py-0 border-blue-500/40 text-blue-600 dark:text-blue-400 font-semibold uppercase">
+                          class="text-nano px-1 py-0 border-blue-500/40 text-blue-600 dark:text-blue-400 font-semibold uppercase">
                           SUNAT
                         </Badge>
                         <span v-if="v.eventos && v.eventos.length > 0"
-                          class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[9px] font-semibold bg-purple-500/10 text-purple-700 dark:text-purple-300 border border-purple-500/20"
+                          class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-nano font-semibold bg-purple-500/10 text-purple-700 dark:text-purple-300 border border-purple-500/20"
                           :title="`${v.eventos.length} eventos laborales registrados`">
                           <IconFileCode class="size-2.5 shrink-0" />
                           <span>{{ v.eventos.length }} {{ v.eventos.length === 1 ? 'evento' : 'eventos' }}</span>
                         </span>
                       </div>
-                      <span class="text-[10px] text-muted-foreground block sm:hidden font-mono mt-0.5">
+                      <span class="text-micro text-muted-foreground block sm:hidden font-mono mt-0.5">
                         {{ formatDate(v.fecha_ingreso) }} &bull; {{ v.fecha_salida ? formatDate(v.fecha_salida) :
                           'Vigente' }}
                       </span>
@@ -172,14 +172,14 @@ const sortedVinculos = computed(() => {
                 </td>
 
                 <td class="hidden sm:table-cell px-3 sm:px-4 py-2.5 whitespace-nowrap">
-                  <span class="font-mono text-muted-foreground text-[11px]">
+                  <span class="font-mono text-muted-foreground text-meta">
                     {{ formatDate(v.fecha_ingreso) }}
                   </span>
                 </td>
 
                 <td class="hidden sm:table-cell px-3 sm:px-4 py-2.5 whitespace-nowrap">
                   <span
-                    :class="v.fecha_salida ? 'font-mono text-muted-foreground text-[11px]' : 'text-[11px] font-medium text-emerald-600 dark:text-emerald-400'">
+                    :class="v.fecha_salida ? 'font-mono text-muted-foreground text-meta' : 'text-meta font-medium text-emerald-600 dark:text-emerald-400'">
                     {{ v.fecha_salida ? formatDate(v.fecha_salida) : 'Vigente' }}
                   </span>
                 </td>
@@ -214,7 +214,7 @@ const sortedVinculos = computed(() => {
                           <span v-else class="inline-flex size-1.5 rounded-full bg-muted-foreground/50 shrink-0"></span>
                           {{ getVinculoStatusType(v) === 'warning' ? `${v.estado} (sin doc. salida)` : v.estado }}
                         </Badge>
-                        <span class="font-mono text-muted-foreground text-[11px]">
+                        <span class="font-mono text-muted-foreground text-meta">
                           Plaza AIRHSP: {{ v.codigo || '-' }}
                         </span>
                       </div>
@@ -310,7 +310,7 @@ const sortedVinculos = computed(() => {
                           </span>
                           <div class="flex items-center gap-2 min-w-0">
                             <span
-                              class="size-5 rounded-full bg-muted text-muted-foreground flex items-center justify-center text-[10px] font-bold shrink-0">
+                              class="size-5 rounded-full bg-muted text-muted-foreground flex items-center justify-center text-micro font-bold shrink-0">
                               {{ (v.sindicato || 'N')[0] }}
                             </span>
                             <span class="font-medium text-foreground truncate min-w-0">{{ v.sindicato || 'No Afiliado'
@@ -415,13 +415,13 @@ const sortedVinculos = computed(() => {
                     <div v-if="v.origen !== 'SUNAT' || (v.eventos && v.eventos.length >= 1)"
                       class="pt-2.5 border-t border-border/60 space-y-2">
                       <div class="flex items-center justify-between">
-                        <span class="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
+                        <span class="text-meta font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
                           <IconFileCode class="size-3.5 text-muted-foreground shrink-0" />
                           Eventos Laborales Registrados ({{ v.eventos?.length || 0 }})
                         </span>
                         <div class="flex items-center gap-2">
                           <button v-if="v.eventos && v.eventos.length > 0" type="button"
-                            class="text-[11px] text-primary hover:underline font-medium inline-flex items-center gap-1 cursor-pointer"
+                            class="text-meta text-primary hover:underline font-medium inline-flex items-center gap-1 cursor-pointer"
                             @click.stop="emit('verEventos', v)">
                             <span>Gestionar eventos</span>
                             <IconExternalLink class="size-3 shrink-0 opacity-70" />
@@ -430,60 +430,60 @@ const sortedVinculos = computed(() => {
                       </div>
                       <div class="space-y-1.5">
                         <div v-for="ev in v.eventos" :key="ev.id"
-                          class="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 p-2 rounded-lg bg-muted/40 border border-border/50 text-[11px]">
+                          class="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 p-2 rounded-lg bg-muted/40 border border-border/50 text-meta">
                           <div class="flex items-center gap-2 flex-wrap min-w-0">
                             <Badge variant="outline" size="xs"
-                              class="font-semibold uppercase text-[10px]">
+                              class="font-semibold uppercase text-micro">
                               {{ getTipoEventoLabel(ev.tipo_evento) }}
                             </Badge>
                             <span v-if="getEstadoVigencia(ev) === 'cerrado'"
-                              class="inline-flex items-center gap-1 text-[10px] font-medium text-muted-foreground bg-muted px-1.5 py-0.5 rounded-md">
+                              class="inline-flex items-center gap-1 text-micro font-medium text-muted-foreground bg-muted px-1.5 py-0.5 rounded-md">
                               {{ getEstadoVigenciaLabel('cerrado') }}
                             </span>
                             <span v-else-if="getEstadoVigencia(ev) === 'vencido'"
-                              class="inline-flex items-center gap-1 text-[10px] font-semibold text-amber-600 dark:text-amber-400 bg-amber-500/10 px-1.5 py-0.5 rounded-md"
+                              class="inline-flex items-center gap-1 text-micro font-semibold text-amber-600 dark:text-amber-400 bg-amber-500/10 px-1.5 py-0.5 rounded-md"
                               title="El evento sigue abierto en el registro porque no tiene documento de salida">
                               <span class="size-1 rounded-full bg-amber-500"></span>
                               {{ getEstadoVigenciaLabel('vencido') }}
                             </span>
                             <span v-else-if="getEstadoVigencia(ev) === 'futuro'"
-                              class="inline-flex items-center gap-1 text-[10px] font-medium text-muted-foreground border border-border px-1.5 py-0.5 rounded-md">
+                              class="inline-flex items-center gap-1 text-micro font-medium text-muted-foreground border border-border px-1.5 py-0.5 rounded-md">
                               {{ getEstadoVigenciaLabel('futuro') }}
                             </span>
                             <span v-else-if="getEstadoVigencia(ev) === 'sin_fechas'"
-                              class="inline-flex items-center gap-1 text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded-md">
+                              class="inline-flex items-center gap-1 text-micro font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded-md">
                               <span class="size-1 rounded-full bg-emerald-500"></span>
                               {{ getEstadoVigenciaLabel('sin_fechas') }}
                             </span>
                             <span v-else
-                              class="inline-flex items-center gap-1 text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded-md">
+                              class="inline-flex items-center gap-1 text-micro font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded-md">
                               <span class="size-1 rounded-full bg-emerald-500"></span>
                               {{ getEstadoVigenciaLabel('vigente') }}
                             </span>
-                            <span v-if="ev.fecha_desde" class="text-muted-foreground text-[10px] font-medium">
+                            <span v-if="ev.fecha_desde" class="text-muted-foreground text-micro font-medium">
                               {{ ev.fecha_hasta ? `Periodo: ${formatDate(ev.fecha_desde)} - ${formatDate(ev.fecha_hasta)}` : `desde ${formatDate(ev.fecha_desde)} (sin término)` }}
                             </span>
-                            <span v-if="ev.nueva_area" class="text-foreground text-[11px] truncate"
+                            <span v-if="ev.nueva_area" class="text-foreground text-meta truncate"
                               :title="ev.nueva_area">
                               Área: {{ ev.nueva_area }}
                             </span>
-                            <span v-if="ev.nuevo_cargo" class="text-foreground text-[11px] truncate"
+                            <span v-if="ev.nuevo_cargo" class="text-foreground text-meta truncate"
                               :title="ev.nuevo_cargo">
                               Cargo: {{ ev.nuevo_cargo }}
                             </span>
                           </div>
                           <div class="flex items-center gap-2 shrink-0">
-                            <span v-if="ev.fecha_inicio" class="text-[10px] font-mono text-muted-foreground">
+                            <span v-if="ev.fecha_inicio" class="text-micro font-mono text-muted-foreground">
                               {{ formatDate(ev.fecha_inicio) }}
                             </span>
                             <button v-if="ev.tipo_doc_inicio || ev.numero_doc_inicio" type="button"
-                              class="text-primary hover:underline text-[11px] font-medium inline-flex items-center gap-1 cursor-pointer"
+                              class="text-primary hover:underline text-meta font-medium inline-flex items-center gap-1 cursor-pointer"
                               @click.stop="emit('verDocumento', { tipo: 'evento', vinculo: v, evento: ev })">
                               <span>{{ [ev.tipo_doc_inicio, ev.numero_doc_inicio].filter(Boolean).join(' N° ') }}</span>
                               <IconExternalLink class="size-3 shrink-0 opacity-70" />
                             </button>
                             <button v-if="ev.doc_salida_id || ev.numero_doc_salida" type="button"
-                              class="text-primary hover:underline text-[11px] font-medium inline-flex items-center gap-1 cursor-pointer"
+                              class="text-primary hover:underline text-meta font-medium inline-flex items-center gap-1 cursor-pointer"
                               :title="[ev.tipo_doc_salida, ev.numero_doc_salida].filter(Boolean).join(' N° ') || undefined"
                               @click.stop="emit('verDocumento', { tipo: 'evento', vinculo: v, evento: ev, doc: 'salida' })">
                               <span>Doc. cierre</span>

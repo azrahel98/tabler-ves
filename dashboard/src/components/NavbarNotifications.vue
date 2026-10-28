@@ -86,7 +86,7 @@ onUnmounted(() => {
       aria-label="Abrir panel de notificaciones" :aria-expanded="isOpen" @click="toggleDropdown">
       <IconBell class="size-4" :stroke-width="2" />
       <span v-if="notifStore.totalNoLeidas > 0"
-        class="absolute -top-1 -right-1 min-w-4.5 h-4.5 px-1 bg-rose-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center ring-2 ring-navbar animate-in fade-in zoom-in">
+        class="absolute -top-1 -right-1 min-w-4.5 h-4.5 px-1 bg-rose-500 text-white text-micro font-bold rounded-full flex items-center justify-center ring-2 ring-navbar animate-in fade-in zoom-in">
         {{ notifStore.totalNoLeidas > 99 ? '99+' : notifStore.totalNoLeidas }}
       </span>
       <span v-else-if="notifStore.isConnected" class="absolute top-2 right-2 size-1.5 rounded-full bg-emerald-500"
@@ -105,14 +105,14 @@ onUnmounted(() => {
           <div class="flex items-center gap-2">
             <h3 class="font-semibold text-foreground text-sm">Notificaciones</h3>
             <span v-if="notifStore.totalNoLeidas > 0"
-              class="px-2 py-0.5 rounded-full text-[11px] font-medium bg-primary/10 text-primary">
+              class="px-2 py-0.5 rounded-full text-meta font-medium bg-primary/10 text-primary">
               {{ notifStore.totalNoLeidas }} nuevas
             </span>
           </div>
 
           <div class="flex items-center gap-1">
             <span :class="[
-              'flex items-center gap-1 text-[11px] font-medium px-2 py-0.5 rounded-md',
+              'flex items-center gap-1 text-meta font-medium px-2 py-0.5 rounded-md',
               notifStore.isConnected ? 'text-emerald-600 dark:text-emerald-400 bg-emerald-500/10' : 'text-muted-foreground bg-muted'
             ]" :title="notifStore.isConnected ? 'Conectado a stream SSE' : 'Sin conexión en tiempo real'">
               <IconWifi v-if="notifStore.isConnected" class="size-3" :stroke-width="2.5" />
@@ -146,7 +146,7 @@ onUnmounted(() => {
               <IconBell class="size-6 text-muted-foreground" :stroke-width="1.5" />
             </div>
             <p class="font-medium text-foreground text-xs">Sin notificaciones</p>
-            <p class="text-[11px] text-muted-foreground mt-0.5">
+            <p class="text-meta text-muted-foreground mt-0.5">
               Te avisaremos cuando ocurra alguna actividad relevante.
             </p>
           </div>
@@ -173,12 +173,12 @@ onUnmounted(() => {
                 ]">
                   {{ item.titulo }}
                 </span>
-                <span class="text-[10px] text-muted-foreground whitespace-nowrap">
+                <span class="text-micro text-muted-foreground whitespace-nowrap">
                   {{ formatearTiempo(item.created_at) }}
                 </span>
               </div>
 
-              <p class="text-[11px] text-muted-foreground mt-0.5 line-clamp-2 leading-relaxed">
+              <p class="text-meta text-muted-foreground mt-0.5 line-clamp-2 leading-relaxed">
                 {{ item.mensaje }}
               </p>
             </div>
@@ -194,7 +194,7 @@ onUnmounted(() => {
           </div>
         </div>
 
-        <div class="p-2 border-t border-border bg-card flex items-center justify-between text-[11px]">
+        <div class="p-2 border-t border-border bg-card flex items-center justify-between text-meta">
           <button type="button"
             class="flex items-center gap-1 px-2.5 py-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition"
             @click="notifStore.cargarNotificaciones()">
@@ -202,7 +202,7 @@ onUnmounted(() => {
             <span>Actualizar</span>
           </button>
 
-          <span class="text-muted-foreground text-[10px]">
+          <span class="text-muted-foreground text-micro">
             {{ notifStore.notificaciones.length }} {{ notifStore.notificaciones.length === 1 ? 'notificación' :
               'notificaciones' }}
           </span>

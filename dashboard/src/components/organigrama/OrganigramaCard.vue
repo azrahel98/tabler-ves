@@ -107,7 +107,7 @@ const handleProfile = (e: MouseEvent) => {
       <h4
         class="font-bold uppercase tracking-tight leading-tight line-clamp-2"
         :class="[
-          compact ? 'text-[10px]' : 'text-xs',
+          compact ? 'text-micro' : 'text-xs',
           isSolidHeader ? 'text-white' : 'text-foreground'
         ]"
         :title="areaName"
@@ -117,7 +117,7 @@ const handleProfile = (e: MouseEvent) => {
 
       <button
         type="button"
-        class="p-0.5 rounded-md shrink-0 opacity-70 hover:opacity-100 transition"
+        class="p-0.5 rounded-md shrink-0 opacity-70 hover:opacity-100 transition inline-flex items-center justify-center min-h-9 min-w-9 lg:min-h-0 lg:min-w-0"
         :class="isSolidHeader ? 'text-white/80 hover:text-white' : 'text-muted-foreground hover:text-foreground'"
         title="Ver ficha técnica"
         @click.stop="handleSelect"
@@ -155,14 +155,14 @@ const handleProfile = (e: MouseEvent) => {
 
         <div class="min-w-0 flex-1">
           <p
-            class="text-[10px] font-semibold truncate group-hover:underline"
+            class="text-micro font-semibold truncate group-hover:underline"
             :class="isSolidHeader ? 'text-white' : 'text-foreground'"
             :title="jefeName"
           >
             {{ jefeName }}
           </p>
           <p
-            class="text-[9px] font-mono truncate"
+            class="text-nano font-mono truncate"
             :class="isSolidHeader ? 'text-white/80' : 'text-muted-foreground'"
           >
             {{ dniVal ? `DNI: ${dniVal}` : 'Titular' }}
@@ -178,7 +178,7 @@ const handleProfile = (e: MouseEvent) => {
 
       <div
         v-else
-        class="text-[10px] italic truncate"
+        class="text-micro italic truncate"
         :class="isSolidHeader ? 'text-white/70' : 'text-muted-foreground'"
       >
         Sin titular registrado

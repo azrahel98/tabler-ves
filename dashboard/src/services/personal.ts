@@ -489,6 +489,7 @@ export interface EventoVinculoPayload {
   fecha_desde?: string | null
   fecha_hasta?: string | null
   encargado_dni?: string | null
+  solo_datos?: boolean | null
 }
 
 export interface EncargoVigente {

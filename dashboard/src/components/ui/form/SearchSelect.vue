@@ -381,7 +381,7 @@ onBeforeUnmount(() => {
       </div>
     </div>
 
-    <p v-if="errorMessage" class="text-destructive text-[11px] font-medium mt-1">
+    <p v-if="errorMessage" class="text-destructive text-meta font-medium mt-1">
       {{ errorMessage }}
     </p>
 
@@ -419,7 +419,7 @@ onBeforeUnmount(() => {
               <div class="flex items-center gap-1.5 shrink-0">
                 <span
                   v-if="opt.badge"
-                  class="text-[10px] text-muted-foreground font-mono"
+                  class="text-micro text-muted-foreground font-mono"
                 >
                   {{ opt.badge }}
                 </span>

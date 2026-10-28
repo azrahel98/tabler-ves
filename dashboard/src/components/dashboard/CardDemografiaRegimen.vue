@@ -102,7 +102,7 @@ const chartOptions = computed<ChartOptions<'doughnut'>>(() => {
     <div class="flex items-center justify-between border-b border-border pb-3 mb-3.5 flex-wrap gap-2">
       <div>
         <h3 class="font-semibold text-foreground tracking-tight text-sm">Régimen Laboral</h3>
-        <p class="text-[11px] text-muted-foreground">Distribución por marco normativo</p>
+        <p class="text-meta text-muted-foreground">Distribución por marco normativo</p>
       </div>
       <div class="flex items-center gap-2">
         <Badge v-if="selectedRegimen" variant="primary" size="xs">
@@ -111,7 +111,7 @@ const chartOptions = computed<ChartOptions<'doughnut'>>(() => {
         <button
           type="button"
           aria-label="Descargar lista de trabajadores activos en Excel"
-          class="inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-medium text-foreground bg-card border border-border rounded-lg hover:bg-muted focus:outline-hidden transition cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+          class="inline-flex items-center gap-1.5 px-2.5 py-1 text-meta font-medium text-foreground bg-card border border-border rounded-lg hover:bg-muted focus:outline-hidden transition cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
           :disabled="isDownloading"
           @click="descargarExcel"
         >

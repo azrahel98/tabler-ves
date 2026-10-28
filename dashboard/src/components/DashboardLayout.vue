@@ -52,7 +52,7 @@ const toggleCollapse = () => {
       <Navbar @toggle-sidebar="isSidebarOpen = !isSidebarOpen" @toggle-collapse="toggleCollapse" />
 
       <div class="flex-1 min-h-0 overflow-y-auto">
-        <main class="flex-1 p-3 pb-6 sm:p-4 sm:pb-8 2xl:p-6 2xl:pb-10 max-w-7xl w-full mx-auto">
+        <main class="flex-1 p-3 pb-6 sm:p-4 sm:pb-8 2xl:p-6 2xl:pb-10 max-w-[1440px] 2xl:max-w-[1720px] w-full mx-auto">
           <router-view />
         </main>
       </div>

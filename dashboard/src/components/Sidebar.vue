@@ -54,7 +54,7 @@ const authStore = useAuthStore()
         </div>
         <div v-if="!isCollapsed" class="flex flex-col min-w-0">
           <span class="text-sm font-bold tracking-tight text-foreground">CRM Pulse</span>
-          <span class="text-[10px] font-medium text-muted-foreground -mt-0.5 tracking-wider uppercase">Admin Suite</span>
+          <span class="text-micro font-medium text-muted-foreground -mt-0.5 tracking-wider uppercase">Admin Suite</span>
         </div>
       </router-link>
 
@@ -150,7 +150,7 @@ const authStore = useAuthStore()
           <p class="text-xs font-semibold text-foreground wrap-break-word">
             {{ authStore.user?.name || 'Administrador' }}
           </p>
-          <p class="text-[11px] text-muted-foreground truncate">
+          <p class="text-meta text-muted-foreground truncate">
             {{ authStore.user?.email || 'admin@crmpulse.com' }}
           </p>
         </div>

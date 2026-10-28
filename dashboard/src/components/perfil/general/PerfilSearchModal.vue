@@ -128,7 +128,7 @@ const irANuevoTrabajador = () => {
               </div>
               <div>
                 <p class="font-semibold text-foreground">{{ res.nombre }}</p>
-                <p class="font-mono text-muted-foreground text-[11px]">DNI: {{ res.dni }}</p>
+                <p class="font-mono text-muted-foreground text-meta">DNI: {{ res.dni }}</p>
               </div>
             </div>
             <Badge :variant="res.estado === 'activo' ? 'success' : 'secondary'" size="sm">
@@ -143,7 +143,7 @@ const irANuevoTrabajador = () => {
       </div>
 
       <div class="p-3 bg-muted/20 border-t border-border flex items-center justify-between">
-        <span class="text-[11px] text-muted-foreground">¿El servidor no está registrado?</span>
+        <span class="text-meta text-muted-foreground">¿El servidor no está registrado?</span>
         <Button size="xs" variant="outline" class="gap-1.5 text-xs text-primary border-primary/20 cursor-pointer" @click="irANuevoTrabajador">
           <IconUserPlus class="size-3.5" />
           <span>Registrar Nuevo Servidor</span>

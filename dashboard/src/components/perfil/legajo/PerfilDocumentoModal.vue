@@ -204,7 +204,7 @@ const handleSubmit = () => {
             <h3 id="modal-documento-title" class="font-bold text-foreground text-sm tracking-tight truncate">
               Registrar Nuevo Documento
             </h3>
-            <p class="text-[11px] text-muted-foreground truncate">
+            <p class="text-meta text-muted-foreground truncate">
               Alta formal de acto administrativo en legajo
             </p>
           </div>
@@ -236,7 +236,7 @@ const handleSubmit = () => {
         >
           <div class="flex items-center gap-2 min-w-0">
             <span class="font-bold text-foreground text-xs truncate">{{ servidorNombre || 'Servidor' }}</span>
-            <span v-if="servidorDni" class="font-mono text-muted-foreground text-[11px]">
+            <span v-if="servidorDni" class="font-mono text-muted-foreground text-meta">
               (DNI {{ servidorDni }})
             </span>
           </div>
@@ -267,7 +267,7 @@ const handleSubmit = () => {
                 {{ tipo.nombre }}
               </option>
             </select>
-            <p v-if="formErrors.tipoDocumentoId" class="text-[11px] text-destructive">
+            <p v-if="formErrors.tipoDocumentoId" class="text-meta text-destructive">
               {{ formErrors.tipoDocumentoId }}
             </p>
           </div>
@@ -298,14 +298,14 @@ const handleSubmit = () => {
                 {{ area.nombre }} {{ area.sigla ? `(${area.sigla})` : '' }}
               </option>
             </select>
-            <p v-if="formErrors.areaId" class="text-[11px] text-destructive">
+            <p v-if="formErrors.areaId" class="text-meta text-destructive">
               {{ formErrors.areaId }}
             </p>
           </div>
 
           <div
             v-else-if="formData.tipoDocumentoId"
-            class="p-2.5 rounded-lg bg-muted/50 border border-border/60 text-muted-foreground text-[11px] flex items-center gap-2"
+            class="p-2.5 rounded-lg bg-muted/50 border border-border/60 text-muted-foreground text-meta flex items-center gap-2"
           >
             <IconCheck class="size-3.5 text-emerald-500 shrink-0" />
             <span>
@@ -330,7 +330,7 @@ const handleSubmit = () => {
                 class="w-full h-9 px-3 rounded-lg border bg-background text-foreground text-xs focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition font-mono"
                 :class="formErrors.numeroDocumento ? 'border-destructive' : 'border-input'"
               />
-              <p v-if="formErrors.numeroDocumento" class="text-[11px] text-destructive">
+              <p v-if="formErrors.numeroDocumento" class="text-meta text-destructive">
                 {{ formErrors.numeroDocumento }}
               </p>
             </div>
@@ -351,7 +351,7 @@ const handleSubmit = () => {
                 class="w-full h-9 px-3 rounded-lg border bg-background text-foreground text-xs focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition font-mono"
                 :class="formErrors.añoDocumento ? 'border-destructive' : 'border-input'"
               />
-              <p v-if="formErrors.añoDocumento" class="text-[11px] text-destructive">
+              <p v-if="formErrors.añoDocumento" class="text-meta text-destructive">
                 {{ formErrors.añoDocumento }}
               </p>
             </div>
@@ -372,7 +372,7 @@ const handleSubmit = () => {
                 class="w-full h-9 px-3 rounded-lg border bg-background text-foreground text-xs focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition"
                 :class="formErrors.fecha ? 'border-destructive' : 'border-input'"
               />
-              <p v-if="formErrors.fecha" class="text-[11px] text-destructive">
+              <p v-if="formErrors.fecha" class="text-meta text-destructive">
                 {{ formErrors.fecha }}
               </p>
             </div>
@@ -408,7 +408,7 @@ const handleSubmit = () => {
               class="w-full p-3 rounded-lg border bg-background text-foreground text-xs focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition resize-none"
               :class="formErrors.descripcion ? 'border-destructive' : 'border-input'"
             ></textarea>
-            <p v-if="formErrors.descripcion" class="text-[11px] text-destructive">
+            <p v-if="formErrors.descripcion" class="text-meta text-destructive">
               {{ formErrors.descripcion }}
             </p>
           </div>

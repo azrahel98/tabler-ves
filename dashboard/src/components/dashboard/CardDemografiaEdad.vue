@@ -84,7 +84,7 @@ const chartOptions = computed<ChartOptions<'bar'>>(() => {
     <div class="flex items-center justify-between border-b border-border pb-3 mb-3.5 flex-wrap gap-2">
       <div>
         <h3 class="font-semibold text-foreground tracking-tight text-sm">Distribución por Edad</h3>
-        <p class="text-[11px] text-muted-foreground">Grupos etarios del personal</p>
+        <p class="text-meta text-muted-foreground">Grupos etarios del personal</p>
       </div>
       <Badge variant="outline" size="xs">Pirámide Activa</Badge>
     </div>

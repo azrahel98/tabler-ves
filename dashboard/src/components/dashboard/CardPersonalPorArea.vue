@@ -155,7 +155,7 @@ const irAArea = (nombre: string) => {
         </div>
         <div>
           <h3 class="font-semibold text-foreground tracking-tight text-sm">Personal por Área</h3>
-          <p class="text-[11px] p-0 m-0 text-muted-foreground">
+          <p class="text-meta p-0 m-0 text-muted-foreground">
             Distribución de dotación activa por dependencia
           </p>
         </div>
@@ -193,22 +193,22 @@ const irAArea = (nombre: string) => {
 
     <div v-if="!isLoading && areas.length > 0" class="grid grid-cols-2 sm:grid-cols-3 gap-px bg-border/60 border-b border-border text-xs">
       <div class="bg-card px-4 py-2.5 sm:px-5">
-        <span class="text-[11px] font-medium text-muted-foreground block">Dotación Total</span>
+        <span class="text-meta font-medium text-muted-foreground block">Dotación Total</span>
         <span class="text-sm font-medium text-foreground font-mono tabular-nums">{{ totalPersonal }}</span>
-        <span class="text-[11px] text-muted-foreground ml-1">servidores</span>
+        <span class="text-meta text-muted-foreground ml-1">servidores</span>
       </div>
       <div class="bg-card px-4 py-2.5 sm:px-5">
-        <span class="text-[11px] font-medium text-muted-foreground block">Mayor Concentración</span>
+        <span class="text-meta font-medium text-muted-foreground block">Mayor Concentración</span>
         <span class="text-xs font-medium text-foreground block wrap-break-word" :title="mayorArea?.nombre">
           {{ mayorArea ? mayorArea.nombre : '-' }}
         </span>
       </div>
       <div class="bg-card px-4 py-2.5 sm:px-5 col-span-2 sm:col-span-1">
-        <span class="text-[11px] font-medium text-muted-foreground block">Participación Líder</span>
+        <span class="text-meta font-medium text-muted-foreground block">Participación Líder</span>
         <span class="text-sm font-medium text-primary font-mono tabular-nums">
           {{ mayorArea && totalPersonal ? Math.round((mayorArea.cantidad / totalPersonal) * 100) : 0 }}%
         </span>
-        <span class="text-[11px] text-muted-foreground ml-1">del total</span>
+        <span class="text-meta text-muted-foreground ml-1">del total</span>
       </div>
     </div>
 
@@ -242,7 +242,7 @@ const irAArea = (nombre: string) => {
             <div class="flex items-center justify-between gap-2 mb-1.5">
               <div class="flex items-center gap-2 min-w-0">
                 <span
-                  class="flex size-5 shrink-0 items-center justify-center rounded-md font-mono text-[11px] font-medium"
+                  class="flex size-5 shrink-0 items-center justify-center rounded-md font-mono text-meta font-medium"
                   :class="idx < 3 ? 'bg-primary/15 text-primary' : 'bg-muted text-muted-foreground'"
                 >
                   {{ idx + 1 }}

@@ -49,7 +49,7 @@ onMounted(() => {
         <IconId class="size-4 text-primary shrink-0" aria-hidden="true" />
         Datos de Identidad y Contacto
       </span>
-      <span class="text-[11px] text-muted-foreground">Campos con (*) son obligatorios</span>
+      <span class="text-meta text-muted-foreground">Campos con (*) son obligatorios</span>
     </div>
 
     <div class="space-y-3 pb-3 border-b border-border">
@@ -59,7 +59,7 @@ onMounted(() => {
             <IconSparkles class="size-3.5 text-primary" aria-hidden="true" />
             Buscar por DNI
           </span>
-          <p class="text-[11px] text-muted-foreground">
+          <p class="text-meta text-muted-foreground">
             Ingresa el DNI y consulta para autocompletar nombres, apellidos y fecha de nacimiento.
           </p>
         </div>

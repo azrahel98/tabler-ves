@@ -124,7 +124,7 @@ const handleSubmit = () => {
             <h3 id="modal-vincular-title" class="font-bold text-foreground text-sm tracking-tight truncate">
               Vincular PDF al Documento
             </h3>
-            <p class="text-[11px] text-muted-foreground truncate">
+            <p class="text-meta text-muted-foreground truncate">
               Asociar una URL externa al acto administrativo
             </p>
           </div>
@@ -148,9 +148,9 @@ const handleSubmit = () => {
               <IconFileText class="size-4 text-primary shrink-0" />
               <span class="font-semibold text-foreground text-xs truncate">{{ documento.sigla }}</span>
             </div>
-            <span class="font-mono text-[11px] text-muted-foreground shrink-0">{{ formatDate(documento.fecha) }}</span>
+            <span class="font-mono text-meta text-muted-foreground shrink-0">{{ formatDate(documento.fecha) }}</span>
           </div>
-          <p class="text-[11px] text-muted-foreground leading-relaxed">{{ documento.descripcion }}</p>
+          <p class="text-meta text-muted-foreground leading-relaxed">{{ documento.descripcion }}</p>
         </div>
 
         <div class="space-y-1.5">
@@ -168,11 +168,11 @@ const handleSubmit = () => {
               :class="formErrors.url ? 'border-destructive focus:ring-destructive' : 'border-border focus:ring-primary'"
             />
           </div>
-          <p v-if="formErrors.url" class="text-[11px] text-destructive flex items-center gap-1 mt-1">
+          <p v-if="formErrors.url" class="text-meta text-destructive flex items-center gap-1 mt-1">
             <IconAlertTriangle class="size-3 shrink-0" />
             <span>{{ formErrors.url }}</span>
           </p>
-          <p v-else class="text-[10px] text-muted-foreground">
+          <p v-else class="text-micro text-muted-foreground">
             Debe ser un enlace HTTPS accesible (portal de transparencia, repositorio institucional, etc.).
           </p>
         </div>
@@ -192,11 +192,11 @@ const handleSubmit = () => {
               :class="formErrors.fileName ? 'border-destructive focus:ring-destructive' : 'border-border focus:ring-primary'"
             />
           </div>
-          <p v-if="formErrors.fileName" class="text-[11px] text-destructive flex items-center gap-1 mt-1">
+          <p v-if="formErrors.fileName" class="text-meta text-destructive flex items-center gap-1 mt-1">
             <IconAlertTriangle class="size-3 shrink-0" />
             <span>{{ formErrors.fileName }}</span>
           </p>
-          <p v-else class="text-[10px] text-muted-foreground">
+          <p v-else class="text-micro text-muted-foreground">
             Identificador con el que se mostrará en el legajo digital (debe terminar en .pdf).
           </p>
         </div>

@@ -337,7 +337,7 @@ onMounted(async () => {
             <div class="text-2xl font-bold font-mono tabular-nums text-foreground mt-1">
               {{ detalle.total }}
             </div>
-            <p class="text-[11px] text-muted-foreground mt-0.5">
+            <p class="text-meta text-muted-foreground mt-0.5">
               {{ detalle.total === 1 ? 'servidor activo' : 'servidores activos' }}
             </p>
           </Card>
@@ -350,7 +350,7 @@ onMounted(async () => {
             >
               {{ areaConMasPersonal?.nombre || '—' }}
             </div>
-            <p class="text-[11px] text-muted-foreground mt-0.5 truncate">
+            <p class="text-meta text-muted-foreground mt-0.5 truncate">
               {{ areaConMasPersonalCantidad }}
             </p>
           </Card>
@@ -363,7 +363,7 @@ onMounted(async () => {
             >
               {{ rangoEdadPredominante?.nombre || '—' }}
             </div>
-            <p class="text-[11px] text-muted-foreground mt-0.5 truncate">
+            <p class="text-meta text-muted-foreground mt-0.5 truncate">
               {{ rangoEdadPredominanteCantidad }}
             </p>
           </Card>

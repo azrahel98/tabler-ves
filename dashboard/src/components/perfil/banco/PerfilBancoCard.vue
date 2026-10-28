@@ -30,7 +30,7 @@ const emit = defineEmits<{
         <h3 class="font-semibold text-foreground tracking-tight text-sm">Información Bancaria</h3>
       </span>
 
-      <span v-if="banco" class="px-2 py-0.5 rounded bg-muted text-[11px] font-mono text-muted-foreground font-medium shrink-0">
+      <span v-if="banco" class="px-2 py-0.5 rounded bg-muted text-meta font-mono text-muted-foreground font-medium shrink-0">
         1 registro
       </span>
     </div>
@@ -43,7 +43,7 @@ const emit = defineEmits<{
       <div class="overflow-x-auto">
         <table class="w-full text-left text-xs" aria-label="Tabla de información bancaria">
           <thead
-            class="border-b border-border bg-muted/30 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground select-none">
+            class="border-b border-border bg-muted/30 text-micro font-semibold uppercase tracking-wider text-muted-foreground select-none">
             <tr>
               <th scope="col" class="px-3 sm:px-4 py-2.5 font-semibold">Banco / Entidad</th>
               <th scope="col" class="hidden sm:table-cell px-3 sm:px-4 py-2.5 font-semibold">Tipo de Cuenta</th>
@@ -55,28 +55,28 @@ const emit = defineEmits<{
           <tbody class="divide-y divide-border">
             <tr class="transition-colors hover:bg-muted/40">
               <td class="px-3 sm:px-4 py-2.5 min-w-0">
-                <span class="font-semibold text-foreground text-[11px] block wrap-break-word break-words"
+                <span class="font-semibold text-foreground text-meta block wrap-break-word break-words"
                   :title="banco.banco">
                   {{ banco.banco }}
                 </span>
-                <span class="text-[10px] text-muted-foreground block sm:hidden wrap-break-word break-words mt-0.5"
+                <span class="text-micro text-muted-foreground block sm:hidden wrap-break-word break-words mt-0.5"
                   :title="banco.tipo_cuenta">
                   {{ banco.tipo_cuenta }}
                 </span>
-                <div class="flex items-center gap-1.5 md:hidden mt-1 font-mono text-[10px] text-muted-foreground">
+                <div class="flex items-center gap-1.5 md:hidden mt-1 font-mono text-micro text-muted-foreground">
                   <span>CCI: {{ banco.cci }}</span>
                 </div>
               </td>
 
               <td class="hidden sm:table-cell px-3 sm:px-4 py-2.5 min-w-0">
-                <span class="text-[11px] text-muted-foreground block wrap-break-word break-words"
+                <span class="text-meta text-muted-foreground block wrap-break-word break-words"
                   :title="banco.tipo_cuenta">
                   {{ banco.tipo_cuenta }}
                 </span>
               </td>
 
               <td class="px-3 sm:px-4 py-2.5 whitespace-nowrap">
-                <div class="flex items-center gap-1.5 font-mono font-medium text-foreground text-[11px]">
+                <div class="flex items-center gap-1.5 font-mono font-medium text-foreground text-meta">
                   <span>{{ banco.numero_cuenta }}</span>
                   <button
                     type="button"
@@ -92,7 +92,7 @@ const emit = defineEmits<{
               </td>
 
               <td class="hidden md:table-cell px-3 sm:px-4 py-2.5 whitespace-nowrap">
-                <div class="flex items-center gap-1.5 font-mono font-medium text-foreground text-[11px]">
+                <div class="flex items-center gap-1.5 font-mono font-medium text-foreground text-meta">
                   <span>{{ banco.cci }}</span>
                   <button
                     type="button"
@@ -108,7 +108,7 @@ const emit = defineEmits<{
               </td>
 
               <td class="px-3 sm:px-4 py-2.5 text-center whitespace-nowrap">
-                <Badge :variant="banco.estado === 1 ? 'success' : 'secondary'" size="xs" class="text-[10px]">
+                <Badge :variant="banco.estado === 1 ? 'success' : 'secondary'" size="xs" class="text-micro">
                   {{ banco.estado === 1 ? 'Activa' : 'Inactiva' }}
                 </Badge>
               </td>

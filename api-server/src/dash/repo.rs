@@ -1549,7 +1549,7 @@ pub async fn get_alerta_70_anos(pool: &MySqlPool) -> Result<Vec<Alerta70Anos>, A
             LEFT JOIN regimen r ON v.regimen = r.id
             LEFT JOIN plaza pl ON v.plaza_id = pl.codigo
         WHERE
-            v.estado = 'activo' and TIMESTAMPDIFF(YEAR, p.fecha_nacimiento, CURRENT_DATE) >= 69
+            v.estado = 'activo' AND YEAR(p.fecha_nacimiento) + 70 <= YEAR(CURRENT_DATE)
         GROUP BY
             p.dni,
             p.apaterno,

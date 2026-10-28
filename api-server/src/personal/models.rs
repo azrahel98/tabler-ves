@@ -221,6 +221,7 @@ pub struct EventoVinculoPayload {
     pub fecha_desde: Option<String>,
     pub fecha_hasta: Option<String>,
     pub encargado_dni: Option<String>,
+    pub solo_datos: Option<bool>,
 }
 
 #[derive(Debug, Serialize, Deserialize, FromRow, Clone)]

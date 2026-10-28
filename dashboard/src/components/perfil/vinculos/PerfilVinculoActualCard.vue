@@ -76,29 +76,29 @@ const emit = defineEmits<{
       <router-link
         v-if="vinculoEfectivo.area"
         :to="{ path: '/personal/area', query: { area: vinculoEfectivo.area } }"
-        class="inline-flex items-center gap-1.5 text-[11px] text-primary font-medium wrap-break-word hover:underline cursor-pointer"
+        class="inline-flex items-center gap-1.5 text-meta text-primary font-medium wrap-break-word hover:underline cursor-pointer"
         title="Ver trabajadores del área"
       >
         <IconBuildingSkyscraper class="size-3 shrink-0" />
         <span>{{ vinculoEfectivo.area }}</span>
       </router-link>
-      <div v-else class="flex items-center gap-1.5 text-[11px] text-primary font-medium wrap-break-word">
+      <div v-else class="flex items-center gap-1.5 text-meta text-primary font-medium wrap-break-word">
         <IconBuildingSkyscraper class="size-3 shrink-0" />
         <span>-</span>
       </div>
     </div>
 
-    <div class="grid grid-cols-3 border-y border-border/60 py-2.5 my-0.5 divide-x divide-border/60">
-      <div class="pr-3">
-        <span class="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground block">Remuneración</span>
+    <div class="grid grid-cols-1 sm:grid-cols-3 border-y border-border/60 py-2.5 my-0.5 divide-y sm:divide-y-0 sm:divide-x divide-border/60">
+      <div class="sm:pr-3">
+        <span class="text-micro font-semibold uppercase tracking-wider text-muted-foreground block">Remuneración</span>
         <p class="font-semibold font-mono text-foreground text-xs mt-0.5">{{ formatMoneda(vinculoEfectivo.sueldo) }}</p>
       </div>
-      <div class="px-3 sm:px-4">
-        <span class="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground block">Plaza AIRHSP</span>
+      <div class="sm:px-4">
+        <span class="text-micro font-semibold uppercase tracking-wider text-muted-foreground block">Plaza AIRHSP</span>
         <p class="font-mono font-semibold text-foreground text-xs mt-0.5">{{ vinculoEfectivo.codigo || '-' }}</p>
       </div>
-      <div class="pl-3 sm:pl-4">
-        <span class="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground block">Régimen</span>
+      <div class="sm:pl-4">
+        <span class="text-micro font-semibold uppercase tracking-wider text-muted-foreground block">Régimen</span>
         <p class="font-semibold text-foreground text-xs truncate mt-0.5" :title="vinculoEfectivo.regimen">{{
           vinculoEfectivo.regimen }}</p>
       </div>
@@ -160,7 +160,7 @@ const emit = defineEmits<{
           </span>
           <div class="flex items-center gap-2 min-w-0">
             <span
-              class="size-5 rounded-full bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center text-[10px] font-bold shrink-0">
+              class="size-5 rounded-full bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center text-micro font-bold shrink-0">
               {{ (vinculoEfectivo.sindicato || 'N')[0] }}
             </span>
             <span class="font-medium text-foreground truncate">{{ vinculoEfectivo.sindicato || 'No Afiliado' }}</span>
@@ -174,7 +174,7 @@ const emit = defineEmits<{
           <div class="flex items-center gap-2 min-w-0">
             <div class="flex items-center -space-x-1.5 overflow-hidden shrink-0">
               <span v-for="v in vinculosFiltrados.slice(0, 3)" :key="v.id"
-                class="size-5 rounded-full ring-2 ring-card bg-muted text-foreground flex items-center justify-center text-[10px] font-bold uppercase cursor-pointer"
+                class="size-5 rounded-full ring-2 ring-card bg-muted text-foreground flex items-center justify-center text-micro font-bold uppercase cursor-pointer"
                 :title="v.cargo" @click="emit('verHistorial')">
                 {{ v.cargo ? v.cargo[0] : 'V' }}
               </span>
@@ -238,7 +238,7 @@ const emit = defineEmits<{
               <IconExternalLink class="size-3 shrink-0 opacity-70" />
             </button>
             <button v-if="vinculoEfectivo.origen !== 'SUNAT'" type="button"
-              class="text-[11px] font-semibold text-purple-600 dark:text-purple-400 hover:text-purple-700 inline-flex items-center gap-1 hover:underline cursor-pointer"
+              class="text-meta font-semibold text-purple-600 dark:text-purple-400 hover:text-purple-700 inline-flex items-center gap-1 hover:underline cursor-pointer"
               @click="emit('crearEvento', vinculoEfectivo)">
               <IconCalendarPlus class="size-3 shrink-0" />
               <span>+ Agregar Evento</span>
@@ -292,7 +292,7 @@ const emit = defineEmits<{
         </span>
         <div class="flex items-center gap-2">
           <Button v-if="vinculoEfectivo.origen !== 'SUNAT'" size="xs" variant="outline"
-            class="text-purple-600 hover:text-purple-700 hover:bg-purple-500/10 border-purple-500/30 gap-1 cursor-pointer text-[11px] h-6.5 px-2"
+            class="text-purple-600 hover:text-purple-700 hover:bg-purple-500/10 border-purple-500/30 gap-1 cursor-pointer text-meta h-6.5 px-2"
             @click="emit('crearEvento', vinculoEfectivo)">
             <IconCalendarPlus class="size-3" />
             <span>Agregar Evento</span>
@@ -309,49 +309,49 @@ const emit = defineEmits<{
           class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-2.5 rounded-lg bg-muted/30 border border-border/60 text-xs">
           <div class="flex items-center gap-2 flex-wrap min-w-0">
             <Badge variant="outline" size="xs"
-              class="font-semibold border-purple-500/30 text-purple-600 dark:text-purple-400 uppercase text-[10px]">
+              class="font-semibold border-purple-500/30 text-purple-600 dark:text-purple-400 uppercase text-micro">
               {{ getTipoEventoLabel(ev.tipo_evento) }}
             </Badge>
             <span v-if="getEstadoVigencia(ev) === 'cerrado'"
-              class="inline-flex items-center gap-1 text-[10px] font-medium text-muted-foreground bg-muted px-1.5 py-0.5 rounded-md">
+              class="inline-flex items-center gap-1 text-micro font-medium text-muted-foreground bg-muted px-1.5 py-0.5 rounded-md">
               {{ getEstadoVigenciaLabel('cerrado') }}
             </span>
             <span v-else-if="getEstadoVigencia(ev) === 'vencido'"
-              class="inline-flex items-center gap-1 text-[10px] font-semibold text-amber-600 dark:text-amber-400 bg-amber-500/10 px-1.5 py-0.5 rounded-md"
+              class="inline-flex items-center gap-1 text-micro font-semibold text-amber-600 dark:text-amber-400 bg-amber-500/10 px-1.5 py-0.5 rounded-md"
               title="El evento sigue abierto en el registro porque no tiene documento de salida">
               <span class="size-1 rounded-full bg-amber-500"></span>
               {{ getEstadoVigenciaLabel('vencido') }}
             </span>
             <span v-else-if="getEstadoVigencia(ev) === 'futuro'"
-              class="inline-flex items-center gap-1 text-[10px] font-medium text-muted-foreground border border-border px-1.5 py-0.5 rounded-md">
+              class="inline-flex items-center gap-1 text-micro font-medium text-muted-foreground border border-border px-1.5 py-0.5 rounded-md">
               {{ getEstadoVigenciaLabel('futuro') }}
             </span>
             <span v-else-if="getEstadoVigencia(ev) === 'sin_fechas'"
-              class="inline-flex items-center gap-1 text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded-md">
+              class="inline-flex items-center gap-1 text-micro font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded-md">
               <span class="size-1 rounded-full bg-emerald-500"></span>
               {{ getEstadoVigenciaLabel('sin_fechas') }}
             </span>
             <span v-else
-              class="inline-flex items-center gap-1 text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded-md">
+              class="inline-flex items-center gap-1 text-micro font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded-md">
               <span class="size-1 rounded-full bg-emerald-500"></span>
               {{ getEstadoVigenciaLabel('vigente') }}
             </span>
-            <span v-if="ev.fecha_desde" class="text-muted-foreground text-[10px] font-medium">
+            <span v-if="ev.fecha_desde" class="text-muted-foreground text-micro font-medium">
               {{ ev.fecha_hasta ? `Periodo: ${formatDate(ev.fecha_desde)} - ${formatDate(ev.fecha_hasta)}` : `desde ${formatDate(ev.fecha_desde)} (sin término)` }}
             </span>
-            <span v-if="ev.nueva_area" class="text-foreground text-[11px] font-medium truncate" :title="ev.nueva_area">
+            <span v-if="ev.nueva_area" class="text-foreground text-meta font-medium truncate" :title="ev.nueva_area">
               Área: {{ ev.nueva_area }}
             </span>
-            <span v-if="ev.nuevo_cargo" class="text-foreground text-[11px] truncate" :title="ev.nuevo_cargo">
+            <span v-if="ev.nuevo_cargo" class="text-foreground text-meta truncate" :title="ev.nuevo_cargo">
               Cargo: {{ ev.nuevo_cargo }}
             </span>
           </div>
           <div class="flex items-center gap-2 shrink-0">
-            <span v-if="ev.fecha_inicio" class="text-[11px] font-mono text-muted-foreground">
+            <span v-if="ev.fecha_inicio" class="text-meta font-mono text-muted-foreground">
               {{ formatDate(ev.fecha_inicio) }}
             </span>
             <button v-if="ev.tipo_doc_inicio || ev.numero_doc_inicio" type="button"
-              class="text-primary hover:underline text-[11px] font-medium inline-flex items-center gap-1 cursor-pointer"
+              class="text-primary hover:underline text-meta font-medium inline-flex items-center gap-1 cursor-pointer"
               @click="emit('verDocumento', { tipo: 'evento', vinculo: vinculoEfectivo, evento: ev })">
               <span>{{ [ev.tipo_doc_inicio, ev.numero_doc_inicio].filter(Boolean).join(' N° ') }}</span>
               <IconExternalLink class="size-3 shrink-0 opacity-70" />

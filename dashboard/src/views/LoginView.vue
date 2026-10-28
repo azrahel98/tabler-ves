@@ -309,13 +309,13 @@ const handleAuthError = (err: unknown) => {
               class="size-10 rounded-full border border-border object-cover" />
             <div class="min-w-0 flex-1">
               <p class="text-xs font-semibold text-foreground wrap-break-word">{{ googleData.full_name }}</p>
-              <p class="text-[11px] text-muted-foreground truncate">{{ googleData.email }}</p>
+              <p class="text-meta text-muted-foreground truncate">{{ googleData.email }}</p>
             </div>
           </div>
 
           <div class="space-y-2 pt-1">
             <div>
-              <label class="block text-[11px] font-semibold text-foreground uppercase tracking-wider mb-1">
+              <label class="block text-meta font-semibold text-foreground uppercase tracking-wider mb-1">
                 Nombre Completo
               </label>
               <input v-model="googleData.full_name" type="text"

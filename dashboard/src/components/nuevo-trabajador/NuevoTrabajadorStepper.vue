@@ -52,7 +52,7 @@ const handleSelect = (step: 1 | 2 | 3) => {
       </div>
       <div class="min-w-0 flex-1">
         <p class="text-xs font-semibold truncate">1. Identidad y Contacto</p>
-        <p class="text-[10px] text-muted-foreground truncate hidden sm:block">DNI, nombres y datos personales</p>
+        <p class="text-micro text-muted-foreground truncate hidden sm:block">DNI, nombres y datos personales</p>
       </div>
     </button>
 
@@ -81,7 +81,7 @@ const handleSelect = (step: 1 | 2 | 3) => {
       </div>
       <div class="min-w-0 flex-1">
         <p class="text-xs font-semibold truncate">2. Vínculo Laboral</p>
-        <p class="text-[10px] text-muted-foreground truncate hidden sm:block">Régimen, cargo, área y remuneración</p>
+        <p class="text-micro text-muted-foreground truncate hidden sm:block">Régimen, cargo, área y remuneración</p>
       </div>
     </button>
 
@@ -110,7 +110,7 @@ const handleSelect = (step: 1 | 2 | 3) => {
       </div>
       <div class="min-w-0 flex-1">
         <p class="text-xs font-semibold truncate">3. Documento de Sustento</p>
-        <p class="text-[10px] text-muted-foreground truncate hidden sm:block">Resolución o contrato de inicio</p>
+        <p class="text-micro text-muted-foreground truncate hidden sm:block">Resolución o contrato de inicio</p>
       </div>
     </button>
   </nav>

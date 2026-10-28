@@ -146,7 +146,7 @@ const handleConfirmarEliminar = () => {
                     {{ documento.tipo }}
                   </Badge>
                 </div>
-                <p class="text-[11px] text-muted-foreground truncate mt-0.5">
+                <p class="text-meta text-muted-foreground truncate mt-0.5">
                   {{ subtituloPanel }}
                 </p>
               </div>
@@ -163,7 +163,7 @@ const handleConfirmarEliminar = () => {
             <div class="p-3.5 rounded-xl border border-border bg-muted/15 space-y-3">
               <div class="flex items-start justify-between gap-2">
                 <div class="space-y-0.5 min-w-0">
-                  <span class="text-[10px] uppercase font-semibold tracking-wider text-muted-foreground block">
+                  <span class="text-micro uppercase font-semibold tracking-wider text-muted-foreground block">
                     Identificación Formal
                   </span>
                   <h4 class="text-sm font-semibold text-foreground tracking-tight wrap-break-words">
@@ -172,14 +172,14 @@ const handleConfirmarEliminar = () => {
                 </div>
 
                 <span v-if="documento.documentoId"
-                  class="font-mono text-[11px] text-muted-foreground px-2 py-0.5 rounded bg-muted border border-border/60 shrink-0">
+                  class="font-mono text-meta text-muted-foreground px-2 py-0.5 rounded bg-muted border border-border/60 shrink-0">
                   ID #{{ documento.documentoId }}
                 </span>
               </div>
 
               <div class="grid grid-cols-2 gap-3 pt-1 border-t border-border/60 text-xs">
                 <div>
-                  <span class="text-muted-foreground text-[11px] flex items-center gap-1">
+                  <span class="text-muted-foreground text-meta flex items-center gap-1">
                     <IconCalendar class="size-3.5 shrink-0 text-muted-foreground" /> Fecha Registro
                   </span>
                   <p class="font-medium font-mono text-foreground mt-0.5">
@@ -188,7 +188,7 @@ const handleConfirmarEliminar = () => {
                 </div>
 
                 <div>
-                  <span class="text-muted-foreground text-[11px] flex items-center gap-1">
+                  <span class="text-muted-foreground text-meta flex items-center gap-1">
                     <IconShieldCheck class="size-3.5 shrink-0 text-muted-foreground" /> Régimen
                   </span>
                   <p class="font-medium text-foreground mt-0.5 truncate" :title="documento.vinculo.regimen">
@@ -198,7 +198,7 @@ const handleConfirmarEliminar = () => {
               </div>
 
               <div v-if="documento.descripcion" class="pt-2 border-t border-border/60 space-y-1">
-                <span class="text-[10px] uppercase font-semibold tracking-wider text-muted-foreground block">
+                <span class="text-micro uppercase font-semibold tracking-wider text-muted-foreground block">
                   Descripción o Referencia
                 </span>
                 <p
@@ -215,20 +215,20 @@ const handleConfirmarEliminar = () => {
                   Datos del Evento Laboral
                 </span>
                 <span v-if="documento.eventoId"
-                  class="font-mono text-[11px] text-purple-600 dark:text-purple-400 font-semibold">
+                  class="font-mono text-meta text-purple-600 dark:text-purple-400 font-semibold">
                   Evento #{{ documento.eventoId }}
                 </span>
               </div>
 
               <div class="grid grid-cols-2 gap-2.5 text-xs pt-1">
                 <div>
-                  <span class="text-[11px] text-muted-foreground block">Tipo de Evento:</span>
+                  <span class="text-meta text-muted-foreground block">Tipo de Evento:</span>
                   <span class="font-semibold text-foreground capitalize mt-0.5 block">
                     {{ documento.tipoEvento || '-' }}
                   </span>
                 </div>
                 <div>
-                  <span class="text-[11px] text-muted-foreground block">Estado del Evento:</span>
+                  <span class="text-meta text-muted-foreground block">Estado del Evento:</span>
                   <span class="font-semibold text-foreground capitalize mt-0.5 block">
                     {{ documento.estadoEvento || 'Registrado' }}
                   </span>
@@ -239,14 +239,14 @@ const handleConfirmarEliminar = () => {
 
             <div class="p-3.5 rounded-xl border border-border bg-card space-y-2.5">
               <div class="flex items-center justify-between gap-2">
-                <span class="text-[10px] uppercase font-semibold tracking-wider text-muted-foreground block">
+                <span class="text-micro uppercase font-semibold tracking-wider text-muted-foreground block">
                   Archivo Digital en Legajo
                 </span>
                 <span v-if="archivo"
-                  class="text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded">
+                  class="text-micro font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded">
                   Adjunto Disponible
                 </span>
-                <span v-else class="text-[10px] text-muted-foreground bg-muted px-2 py-0.5 rounded">
+                <span v-else class="text-micro text-muted-foreground bg-muted px-2 py-0.5 rounded">
                   Sin adjunto
                 </span>
               </div>
@@ -257,7 +257,7 @@ const handleConfirmarEliminar = () => {
                     <p class="font-medium text-foreground text-xs truncate" :title="archivo.original_name">
                       {{ archivo.original_name }}
                     </p>
-                    <p class="text-[11px] text-muted-foreground font-mono mt-0.5">
+                    <p class="text-meta text-muted-foreground font-mono mt-0.5">
                       {{ (archivo.extension || 'pdf').toUpperCase() }} {{ archivo.size ? `• ${archivo.size}` : '' }}
                     </p>
                   </div>
@@ -271,8 +271,8 @@ const handleConfirmarEliminar = () => {
 
               <div v-else class="text-center py-3 text-muted-foreground space-y-1">
                 <IconFileAlert class="size-6 mx-auto text-muted-foreground/50" />
-                <p class="text-[11px] font-medium text-foreground">Sin archivo digital asociado</p>
-                <p class="text-[10px]">
+                <p class="text-meta font-medium text-foreground">Sin archivo digital asociado</p>
+                <p class="text-micro">
                   El documento está registrado administrativamente pero no cuenta con archivo PDF en el legajo digital.
                 </p>
               </div>
@@ -286,7 +286,7 @@ const handleConfirmarEliminar = () => {
                 <div class="flex items-center justify-between gap-2">
                   <div>
                     <h5 class="font-semibold text-destructive text-xs">Zona de Gestión de Evento</h5>
-                    <p class="text-[11px] text-muted-foreground">
+                    <p class="text-meta text-muted-foreground">
                       Puedes remover este evento y sus documentos vinculados.
                     </p>
                   </div>
@@ -306,7 +306,7 @@ const handleConfirmarEliminar = () => {
                     <IconAlertCircle class="size-4 shrink-0" />
                     ¿Confirmar eliminación del evento?
                   </h5>
-                  <p class="text-[11px] text-foreground/90 leading-relaxed">
+                  <p class="text-meta text-foreground/90 leading-relaxed">
                     Esta acción eliminará de forma irreversible el registro del evento laboral y los documentos
                     asociados a él en la base de datos.
                   </p>

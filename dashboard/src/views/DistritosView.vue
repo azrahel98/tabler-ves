@@ -602,9 +602,9 @@ onBeforeUnmount(() => {
             <span class="text-2xl font-bold tracking-tight text-foreground font-mono">
               {{ kpis.totalLimaCallao }}
             </span>
-            <span class="text-[11px] text-muted-foreground">En mapa</span>
+            <span class="text-meta text-muted-foreground">En mapa</span>
           </div>
-          <p class="text-[10px] text-muted-foreground mt-1 truncate">Total de activos geolocalizados</p>
+          <p class="text-micro text-muted-foreground mt-1 truncate">Total de activos geolocalizados</p>
         </Card>
 
         <Card class="p-4">
@@ -616,9 +616,9 @@ onBeforeUnmount(() => {
             <span class="text-2xl font-bold tracking-tight text-primary font-mono">
               {{ kpis.distritosConPresencia }} <span class="text-sm font-normal text-muted-foreground">/ {{ distritosRanking.length || 50 }}</span>
             </span>
-            <span class="text-[11px] text-muted-foreground">Distritos</span>
+            <span class="text-meta text-muted-foreground">Distritos</span>
           </div>
-          <p class="text-[10px] text-muted-foreground mt-1 truncate">Distritos con al menos 1 trabajador</p>
+          <p class="text-micro text-muted-foreground mt-1 truncate">Distritos con al menos 1 trabajador</p>
         </Card>
 
         <Card class="p-4">
@@ -634,7 +634,7 @@ onBeforeUnmount(() => {
               {{ kpis.topDistritoCantidad }}
             </span>
           </div>
-          <p class="text-[10px] text-muted-foreground mt-1 truncate">Mayor concentración de personal</p>
+          <p class="text-micro text-muted-foreground mt-1 truncate">Mayor concentración de personal</p>
         </Card>
       </div>
 
@@ -642,11 +642,11 @@ onBeforeUnmount(() => {
                 <div class="lg:col-span-2 space-y-3">
           <div
             ref="mapContainer"
-            class="distritos-map h-[420px] lg:h-[560px] w-full rounded-xl overflow-hidden border border-border shadow-2xs z-0 bg-card"
+            class="distritos-map h-[320px] sm:h-[420px] lg:h-[560px] max-h-[75vh] w-full rounded-xl overflow-hidden border border-border shadow-2xs z-0 bg-card"
           ></div>
 
                     <div class="p-3 bg-card border border-border rounded-xl shadow-2xs flex flex-wrap items-center justify-between gap-3 text-xs">
-            <div class="font-medium text-foreground text-[11px]">Concentración de personal:</div>
+            <div class="font-medium text-foreground text-meta">Concentración de personal:</div>
             <div class="flex flex-wrap items-center gap-3">
               <div
                 v-for="(item, idx) in legendRanges"
@@ -657,11 +657,11 @@ onBeforeUnmount(() => {
                   class="size-3.5 rounded-xs border border-black/10 shrink-0"
                   :style="{ backgroundColor: item.color }"
                 ></span>
-                <span class="text-[11px] font-mono text-muted-foreground tabular-nums">{{ item.label }}</span>
+                <span class="text-meta font-mono text-muted-foreground tabular-nums">{{ item.label }}</span>
               </div>
               <div class="flex items-center gap-1.5">
                 <span class="size-3.5 rounded-xs border border-border bg-[#94a3b8]/20 shrink-0"></span>
-                <span class="text-[11px] text-muted-foreground">Sin trabajadores</span>
+                <span class="text-meta text-muted-foreground">Sin trabajadores</span>
               </div>
             </div>
           </div>
@@ -694,7 +694,7 @@ onBeforeUnmount(() => {
             >
               <div class="flex items-center justify-between gap-2 text-xs mb-1.5">
                 <div class="flex items-center gap-2 min-w-0">
-                  <span class="size-5 rounded-full bg-muted flex items-center justify-center font-mono text-[10px] text-muted-foreground font-semibold shrink-0">
+                  <span class="size-5 rounded-full bg-muted flex items-center justify-center font-mono text-micro text-muted-foreground font-semibold shrink-0">
                     {{ index + 1 }}
                   </span>
                   <span class="font-medium text-foreground truncate" :title="item.nombreDisplay">
@@ -743,12 +743,12 @@ onBeforeUnmount(() => {
                 <div
                   v-for="(item, idx) in noReconocidosLista"
                   :key="idx"
-                  class="flex items-center justify-between text-[11px] text-muted-foreground py-0.5"
+                  class="flex items-center justify-between text-meta text-muted-foreground py-0.5"
                 >
                   <span class="truncate pr-2" :title="item.nombreOriginal">{{ item.nombreOriginal }}</span>
                   <span class="font-mono tabular-nums font-semibold shrink-0">{{ item.cantidad }}</span>
                 </div>
-                <div v-if="noReconocidosLista.length === 0" class="text-[11px] text-muted-foreground italic py-1">
+                <div v-if="noReconocidosLista.length === 0" class="text-meta text-muted-foreground italic py-1">
                   Ningún distrito sin clasificar
                 </div>
               </div>

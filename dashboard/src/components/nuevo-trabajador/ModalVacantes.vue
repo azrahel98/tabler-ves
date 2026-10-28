@@ -100,14 +100,14 @@ const onSeleccionar = (vacante: VacanteOption) => {
                   <Badge variant="success" size="xs">Vacante</Badge>
                 </div>
                 <p class="text-xs font-semibold text-foreground truncate">{{ v.cargo || 'Sin cargo asignado' }}</p>
-                <p class="text-[11px] text-muted-foreground truncate">{{ v.area || 'Sin unidad orgánica asignada' }}</p>
+                <p class="text-meta text-muted-foreground truncate">{{ v.area || 'Sin unidad orgánica asignada' }}</p>
               </div>
 
               <div class="text-right shrink-0 pl-2">
                 <span class="font-mono font-bold text-foreground text-xs block">
                   {{ formatMoneda(v.sueldo) }}
                 </span>
-                <Button size="xs" variant="primary" class="mt-1 text-[10px] min-h-[32px] sm:min-h-[28px] px-2.5">
+                <Button size="xs" variant="primary" class="mt-1 text-micro min-h-[32px] sm:min-h-[28px] px-2.5">
                   Seleccionar Plaza
                 </Button>
               </div>

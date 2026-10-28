@@ -96,7 +96,7 @@ onMounted(async () => {
         <IconCake class="size-4 text-pink-500" aria-hidden="true" />
         <div>
           <h3 class="font-semibold text-foreground tracking-tight text-sm">Cumpleaños Próximos</h3>
-          <p class="text-[11px] text-muted-foreground">Onomásticos del personal activo</p>
+          <p class="text-meta text-muted-foreground">Onomásticos del personal activo</p>
         </div>
       </div>
       <div class="flex items-center gap-1.5">
@@ -130,7 +130,7 @@ onMounted(async () => {
           <IconCake class="size-4" aria-hidden="true" />
         </div>
         <p class="font-medium text-xs text-foreground">Sin cumpleaños este mes</p>
-        <p class="text-[11px]">No hay onomásticos registrados.</p>
+        <p class="text-meta">No hay onomásticos registrados.</p>
       </div>
 
       <div v-else class="divide-y divide-border">

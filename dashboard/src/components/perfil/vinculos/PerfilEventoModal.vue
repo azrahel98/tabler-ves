@@ -413,11 +413,12 @@ const validarFormulario = (): boolean => {
     if (esVacaciones.value && !fechaHasta.value) {
       errors.fechaHasta = 'La fecha de fin de vacaciones es obligatoria.'
     }
-    if (fechaDesde.value && fechaHasta.value) {
-      if (fechaHasta.value < fechaDesde.value) {
-        toast.error('La fecha de vigencia hasta no puede ser anterior a la fecha desde.')
-        errors.fechaHasta = 'La fecha hasta no puede ser anterior a la fecha desde.'
-      }
+  }
+
+  if (fechaDesde.value && fechaHasta.value) {
+    if (fechaHasta.value < fechaDesde.value) {
+      toast.error('La fecha de vigencia hasta no puede ser anterior a la fecha desde.')
+      errors.fechaHasta = 'La fecha hasta no puede ser anterior a la fecha desde.'
     }
   }
 
@@ -502,8 +503,8 @@ const handleSubmit = () => {
             }
             : null,
         estado: 'desactivado',
-        fecha_desde: requiereVigencia.value && fechaDesde.value ? fechaDesde.value : null,
-        fecha_hasta: requiereVigencia.value && fechaHasta.value ? fechaHasta.value : null,
+        fecha_desde: fechaDesde.value ? fechaDesde.value : null,
+        fecha_hasta: fechaHasta.value ? fechaHasta.value : null,
       }
       emit('save', payload)
     } else {
@@ -514,8 +515,9 @@ const handleSubmit = () => {
         nueva_area_id: nuevaAreaId.value ? Number(nuevaAreaId.value) : null,
         nuevo_cargo_id: nuevoCargoId.value ? Number(nuevoCargoId.value) : null,
         estado: props.evento.estado || 'activo',
-        fecha_desde: requiereVigencia.value && fechaDesde.value ? fechaDesde.value : null,
-        fecha_hasta: requiereVigencia.value && fechaHasta.value ? fechaHasta.value : null,
+        fecha_desde: fechaDesde.value ? fechaDesde.value : null,
+        fecha_hasta: fechaHasta.value ? fechaHasta.value : null,
+        solo_datos: true,
       }
       emit('save', payload)
     }
@@ -538,8 +540,8 @@ const handleSubmit = () => {
       documento_inicio: payloadDocumentoInicio,
       mismo_documento: mismoDocumento.value,
       estado: mismoDocumento.value ? 'desactivado' : 'activo',
-      fecha_desde: requiereVigencia.value && fechaDesde.value ? fechaDesde.value : null,
-      fecha_hasta: requiereVigencia.value && fechaHasta.value ? fechaHasta.value : null,
+      fecha_desde: fechaDesde.value ? fechaDesde.value : null,
+      fecha_hasta: fechaHasta.value ? fechaHasta.value : null,
       encargado_dni: esVacaciones.value && encargadoSeleccionado.value ? encargadoSeleccionado.value.dni : null,
     }
     emit('save', payload)
@@ -593,47 +595,47 @@ const handleSubmit = () => {
               <div class="p-3.5 rounded-xl border border-border bg-muted/20 space-y-2">
                 <div class="flex items-center justify-between gap-2">
                   <div class="flex items-center gap-2">
-                    <span class="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Evento
+                    <span class="text-meta font-semibold uppercase tracking-wider text-muted-foreground">Evento
                       Actual</span>
                     <Badge size="xs" :variant="evento.estado?.toLowerCase() === 'activo' ? 'success' : 'secondary'">
                       {{ evento.estado?.toLowerCase() === 'activo' ? 'Activo' : 'Finalizado' }}
                     </Badge>
                   </div>
-                  <span class="font-mono text-[10px] text-muted-foreground font-semibold">
+                  <span class="font-mono text-micro text-muted-foreground font-semibold">
                     #{{ evento.id }}
                   </span>
                 </div>
 
                 <div class="grid grid-cols-2 gap-2 text-xs pt-1">
                   <div>
-                    <span class="text-muted-foreground block text-[11px]">Tipo de Evento:</span>
+                    <span class="text-muted-foreground block text-meta">Tipo de Evento:</span>
                     <span class="font-medium text-foreground capitalize block">
                       {{ getTipoEventoLabel(evento.tipo_evento) }}
                     </span>
                   </div>
                   <div>
-                    <span class="text-muted-foreground block text-[11px]">Fecha de Inicio:</span>
+                    <span class="text-muted-foreground block text-meta">Fecha de Inicio:</span>
                     <span class="font-mono text-foreground font-medium block">
                       {{ evento.fecha_inicio ? formatDate(evento.fecha_inicio) : '-' }}
                     </span>
                   </div>
                   <div class="col-span-2">
-                    <span class="text-muted-foreground block text-[11px]">Documento de Sustento:</span>
+                    <span class="text-muted-foreground block text-meta">Documento de Sustento:</span>
                     <span class="font-medium text-foreground truncate block"
                       :title="[evento.tipo_doc_inicio, evento.numero_doc_inicio].filter(Boolean).join(' N° ') || '-'">
                       {{ [evento.tipo_doc_inicio, evento.numero_doc_inicio].filter(Boolean).join(' N° ') || '-' }}
                     </span>
                   </div>
                   <div v-if="evento.nueva_area" class="col-span-2">
-                    <span class="text-muted-foreground block text-[11px]">Área Asignada:</span>
+                    <span class="text-muted-foreground block text-meta">Área Asignada:</span>
                     <span class="font-medium text-foreground block">{{ evento.nueva_area }}</span>
                   </div>
                   <div v-if="evento.nuevo_cargo" class="col-span-2">
-                    <span class="text-muted-foreground block text-[11px]">Cargo Asignado:</span>
+                    <span class="text-muted-foreground block text-meta">Cargo Asignado:</span>
                     <span class="font-medium text-foreground block">{{ evento.nuevo_cargo }}</span>
                   </div>
                   <div v-if="evento.fecha_desde" class="col-span-2">
-                    <span class="text-muted-foreground block text-[11px]">Vigencia de Encargo:</span>
+                    <span class="text-muted-foreground block text-meta">Vigencia de Encargo:</span>
                     <span class="font-mono text-foreground font-medium block">
                       Del {{ formatDate(evento.fecha_desde) }}{{ evento.fecha_hasta ? ` al ${formatDate(evento.fecha_hasta)}` : ' en adelante' }}
                     </span>
@@ -641,7 +643,7 @@ const handleSubmit = () => {
                 </div>
 
                 <div v-if="esEventoFinalizado" class="border-t border-border/60 pt-2 space-y-1">
-                  <div class="flex items-center justify-between text-[11px]">
+                  <div class="flex items-center justify-between text-meta">
                     <span class="text-muted-foreground font-medium">Término de Evento:</span>
                     <span class="font-mono text-foreground font-medium">
                       {{ evento.fecha_salida ? formatDate(evento.fecha_salida) : '-' }}
@@ -651,7 +653,7 @@ const handleSubmit = () => {
                     {{ [evento.tipo_doc_salida, evento.numero_doc_salida].filter(Boolean).join(' N° ') ||
                       'Mismo documento de inicio' }}
                   </p>
-                  <p v-if="evento.descrip_salida" class="text-muted-foreground text-[11px] leading-relaxed">
+                  <p v-if="evento.descrip_salida" class="text-muted-foreground text-meta leading-relaxed">
                     {{ evento.descrip_salida }}
                   </p>
                 </div>
@@ -715,7 +717,7 @@ const handleSubmit = () => {
                           {{ td.nombre }} {{ td.sigla ? `(${td.sigla})` : '' }}
                         </option>
                       </select>
-                      <p v-if="formErrors.tipoDocumentoSalida" class="text-rose-500 text-[11px] mt-1">
+                      <p v-if="formErrors.tipoDocumentoSalida" class="text-rose-500 text-meta mt-1">
                         {{ formErrors.tipoDocumentoSalida }}
                       </p>
                     </div>
@@ -738,7 +740,7 @@ const handleSubmit = () => {
                       <input v-model.number="docSalida.numeroDocumento" type="number" min="1" placeholder="Ej. 189"
                         class="w-full rounded-lg border bg-background px-3 py-2 text-xs focus:ring-2 focus:ring-primary focus:outline-hidden font-mono"
                         :class="formErrors.numeroDocumentoSalida ? 'border-rose-500 ring-rose-500' : 'border-border'" />
-                      <p v-if="formErrors.numeroDocumentoSalida" class="text-rose-500 text-[11px] mt-1">
+                      <p v-if="formErrors.numeroDocumentoSalida" class="text-rose-500 text-meta mt-1">
                         {{ formErrors.numeroDocumentoSalida }}
                       </p>
                     </div>
@@ -750,7 +752,7 @@ const handleSubmit = () => {
                       <input v-model="docSalida.fecha" type="date"
                         class="w-full rounded-lg border bg-background px-3 py-2 text-xs focus:ring-2 focus:ring-primary focus:outline-hidden font-mono"
                         :class="formErrors.fechaSalida ? 'border-rose-500 ring-rose-500' : 'border-border'" />
-                      <p v-if="formErrors.fechaSalida" class="text-rose-500 text-[11px] mt-1">
+                      <p v-if="formErrors.fechaSalida" class="text-rose-500 text-meta mt-1">
                         {{ formErrors.fechaSalida }}
                       </p>
                     </div>
@@ -771,7 +773,7 @@ const handleSubmit = () => {
                       placeholder="Detalles de la conclusión del evento..."
                       class="w-full rounded-lg border bg-background p-2.5 text-xs focus:ring-2 focus:ring-primary focus:outline-hidden leading-relaxed"
                       :class="formErrors.descripcionSalida ? 'border-rose-500 ring-rose-500' : 'border-border'"></textarea>
-                    <p v-if="formErrors.descripcionSalida" class="text-rose-500 text-[11px] mt-1">
+                    <p v-if="formErrors.descripcionSalida" class="text-rose-500 text-meta mt-1">
                       {{ formErrors.descripcionSalida }}
                     </p>
                   </div>
@@ -781,7 +783,7 @@ const handleSubmit = () => {
                   <IconCheck class="size-4.5 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
                   <div class="space-y-0.5">
                     <p class="font-medium text-foreground text-xs">Cierre con Documento de Inicio</p>
-                    <p class="text-muted-foreground text-[11px] leading-relaxed">
+                    <p class="text-muted-foreground text-meta leading-relaxed">
                       Se utilizará el mismo documento de inicio registrado anteriormente para marcar la finalización de
                       este evento y actualizar el estado laboral del trabajador.
                     </p>
@@ -795,7 +797,7 @@ const handleSubmit = () => {
                   <IconCheck class="size-4" />
                   <span>Este evento ya se encuentra finalizado</span>
                 </div>
-                <p class="text-muted-foreground text-[11px] leading-relaxed">
+                <p class="text-muted-foreground text-meta leading-relaxed">
                   Si deseas rectificar el tipo de evento, el área o el cargo asignados, selecciona la pestaña <strong
                     class="text-foreground">Modificar Datos</strong> en la parte superior.
                 </p>
@@ -813,7 +815,7 @@ const handleSubmit = () => {
                       {{ t.label }}
                     </option>
                   </select>
-                  <p v-if="formErrors.tipoEvento" class="text-rose-500 text-[11px] mt-1">
+                  <p v-if="formErrors.tipoEvento" class="text-rose-500 text-meta mt-1">
                     {{ formErrors.tipoEvento }}
                   </p>
                 </div>
@@ -848,7 +850,7 @@ const handleSubmit = () => {
                     {{ t.label }}
                   </option>
                 </select>
-                <p v-if="formErrors.tipoEvento" class="text-rose-500 text-[11px] mt-1">
+                <p v-if="formErrors.tipoEvento" class="text-rose-500 text-meta mt-1">
                   {{ formErrors.tipoEvento }}
                 </p>
               </div>
@@ -870,21 +872,21 @@ const handleSubmit = () => {
               </div>
 
               <!-- Campos específicos para vigencia (encargaturas y vacaciones) -->
-              <div v-if="requiereVigencia" class="p-3.5 rounded-xl border border-amber-500/30 bg-amber-500/5 space-y-3">
+              <div class="p-3.5 rounded-xl border border-amber-500/30 bg-amber-500/5 space-y-3">
                 <div class="flex items-center gap-2 text-amber-600 dark:text-amber-400 font-semibold text-xs">
                   <IconUser class="size-4" />
-                  <span>{{ esVacaciones ? 'Periodo de Vacaciones' : 'Datos de la Encargatura' }}</span>
+                  <span>{{ esVacaciones ? 'Periodo de Vacaciones' : esEncargo ? 'Datos de la Encargatura' : 'Vigencia del Evento' }}</span>
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <label class="block font-medium text-foreground mb-1 text-xs">
-                      {{ esVacaciones ? 'Fecha de inicio' : 'Vigencia desde' }} <span class="text-rose-500">*</span>
+                      {{ esVacaciones ? 'Fecha de inicio' : 'Vigencia desde' }} <span v-if="requiereVigencia" class="text-rose-500">*</span>
                     </label>
                     <input v-model="fechaDesde" type="date"
                       class="w-full rounded-lg border bg-background px-3 py-2 text-xs focus:ring-2 focus:ring-primary focus:outline-hidden font-mono"
                       :class="formErrors.fechaDesde ? 'border-rose-500 ring-rose-500' : 'border-border'" />
-                    <p v-if="formErrors.fechaDesde" class="text-rose-500 text-[11px] mt-1">
+                    <p v-if="formErrors.fechaDesde" class="text-rose-500 text-meta mt-1">
                       {{ formErrors.fechaDesde }}
                     </p>
                   </div>
@@ -896,11 +898,15 @@ const handleSubmit = () => {
                     <input v-model="fechaHasta" type="date"
                       class="w-full rounded-lg border bg-background px-3 py-2 text-xs focus:ring-2 focus:ring-primary focus:outline-hidden font-mono"
                       :class="formErrors.fechaHasta ? 'border-rose-500 ring-rose-500' : 'border-border'" />
-                    <p v-if="formErrors.fechaHasta" class="text-rose-500 text-[11px] mt-1">
+                    <p v-if="formErrors.fechaHasta" class="text-rose-500 text-meta mt-1">
                       {{ formErrors.fechaHasta }}
                     </p>
                   </div>
                 </div>
+
+                <p v-if="!requiereVigencia" class="text-meta text-muted-foreground">
+                  Opcional. Si la resolución fija el inicio y el término del evento, completa ambas fechas y marca la casilla de documento único más abajo.
+                </p>
               </div>
 
               <!-- Encargo temporal del puesto (opcional) -->
@@ -920,7 +926,7 @@ const handleSubmit = () => {
                     </div>
                     <div>
                       <p class="font-semibold text-foreground text-xs">{{ encargadoSeleccionado.nombre }}</p>
-                      <p class="text-[11px] font-mono text-muted-foreground">DNI: {{ encargadoSeleccionado.dni }}</p>
+                      <p class="text-meta font-mono text-muted-foreground">DNI: {{ encargadoSeleccionado.dni }}</p>
                     </div>
                   </div>
                   <button type="button"
@@ -938,13 +944,13 @@ const handleSubmit = () => {
                       class="w-full rounded-lg border border-border bg-background px-3 py-2 pl-8 text-xs focus:ring-2 focus:ring-primary focus:outline-hidden"
                       @input="onSearchEncargadoInput" />
                     <IconSearch class="size-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
-                    <span v-if="isSearchingEncargado" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] text-muted-foreground">
+                    <span v-if="isSearchingEncargado" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-micro text-muted-foreground">
                       Buscando...
                     </span>
                   </div>
 
                   <!-- Error inline si intenta elegir al propio titular u otro error -->
-                  <p v-if="encargadoError" class="text-rose-500 text-[11px]">
+                  <p v-if="encargadoError" class="text-rose-500 text-meta">
                     {{ encargadoError }}
                   </p>
 
@@ -956,7 +962,7 @@ const handleSubmit = () => {
                       @click="seleccionarEncargado(res)">
                       <div>
                         <p class="font-medium text-foreground">{{ res.nombre }}</p>
-                        <p class="text-[11px] font-mono text-muted-foreground">DNI: {{ res.dni }}</p>
+                        <p class="text-meta font-mono text-muted-foreground">DNI: {{ res.dni }}</p>
                       </div>
                       <Badge :variant="res.estado === 'activo' ? 'success' : 'secondary'" size="xs">
                         {{ res.estado }}
@@ -964,12 +970,12 @@ const handleSubmit = () => {
                     </button>
                   </div>
                   <div v-else-if="encargadoSearchQuery.trim().length >= 3 && !isSearchingEncargado"
-                    class="py-2 text-center text-[11px] text-muted-foreground">
+                    class="py-2 text-center text-meta text-muted-foreground">
                     No se encontraron trabajadores.
                   </div>
                 </div>
 
-                <p class="text-[11px] text-muted-foreground">
+                <p class="text-meta text-muted-foreground">
                   Se registrará un encargo de puesto con el mismo documento y el mismo periodo, heredando el área y el cargo del titular.
                 </p>
               </div>
@@ -995,7 +1001,7 @@ const handleSubmit = () => {
                         {{ td.nombre }} {{ td.sigla ? `(${td.sigla})` : '' }}
                       </option>
                     </select>
-                    <p v-if="formErrors.tipoDocumentoInicio" class="text-rose-500 text-[11px] mt-1">
+                    <p v-if="formErrors.tipoDocumentoInicio" class="text-rose-500 text-meta mt-1">
                       {{ formErrors.tipoDocumentoInicio }}
                     </p>
                   </div>
@@ -1018,7 +1024,7 @@ const handleSubmit = () => {
                     <input v-model.number="docInicio.numeroDocumento" type="number" min="1" placeholder="Ej. 124"
                       class="w-full rounded-lg border bg-background px-3 py-2 text-xs focus:ring-2 focus:ring-primary focus:outline-hidden font-mono"
                       :class="formErrors.numeroDocumentoInicio ? 'border-rose-500 ring-rose-500' : 'border-border'" />
-                    <p v-if="formErrors.numeroDocumentoInicio" class="text-rose-500 text-[11px] mt-1">
+                    <p v-if="formErrors.numeroDocumentoInicio" class="text-rose-500 text-meta mt-1">
                       {{ formErrors.numeroDocumentoInicio }}
                     </p>
                   </div>
@@ -1030,7 +1036,7 @@ const handleSubmit = () => {
                     <input v-model="docInicio.fecha" type="date"
                       class="w-full rounded-lg border bg-background px-3 py-2 text-xs focus:ring-2 focus:ring-primary focus:outline-hidden font-mono"
                       :class="formErrors.fechaInicio ? 'border-rose-500 ring-rose-500' : 'border-border'" />
-                    <p v-if="formErrors.fechaInicio" class="text-rose-500 text-[11px] mt-1">
+                    <p v-if="formErrors.fechaInicio" class="text-rose-500 text-meta mt-1">
                       {{ formErrors.fechaInicio }}
                     </p>
                   </div>
@@ -1058,7 +1064,7 @@ const handleSubmit = () => {
                   <textarea v-model="docInicio.descripcion" rows="2" placeholder="Motivo o detalle del evento..."
                     class="w-full rounded-lg border bg-background p-2.5 text-xs focus:ring-2 focus:ring-primary focus:outline-hidden leading-relaxed"
                     :class="formErrors.descripcionInicio ? 'border-rose-500 ring-rose-500' : 'border-border'"></textarea>
-                  <p v-if="formErrors.descripcionInicio" class="text-rose-500 text-[11px] mt-1">
+                  <p v-if="formErrors.descripcionInicio" class="text-rose-500 text-meta mt-1">
                     {{ formErrors.descripcionInicio }}
                   </p>
                 </div>
