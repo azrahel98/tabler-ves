@@ -4,6 +4,7 @@ import { RouterLink } from 'vue-router'
 import Card from '@/components/ui/card/Card.vue'
 import Badge from '@/components/ui/badge/Badge.vue'
 import Button from '@/components/ui/button/Button.vue'
+import PageHeader from '@/components/ui/page-header/PageHeader.vue'
 import DataTable, { type DataTableColumn } from '@/components/ui/datatable/DataTable.vue'
 import { useAuthStore } from '@/stores/auth'
 import {
@@ -445,25 +446,10 @@ const restablecerFiltros = () => {
 <template>
   <div class="space-y-6 max-w-7xl mx-auto pb-16">
     <!-- Encabezado -->
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border pb-4">
-      <div>
-        <div class="flex items-center gap-2.5">
-          <div class="p-2 rounded-xl bg-primary/10 text-primary border border-primary/20">
-            <IconArrowsDiff class="size-6" :stroke-width="2" />
-          </div>
-          <div>
-            <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-foreground">
-              Comparación AIRHSP
-            </h1>
-            <p class="text-xs sm:text-sm text-muted-foreground mt-0.5">
-              AIRHSP es la fuente oficial para nombres, apellidos y fecha de nacimiento.
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <div v-if="comparaciones.length > 0" class="flex items-center gap-2">
+    <PageHeader title="Comparación AIRHSP" subtitle="AIRHSP es la fuente oficial para nombres, apellidos y fecha de nacimiento.">
+      <template #actions>
         <Button
+          v-if="comparaciones.length > 0"
           variant="outline"
           size="sm"
           class="gap-1.5 text-xs font-semibold"
@@ -473,8 +459,8 @@ const restablecerFiltros = () => {
           <IconDownload class="size-4 text-emerald-600 dark:text-emerald-400" />
           <span>Exportar Excel</span>
         </Button>
-      </div>
-    </div>
+      </template>
+    </PageHeader>
 
     <!-- Sección de carga de archivos -->
     <Card class="p-4 sm:p-6">
@@ -739,7 +725,7 @@ const restablecerFiltros = () => {
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border pb-4">
           <div class="space-y-1">
             <div class="flex items-center gap-2">
-              <h2 class="text-base sm:text-lg font-bold text-foreground">
+              <h2 class="text-title font-bold text-foreground">
                 {{ previewData.aplicado ? 'Resultado de la Actualización con AIRHSP' : 'Vista Previa de Actualización con AIRHSP' }}
               </h2>
               <Badge
@@ -800,7 +786,7 @@ const restablecerFiltros = () => {
               <IconUsers class="size-3.5 text-muted-foreground shrink-0" />
             </div>
             <div class="mt-2 flex items-baseline justify-between">
-              <span class="text-xl sm:text-2xl font-bold tracking-tight text-foreground font-mono">
+              <span class="text-kpi font-bold tracking-tight text-foreground font-mono">
                 {{ previewData.resumen.coincidencias }}
               </span>
             </div>
@@ -814,7 +800,7 @@ const restablecerFiltros = () => {
               <span class="size-2 rounded-full bg-primary shrink-0"></span>
             </div>
             <div class="mt-2 flex items-baseline justify-between">
-              <span class="text-xl sm:text-2xl font-bold tracking-tight text-primary font-mono">
+              <span class="text-kpi font-bold tracking-tight text-primary font-mono">
                 {{ previewData.resumen.con_cambios }}
               </span>
             </div>
@@ -828,7 +814,7 @@ const restablecerFiltros = () => {
               <IconCheck class="size-3.5 text-emerald-500 shrink-0" />
             </div>
             <div class="mt-2 flex items-baseline justify-between">
-              <span class="text-xl sm:text-2xl font-bold tracking-tight text-emerald-600 dark:text-emerald-400 font-mono">
+              <span class="text-kpi font-bold tracking-tight text-emerald-600 dark:text-emerald-400 font-mono">
                 {{ previewData.resumen.sin_cambios }}
               </span>
             </div>
@@ -842,7 +828,7 @@ const restablecerFiltros = () => {
               <IconAlertTriangle class="size-3.5 text-amber-500 shrink-0" />
             </div>
             <div class="mt-2 flex items-baseline justify-between">
-              <span class="text-xl sm:text-2xl font-bold tracking-tight text-amber-600 dark:text-amber-400 font-mono">
+              <span class="text-kpi font-bold tracking-tight text-amber-600 dark:text-amber-400 font-mono">
                 {{ previewData.resumen.omitidos_fecha_ingreso }}
               </span>
             </div>
@@ -856,7 +842,7 @@ const restablecerFiltros = () => {
               <span class="size-2 rounded-full bg-destructive shrink-0"></span>
             </div>
             <div class="mt-2 flex items-baseline justify-between">
-              <span class="text-xl sm:text-2xl font-bold tracking-tight text-destructive font-mono">
+              <span class="text-kpi font-bold tracking-tight text-destructive font-mono">
                 {{ previewData.resumen.errores }}
               </span>
             </div>
@@ -870,7 +856,7 @@ const restablecerFiltros = () => {
               <IconCheck class="size-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
             </div>
             <div class="mt-2 flex items-baseline justify-between">
-              <span class="text-xl sm:text-2xl font-bold tracking-tight text-emerald-700 dark:text-emerald-300 font-mono">
+              <span class="text-kpi font-bold tracking-tight text-emerald-700 dark:text-emerald-300 font-mono">
                 {{ previewData.resumen.actualizados }}
               </span>
             </div>
@@ -1129,7 +1115,7 @@ const restablecerFiltros = () => {
           </div>
 
           <div class="flex items-baseline gap-2 shrink-0 self-end sm:self-center">
-            <span class="text-3xl sm:text-4xl font-extrabold text-amber-600 dark:text-amber-400 font-mono">
+            <span class="text-kpi font-extrabold text-amber-600 dark:text-amber-400 font-mono">
               {{ personasConDiferenciaPersonal }}
             </span>
             <span class="text-xs font-medium text-muted-foreground">
@@ -1148,7 +1134,7 @@ const restablecerFiltros = () => {
             <IconUsers class="size-3.5 text-muted-foreground shrink-0" />
           </div>
           <div class="mt-2 flex items-baseline justify-between">
-            <span class="text-xl sm:text-2xl font-bold tracking-tight text-foreground font-mono">
+            <span class="text-kpi font-bold tracking-tight text-foreground font-mono">
               {{ resumen.procesados }}
             </span>
           </div>
@@ -1162,7 +1148,7 @@ const restablecerFiltros = () => {
             <span class="size-2 rounded-full bg-primary shrink-0"></span>
           </div>
           <div class="mt-2 flex items-baseline justify-between">
-            <span class="text-xl sm:text-2xl font-bold tracking-tight text-primary font-mono">
+            <span class="text-kpi font-bold tracking-tight text-primary font-mono">
               {{ resumen.encontrados_mef }}
             </span>
           </div>
@@ -1176,7 +1162,7 @@ const restablecerFiltros = () => {
             <IconCheck class="size-3.5 text-emerald-500 shrink-0" />
           </div>
           <div class="mt-2 flex items-baseline justify-between">
-            <span class="text-xl sm:text-2xl font-bold tracking-tight text-emerald-600 dark:text-emerald-400 font-mono">
+            <span class="text-kpi font-bold tracking-tight text-emerald-600 dark:text-emerald-400 font-mono">
               {{ resumen.ok }}
             </span>
           </div>
@@ -1190,7 +1176,7 @@ const restablecerFiltros = () => {
             <span class="size-2 rounded-full bg-amber-500 shrink-0"></span>
           </div>
           <div class="mt-2 flex items-baseline justify-between">
-            <span class="text-xl sm:text-2xl font-bold tracking-tight text-amber-600 dark:text-amber-400 font-mono">
+            <span class="text-kpi font-bold tracking-tight text-amber-600 dark:text-amber-400 font-mono">
               {{ resumen.diferencias }}
             </span>
           </div>
@@ -1204,7 +1190,7 @@ const restablecerFiltros = () => {
             <span class="size-2 rounded-full bg-rose-500 shrink-0"></span>
           </div>
           <div class="mt-2 flex items-baseline justify-between">
-            <span class="text-xl sm:text-2xl font-bold tracking-tight text-rose-600 dark:text-rose-400 font-mono">
+            <span class="text-kpi font-bold tracking-tight text-rose-600 dark:text-rose-400 font-mono">
               {{ resumen.no_encontrados }}
             </span>
           </div>
@@ -1218,7 +1204,7 @@ const restablecerFiltros = () => {
             <span class="size-2 rounded-full bg-purple-500 shrink-0"></span>
           </div>
           <div class="mt-2 flex items-baseline justify-between">
-            <span class="text-xl sm:text-2xl font-bold tracking-tight text-purple-600 dark:text-purple-400 font-mono">
+            <span class="text-kpi font-bold tracking-tight text-purple-600 dark:text-purple-400 font-mono">
               {{ resumen.no_en_sistema }}
             </span>
           </div>

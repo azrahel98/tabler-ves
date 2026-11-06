@@ -4,6 +4,7 @@ import { Bar } from 'vue-chartjs'
 import Card from '@/components/ui/card/Card.vue'
 import Badge from '@/components/ui/badge/Badge.vue'
 import { useThemeStore } from '@/stores/theme'
+import { useChartScale } from '@/lib/chart'
 import type { RangoReport } from './types'
 import type { ChartOptions, ChartData } from 'chart.js'
 
@@ -15,9 +16,10 @@ interface Props {
 
 const props = withDefaults(defineProps<Props>(), {
   isLoading: false,
-  chartHeight: 'h-57.5',
+  chartHeight: 'h-40',
 })
 
+const { chartFontSize } = useChartScale()
 const themeStore = useThemeStore()
 const isDark = computed(() => themeStore.isDark)
 
@@ -57,7 +59,7 @@ const chartOptions = computed<ChartOptions<'bar'>>(() => {
           color: chartTextColor.value,
           font: {
             family: 'Inter, ui-sans-serif, system-ui, sans-serif',
-            size: 11,
+            size: chartFontSize.value,
             weight: 500,
           },
         },
@@ -70,7 +72,7 @@ const chartOptions = computed<ChartOptions<'bar'>>(() => {
           color: chartTextColor.value,
           font: {
             family: 'Inter, ui-sans-serif, system-ui, sans-serif',
-            size: 11,
+            size: chartFontSize.value,
           },
         },
       },

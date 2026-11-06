@@ -140,7 +140,7 @@ const filteredAndSortedArchivos = computed(() => {
 <template>
   <div class="space-y-6">
     <Card class="space-y-3">
-      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 border-b border-border pb-3">
+      <div class="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-3">
         <div class="flex items-center gap-2">
           <IconFileText class="size-3.5 text-primary shrink-0" />
           <h3 class="text-sm font-semibold tracking-tight text-foreground">Archivos Digitales del Legajo</h3>
@@ -154,7 +154,7 @@ const filteredAndSortedArchivos = computed(() => {
           <div class="relative">
             <IconSearch class="size-3.5 text-muted-foreground absolute left-2.5 top-1/2 -translate-y-1/2" />
             <input v-model="searchQuery" type="text" placeholder="Buscar archivo PDF..."
-              class="h-7.5 pl-7 pr-2.5 text-meta rounded-lg border border-border bg-background/50 focus:bg-background focus:outline-hidden focus:ring-1 focus:ring-primary w-36 sm:w-44 transition" />
+              class="h-7.5 pl-7 pr-2.5 text-meta rounded-lg border border-border bg-background/50 focus:bg-background focus:outline-hidden focus:ring-1 focus:ring-primary w-40 transition" />
           </div>
 
 
@@ -186,17 +186,17 @@ const filteredAndSortedArchivos = computed(() => {
               <thead
                 class="border-b border-border bg-muted/30 text-micro font-semibold uppercase tracking-wider text-muted-foreground select-none">
                 <tr>
-                  <th scope="col" class="px-3 sm:px-4 py-2 font-semibold w-[48%]">Nombre</th>
-                  <th scope="col" class="px-3 sm:px-4 py-2 font-semibold w-[14%]">Tamaño</th>
-                  <th scope="col" class="px-3 sm:px-4 py-2 font-semibold w-[22%]">Acceso</th>
-                  <th scope="col" class="px-3 sm:px-4 py-2 font-semibold w-[16%] text-right sm:text-left">Modificado
+                  <th scope="col" class="px-3 py-2 font-semibold w-[48%]">Nombre</th>
+                  <th scope="col" class="px-3 py-2 font-semibold w-[14%]">Tamaño</th>
+                  <th scope="col" class="px-3 py-2 font-semibold w-[22%]">Acceso</th>
+                  <th scope="col" class="px-3 py-2 font-semibold w-[16%] text-left">Modificado
                   </th>
                 </tr>
               </thead>
               <tbody class="divide-y divide-border text-xs">
                 <tr v-for="archivo in filteredAndSortedArchivos" :key="archivo.id"
                   class="group hover:bg-muted/40 transition-colors">
-                  <td class="px-3 sm:px-4 py-2 min-w-0">
+                  <td class="px-3 py-2 min-w-0">
                     <div class="flex items-center gap-2.5">
                       <div class="shrink-0 flex items-center justify-center">
                         <svg class="size-6 shrink-0 drop-shadow-2xs" viewBox="0 0 24 24" fill="none"
@@ -215,18 +215,18 @@ const filteredAndSortedArchivos = computed(() => {
                         </svg>
                       </div>
                       <button type="button" @click="handleOpenFile(archivo)"
-                        class="font-medium text-foreground hover:text-primary transition-colors truncate max-w-sm sm:max-w-md block text-meta text-left cursor-pointer"
+                        class="font-medium text-foreground hover:text-primary transition-colors truncate max-w-sm block text-meta text-left cursor-pointer"
                         :title="archivo.original_name">
                         {{ archivo.original_name }}
                       </button>
                     </div>
                   </td>
 
-                  <td class="px-3 sm:px-4 py-2 text-muted-foreground font-mono text-meta whitespace-nowrap">
+                  <td class="px-3 py-2 text-muted-foreground font-mono text-meta whitespace-nowrap">
                     {{ archivo.size || '256 KB' }}
                   </td>
 
-                  <td class="px-3 sm:px-4 py-2 whitespace-nowrap">
+                  <td class="px-3 py-2 whitespace-nowrap">
                     <div class="flex items-center gap-1.5">
                       <div v-if="getAccessDetails(archivo).isOnlyYou"
                         class="size-4 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 flex items-center justify-center shrink-0">
@@ -242,7 +242,7 @@ const filteredAndSortedArchivos = computed(() => {
                     </div>
                   </td>
 
-                  <td class="px-3 sm:px-4 py-2 text-muted-foreground text-right sm:text-left whitespace-nowrap">
+                  <td class="px-3 py-2 text-muted-foreground text-left whitespace-nowrap">
                     <div class="flex items-center justify-between gap-2">
                       <span class="font-mono text-meta">{{ formatFileDate(archivo.fecha_subida) }}</span>
                       <div class="flex items-center gap-1">
@@ -267,7 +267,7 @@ const filteredAndSortedArchivos = computed(() => {
           </div>
         </div>
 
-        <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+        <div v-else class="grid grid-cols-[repeat(auto-fit,minmax(14rem,1fr))] gap-3">
           <div v-for="archivo in filteredAndSortedArchivos" :key="archivo.id"
             class="group rounded-xl border border-border bg-card p-3 hover:shadow-xs hover:border-primary/40 transition-all flex flex-col justify-between space-y-2.5">
             <div class="flex items-start justify-between gap-2">
@@ -360,24 +360,24 @@ const filteredAndSortedArchivos = computed(() => {
             <thead
               class="border-b border-border bg-muted/30 text-micro font-semibold uppercase tracking-wider text-muted-foreground select-none">
               <tr>
-                <th scope="col" class="px-3 sm:px-4 py-2.5 font-semibold">Documento / Sigla</th>
-                <th scope="col" class="px-3 sm:px-4 py-2.5 font-semibold">Descripción</th>
-                <th scope="col" class="px-3 sm:px-4 py-2.5 font-semibold whitespace-nowrap">Fecha</th>
-                <th scope="col" class="px-3 sm:px-4 py-2.5 text-right font-semibold whitespace-nowrap">Archivo PDF</th>
+                <th scope="col" class="px-3 py-2.5 font-semibold">Documento / Sigla</th>
+                <th scope="col" class="px-3 py-2.5 font-semibold">Descripción</th>
+                <th scope="col" class="px-3 py-2.5 font-semibold whitespace-nowrap">Fecha</th>
+                <th scope="col" class="px-3 py-2.5 text-right font-semibold whitespace-nowrap">Archivo PDF</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-border">
               <tr v-for="doc in documentos" :key="doc.id" class="transition-colors hover:bg-muted/40">
-                <td class="px-3 sm:px-4 py-2.5 whitespace-nowrap align-top">
+                <td class="px-3 py-2.5 whitespace-nowrap align-top">
                   <span class="font-semibold text-foreground text-meta block">{{ doc.sigla }}</span>
                 </td>
-                <td class="px-3 sm:px-4 py-2.5 min-w-0 align-top">
+                <td class="px-3 py-2.5 min-w-0 align-top">
                   <p class="text-micro text-muted-foreground leading-relaxed">{{ doc.descripcion }}</p>
                 </td>
-                <td class="px-3 sm:px-4 py-2.5 font-mono text-meta text-muted-foreground whitespace-nowrap align-top">
+                <td class="px-3 py-2.5 font-mono text-meta text-muted-foreground whitespace-nowrap align-top">
                   {{ formatDate(doc.fecha) }}
                 </td>
-                <td class="px-3 sm:px-4 py-2.5 text-right whitespace-nowrap align-top">
+                <td class="px-3 py-2.5 text-right whitespace-nowrap align-top">
                   <div v-if="getArchivoDeDocumento(doc.id)" class="inline-flex items-center gap-1.5 justify-end">
                     <button type="button" @click="handleOpenFile(getArchivoDeDocumento(doc.id)!)"
                       class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-meta font-medium bg-rose-500/10 text-rose-600 dark:text-rose-400 hover:bg-rose-500/20 transition-colors cursor-pointer"

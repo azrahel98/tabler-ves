@@ -557,7 +557,7 @@ const handleSubmit = () => {
       <div class="fixed inset-0 bg-neutral-900/60 backdrop-blur-xs" @click="!isSaving && emit('close')"></div>
     </transition>
 
-    <div class="flex min-h-screen items-center justify-center p-3 sm:p-4 text-center">
+    <div class="flex min-h-screen items-center justify-center p-3 text-center">
       <transition appear enter-active-class="transform transition ease-out duration-300"
         enter-from-class="scale-95 opacity-0" enter-to-class="scale-100 opacity-100"
         leave-active-class="transform transition ease-in duration-200" leave-from-class="scale-100 opacity-100"
@@ -572,7 +572,7 @@ const handleSubmit = () => {
                 <IconFileCode class="size-4.5" />
               </div>
               <div class="min-w-0">
-                <h3 class="font-bold text-base text-foreground tracking-tight truncate">
+                <h3 class="font-bold text-title text-foreground tracking-tight truncate">
                   {{ esModoExistente ? (esEventoFinalizado ? 'Detalles del Evento Laboral' : 'Gestionar Evento Laboral')
                     : 'Registrar Nuevo Evento Laboral' }}
                 </h3>
@@ -589,7 +589,7 @@ const handleSubmit = () => {
             </button>
           </div>
 
-          <form id="evento-form" class="p-5 sm:p-6 overflow-y-auto min-h-0 flex-1 space-y-4 text-xs"
+          <form id="evento-form" class="p-5 overflow-y-auto min-h-0 flex-1 space-y-4 text-xs"
             @submit.prevent="handleSubmit">
             <div v-if="esModoExistente && evento" class="space-y-3">
               <div class="p-3.5 rounded-xl border border-border bg-muted/20 space-y-2">
@@ -704,8 +704,8 @@ const handleSubmit = () => {
                     </span>
                   </div>
 
-                  <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    <div class="sm:col-span-2">
+                  <div class="grid grid-cols-[repeat(auto-fit,minmax(14rem,1fr))] gap-3">
+                    <div>
                       <label class="block font-medium text-foreground mb-1 text-xs">
                         Tipo de Documento <span class="text-rose-500">*</span>
                       </label>
@@ -732,7 +732,7 @@ const handleSubmit = () => {
                     </div>
                   </div>
 
-                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div class="grid grid-cols-[repeat(auto-fit,minmax(14rem,1fr))] gap-3">
                     <div>
                       <label class="block font-medium text-foreground mb-1 text-xs">
                         Número de Documento <span class="text-rose-500">*</span>
@@ -821,7 +821,7 @@ const handleSubmit = () => {
                 </div>
 
                 <div v-if="requiereMovimiento"
-                  class="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3 rounded-xl border border-border/80 bg-muted/10">
+                  class="grid grid-cols-[repeat(auto-fit,minmax(14rem,1fr))] gap-3 p-3 rounded-xl border border-border/80 bg-muted/10">
                   <div>
                     <SearchSelect v-model="nuevaAreaId" label="Nueva Área Asignada"
                       placeholder="Mantener área actual"
@@ -856,7 +856,7 @@ const handleSubmit = () => {
               </div>
 
               <div v-if="requiereMovimiento"
-                class="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3 rounded-xl border border-border/80 bg-muted/10">
+                class="grid grid-cols-[repeat(auto-fit,minmax(14rem,1fr))] gap-3 p-3 rounded-xl border border-border/80 bg-muted/10">
                 <div>
                   <SearchSelect v-model="nuevaAreaId" label="Nueva Área Asignada"
                     placeholder="Mantener área actual"
@@ -878,7 +878,7 @@ const handleSubmit = () => {
                   <span>{{ esVacaciones ? 'Periodo de Vacaciones' : esEncargo ? 'Datos de la Encargatura' : 'Vigencia del Evento' }}</span>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div class="grid grid-cols-[repeat(auto-fit,minmax(14rem,1fr))] gap-3">
                   <div>
                     <label class="block font-medium text-foreground mb-1 text-xs">
                       {{ esVacaciones ? 'Fecha de inicio' : 'Vigencia desde' }} <span v-if="requiereVigencia" class="text-rose-500">*</span>
@@ -988,8 +988,8 @@ const handleSubmit = () => {
                   </span>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                  <div class="sm:col-span-2">
+                <div class="grid grid-cols-[repeat(auto-fit,minmax(14rem,1fr))] gap-3">
+                  <div>
                     <label class="block font-medium text-foreground mb-1 text-xs">
                       Tipo de Documento <span class="text-rose-500">*</span>
                     </label>
@@ -1016,7 +1016,7 @@ const handleSubmit = () => {
                   </div>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div class="grid grid-cols-[repeat(auto-fit,minmax(14rem,1fr))] gap-3">
                   <div>
                     <label class="block font-medium text-foreground mb-1 text-xs">
                       Número de Documento <span class="text-rose-500">*</span>
@@ -1081,7 +1081,7 @@ const handleSubmit = () => {
           </form>
 
           <div
-            class="px-5 py-3.5 sm:px-6 border-t border-border flex items-center justify-end gap-2.5 shrink-0 bg-muted/20">
+            class="px-5 py-3.5 border-t border-border flex items-center justify-end gap-2.5 shrink-0 bg-muted/20">
             <Button size="sm" variant="outline" class="cursor-pointer" :disabled="isSaving" @click="emit('close')">
               {{ !debeMostrarBotonGuardar ? 'Cerrar' : 'Cancelar' }}
             </Button>

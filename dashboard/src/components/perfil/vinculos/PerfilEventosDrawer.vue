@@ -144,13 +144,13 @@ const mismoDocumento = (ev: EventoVinculoDetalle): boolean => {
       <div class="fixed inset-0 bg-neutral-900/60 backdrop-blur-xs" @click="!isDeleting && emit('close')"></div>
     </transition>
 
-    <div class="fixed inset-y-0 right-0 max-w-full flex pl-6 sm:pl-10">
-      <transition appear enter-active-class="transform transition ease-out duration-300 sm:duration-350"
+    <div class="fixed inset-y-0 right-0 max-w-full flex pl-6">
+      <transition appear enter-active-class="transform transition ease-out duration-300"
         enter-from-class="translate-x-full" enter-to-class="translate-x-0"
         leave-active-class="transform transition ease-in duration-250" leave-from-class="translate-x-0"
         leave-to-class="translate-x-full">
         <aside v-if="isOpen && vinculo"
-          class="w-screen max-w-md sm:max-w-lg bg-card border-l border-border shadow-2xl flex flex-col z-10 overflow-hidden text-xs">
+          class="w-screen max-w-md bg-card border-l border-border shadow-2xl flex flex-col z-10 overflow-hidden text-xs">
           
           <header class="px-5 py-4 border-b border-border flex items-center justify-between shrink-0 bg-muted/15">
             <div class="flex items-center gap-3 min-w-0">

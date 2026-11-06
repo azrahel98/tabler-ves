@@ -312,7 +312,7 @@ const regimenBadgeVariant = (regimen: string): 'primary' | 'success' | 'warning'
                   <Badge :variant="regimenBadgeVariant(t.regimen)" size="xs">
                     {{ t.regimen }}
                   </Badge>
-
+                  <span class="font-mono text-meta text-muted-foreground">{{ t.plaza || '-' }}</span>
                 </div>
               </td>
               <td class="px-5 py-3.5">

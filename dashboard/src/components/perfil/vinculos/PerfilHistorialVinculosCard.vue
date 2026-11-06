@@ -82,7 +82,7 @@ const sortedVinculos = computed(() => {
 
 <template>
   <Card class="space-y-3">
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5 border-b border-border pb-3">
+    <div class="flex flex-wrap items-center justify-between gap-2.5 border-b border-border pb-3">
       <span class="text-sm font-bold text-foreground tracking-wider flex items-center gap-2">
         <IconBriefcase class="size-3.5 text-primary shrink-0" />
         <h3 class="font-semibold text-foreground tracking-tight text-sm">Historial de Vínculos Laborales</h3>
@@ -110,11 +110,11 @@ const sortedVinculos = computed(() => {
           <thead
             class="border-b border-border bg-muted/30 text-meta font-semibold uppercase tracking-wider text-muted-foreground select-none">
             <tr>
-              <th scope="col" class="px-3 sm:px-4 py-2.5 font-semibold">Cargo</th>
-              <th scope="col" class="hidden sm:table-cell px-3 sm:px-4 py-2.5 font-semibold">Ingreso</th>
-              <th scope="col" class="hidden sm:table-cell px-3 sm:px-4 py-2.5 font-semibold">Cese</th>
-              <th scope="col" class="px-3 sm:px-4 py-2.5 text-right font-semibold">Sueldo</th>
-              <th scope="col" class="px-2 py-2.5 text-center w-10 sm:w-12">
+              <th scope="col" class="px-3 py-2.5 font-semibold">Cargo</th>
+              <th scope="col" class="px-3 py-2.5 font-semibold">Ingreso</th>
+              <th scope="col" class="px-3 py-2.5 font-semibold">Cese</th>
+              <th scope="col" class="px-3 py-2.5 text-right font-semibold">Sueldo</th>
+              <th scope="col" class="px-2 py-2.5 text-center w-10">
                 <span class="sr-only">Detalle</span>
               </th>
             </tr>
@@ -129,7 +129,7 @@ const sortedVinculos = computed(() => {
                 @click="v.origen !== 'SUNAT' && toggleExpand(v.id)"
                 @keydown.enter.prevent="v.origen !== 'SUNAT' && toggleExpand(v.id)"
                 @keydown.space.prevent="v.origen !== 'SUNAT' && toggleExpand(v.id)">
-                <td class="px-3 sm:px-4 py-2.5 min-w-0">
+                <td class="px-3 py-2.5 min-w-0">
                   <div class="flex items-start gap-2.5">
                     <span v-if="getVinculoStatusType(v) === 'success'" class="relative flex size-2 shrink-0 mt-1"
                       title="Vínculo Activo / Vigente">
@@ -163,7 +163,7 @@ const sortedVinculos = computed(() => {
                           <span>{{ v.eventos.length }} {{ v.eventos.length === 1 ? 'evento' : 'eventos' }}</span>
                         </span>
                       </div>
-                      <span class="text-micro text-muted-foreground block sm:hidden font-mono mt-0.5">
+                      <span class="text-micro text-muted-foreground block font-mono mt-0.5">
                         {{ formatDate(v.fecha_ingreso) }} &bull; {{ v.fecha_salida ? formatDate(v.fecha_salida) :
                           'Vigente' }}
                       </span>
@@ -171,13 +171,13 @@ const sortedVinculos = computed(() => {
                   </div>
                 </td>
 
-                <td class="hidden sm:table-cell px-3 sm:px-4 py-2.5 whitespace-nowrap">
+                <td class="px-3 py-2.5 whitespace-nowrap">
                   <span class="font-mono text-muted-foreground text-meta">
                     {{ formatDate(v.fecha_ingreso) }}
                   </span>
                 </td>
 
-                <td class="hidden sm:table-cell px-3 sm:px-4 py-2.5 whitespace-nowrap">
+                <td class="px-3 py-2.5 whitespace-nowrap">
                   <span
                     :class="v.fecha_salida ? 'font-mono text-muted-foreground text-meta' : 'text-meta font-medium text-emerald-600 dark:text-emerald-400'">
                     {{ v.fecha_salida ? formatDate(v.fecha_salida) : 'Vigente' }}
@@ -185,7 +185,7 @@ const sortedVinculos = computed(() => {
                 </td>
 
                 <td
-                  class="px-3 sm:px-4 py-2.5 text-right font-mono font-medium text-foreground tabular-nums text-xs whitespace-nowrap">
+                  class="px-3 py-2.5 text-right font-mono font-medium text-foreground tabular-nums text-xs whitespace-nowrap">
                   {{ v.origen === 'SUNAT' ? '-' : formatMoneda(v.sueldo) }}
                 </td>
 
@@ -201,10 +201,10 @@ const sortedVinculos = computed(() => {
               </tr>
 
               <tr v-if="v.origen !== 'SUNAT' && isExpanded(v.id)" class="bg-muted/15 border-b border-border/80">
-                <td colspan="5" class="p-2.5 sm:p-4">
-                  <div class="p-3 sm:p-4 rounded-xl bg-card border border-border/70 space-y-3 text-xs">
+                <td colspan="5" class="p-2.5">
+                  <div class="p-3 rounded-xl bg-card border border-border/70 space-y-3 text-xs">
                     <div
-                      class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pb-2.5 border-b border-border/60">
+                      class="flex flex-wrap items-center justify-between gap-2 pb-2.5 border-b border-border/60">
                       <div class="flex items-center gap-2 flex-wrap">
                         <Badge :variant="getBadgeVariant(getVinculoStatusType(v))" size="xs" class="gap-1.5">
                           <span v-if="getVinculoStatusType(v) === 'success'"
@@ -236,10 +236,10 @@ const sortedVinculos = computed(() => {
                       </div>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-2.5 pt-0.5">
+                    <div class="grid grid-cols-[repeat(auto-fit,minmax(14rem,1fr))] gap-x-8 gap-y-2.5 pt-0.5">
                       <div class="space-y-2.5">
                         <div
-                          class="grid grid-cols-[115px_1fr] sm:grid-cols-[135px_1fr] items-start sm:items-center gap-2">
+                          class="grid grid-cols-[8rem_1fr] items-center gap-2">
                           <span class="text-muted-foreground flex items-center gap-1.5 shrink-0">
                             <IconBuildingSkyscraper class="size-3.5 text-muted-foreground/70 shrink-0" /> Área:
                           </span>
@@ -249,7 +249,7 @@ const sortedVinculos = computed(() => {
                         </div>
 
                         <div
-                          class="grid grid-cols-[115px_1fr] sm:grid-cols-[135px_1fr] items-start sm:items-center gap-2">
+                          class="grid grid-cols-[8rem_1fr] items-center gap-2">
                           <span class="text-muted-foreground flex items-center gap-1.5 shrink-0">
                             <IconCalendar class="size-3.5 text-muted-foreground/70 shrink-0" /> Fecha Ingreso:
                           </span>
@@ -258,7 +258,7 @@ const sortedVinculos = computed(() => {
                         </div>
 
                         <div
-                          class="grid grid-cols-[115px_1fr] sm:grid-cols-[135px_1fr] items-start sm:items-center gap-2">
+                          class="grid grid-cols-[8rem_1fr] items-center gap-2">
                           <span class="text-muted-foreground flex items-center gap-1.5 shrink-0">
                             <IconFileText class="size-3.5 text-muted-foreground/70 shrink-0" /> Doc. Ingreso:
                           </span>
@@ -274,7 +274,7 @@ const sortedVinculos = computed(() => {
                         </div>
 
                         <div
-                          class="grid grid-cols-[115px_1fr] sm:grid-cols-[135px_1fr] items-start sm:items-center gap-2">
+                          class="grid grid-cols-[8rem_1fr] items-center gap-2">
                           <span class="text-muted-foreground flex items-center gap-1.5 shrink-0">
                             <IconFileDescription class="size-3.5 text-muted-foreground/70 shrink-0" /> Ref. Ingreso:
                           </span>
@@ -284,7 +284,7 @@ const sortedVinculos = computed(() => {
                         </div>
 
                         <div
-                          class="grid grid-cols-[115px_1fr] sm:grid-cols-[135px_1fr] items-start sm:items-center gap-2">
+                          class="grid grid-cols-[8rem_1fr] items-center gap-2">
                           <span class="text-muted-foreground flex items-center gap-1.5 shrink-0">
                             <IconBriefcase class="size-3.5 text-muted-foreground/70 shrink-0" /> G. Ocupacional:
                           </span>
@@ -293,7 +293,7 @@ const sortedVinculos = computed(() => {
                         </div>
 
                         <div
-                          class="grid grid-cols-[115px_1fr] sm:grid-cols-[135px_1fr] items-start sm:items-center gap-2">
+                          class="grid grid-cols-[8rem_1fr] items-center gap-2">
                           <span class="text-muted-foreground flex items-center gap-1.5 shrink-0">
                             <IconId class="size-3.5 text-muted-foreground/70 shrink-0" /> C. Estructural:
                           </span>
@@ -304,7 +304,7 @@ const sortedVinculos = computed(() => {
                         </div>
 
                         <div
-                          class="grid grid-cols-[115px_1fr] sm:grid-cols-[135px_1fr] items-start sm:items-center gap-2">
+                          class="grid grid-cols-[8rem_1fr] items-center gap-2">
                           <span class="text-muted-foreground flex items-center gap-1.5 shrink-0">
                             <IconShieldCheck class="size-3.5 text-muted-foreground/70 shrink-0" /> Afiliación:
                           </span>
@@ -321,7 +321,7 @@ const sortedVinculos = computed(() => {
 
                       <div class="space-y-2.5">
                         <div
-                          class="grid grid-cols-[115px_1fr] sm:grid-cols-[135px_1fr] items-start sm:items-center gap-2">
+                          class="grid grid-cols-[8rem_1fr] items-center gap-2">
                           <span class="text-muted-foreground flex items-center gap-1.5 shrink-0">
                             <IconFileCertificate class="size-3.5 text-muted-foreground/70 shrink-0" /> Régimen:
                           </span>
@@ -331,7 +331,7 @@ const sortedVinculos = computed(() => {
                         </div>
 
                         <div
-                          class="grid grid-cols-[115px_1fr] sm:grid-cols-[135px_1fr] items-start sm:items-center gap-2">
+                          class="grid grid-cols-[8rem_1fr] items-center gap-2">
                           <span class="text-muted-foreground flex items-center gap-1.5 shrink-0">
                             <IconCalendarOff class="size-3.5 text-muted-foreground/70 shrink-0" /> Fecha Cese:
                           </span>
@@ -342,7 +342,7 @@ const sortedVinculos = computed(() => {
                         </div>
 
                         <div
-                          class="grid grid-cols-[115px_1fr] sm:grid-cols-[135px_1fr] items-start sm:items-center gap-2">
+                          class="grid grid-cols-[8rem_1fr] items-center gap-2">
                           <span class="text-muted-foreground flex items-center gap-1.5 shrink-0">
                             <IconFileCheck class="size-3.5 text-muted-foreground/70 shrink-0" /> Doc. Salida:
                           </span>
@@ -358,7 +358,7 @@ const sortedVinculos = computed(() => {
                         </div>
 
                         <div
-                          class="grid grid-cols-[115px_1fr] sm:grid-cols-[135px_1fr] items-start sm:items-center gap-2">
+                          class="grid grid-cols-[8rem_1fr] items-center gap-2">
                           <span class="text-muted-foreground flex items-center gap-1.5 shrink-0">
                             <IconFileDescription class="size-3.5 text-muted-foreground/70 shrink-0" /> Ref. Salida:
                           </span>
@@ -368,7 +368,7 @@ const sortedVinculos = computed(() => {
                         </div>
 
                         <div
-                          class="grid grid-cols-[115px_1fr] sm:grid-cols-[135px_1fr] items-start sm:items-center gap-2">
+                          class="grid grid-cols-[8rem_1fr] items-center gap-2">
                           <span class="text-muted-foreground flex items-center gap-1.5 shrink-0">
                             <IconAlertCircle class="size-3.5 text-muted-foreground/70 shrink-0" /> Eventos:
                           </span>
@@ -386,7 +386,7 @@ const sortedVinculos = computed(() => {
                         </div>
 
                         <div v-if="v.doc_evento_tipo || v.numero_doc_evento"
-                          class="grid grid-cols-[115px_1fr] sm:grid-cols-[135px_1fr] items-start sm:items-center gap-2">
+                          class="grid grid-cols-[8rem_1fr] items-center gap-2">
                           <span class="text-muted-foreground flex items-center gap-1.5 shrink-0">
                             <IconFileCode class="size-3.5 text-muted-foreground/70 shrink-0" /> Doc. Evento:
                           </span>
@@ -401,7 +401,7 @@ const sortedVinculos = computed(() => {
                         </div>
 
                         <div v-if="v.fecha_evento"
-                          class="grid grid-cols-[115px_1fr] sm:grid-cols-[135px_1fr] items-start sm:items-center gap-2">
+                          class="grid grid-cols-[8rem_1fr] items-center gap-2">
                           <span class="text-muted-foreground flex items-center gap-1.5 shrink-0">
                             <IconCalendar class="size-3.5 text-muted-foreground/70 shrink-0" /> Fecha Evento:
                           </span>
@@ -430,7 +430,7 @@ const sortedVinculos = computed(() => {
                       </div>
                       <div class="space-y-1.5">
                         <div v-for="ev in v.eventos" :key="ev.id"
-                          class="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 p-2 rounded-lg bg-muted/40 border border-border/50 text-meta">
+                          class="flex flex-wrap items-center justify-between gap-1.5 p-2 rounded-lg bg-muted/40 border border-border/50 text-meta">
                           <div class="flex items-center gap-2 flex-wrap min-w-0">
                             <Badge variant="outline" size="xs"
                               class="font-semibold uppercase text-micro">

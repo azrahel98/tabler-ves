@@ -60,7 +60,7 @@ const emit = defineEmits<{
 
 <template>
   <Card v-if="vinculoEfectivo" class="space-y-3.5">
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5 border-b border-border pb-3">
+    <div class="flex flex-wrap items-center justify-between gap-2.5 border-b border-border pb-3">
       <span class="text-sm font-bold text-foreground tracking-wider flex items-center gap-2">
         <IconBriefcase class="size-3.5 text-primary shrink-0" />
         <h3 class="font-semibold text-foreground tracking-tight text-sm">Ultimo Laboral Actual</h3>
@@ -70,7 +70,7 @@ const emit = defineEmits<{
 
 
     <div class="space-y-1">
-      <h5 class="text-xs sm:text-sm font-semibold text-foreground tracking-tight wrap-break-word">
+      <h5 class="text-xs font-semibold text-foreground tracking-tight wrap-break-word">
         {{ vinculoEfectivo.cargo }}
       </h5>
       <router-link
@@ -88,32 +88,32 @@ const emit = defineEmits<{
       </div>
     </div>
 
-    <div class="grid grid-cols-1 sm:grid-cols-3 border-y border-border/60 py-2.5 my-0.5 divide-y sm:divide-y-0 sm:divide-x divide-border/60">
-      <div class="sm:pr-3">
+    <div class="grid grid-cols-[repeat(auto-fit,minmax(9.5rem,1fr))] border-y border-border/60 py-2.5 my-0.5 gap-4">
+      <div>
         <span class="text-micro font-semibold uppercase tracking-wider text-muted-foreground block">Remuneración</span>
         <p class="font-semibold font-mono text-foreground text-xs mt-0.5">{{ formatMoneda(vinculoEfectivo.sueldo) }}</p>
       </div>
-      <div class="sm:px-4">
+      <div>
         <span class="text-micro font-semibold uppercase tracking-wider text-muted-foreground block">Plaza AIRHSP</span>
         <p class="font-mono font-semibold text-foreground text-xs mt-0.5">{{ vinculoEfectivo.codigo || '-' }}</p>
       </div>
-      <div class="sm:pl-4">
+      <div>
         <span class="text-micro font-semibold uppercase tracking-wider text-muted-foreground block">Régimen</span>
         <p class="font-semibold text-foreground text-xs truncate mt-0.5" :title="vinculoEfectivo.regimen">{{
           vinculoEfectivo.regimen }}</p>
       </div>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-3.5 pt-1 text-xs">
+    <div class="grid grid-cols-[repeat(auto-fit,minmax(13rem,1fr))] gap-x-6 gap-y-3.5 pt-1 text-xs">
       <div class="space-y-3.5">
-        <div class="grid grid-cols-[130px_1fr] sm:grid-cols-[145px_1fr] items-start gap-2.5">
+        <div class="grid grid-cols-[7.5rem_1fr] items-start gap-2.5">
           <span class="text-muted-foreground flex items-center gap-1.5 shrink-0 mt-0.5">
             <IconCalendar class="size-4 text-muted-foreground shrink-0" /> Fecha Ingreso:
           </span>
           <span class="font-mono font-medium text-foreground">{{ formatDate(vinculoEfectivo.fecha_ingreso) }}</span>
         </div>
 
-        <div class="grid grid-cols-[130px_1fr] sm:grid-cols-[145px_1fr] items-start gap-2.5">
+        <div class="grid grid-cols-[7.5rem_1fr] items-start gap-2.5">
           <span class="text-muted-foreground flex items-center gap-1.5 shrink-0 mt-0.5">
             <IconFileText class="size-4 text-muted-foreground shrink-0" /> Doc. Ingreso:
           </span>
@@ -128,7 +128,7 @@ const emit = defineEmits<{
           <span v-else class="text-muted-foreground text-xs">-</span>
         </div>
 
-        <div class="grid grid-cols-[130px_1fr] sm:grid-cols-[145px_1fr] items-start gap-2.5">
+        <div class="grid grid-cols-[7.5rem_1fr] items-start gap-2.5">
           <span class="text-muted-foreground flex items-center gap-1.5 shrink-0 mt-0.5">
             <IconFileDescription class="size-4 text-muted-foreground shrink-0" /> Ref. Ingreso:
           </span>
@@ -137,7 +137,7 @@ const emit = defineEmits<{
           </span>
         </div>
 
-        <div class="grid grid-cols-[130px_1fr] sm:grid-cols-[145px_1fr] items-start gap-2.5">
+        <div class="grid grid-cols-[7.5rem_1fr] items-start gap-2.5">
           <span class="text-muted-foreground flex items-center gap-1.5 shrink-0 mt-0.5">
             <IconBriefcase class="size-4 text-muted-foreground shrink-0" /> G. Ocupacional:
           </span>
@@ -145,7 +145,7 @@ const emit = defineEmits<{
           }}</span>
         </div>
 
-        <div class="grid grid-cols-[130px_1fr] sm:grid-cols-[145px_1fr] items-start gap-2.5">
+        <div class="grid grid-cols-[7.5rem_1fr] items-start gap-2.5">
           <span class="text-muted-foreground flex items-center gap-1.5 shrink-0 mt-0.5">
             <IconId class="size-4 text-muted-foreground shrink-0" /> C. Estructural:
           </span>
@@ -154,7 +154,7 @@ const emit = defineEmits<{
           </span>
         </div>
 
-        <div class="grid grid-cols-[130px_1fr] sm:grid-cols-[145px_1fr] items-center gap-2.5">
+        <div class="grid grid-cols-[7.5rem_1fr] items-center gap-2.5">
           <span class="text-muted-foreground flex items-center gap-1.5 shrink-0">
             <IconShieldCheck class="size-4 text-muted-foreground shrink-0" /> Afiliación:
           </span>
@@ -167,7 +167,7 @@ const emit = defineEmits<{
           </div>
         </div>
 
-        <div class="grid grid-cols-[130px_1fr] sm:grid-cols-[145px_1fr] items-center gap-2.5">
+        <div class="grid grid-cols-[7.5rem_1fr] items-center gap-2.5">
           <span class="text-muted-foreground flex items-center gap-1.5 shrink-0">
             <IconHistory class="size-4 text-muted-foreground shrink-0" /> Historial:
           </span>
@@ -189,7 +189,7 @@ const emit = defineEmits<{
 
       <div class="space-y-3.5">
         <div v-if="vinculoEfectivo.fecha_salida"
-          class="grid grid-cols-[130px_1fr] sm:grid-cols-[145px_1fr] items-start gap-2.5">
+          class="grid grid-cols-[7.5rem_1fr] items-start gap-2.5">
           <span class="text-muted-foreground flex items-center gap-1.5 shrink-0 mt-0.5">
             <IconCalendarOff class="size-4 text-muted-foreground shrink-0" /> Fecha Salida:
           </span>
@@ -199,7 +199,7 @@ const emit = defineEmits<{
         </div>
 
         <div v-if="vinculoEfectivo.doc_salida || vinculoEfectivo.numero_doc_salida"
-          class="grid grid-cols-[130px_1fr] sm:grid-cols-[145px_1fr] items-start gap-2.5">
+          class="grid grid-cols-[7.5rem_1fr] items-start gap-2.5">
           <span class="text-muted-foreground flex items-center gap-1.5 shrink-0 mt-0.5">
             <IconFileCheck class="size-4 text-muted-foreground shrink-0" /> Doc. Salida:
           </span>
@@ -214,7 +214,7 @@ const emit = defineEmits<{
         </div>
 
         <div v-if="vinculoEfectivo.descrip_salida"
-          class="grid grid-cols-[130px_1fr] sm:grid-cols-[145px_1fr] items-start gap-2.5">
+          class="grid grid-cols-[7.5rem_1fr] items-start gap-2.5">
           <span class="text-muted-foreground flex items-center gap-1.5 shrink-0 mt-0.5">
             <IconFileDescription class="size-4 text-muted-foreground shrink-0" /> Ref. Salida:
           </span>
@@ -223,7 +223,7 @@ const emit = defineEmits<{
           </span>
         </div>
 
-        <div class="grid grid-cols-[130px_1fr] sm:grid-cols-[145px_1fr] items-start gap-2.5">
+        <div class="grid grid-cols-[7.5rem_1fr] items-start gap-2.5">
           <span class="text-muted-foreground flex items-center gap-1.5 shrink-0 mt-0.5">
             <IconAlertCircle class="size-4 text-muted-foreground shrink-0" /> Eventos:
           </span>
@@ -247,7 +247,7 @@ const emit = defineEmits<{
         </div>
 
         <div v-if="vinculoEfectivo.doc_evento_tipo || vinculoEfectivo.numero_doc_evento"
-          class="grid grid-cols-[130px_1fr] sm:grid-cols-[145px_1fr] items-start gap-2.5">
+          class="grid grid-cols-[7.5rem_1fr] items-start gap-2.5">
           <span class="text-muted-foreground flex items-center gap-1.5 shrink-0 mt-0.5">
             <IconFileCode class="size-4 text-muted-foreground shrink-0" /> Doc. Evento:
           </span>
@@ -262,7 +262,7 @@ const emit = defineEmits<{
         </div>
 
         <div v-if="vinculoEfectivo.fecha_evento"
-          class="grid grid-cols-[130px_1fr] sm:grid-cols-[145px_1fr] items-start gap-2.5">
+          class="grid grid-cols-[7.5rem_1fr] items-start gap-2.5">
           <span class="text-muted-foreground flex items-center gap-1.5 shrink-0 mt-0.5">
             <IconCalendar class="size-4 text-muted-foreground shrink-0" /> Fecha Evento:
           </span>
@@ -270,7 +270,7 @@ const emit = defineEmits<{
         </div>
 
         <div v-if="vinculoEfectivo.estado"
-          class="grid grid-cols-[130px_1fr] sm:grid-cols-[145px_1fr] items-center gap-2.5">
+          class="grid grid-cols-[7.5rem_1fr] items-center gap-2.5">
           <span class="text-muted-foreground flex items-center gap-1.5 shrink-0">
             <IconShieldCheck class="size-4 text-muted-foreground shrink-0" /> Estado:
           </span>
@@ -306,7 +306,7 @@ const emit = defineEmits<{
       </div>
       <div class="space-y-1.5">
         <div v-for="ev in vinculoEfectivo.eventos" :key="ev.id"
-          class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-2.5 rounded-lg bg-muted/30 border border-border/60 text-xs">
+          class="flex flex-wrap items-center justify-between gap-2 p-2.5 rounded-lg bg-muted/30 border border-border/60 text-xs">
           <div class="flex items-center gap-2 flex-wrap min-w-0">
             <Badge variant="outline" size="xs"
               class="font-semibold border-purple-500/30 text-purple-600 dark:text-purple-400 uppercase text-micro">

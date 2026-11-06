@@ -534,7 +534,7 @@ watch(
 </script>
 
 <template>
-  <div class="space-y-6 pb-16">
+  <div class="mx-auto w-full max-w-5xl space-y-6 px-4 pb-16">
     <div
       v-if="loadError"
       role="alert"
@@ -564,8 +564,8 @@ watch(
           <div class="h-6 w-24 bg-muted rounded"></div>
         </div>
         <div class="p-6">
-          <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-            <div class="size-18 sm:size-20 rounded-2xl bg-muted/70 shrink-0"></div>
+          <div class="flex flex-wrap items-center gap-4">
+            <div class="size-18 rounded-2xl bg-muted/70 shrink-0"></div>
             <div class="space-y-2 flex-1">
               <div class="h-6 w-64 bg-muted rounded"></div>
               <div class="flex gap-2">
@@ -583,12 +583,12 @@ watch(
         </div>
       </div>
 
-      <div class="grid grid-cols-1 xl:grid-cols-12 gap-6">
-        <div class="xl:col-span-4 space-y-6">
+      <div class="flex flex-wrap gap-6">
+        <div class="basis-[16rem] grow min-w-0 space-y-6">
           <div class="h-80 bg-card border border-border rounded-2xl p-5"></div>
           <div class="h-44 bg-card border border-border rounded-2xl p-5"></div>
         </div>
-        <div class="xl:col-span-8 space-y-6">
+        <div class="basis-[30rem] grow-[5] min-w-0 space-y-6">
           <div class="h-64 bg-card border border-border rounded-2xl p-6"></div>
           <div class="h-48 bg-card border border-border rounded-2xl p-6"></div>
         </div>
@@ -600,7 +600,7 @@ watch(
       class="text-center py-16 bg-card border border-border rounded-2xl p-8 space-y-3"
     >
       <IconUser class="size-12 mx-auto text-muted-foreground/40" />
-      <h3 class="text-base font-bold text-foreground">Ficha del servidor no encontrada</h3>
+      <h3 class="text-title font-bold text-foreground">Ficha del servidor no encontrada</h3>
       <p class="text-xs text-muted-foreground max-w-sm mx-auto">
         No se encontró información registrada para el DNI solicitado. Puede buscar otro servidor en el sistema.
       </p>
@@ -627,8 +627,8 @@ watch(
         @copy-to-clipboard="copyToClipboard"
       />
 
-      <div class="grid grid-cols-1 xl:grid-cols-12 gap-6">
-        <div class="xl:col-span-4">
+      <div class="flex flex-wrap gap-6">
+        <div class="basis-[16rem] grow min-w-0">
           <PerfilInfoContacto
             :perfil="perfil"
             :contacto="contacto"
@@ -638,7 +638,7 @@ watch(
           />
         </div>
 
-        <div class="xl:col-span-8">
+        <div class="basis-[30rem] grow-[5] min-w-0">
           <PerfilVinculoActualCard
             v-if="activeTab === 'perfil'"
             :vinculo-activo="vinculoActivo"

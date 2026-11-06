@@ -4,6 +4,7 @@ import { Bar } from 'vue-chartjs'
 import Card from '@/components/ui/card/Card.vue'
 import Badge from '@/components/ui/badge/Badge.vue'
 import { useThemeStore } from '@/stores/theme'
+import { useChartScale } from '@/lib/chart'
 import type { ChartOptions, ChartData } from 'chart.js'
 
 export interface ItemConteo {
@@ -25,9 +26,10 @@ const props = withDefaults(defineProps<Props>(), {
   subtitulo: 'Distribución por cargo',
   badgeLabel: undefined,
   isLoading: false,
-  chartHeight: 'h-60',
+  chartHeight: 'h-52',
 })
 
+const { chartFontSize } = useChartScale()
 const themeStore = useThemeStore()
 const isDark = computed(() => themeStore.isDark)
 
@@ -88,7 +90,7 @@ const chartOptions = computed<ChartOptions<'bar'>>(() => {
           color: chartTextColor.value,
           font: {
             family: 'Inter, ui-sans-serif, system-ui, sans-serif',
-            size: 11,
+            size: chartFontSize.value,
           },
           precision: 0,
         },
@@ -101,7 +103,7 @@ const chartOptions = computed<ChartOptions<'bar'>>(() => {
           color: isDark.value ? '#f1f5f9' : '#1e293b',
           font: {
             family: 'Inter, ui-sans-serif, system-ui, sans-serif',
-            size: 11,
+            size: chartFontSize.value,
             weight: 500,
           },
         },

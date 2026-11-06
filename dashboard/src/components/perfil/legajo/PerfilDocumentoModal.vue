@@ -221,7 +221,7 @@ const handleSubmit = () => {
         </button>
       </div>
 
-      <div class="p-4 sm:p-5 overflow-y-auto space-y-4 flex-1">
+      <div class="p-4 overflow-y-auto space-y-4 flex-1">
         <div
           v-if="formErrors.general"
           class="p-3 rounded-xl bg-destructive/10 border border-destructive/20 text-destructive text-xs flex items-center gap-2"
@@ -313,7 +313,7 @@ const handleSubmit = () => {
             </span>
           </div>
 
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div class="grid grid-cols-[repeat(auto-fit,minmax(14rem,1fr))] gap-3">
             <div class="space-y-1.5">
               <label for="doc-numero" class="font-semibold text-foreground text-xs flex items-center gap-1.5">
                 <IconHash class="size-3.5 text-muted-foreground" />
@@ -357,7 +357,7 @@ const handleSubmit = () => {
             </div>
           </div>
 
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div class="grid grid-cols-[repeat(auto-fit,minmax(14rem,1fr))] gap-3">
             <div class="space-y-1.5">
               <label for="doc-fecha" class="font-semibold text-foreground text-xs flex items-center gap-1.5">
                 <IconCalendar class="size-3.5 text-muted-foreground" />

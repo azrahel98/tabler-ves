@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import Button from '@/components/ui/button/Button.vue'
+import PageHeader from '@/components/ui/page-header/PageHeader.vue'
 import CardPersonalPorArea from '@/components/dashboard/CardPersonalPorArea.vue'
 import CardNominaPersonal from '@/components/dashboard/CardNominaPersonal.vue'
 import CardDemografiaRegimen from '@/components/dashboard/CardDemografiaRegimen.vue'
@@ -93,13 +94,24 @@ onMounted(() => {
     </div>
 
 
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
-      <CardDemografiaRegimen :resumen="resumen" :is-loading="isLoading" :selected-regimen="selectedRegimen" />
+    <PageHeader title="Panel" subtitle="Resumen general del personal" :back="false" />
 
-      <CardCumpleanos :cumpleanos="cumpleanos" :is-loading="isLoading" />
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+      <CardDemografiaRegimen
+        :resumen="resumen"
+        :is-loading="isLoading"
+        :selected-regimen="selectedRegimen"
+        class="h-[380px] min-h-[380px]"
+      />
+
+      <CardCumpleanos
+        :cumpleanos="cumpleanos"
+        :is-loading="isLoading"
+        class="h-[380px] min-h-[380px]"
+      />
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+    <div class="grid grid-cols-[repeat(auto-fit,minmax(16rem,1fr))] gap-5">
       <CardDemografiaEdad :rangos="rangosEdad" :is-loading="isLoading" />
       <CardDemografiaGenero :por-sexo="resumen?.por_sexo || []" :is-loading="isLoading" />
       <CardDemografiaAntiguedad :rangos="rangosAntiguedad" :is-loading="isLoading" />

@@ -4,6 +4,7 @@ import { Line } from 'vue-chartjs'
 import Card from '@/components/ui/card/Card.vue'
 import Badge from '@/components/ui/badge/Badge.vue'
 import { useThemeStore } from '@/stores/theme'
+import { useChartScale } from '@/lib/chart'
 import type { RangoReport } from './types'
 import type { ChartOptions, ChartData } from 'chart.js'
 
@@ -16,6 +17,7 @@ const props = withDefaults(defineProps<Props>(), {
   isLoading: false,
 })
 
+const { chartFontSize } = useChartScale()
 const themeStore = useThemeStore()
 const isDark = computed(() => themeStore.isDark)
 
@@ -61,7 +63,7 @@ const chartOptions = computed<ChartOptions<'line'>>(() => {
           color: chartTextColor.value,
           font: {
             family: 'Inter, ui-sans-serif, system-ui, sans-serif',
-            size: 11,
+            size: chartFontSize.value,
             weight: 500,
           },
         },
@@ -74,7 +76,7 @@ const chartOptions = computed<ChartOptions<'line'>>(() => {
           color: chartTextColor.value,
           font: {
             family: 'Inter, ui-sans-serif, system-ui, sans-serif',
-            size: 11,
+            size: chartFontSize.value,
           },
         },
       },
@@ -93,8 +95,8 @@ const chartOptions = computed<ChartOptions<'line'>>(() => {
       <Badge variant="outline" size="xs">Trayectoria</Badge>
     </div>
 
-    <div v-if="isLoading" class="h-56 bg-muted/60 rounded-lg animate-pulse" aria-busy="true"></div>
-    <div v-else class="h-57.5 relative w-full">
+    <div v-if="isLoading" class="h-40 bg-muted/60 rounded-lg animate-pulse" aria-busy="true"></div>
+    <div v-else class="h-40 relative w-full">
       <Line
         :data="chartData"
         :options="chartOptions"

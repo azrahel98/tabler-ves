@@ -113,7 +113,7 @@ const calcularEdad = calculateAge
             <IconMail class="size-4 text-muted-foreground" /> Correo:
           </span>
           <a v-if="perfil?.email" :href="'mailto:' + perfil.email"
-            class="font-medium text-primary hover:underline text-[11.4px] wrap-break-word max-w-[160px] sm:max-w-[200px]"
+            class="font-medium text-primary hover:underline text-[11.4px] wrap-break-word max-w-44"
             :title="perfil.email">
             {{ perfil.email }}
           </a>

@@ -90,8 +90,8 @@ onMounted(async () => {
 </script>
 
 <template>
-  <Card :no-padding="true" class="shadow-2xs">
-    <div class="flex items-center justify-between border-b border-border p-3.5 sm:px-4">
+  <Card :no-padding="true" class="shadow-2xs h-[380px] min-h-[380px] flex flex-col overflow-hidden">
+    <div class="flex items-center justify-between border-b border-border p-3.5 sm:px-4 shrink-0">
       <div class="flex items-center gap-2">
         <IconCake class="size-4 text-pink-500" aria-hidden="true" />
         <div>
@@ -111,57 +111,59 @@ onMounted(async () => {
       </div>
     </div>
 
-    <div ref="listContainerRef" class="max-h-65 overflow-y-auto scroll-smooth">
-      <div v-if="isLoading" class="p-4 space-y-3 animate-pulse" aria-busy="true">
-        <div v-for="i in 2" :key="i" class="flex items-center justify-between">
-          <div class="flex items-center gap-2.5">
-            <div class="size-8 rounded-full bg-muted"></div>
-            <div class="space-y-1">
-              <div class="h-3 w-24 bg-muted rounded"></div>
-              <div class="h-2.5 w-32 bg-muted rounded"></div>
+    <div class="relative flex-1 min-h-0 overflow-hidden flex flex-col">
+      <div ref="listContainerRef" class="flex-1 overflow-y-auto scroll-smooth overscroll-contain">
+        <div v-if="isLoading" class="p-4 space-y-3 animate-pulse" aria-busy="true">
+          <div v-for="i in 4" :key="i" class="flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+              <div class="size-8 rounded-full bg-muted"></div>
+              <div class="space-y-1">
+                <div class="h-3 w-24 bg-muted rounded"></div>
+                <div class="h-2.5 w-32 bg-muted rounded"></div>
+              </div>
             </div>
+            <div class="h-3 w-10 bg-muted rounded"></div>
           </div>
-          <div class="h-3 w-10 bg-muted rounded"></div>
+        </div>
+
+        <div v-else-if="cumpleanos.length === 0" class="py-8 px-4 text-center space-y-1.5 text-muted-foreground my-auto">
+          <div class="size-8 rounded-full bg-muted/60 flex items-center justify-center mx-auto text-muted-foreground">
+            <IconCake class="size-4" aria-hidden="true" />
+          </div>
+          <p class="font-medium text-xs text-foreground">Sin cumpleaños este mes</p>
+          <p class="text-meta">No hay onomásticos registrados.</p>
+        </div>
+
+        <div v-else class="divide-y divide-border">
+          <router-link v-for="(c, index) in cumpleanos" :key="c.dni" :to="{ name: 'perfil', params: { dni: c.dni } }"
+            :data-index="index"
+            class="p-3 hover:bg-muted/30 focus-visible:bg-muted/40 focus-visible:outline-hidden transition-colors flex items-center justify-between text-xs group cursor-pointer">
+            <div class="flex items-center gap-2.5 min-w-0">
+              <img v-if="c.avatar" v-auth-src="resolveAvatarUrl(c.dni)!" :alt="c.nombre"
+                class="size-10 rounded-full object-cover border border-border shrink-0 shadow-2xs group-hover:border-primary transition-colors" />
+              <div v-else
+                class="size-8 rounded-full bg-pink-500/10 text-pink-600 dark:text-pink-400 flex items-center justify-center font-bold text-xs shrink-0 border border-pink-500/20 group-hover:border-pink-500 transition-colors">
+                {{ c.nombre.charAt(0) }}
+              </div>
+
+              <div class="min-w-0">
+                <p class="font-medium text-xs text-foreground group-hover:text-primary transition-colors wrap-break-word">
+                  {{ c.nombre }}
+                </p>
+              </div>
+            </div>
+
+            <div class="text-right shrink-0 flex flex-col items-end gap-0.5">
+              <span class="text-xs font-bold text-foreground block font-mono">{{ formatDayMonth(c.nacimiento) }}</span>
+              <div class="flex items-center gap-1">
+                <Badge v-if="isToday(c.nacimiento)" variant="success" size="xs">¡Hoy!</Badge>
+                <Badge variant="outline" size="xs">{{ c.edad }} años</Badge>
+              </div>
+            </div>
+          </router-link>
         </div>
       </div>
-
-      <div v-else-if="cumpleanos.length === 0" class="py-8 px-4 text-center space-y-1.5 text-muted-foreground">
-        <div class="size-8 rounded-full bg-muted/60 flex items-center justify-center mx-auto text-muted-foreground">
-          <IconCake class="size-4" aria-hidden="true" />
-        </div>
-        <p class="font-medium text-xs text-foreground">Sin cumpleaños este mes</p>
-        <p class="text-meta">No hay onomásticos registrados.</p>
-      </div>
-
-      <div v-else class="divide-y divide-border">
-        <router-link v-for="(c, index) in cumpleanos" :key="c.dni" :to="{ name: 'perfil', params: { dni: c.dni } }"
-          :data-index="index"
-          class="p-3 hover:bg-muted/30 focus-visible:bg-muted/40 focus-visible:outline-hidden transition-colors flex items-center justify-between text-xs group cursor-pointer">
-          <div class="flex items-center gap-2.5 min-w-0">
-            <img v-if="c.avatar" v-auth-src="resolveAvatarUrl(c.dni)!" :alt="c.nombre"
-              class="size-10 rounded-full object-cover border border-border shrink-0 shadow-2xs group-hover:border-primary transition-colors" />
-            <div v-else
-              class="size-8 rounded-full bg-pink-500/10 text-pink-600 dark:text-pink-400 flex items-center justify-center font-bold text-xs shrink-0 border border-pink-500/20 group-hover:border-pink-500 transition-colors">
-              {{ c.nombre.charAt(0) }}
-            </div>
-
-            <div class="min-w-0">
-              <p class="font-medium text-xs text-foreground group-hover:text-primary transition-colors wrap-break-word">
-                {{ c.nombre }}
-              </p>
-
-            </div>
-          </div>
-
-          <div class="text-right shrink-0 flex flex-col items-end gap-0.5">
-            <span class="text-xs font-bold text-foreground block font-mono">{{ formatDayMonth(c.nacimiento) }}</span>
-            <div class="flex items-center gap-1">
-              <Badge v-if="isToday(c.nacimiento)" variant="success" size="xs">¡Hoy!</Badge>
-              <Badge variant="outline" size="xs">{{ c.edad }} años</Badge>
-            </div>
-          </div>
-        </router-link>
-      </div>
+      <div v-if="!isLoading && cumpleanos.length > 4" class="pointer-events-none absolute inset-x-0 bottom-0 h-5 bg-gradient-to-t from-card/90 to-transparent"></div>
     </div>
   </Card>
 </template>

@@ -281,7 +281,7 @@ const handleSubmit = () => {
         </button>
       </div>
 
-      <div class="p-4 sm:p-5 overflow-y-auto space-y-4 flex-1">
+      <div class="p-4 overflow-y-auto space-y-4 flex-1">
         <div
           v-if="formErrors.general"
           class="p-3 rounded-xl bg-destructive/10 border border-destructive/20 text-destructive text-xs flex items-center gap-2"
@@ -302,7 +302,7 @@ const handleSubmit = () => {
           </div>
 
           <div
-            class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-meta text-muted-foreground pt-1 border-t border-border/60"
+            class="grid grid-cols-[repeat(auto-fit,minmax(14rem,1fr))] gap-2 text-meta text-muted-foreground pt-1 border-t border-border/60"
           >
             <div class="flex items-center gap-1.5 truncate">
               <IconBriefcase class="size-3.5 text-muted-foreground shrink-0" />
@@ -324,8 +324,8 @@ const handleSubmit = () => {
         </div>
 
         <form id="renuncia-form" class="space-y-4" @submit.prevent="handleSubmit">
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <div class="space-y-1" :class="esSunat ? 'sm:col-span-3' : 'sm:col-span-1'">
+          <div class="grid grid-cols-[repeat(auto-fit,minmax(14rem,1fr))] gap-3">
+            <div class="space-y-1">
               <label for="renuncia-tipo-doc" class="block font-medium text-foreground text-[11.5px]">
                 Tipo de Documento <span class="text-rose-500">*</span>
               </label>
@@ -348,7 +348,7 @@ const handleSubmit = () => {
               </p>
             </div>
 
-            <div v-if="!esSunat" class="space-y-1 sm:col-span-1">
+            <div v-if="!esSunat" class="space-y-1">
               <label for="renuncia-num-doc" class="block font-medium text-foreground text-[11.5px]">
                 Número de Documento <span class="text-rose-500">*</span>
               </label>
@@ -368,7 +368,7 @@ const handleSubmit = () => {
               </p>
             </div>
 
-            <div v-if="!esSunat" class="space-y-1 sm:col-span-1">
+            <div v-if="!esSunat" class="space-y-1">
               <label for="renuncia-anio-doc" class="block font-medium text-foreground text-[11.5px]">
                 Año <span class="text-rose-500">*</span>
               </label>
@@ -462,7 +462,7 @@ const handleSubmit = () => {
             </span>
           </div>
 
-          <div class="grid grid-cols-1 gap-3" :class="esSunat ? '' : 'sm:grid-cols-2'">
+          <div class="grid grid-cols-[repeat(auto-fit,minmax(14rem,1fr))] gap-3">
             <div class="space-y-1">
               <label for="renuncia-fecha" class="block font-medium text-foreground text-[11.5px]">
                 Fecha de Renuncia / Cese <span class="text-rose-500">*</span>

@@ -29,13 +29,13 @@ const sortedGrados = computed(() => {
 
 <template>
   <Card class="space-y-3">
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5 border-b border-border pb-3">
+    <div class="flex flex-wrap items-center justify-between gap-2.5 border-b border-border pb-3">
       <span class="text-sm font-bold text-foreground tracking-wider flex items-center gap-2">
         <IconSchool class="size-3.5 text-primary shrink-0" />
         <h3 class="font-semibold text-foreground tracking-tight text-sm">Formación y Grados Académicos</h3>
       </span>
 
-      <div class="flex items-center justify-between sm:justify-end gap-3 w-full sm:w-auto">
+      <div class="flex items-center justify-end gap-3">
         <button v-if="grados.length > 1" type="button"
           class="text-xs text-primary hover:underline font-medium inline-flex items-center gap-1 cursor-pointer"
           @click="toggleSort">
@@ -59,47 +59,47 @@ const sortedGrados = computed(() => {
           <thead
             class="border-b border-border bg-muted/30 text-micro font-semibold uppercase tracking-wider text-muted-foreground select-none">
             <tr>
-              <th scope="col" class="px-3 sm:px-4 py-2.5 font-semibold">Grado / Profesión</th>
-              <th scope="col" class="hidden sm:table-cell px-3 sm:px-4 py-2.5 font-semibold">Universidad / Institución
+              <th scope="col" class="px-3 py-2.5 font-semibold">Grado / Profesión</th>
+              <th scope="col" class="px-3 py-2.5 font-semibold">Universidad / Institución
               </th>
-              <th scope="col" class="px-3 sm:px-4 py-2.5 font-semibold text-center sm:text-left">Nivel</th>
-              <th scope="col" class="hidden md:table-cell px-3 sm:px-4 py-2.5 font-semibold text-center">Abreviatura
+              <th scope="col" class="px-3 py-2.5 font-semibold text-left">Nivel</th>
+              <th scope="col" class="px-3 py-2.5 font-semibold text-center">Abreviatura
               </th>
-              <th scope="col" class="px-3 sm:px-4 py-2.5 text-right font-semibold">Fecha de Grado</th>
+              <th scope="col" class="px-3 py-2.5 text-right font-semibold">Fecha de Grado</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-border">
             <tr v-for="grado in sortedGrados" :key="grado.id" class="transition-colors hover:bg-muted/40">
-              <td class="px-3 sm:px-4 py-2.5 min-w-0">
+              <td class="px-3 py-2.5 min-w-0">
                 <span class="font-semibold text-foreground text-meta block wrap-break-word break-words"
                   :title="grado.profesion">
                   {{ grado.profesion }}
                 </span>
-                <span class="text-micro text-muted-foreground block sm:hidden wrap-break-word break-words mt-0.5"
+                <span class="text-micro text-muted-foreground block wrap-break-word break-words mt-0.5"
                   :title="grado.universidad">
                   {{ grado.universidad }}
                 </span>
-                <div v-if="grado.abrv" class="flex items-center gap-1.5 md:hidden mt-1">
+                <div v-if="grado.abrv" class="flex items-center gap-1.5 mt-1">
                   <span class="px-1.5 py-0.2 rounded bg-muted text-micro font-mono text-muted-foreground uppercase">
                     {{ grado.abrv }}
                   </span>
                 </div>
               </td>
 
-              <td class="hidden sm:table-cell px-3 sm:px-4 py-2.5 min-w-0">
+              <td class="px-3 py-2.5 min-w-0">
                 <span class="text-meta text-muted-foreground block wrap-break-word break-words"
                   :title="grado.universidad">
                   {{ grado.universidad }}
                 </span>
               </td>
 
-              <td class="px-3 sm:px-4 py-2.5 text-center sm:text-left whitespace-nowrap">
+              <td class="px-3 py-2.5 text-left whitespace-nowrap">
                 <Badge variant="primary" size="xs">
                   {{ grado.nivel_academico }}
                 </Badge>
               </td>
 
-              <td class="hidden md:table-cell px-3 sm:px-4 py-2.5 text-center whitespace-nowrap">
+              <td class="px-3 py-2.5 text-center whitespace-nowrap">
                 <span
                   class="px-2 py-0.5 rounded bg-muted text-meta font-mono text-muted-foreground font-medium uppercase">
                   {{ grado.abrv || '-' }}
@@ -107,7 +107,7 @@ const sortedGrados = computed(() => {
               </td>
 
               <td
-                class="px-3 sm:px-4 py-2.5 text-right font-mono font-medium text-foreground tabular-nums text-meta whitespace-nowrap">
+                class="px-3 py-2.5 text-right font-mono font-medium text-foreground tabular-nums text-meta whitespace-nowrap">
                 {{ formatDate(grado.fecha) }}
               </td>
             </tr>

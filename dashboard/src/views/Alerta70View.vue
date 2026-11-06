@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router'
 import Card from '@/components/ui/card/Card.vue'
 import Badge from '@/components/ui/badge/Badge.vue'
 import Button from '@/components/ui/button/Button.vue'
+import PageHeader from '@/components/ui/page-header/PageHeader.vue'
 import DataTable, { type DataTableColumn } from '@/components/ui/datatable/DataTable.vue'
 import {
   fetchAlerta70,
@@ -261,7 +262,8 @@ const irAlPerfil = (dni: string) => {
 
 <template>
   <div class="space-y-6 max-w-7xl mx-auto pb-16">
-    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
+    <PageHeader title="Alerta 70 Años" subtitle="Servidores que alcanzan la edad límite de cese" />
+    <div class="grid grid-cols-[repeat(auto-fit,minmax(11rem,1fr))] gap-4">
       <Card
         class="p-4 cursor-pointer transition-all hover:border-primary/40"
         :class="filtroEstado === 'todos' ? 'ring-2 ring-primary/20 border-primary/40' : ''"
@@ -272,7 +274,7 @@ const irAlPerfil = (dni: string) => {
           <span class="size-2 rounded-full bg-primary"></span>
         </div>
         <div class="mt-2 flex items-baseline justify-between">
-          <span class="text-2xl font-bold tracking-tight text-foreground font-mono">
+          <span class="text-kpi font-bold tracking-tight text-foreground font-mono">
             {{ conteoPorEstado.total }}
           </span>
           <span class="text-meta text-muted-foreground">Servidores</span>
@@ -290,7 +292,7 @@ const irAlPerfil = (dni: string) => {
           <span class="size-2 rounded-full bg-rose-500 animate-pulse"></span>
         </div>
         <div class="mt-2 flex items-baseline justify-between">
-          <span class="text-2xl font-bold tracking-tight text-rose-600 dark:text-rose-400 font-mono">
+          <span class="text-kpi font-bold tracking-tight text-rose-600 dark:text-rose-400 font-mono">
             {{ conteoPorEstado.excedido }}
           </span>
           <span class="text-meta text-rose-600/70 dark:text-rose-400/70">Urgente</span>
@@ -308,7 +310,7 @@ const irAlPerfil = (dni: string) => {
           <span class="size-2 rounded-full bg-amber-500"></span>
         </div>
         <div class="mt-2 flex items-baseline justify-between">
-          <span class="text-2xl font-bold tracking-tight text-amber-600 dark:text-amber-400 font-mono">
+          <span class="text-kpi font-bold tracking-tight text-amber-600 dark:text-amber-400 font-mono">
             {{ conteoPorEstado.alLimite }}
           </span>
           <span class="text-meta text-amber-600/70 dark:text-amber-400/70">6 a 15 días</span>
@@ -326,7 +328,7 @@ const irAlPerfil = (dni: string) => {
           <span class="size-2 rounded-full bg-sky-500"></span>
         </div>
         <div class="mt-2 flex items-baseline justify-between">
-          <span class="text-2xl font-bold tracking-tight text-primary font-mono">
+          <span class="text-kpi font-bold tracking-tight text-primary font-mono">
             {{ conteoPorEstado.atiempo }}
           </span>
           <span class="text-meta text-muted-foreground">Preventivo</span>
@@ -344,7 +346,7 @@ const irAlPerfil = (dni: string) => {
           <span class="size-2 rounded-full bg-purple-500"></span>
         </div>
         <div class="mt-2 flex items-baseline justify-between">
-          <span class="text-2xl font-bold tracking-tight text-purple-600 dark:text-purple-400 font-mono">
+          <span class="text-kpi font-bold tracking-tight text-purple-600 dark:text-purple-400 font-mono">
             {{ conteoPorEstado.excepcional }}
           </span>
           <span class="text-meta text-purple-600/70 dark:text-purple-400/70">D.L. 1057</span>

@@ -51,7 +51,7 @@ const sizeClasses: Record<ButtonSize, string> = {
   xs: 'h-7 px-2 text-xs rounded-md gap-1.5',
   sm: 'h-8 px-3 text-xs rounded-lg gap-1.5',
   md: 'h-9 px-4 text-sm rounded-lg gap-2',
-  lg: 'h-11 px-5 text-base rounded-xl gap-2.5',
+  lg: 'h-11 px-5 text-sm rounded-xl gap-2.5',
 }
 
 const computedClasses = computed(() => {

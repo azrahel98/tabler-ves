@@ -4,6 +4,7 @@ import { Doughnut } from 'vue-chartjs'
 import Card from '@/components/ui/card/Card.vue'
 import Badge from '@/components/ui/badge/Badge.vue'
 import { useThemeStore } from '@/stores/theme'
+import { useChartScale } from '@/lib/chart'
 import type { ChartOptions, ChartData } from 'chart.js'
 
 interface SexoItem {
@@ -20,6 +21,7 @@ const props = withDefaults(defineProps<Props>(), {
   isLoading: false,
 })
 
+const { chartFontSize } = useChartScale()
 const themeStore = useThemeStore()
 const isDark = computed(() => themeStore.isDark)
 
@@ -51,7 +53,7 @@ const chartOptions = computed<ChartOptions<'doughnut'>>(() => {
           color: chartTextColor.value,
           font: {
             family: 'Inter, ui-sans-serif, system-ui, sans-serif',
-            size: 11,
+            size: chartFontSize.value,
             weight: 500,
           },
           usePointStyle: true,
@@ -73,8 +75,8 @@ const chartOptions = computed<ChartOptions<'doughnut'>>(() => {
       <Badge variant="outline" size="xs">Paridad</Badge>
     </div>
 
-    <div v-if="isLoading" class="h-56 bg-muted/60 rounded-lg animate-pulse" aria-busy="true"></div>
-    <div v-else class="h-57.5 flex items-center justify-center relative w-full">
+    <div v-if="isLoading" class="h-40 bg-muted/60 rounded-lg animate-pulse" aria-busy="true"></div>
+    <div v-else class="h-40 flex items-center justify-center relative w-full">
       <Doughnut
         :data="chartData"
         :options="chartOptions"

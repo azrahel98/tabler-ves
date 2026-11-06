@@ -20,7 +20,7 @@ interface Props {
 const props = withDefaults(defineProps<Props>(), {
   isLoading: false,
   selectedRegimen: null,
-  chartHeight: 'h-57.5',
+  chartHeight: undefined,
 })
 
 const emit = defineEmits<{
@@ -43,9 +43,9 @@ const descargarExcel = async () => {
   }
 }
 
-const isDark = computed(() => themeStore.isDark)
+const REGIMEN_COLORS = ['#2563eb', '#38bdf8', '#6366f1', '#10b981', '#f59e0b']
 
-const chartTextColor = computed(() => isDark.value ? '#94a3b8' : '#475569')
+const isDark = computed(() => themeStore.isDark)
 
 const chartData = computed<ChartData<'doughnut'>>(() => {
   const labels = props.resumen?.por_regimen.map((r) => r.nombre) || []
@@ -55,7 +55,7 @@ const chartData = computed<ChartData<'doughnut'>>(() => {
     datasets: [
       {
         data,
-        backgroundColor: ['#2563eb', '#38bdf8', '#6366f1', '#10b981', '#f59e0b'],
+        backgroundColor: REGIMEN_COLORS,
         borderWidth: 2,
         borderColor: isDark.value ? '#1e293b' : '#ffffff',
       },
@@ -71,17 +71,7 @@ const chartOptions = computed<ChartOptions<'doughnut'>>(() => {
     cutout: '72%',
     plugins: {
       legend: {
-        position: 'bottom',
-        labels: {
-          color: chartTextColor.value,
-          font: {
-            family: 'Inter, ui-sans-serif, system-ui, sans-serif',
-            size: 11,
-            weight: 500,
-          },
-          usePointStyle: true,
-          padding: 14,
-        },
+        display: false,
       },
     },
     onClick: (_event, elements) => {
@@ -98,8 +88,8 @@ const chartOptions = computed<ChartOptions<'doughnut'>>(() => {
 </script>
 
 <template>
-  <Card class="shadow-2xs">
-    <div class="flex items-center justify-between border-b border-border pb-3 mb-3.5 flex-wrap gap-2">
+  <Card class="shadow-2xs h-[380px] min-h-[380px] flex flex-col overflow-hidden">
+    <div class="flex items-center justify-between border-b border-border pb-3 mb-3.5 flex-wrap gap-2 shrink-0">
       <div>
         <h3 class="font-semibold text-foreground tracking-tight text-sm">Régimen Laboral</h3>
         <p class="text-meta text-muted-foreground">Distribución por marco normativo</p>
@@ -122,13 +112,39 @@ const chartOptions = computed<ChartOptions<'doughnut'>>(() => {
       </div>
     </div>
 
-    <div v-if="isLoading" :class="[chartHeight, 'bg-muted/60 rounded-lg animate-pulse']" aria-busy="true"></div>
-    <div v-else :class="[chartHeight, 'flex items-center justify-center relative w-full']">
-      <Doughnut
-        :data="chartData"
-        :options="chartOptions"
-        aria-label="Gráfico de distribución por régimen laboral"
-      />
+    <div class="flex-1 min-h-0 flex flex-col justify-between overflow-y-auto scroll-smooth overscroll-contain pr-0.5">
+      <div
+        v-if="isLoading"
+        :class="[props.chartHeight || 'h-44 sm:h-48', 'bg-muted/60 rounded-lg animate-pulse w-full shrink-0']"
+        aria-busy="true"
+      ></div>
+      <div
+        v-else
+        :class="[props.chartHeight || 'h-44 sm:h-48', 'flex items-center justify-center relative w-full shrink-0 py-1']"
+      >
+        <Doughnut
+          :data="chartData"
+          :options="chartOptions"
+          aria-label="Gráfico de distribución por régimen laboral"
+        />
+      </div>
+
+      <div
+        v-if="!isLoading && resumen?.por_regimen"
+        class="flex flex-wrap items-center justify-center gap-x-4 gap-y-1.5 pt-3 shrink-0"
+      >
+        <div
+          v-for="(r, i) in resumen.por_regimen"
+          :key="r.nombre"
+          class="flex items-center gap-1.5"
+        >
+          <span
+            class="size-2 rounded-full shrink-0"
+            :style="{ backgroundColor: REGIMEN_COLORS[i % REGIMEN_COLORS.length] }"
+          />
+          <span class="text-meta text-muted-foreground">{{ r.nombre }}</span>
+        </div>
+      </div>
     </div>
   </Card>
 </template>

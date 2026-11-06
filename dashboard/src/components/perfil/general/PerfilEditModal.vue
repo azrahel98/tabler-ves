@@ -157,7 +157,7 @@ const onSubmit = () => {
     @keydown.esc="handleRequestClose">
     <div class="w-full max-w-xl bg-card border border-border rounded-2xl shadow-xl overflow-hidden text-xs">
       <div v-if="showConfirmDiscard"
-        class="p-4 bg-amber-500/10 border-b border-amber-500/20 text-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+        class="p-4 bg-amber-500/10 border-b border-amber-500/20 text-xs flex flex-wrap items-center justify-between gap-3">
         <div class="space-y-0.5">
           <p class="font-bold text-amber-700 dark:text-amber-400">¿Desea descartar los cambios no guardados?</p>
           <p class="text-muted-foreground text-meta">Si cierra ahora, perderá las modificaciones realizadas en la
@@ -190,7 +190,7 @@ const onSubmit = () => {
       </div>
 
       <form class="p-5 space-y-4" @submit.prevent="onSubmit">
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div class="grid grid-cols-[repeat(auto-fit,minmax(14rem,1fr))] gap-4">
           <div class="space-y-1.5">
             <label class="font-semibold text-foreground">Nombre Completo</label>
             <input v-model="editForm.nombre" type="text"

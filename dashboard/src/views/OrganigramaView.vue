@@ -2,6 +2,7 @@
 import { ref, computed, onMounted, onUnmounted, watch, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import Button from '@/components/ui/button/Button.vue'
+import PageHeader from '@/components/ui/page-header/PageHeader.vue'
 import OrganigramaCard, { type CardNodeData } from '@/components/organigrama/OrganigramaCard.vue'
 import OrganigramaBranch from '@/components/organigrama/OrganigramaBranch.vue'
 import { api } from '@/services/api'
@@ -488,6 +489,7 @@ const closeNodeDetail = () => {
 
 <template>
   <div class="space-y-6 pb-0">
+    <PageHeader title="Organigrama" subtitle="Estructura orgánica y titulares por dependencia" />
 
 
 
@@ -588,7 +590,7 @@ const closeNodeDetail = () => {
     <div v-else-if="organigramaRaw.length === 0"
       class="p-16 text-center rounded-2xl border border-dashed border-border bg-card">
       <IconSitemap class="size-12 text-muted-foreground mx-auto mb-3 opacity-40" />
-      <p class="text-base font-bold text-foreground">No se encontraron registros en el organigrama</p>
+      <p class="text-title font-bold text-foreground">No se encontraron registros en el organigrama</p>
       <p class="text-xs text-muted-foreground mt-1 max-w-sm mx-auto">
         No se obtuvo información de áreas o dependencias desde el servidor.
       </p>

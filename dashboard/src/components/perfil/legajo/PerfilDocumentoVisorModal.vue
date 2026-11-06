@@ -135,11 +135,11 @@ const handleAbrirNuevaPestana = () => {
 
 <template>
   <div v-if="isOpen"
-    class="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-neutral-900/70 backdrop-blur-xs"
+    class="fixed inset-0 z-50 flex items-center justify-center p-2 bg-neutral-900/70 backdrop-blur-xs"
     role="dialog" aria-modal="true" aria-labelledby="visor-titulo" @click.self="emit('close')">
     <div class="bg-card border border-border shadow-2xl overflow-hidden flex flex-col transition-all duration-200"
       :class="isFullscreen
-        ? 'fixed inset-2 sm:inset-4 rounded-xl z-50'
+        ? 'fixed inset-2 rounded-xl z-50'
         : 'w-full max-w-5xl h-[88vh] rounded-2xl'
         ">
       <div class="px-4 py-3 border-b border-border bg-muted/25 flex items-center justify-between gap-3 shrink-0">
@@ -151,7 +151,7 @@ const handleAbrirNuevaPestana = () => {
 
           <div class="min-w-0">
             <h3 id="visor-titulo"
-              class="font-bold text-foreground text-sm tracking-tight truncate max-w-xs sm:max-w-md md:max-w-lg">
+              class="font-bold text-foreground text-sm tracking-tight truncate max-w-md">
               {{ tituloMostrado }}
             </h3>
             <p v-if="archivo" class="text-meta text-muted-foreground font-mono truncate">

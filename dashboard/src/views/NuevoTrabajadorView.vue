@@ -2,6 +2,7 @@
 import { ref, reactive, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import Button from '@/components/ui/button/Button.vue'
+import PageHeader from '@/components/ui/page-header/PageHeader.vue'
 import NuevoTrabajadorStepper from '@/components/nuevo-trabajador/NuevoTrabajadorStepper.vue'
 import StepIdentidad from '@/components/nuevo-trabajador/StepIdentidad.vue'
 import StepVinculoLaboral from '@/components/nuevo-trabajador/StepVinculoLaboral.vue'
@@ -30,9 +31,6 @@ import {
   type VacanteOption,
   type NuevoTrabajadorPayload,
 } from '@/services/personal'
-import {
-  IconArrowLeft,
-} from '@tabler/icons-vue'
 import { useToastStore } from '@/stores/toast'
 import { REGION_FIJA } from '@/constants/distritos'
 
@@ -382,29 +380,8 @@ const onSubmitRegistro = async () => {
 
 <template>
   <div class="space-y-6 max-w-7xl mx-auto pb-[calc(4rem+env(safe-area-inset-bottom))]">
-    <div class="flex items-center justify-between gap-4 border-b border-border/70 pb-3">
-      <div class="flex items-center gap-2.5 min-w-0">
-        <button
-          type="button"
-          class="size-8 inline-flex items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-colors cursor-pointer shrink-0"
-          title="Volver"
-          aria-label="Volver a la página anterior"
-          @click="router.back()"
-        >
-          <IconArrowLeft class="size-4" aria-hidden="true" />
-        </button>
-        <div class="h-4 w-px bg-border shrink-0" aria-hidden="true"></div>
-        <div class="min-w-0">
-          <h1 class="text-sm sm:text-base font-semibold tracking-tight text-foreground truncate">
-            Alta de Nuevo Servidor Público
-          </h1>
-          <p class="text-xs text-muted-foreground truncate hidden sm:block">
-            Registro de identidad, vínculo laboral y sustento
-          </p>
-        </div>
-      </div>
-
-      <div class="flex items-center gap-2 shrink-0">
+    <PageHeader title="Alta de Nuevo Servidor Público" subtitle="Registro de identidad, vínculo laboral y sustento">
+      <template #actions>
         <Button
           variant="ghost"
           size="sm"
@@ -413,8 +390,8 @@ const onSubmitRegistro = async () => {
         >
           Cancelar
         </Button>
-      </div>
-    </div>
+      </template>
+    </PageHeader>
 
     <NuevoTrabajadorStepper :current-step="currentStep" :is-step1-valid="isStep1Valid" :is-step2-valid="isStep2Valid"
       :is-step3-valid="isStep3Valid" @select-step="onSelectStep" />

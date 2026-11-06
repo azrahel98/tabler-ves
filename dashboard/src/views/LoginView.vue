@@ -224,7 +224,7 @@ const handleAuthError = (err: unknown) => {
         class="inline-flex size-12 rounded-2xl bg-primary text-primary-foreground items-center justify-center font-bold shadow-md mb-4">
         <IconStack2 class="size-7" :stroke-width="2.2" />
       </div>
-      <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
+      <h1 class="text-kpi font-bold tracking-tight text-foreground">
         CRM Pulse
       </h1>
       <p class="mt-1.5 text-xs sm:text-sm text-muted-foreground">

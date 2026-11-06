@@ -24,7 +24,7 @@ const emit = defineEmits<{
 
 <template>
   <Card class="space-y-3">
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5 border-b border-border pb-3">
+    <div class="flex flex-wrap items-center justify-between gap-2.5 border-b border-border pb-3">
       <span class="text-sm font-bold text-foreground tracking-wider flex items-center gap-2">
         <IconBuildingBank class="size-3.5 text-primary shrink-0" />
         <h3 class="font-semibold text-foreground tracking-tight text-sm">Información Bancaria</h3>
@@ -45,37 +45,37 @@ const emit = defineEmits<{
           <thead
             class="border-b border-border bg-muted/30 text-micro font-semibold uppercase tracking-wider text-muted-foreground select-none">
             <tr>
-              <th scope="col" class="px-3 sm:px-4 py-2.5 font-semibold">Banco / Entidad</th>
-              <th scope="col" class="hidden sm:table-cell px-3 sm:px-4 py-2.5 font-semibold">Tipo de Cuenta</th>
-              <th scope="col" class="px-3 sm:px-4 py-2.5 font-semibold">Número de Cuenta</th>
-              <th scope="col" class="hidden md:table-cell px-3 sm:px-4 py-2.5 font-semibold">Código Interbancario (CCI)</th>
-              <th scope="col" class="px-3 sm:px-4 py-2.5 text-center font-semibold">Estado</th>
+              <th scope="col" class="px-3 py-2.5 font-semibold">Banco / Entidad</th>
+              <th scope="col" class="px-3 py-2.5 font-semibold">Tipo de Cuenta</th>
+              <th scope="col" class="px-3 py-2.5 font-semibold">Número de Cuenta</th>
+              <th scope="col" class="px-3 py-2.5 font-semibold">Código Interbancario (CCI)</th>
+              <th scope="col" class="px-3 py-2.5 text-center font-semibold">Estado</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-border">
             <tr class="transition-colors hover:bg-muted/40">
-              <td class="px-3 sm:px-4 py-2.5 min-w-0">
+              <td class="px-3 py-2.5 min-w-0">
                 <span class="font-semibold text-foreground text-meta block wrap-break-word break-words"
                   :title="banco.banco">
                   {{ banco.banco }}
                 </span>
-                <span class="text-micro text-muted-foreground block sm:hidden wrap-break-word break-words mt-0.5"
+                <span class="text-micro text-muted-foreground block wrap-break-word break-words mt-0.5"
                   :title="banco.tipo_cuenta">
                   {{ banco.tipo_cuenta }}
                 </span>
-                <div class="flex items-center gap-1.5 md:hidden mt-1 font-mono text-micro text-muted-foreground">
+                <div class="flex items-center gap-1.5 mt-1 font-mono text-micro text-muted-foreground">
                   <span>CCI: {{ banco.cci }}</span>
                 </div>
               </td>
 
-              <td class="hidden sm:table-cell px-3 sm:px-4 py-2.5 min-w-0">
+              <td class="px-3 py-2.5 min-w-0">
                 <span class="text-meta text-muted-foreground block wrap-break-word break-words"
                   :title="banco.tipo_cuenta">
                   {{ banco.tipo_cuenta }}
                 </span>
               </td>
 
-              <td class="px-3 sm:px-4 py-2.5 whitespace-nowrap">
+              <td class="px-3 py-2.5 whitespace-nowrap">
                 <div class="flex items-center gap-1.5 font-mono font-medium text-foreground text-meta">
                   <span>{{ banco.numero_cuenta }}</span>
                   <button
@@ -91,7 +91,7 @@ const emit = defineEmits<{
                 </div>
               </td>
 
-              <td class="hidden md:table-cell px-3 sm:px-4 py-2.5 whitespace-nowrap">
+              <td class="px-3 py-2.5 whitespace-nowrap">
                 <div class="flex items-center gap-1.5 font-mono font-medium text-foreground text-meta">
                   <span>{{ banco.cci }}</span>
                   <button
@@ -107,7 +107,7 @@ const emit = defineEmits<{
                 </div>
               </td>
 
-              <td class="px-3 sm:px-4 py-2.5 text-center whitespace-nowrap">
+              <td class="px-3 py-2.5 text-center whitespace-nowrap">
                 <Badge :variant="banco.estado === 1 ? 'success' : 'secondary'" size="xs" class="text-micro">
                   {{ banco.estado === 1 ? 'Activa' : 'Inactiva' }}
                 </Badge>

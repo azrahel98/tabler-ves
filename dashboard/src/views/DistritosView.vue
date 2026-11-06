@@ -5,13 +5,13 @@ import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import Card from '@/components/ui/card/Card.vue'
 import Button from '@/components/ui/button/Button.vue'
+import PageHeader from '@/components/ui/page-header/PageHeader.vue'
 import {
   fetchActivosPorDistrito,
   type DistritoConteo,
 } from '@/services/personal'
 import { useThemeStore } from '@/stores/theme'
 import {
-  IconArrowLeft,
   IconRefresh,
   IconAlertTriangle,
   IconChevronDown,
@@ -521,30 +521,14 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="space-y-6 max-w-7xl mx-auto pb-16">
-    <div class="flex items-center justify-between gap-4 border-b border-border/70 pb-3">
-      <div class="flex items-center gap-2.5 min-w-0">
-        <button
-          type="button"
-          class="size-8 inline-flex items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-colors cursor-pointer shrink-0"
-          title="Volver"
-          aria-label="Volver a la página anterior"
-          @click="router.back()"
-        >
-          <IconArrowLeft class="size-4" aria-hidden="true" />
-        </button>
-        <div class="h-4 w-px bg-border shrink-0" aria-hidden="true"></div>
-        <div class="min-w-0">
-          <h1 class="text-sm sm:text-base font-semibold tracking-tight text-foreground truncate">Mapa de Distritos</h1>
-          <p class="text-xs text-muted-foreground truncate hidden sm:block">Residencia del personal activo en Lima Metropolitana y Callao</p>
-        </div>
-      </div>
-      <div class="flex items-center gap-2 shrink-0">
+    <PageHeader title="Mapa de Distritos" subtitle="Residencia del personal activo en Lima Metropolitana y Callao">
+      <template #actions>
         <Button variant="ghost" size="sm" class="gap-1.5 text-xs text-muted-foreground hover:text-foreground cursor-pointer" :disabled="isLoading" @click="cargarTodo">
           <IconRefresh class="size-3.5" :class="isLoading ? 'animate-spin' : ''" />
           <span>Actualizar</span>
         </Button>
-      </div>
-    </div>
+      </template>
+    </PageHeader>
 
         <div
       v-if="errorMessage"
@@ -599,7 +583,7 @@ onBeforeUnmount(() => {
             <span class="size-2 rounded-full bg-primary"></span>
           </div>
           <div class="mt-2 flex items-baseline justify-between">
-            <span class="text-2xl font-bold tracking-tight text-foreground font-mono">
+            <span class="text-kpi font-bold tracking-tight text-foreground font-mono">
               {{ kpis.totalLimaCallao }}
             </span>
             <span class="text-meta text-muted-foreground">En mapa</span>
@@ -613,7 +597,7 @@ onBeforeUnmount(() => {
             <span class="size-2 rounded-full bg-sky-500"></span>
           </div>
           <div class="mt-2 flex items-baseline justify-between">
-            <span class="text-2xl font-bold tracking-tight text-primary font-mono">
+            <span class="text-kpi font-bold tracking-tight text-primary font-mono">
               {{ kpis.distritosConPresencia }} <span class="text-sm font-normal text-muted-foreground">/ {{ distritosRanking.length || 50 }}</span>
             </span>
             <span class="text-meta text-muted-foreground">Distritos</span>
@@ -627,10 +611,10 @@ onBeforeUnmount(() => {
             <span class="size-2 rounded-full bg-emerald-500"></span>
           </div>
           <div class="mt-2 flex items-baseline justify-between">
-            <span class="text-xl font-bold tracking-tight text-foreground truncate max-w-[70%]">
+            <span class="text-kpi font-bold tracking-tight text-foreground truncate max-w-[70%]">
               {{ kpis.topDistritoNombre }}
             </span>
-            <span class="text-xl font-bold text-emerald-600 dark:text-emerald-400 font-mono">
+            <span class="text-kpi font-bold text-emerald-600 dark:text-emerald-400 font-mono">
               {{ kpis.topDistritoCantidad }}
             </span>
           </div>
@@ -642,7 +626,7 @@ onBeforeUnmount(() => {
                 <div class="lg:col-span-2 space-y-3">
           <div
             ref="mapContainer"
-            class="distritos-map h-[320px] sm:h-[420px] lg:h-[560px] max-h-[75vh] w-full rounded-xl overflow-hidden border border-border shadow-2xs z-0 bg-card"
+            class="distritos-map h-[34rem] max-h-[75vh] w-full rounded-xl overflow-hidden border border-border shadow-2xs z-0 bg-card"
           ></div>
 
                     <div class="p-3 bg-card border border-border rounded-xl shadow-2xs flex flex-wrap items-center justify-between gap-3 text-xs">
@@ -793,7 +777,7 @@ onBeforeUnmount(() => {
   background-color: var(--color-popover, #1e293b);
   color: var(--color-popover-foreground, #ffffff);
   border: 1px solid var(--color-border, #334155);
-  font-size: 11px;
+  font-size: 0.75rem;
   font-weight: 600;
   border-radius: 6px;
   padding: 4px 8px;

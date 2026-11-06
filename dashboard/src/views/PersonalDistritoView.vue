@@ -3,6 +3,7 @@ import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import Card from '@/components/ui/card/Card.vue'
 import Button from '@/components/ui/button/Button.vue'
+import PageHeader from '@/components/ui/page-header/PageHeader.vue'
 import Badge from '@/components/ui/badge/Badge.vue'
 import DataTable, { type DataTableColumn } from '@/components/ui/datatable/DataTable.vue'
 import SearchSelect, { type SelectOption } from '@/components/ui/form/SearchSelect.vue'
@@ -17,7 +18,6 @@ import {
 import { resolveAvatarUrl } from '@/components/dashboard/types'
 import { formatDate } from '@/utils/date'
 import {
-  IconArrowLeft,
   IconRefresh,
   IconAlertTriangle,
   IconMapPin,
@@ -235,28 +235,8 @@ onMounted(async () => {
 
 <template>
   <div class="space-y-6 max-w-7xl mx-auto pb-16">
-    <div class="flex items-center justify-between gap-4 border-b border-border/70 pb-3">
-      <div class="flex items-center gap-2.5 min-w-0">
-        <button
-          type="button"
-          class="size-8 inline-flex items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-colors cursor-pointer shrink-0"
-          title="Volver"
-          aria-label="Volver a la página anterior"
-          @click="router.back()"
-        >
-          <IconArrowLeft class="size-4" aria-hidden="true" />
-        </button>
-        <div class="h-4 w-px bg-border shrink-0" aria-hidden="true"></div>
-        <div class="min-w-0">
-          <h1 class="text-sm sm:text-base font-semibold tracking-tight text-foreground truncate">
-            Trabajadores por Distrito
-          </h1>
-          <p class="text-xs text-muted-foreground truncate hidden sm:block">
-            Personal activo según distrito de residencia
-          </p>
-        </div>
-      </div>
-      <div class="flex items-center gap-2 shrink-0">
+    <PageHeader title="Trabajadores por Distrito" subtitle="Personal activo según distrito de residencia">
+      <template #actions>
         <Button
           variant="ghost"
           size="sm"
@@ -267,8 +247,8 @@ onMounted(async () => {
           <IconRefresh class="size-3.5" :class="estaCargando ? 'animate-spin' : ''" />
           <span>Actualizar</span>
         </Button>
-      </div>
-    </div>
+      </template>
+    </PageHeader>
 
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
       <div class="w-full sm:w-96">
@@ -334,7 +314,7 @@ onMounted(async () => {
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <Card class="p-4 bg-card border border-border shadow-2xs">
             <p class="text-xs text-muted-foreground">Total trabajadores</p>
-            <div class="text-2xl font-bold font-mono tabular-nums text-foreground mt-1">
+            <div class="text-kpi font-bold font-mono tabular-nums text-foreground mt-1">
               {{ detalle.total }}
             </div>
             <p class="text-meta text-muted-foreground mt-0.5">
@@ -345,7 +325,7 @@ onMounted(async () => {
           <Card class="p-4 bg-card border border-border shadow-2xs">
             <p class="text-xs text-muted-foreground">Área con más personal</p>
             <div
-              class="text-2xl font-bold font-mono tabular-nums text-foreground mt-1 truncate"
+              class="text-kpi font-bold font-mono tabular-nums text-foreground mt-1 truncate"
               :title="areaConMasPersonal?.nombre || '—'"
             >
               {{ areaConMasPersonal?.nombre || '—' }}
@@ -358,7 +338,7 @@ onMounted(async () => {
           <Card class="p-4 bg-card border border-border shadow-2xs">
             <p class="text-xs text-muted-foreground">Rango de edad predominante</p>
             <div
-              class="text-2xl font-bold font-mono tabular-nums text-foreground mt-1 truncate"
+              class="text-kpi font-bold font-mono tabular-nums text-foreground mt-1 truncate"
               :title="rangoEdadPredominante?.nombre || '—'"
             >
               {{ rangoEdadPredominante?.nombre || '—' }}

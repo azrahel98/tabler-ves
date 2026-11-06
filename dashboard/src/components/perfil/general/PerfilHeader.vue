@@ -79,21 +79,21 @@ const handleTabKeyDown = (event: KeyboardEvent) => {
 
 <template>
   <div class="bg-card border border-border rounded-2xl overflow-hidden shadow-xs">
-    <div class="p-5 sm:p-6">
-      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 min-w-0 w-full sm:w-auto">
+    <div class="p-5">
+      <div class="flex flex-wrap items-center justify-between gap-4">
+        <div class="flex flex-wrap items-center gap-4 min-w-0">
           <div
-            class="relative size-18 sm:size-21 rounded-full bg-primary/10 border border-primary/20 text-primary flex items-center justify-center shrink-0 shadow-xs overflow-hidden">
+            class="relative size-16 rounded-full bg-primary/10 border border-primary/20 text-primary flex items-center justify-center shrink-0 shadow-xs overflow-hidden">
             <img v-if="!avatarError && avatarUrl" v-auth-src="avatarUrl" :alt="perfil?.nombre || 'Foto del servidor'"
               class="size-full object-cover" @error="avatarError = true" />
-            <span v-else class="text-xl sm:text-2xl font-bold tracking-tight select-none">
+            <span v-else class="text-kpi font-bold tracking-tight select-none">
               {{ userInitials }}
             </span>
           </div>
 
           <div class="space-y-1.5 min-w-0">
             <div class="flex flex-wrap items-center gap-2">
-              <h1 class="text-lg sm:text-xl font-bold text-foreground tracking-tight break-words">
+              <h1 class="text-title font-bold text-foreground tracking-tight break-words">
                 {{ perfil?.nombre || 'Cargando datos del servidor...' }}
               </h1>
             </div>
@@ -127,7 +127,7 @@ const handleTabKeyDown = (event: KeyboardEvent) => {
       </div>
 
       <div class="border-t border-border mt-6 pt-1 overflow-x-auto">
-        <nav class="flex gap-2 sm:gap-4 min-w-max" role="tablist" aria-label="Pestañas del legajo"
+        <nav class="flex gap-2 min-w-max" role="tablist" aria-label="Pestañas del legajo"
           @keydown="handleTabKeyDown">
           <button type="button" role="tab" :aria-selected="activeTab === 'perfil'"
             :tabindex="activeTab === 'perfil' ? 0 : -1"
@@ -145,7 +145,7 @@ const handleTabKeyDown = (event: KeyboardEvent) => {
             @click="emit('update:activeTab', 'vinculos')">
             <IconBriefcase class="size-4" />
             <span>Vínculos Laborales</span>
-            <span class="px-1.5 py-0.2 text-micro rounded-full bg-muted text-foreground">
+            <span class="px-1.5 py-0.5 text-micro rounded-full bg-muted text-foreground">
               {{ vinculosCount }}
             </span>
           </button>
@@ -157,7 +157,7 @@ const handleTabKeyDown = (event: KeyboardEvent) => {
             @click="emit('update:activeTab', 'legajo')">
             <IconFileText class="size-4" />
             <span>Legajo Digital</span>
-            <span class="px-1.5 py-0.2 text-micro rounded-full bg-muted text-foreground">
+            <span class="px-1.5 py-0.5 text-micro rounded-full bg-muted text-foreground">
               {{ archivosCount }}
             </span>
           </button>
@@ -169,7 +169,7 @@ const handleTabKeyDown = (event: KeyboardEvent) => {
             @click="emit('update:activeTab', 'grados')">
             <IconSchool class="size-4" />
             <span>Grados Académicos</span>
-            <span class="px-1.5 py-0.2 text-micro rounded-full bg-muted text-foreground">
+            <span class="px-1.5 py-0.5 text-micro rounded-full bg-muted text-foreground">
               {{ gradosCount }}
             </span>
           </button>

@@ -5,8 +5,9 @@ import { Bar } from 'vue-chartjs'
 import Card from '@/components/ui/card/Card.vue'
 import Badge from '@/components/ui/badge/Badge.vue'
 import { useThemeStore } from '@/stores/theme'
+import { useChartScale } from '@/lib/chart'
 import type { AreaReport } from './types'
-import type { ChartOptions, ChartData } from 'chart.js'
+import type { ChartOptions, ChartData, Scale } from 'chart.js'
 import {
   IconBuildingSkyscraper,
   IconChartBar,
@@ -23,12 +24,13 @@ interface Props {
 const props = withDefaults(defineProps<Props>(), {
   isLoading: false,
   selectedArea: null,
-  chartHeight: 'h-64',
+  chartHeight: 'h-52',
 })
 
 const router = useRouter()
 
 const activeView = ref<'chart' | 'list'>('chart')
+const { chartFontSize } = useChartScale()
 const themeStore = useThemeStore()
 const isDark = computed(() => themeStore.isDark)
 
@@ -76,6 +78,9 @@ const chartOptions = computed<ChartOptions<'bar'>>(() => {
     indexAxis: 'y',
     responsive: true,
     maintainAspectRatio: false,
+    layout: {
+      padding: { left: 4, right: 8 },
+    },
     plugins: {
       legend: {
         display: false,
@@ -105,7 +110,7 @@ const chartOptions = computed<ChartOptions<'bar'>>(() => {
           color: chartTextColor.value,
           font: {
             family: 'Inter, ui-sans-serif, system-ui, sans-serif',
-            size: 11,
+            size: chartFontSize.value,
           },
         },
       },
@@ -113,12 +118,21 @@ const chartOptions = computed<ChartOptions<'bar'>>(() => {
         grid: {
           display: false,
         },
+        afterFit: (scale: Scale) => {
+          const maxWidth = scale.chart.width * 0.4
+          scale.width = Math.min(Math.max(scale.width + 12, 215), maxWidth)
+        },
         ticks: {
+          padding: 6,
           color: isDark.value ? '#f1f5f9' : '#1e293b',
           font: {
             family: 'Inter, ui-sans-serif, system-ui, sans-serif',
-            size: 11,
+            size: chartFontSize.value,
             weight: 500,
+          },
+          callback: (_value, index) => {
+            const nombre = top5Areas.value[index]?.nombre ?? ''
+            return nombre.length > 34 ? `${nombre.slice(0, 34)}…` : nombre
           },
         },
       },
