@@ -34,7 +34,7 @@ import {
   IconExternalLink,
 } from '@tabler/icons-vue'
 
-const props = withDefaults(defineProps<{ vinculo: PersonalVinculo; modo?: 'info' | 'acciones' }>(), { modo: 'info' })
+const props = withDefaults(defineProps<{ vinculo: PersonalVinculo; modo?: 'info' | 'eventos' | 'acciones' }>(), { modo: 'info' })
 
 const emit = defineEmits<{
   (e: 'registrarRenuncia', vinculo: PersonalVinculo): void
@@ -79,9 +79,13 @@ const puedeRenunciar = computed(() => v.value.estado.toLowerCase() !== 'inactivo
   <div ref="root" class="hs-tooltip [--trigger:click] [--placement:bottom-end] --prevent-on-load-init inline-block" @click.stop>
     <button type="button"
       class="hs-tooltip-toggle size-8 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition cursor-pointer inline-flex items-center justify-center focus:outline-hidden focus-visible:ring-2 focus-visible:ring-primary"
-      aria-haspopup="dialog" :aria-label="modo === 'info' ? 'Ver información del vínculo' : 'Acciones del vínculo'"
-      :title="modo === 'info' ? 'Información' : 'Acciones'">
+      aria-haspopup="dialog" :aria-label="modo === 'info' ? 'Ver información del vínculo' : modo === 'eventos' ? 'Ver eventos del vínculo' : 'Acciones del vínculo'"
+      :title="modo === 'info' ? 'Información' : modo === 'eventos' ? 'Eventos' : 'Acciones'">
       <IconInfoCircle v-if="modo === 'info'" class="size-4" />
+      <span v-else-if="modo === 'eventos'" class="relative inline-flex">
+        <IconFileCode class="size-4" />
+        <span class="absolute -top-1.5 -right-2 min-w-3.5 h-3.5 px-0.5 rounded-full bg-purple-500 text-white text-nano font-bold flex items-center justify-center">{{ v.eventos?.length || 0 }}</span>
+      </span>
       <IconDotsVertical v-else class="size-4" />
     </button>
 
@@ -159,50 +163,57 @@ const puedeRenunciar = computed(() => v.value.estado.toLowerCase() !== 'inactivo
             <IconNotes class="size-4 text-muted-foreground shrink-0 mt-0.5" />
             <span class="text-muted-foreground wrap-break-word min-w-0">{{ referencias }}</span>
           </div>
+        </div>
+      </div>
+    </div>
 
-          <div v-if="v.eventos && v.eventos.length > 0" class="pt-2.5 border-t border-border space-y-2">
-            <div class="flex items-center justify-between gap-2">
-              <span class="text-meta font-semibold text-muted-foreground inline-flex items-center gap-1.5">
-                <IconFileCode class="size-3.5" />
-                Eventos ({{ v.eventos.length }})
-              </span>
-              <button type="button"
-                class="text-meta text-primary hover:underline font-medium inline-flex items-center gap-1 cursor-pointer"
-                @click="run(() => emit('verEventos', v))">
-                Gestionar <IconExternalLink class="size-3 opacity-70" />
-              </button>
-            </div>
-            <ul class="space-y-1.5">
-              <li v-for="ev in v.eventos" :key="ev.id"
-                class="p-2 rounded-lg bg-muted/50 border border-border/50 text-meta space-y-1">
-                <div class="flex flex-wrap items-center gap-1.5">
-                  <Badge variant="outline" size="xs" class="font-semibold uppercase text-micro">
-                    {{ getTipoEventoLabel(ev.tipo_evento) }}
-                  </Badge>
-                  <span class="text-micro font-medium text-muted-foreground">
-                    {{ getEstadoVigenciaLabel(getEstadoVigencia(ev)) }}
-                  </span>
-                </div>
-                <p v-if="ev.fecha_desde" class="text-muted-foreground text-micro">
-                  {{ ev.fecha_hasta ? `${formatDate(ev.fecha_desde)} - ${formatDate(ev.fecha_hasta)}` : `desde ${formatDate(ev.fecha_desde)}` }}
-                </p>
-                <p v-if="ev.nueva_area" class="text-foreground truncate" :title="ev.nueva_area">Área: {{ ev.nueva_area }}</p>
-                <p v-if="ev.nuevo_cargo" class="text-foreground truncate" :title="ev.nuevo_cargo">Cargo: {{ ev.nuevo_cargo }}</p>
-                <div class="flex flex-wrap items-center gap-3">
-                  <button v-if="ev.tipo_doc_inicio || ev.numero_doc_inicio" type="button"
-                    class="text-primary hover:underline font-medium cursor-pointer"
-                    @click="run(() => emit('verDocumento', { tipo: 'evento', vinculo: v, evento: ev }))">
-                    {{ [ev.tipo_doc_inicio, ev.numero_doc_inicio].filter(Boolean).join(' N° ') }}
-                  </button>
-                  <button v-if="ev.doc_salida_id || ev.numero_doc_salida" type="button"
-                    class="text-primary hover:underline font-medium cursor-pointer"
-                    @click="run(() => emit('verDocumento', { tipo: 'evento', vinculo: v, evento: ev, doc: 'salida' }))">
-                    Doc. cierre
-                  </button>
-                </div>
-              </li>
-            </ul>
+    <!-- Popover de eventos -->
+    <div v-else-if="modo === 'eventos'"
+      class="hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible hidden invisible opacity-0 transition-opacity z-50 w-[min(24rem,calc(100vw-2rem))] text-xs"
+      role="dialog" aria-label="Eventos del vínculo laboral">
+      <div class="bg-card border border-border rounded-2xl shadow-xl overflow-hidden text-left">
+        <div class="px-4 py-3 flex items-center justify-between gap-2 border-b border-border">
+          <div class="min-w-0">
+            <p class="font-semibold text-foreground text-sm">Eventos laborales ({{ v.eventos?.length || 0 }})</p>
+            <p class="text-muted-foreground truncate" :title="v.cargo || ''">{{ v.cargo || 'Vínculo laboral' }}</p>
           </div>
+          <button type="button"
+            class="text-meta text-primary hover:underline font-medium inline-flex items-center gap-1 cursor-pointer shrink-0"
+            @click="run(() => emit('verEventos', v))">
+            Gestionar <IconExternalLink class="size-3 opacity-70" />
+          </button>
+        </div>
+        <div class="p-3 max-h-80 overflow-y-auto">
+          <ul class="space-y-1.5">
+            <li v-for="ev in v.eventos" :key="ev.id"
+              class="p-2 rounded-lg bg-muted/50 border border-border/50 text-meta space-y-1">
+              <div class="flex flex-wrap items-center gap-1.5">
+                <Badge variant="outline" size="xs" class="font-semibold uppercase text-micro">
+                  {{ getTipoEventoLabel(ev.tipo_evento) }}
+                </Badge>
+                <span class="text-micro font-medium text-muted-foreground">
+                  {{ getEstadoVigenciaLabel(getEstadoVigencia(ev)) }}
+                </span>
+              </div>
+              <p v-if="ev.fecha_desde" class="text-muted-foreground text-micro">
+                {{ ev.fecha_hasta ? `${formatDate(ev.fecha_desde)} - ${formatDate(ev.fecha_hasta)}` : `desde ${formatDate(ev.fecha_desde)}` }}
+              </p>
+              <p v-if="ev.nueva_area" class="text-foreground truncate" :title="ev.nueva_area">Área: {{ ev.nueva_area }}</p>
+              <p v-if="ev.nuevo_cargo" class="text-foreground truncate" :title="ev.nuevo_cargo">Cargo: {{ ev.nuevo_cargo }}</p>
+              <div class="flex flex-wrap items-center gap-3">
+                <button v-if="ev.tipo_doc_inicio || ev.numero_doc_inicio" type="button"
+                  class="text-primary hover:underline font-medium cursor-pointer"
+                  @click="run(() => emit('verDocumento', { tipo: 'evento', vinculo: v, evento: ev }))">
+                  {{ [ev.tipo_doc_inicio, ev.numero_doc_inicio].filter(Boolean).join(' N° ') }}
+                </button>
+                <button v-if="ev.doc_salida_id || ev.numero_doc_salida" type="button"
+                  class="text-primary hover:underline font-medium cursor-pointer"
+                  @click="run(() => emit('verDocumento', { tipo: 'evento', vinculo: v, evento: ev, doc: 'salida' }))">
+                  Doc. cierre
+                </button>
+              </div>
+            </li>
+          </ul>
         </div>
       </div>
     </div>

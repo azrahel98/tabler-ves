@@ -12,7 +12,6 @@ import {
 import { formatDate, parseDateSafe } from '@/utils/date'
 import {
   IconBriefcase,
-  IconFileCode,
   IconSearch,
   IconArrowsSort,
   IconChevronUp,
@@ -188,7 +187,7 @@ const estadoLabel = (v: PersonalVinculo) => {
                   <IconArrowsSort v-else class="size-3 opacity-60" />
                 </button>
               </th>
-              <th scope="col" class="px-2 py-3 text-center w-20"><span class="sr-only">Detalle</span></th>
+              <th scope="col" class="px-2 py-3 text-center w-28"><span class="sr-only">Detalle</span></th>
             </tr>
           </thead>
           <tbody class="divide-y divide-border">
@@ -221,13 +220,7 @@ const estadoLabel = (v: PersonalVinculo) => {
                           class="text-nano px-1 py-0 border-blue-500/40 text-blue-600 dark:text-blue-400 font-semibold uppercase">
                           SUNAT
                         </Badge>
-                        <span v-if="v.eventos && v.eventos.length > 0"
-                          class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-nano font-semibold bg-purple-500/10 text-purple-700 dark:text-purple-300 border border-purple-500/20"
-                          :title="`${v.eventos.length} eventos laborales registrados`">
-                          <IconFileCode class="size-2.5 shrink-0" />
-                          <span>{{ v.eventos.length }} {{ v.eventos.length === 1 ? 'evento' : 'eventos' }}</span>
-                        </span>
-                      </div>
+                                              </div>
                     </div>
                   </div>
                 </td>
@@ -261,6 +254,10 @@ const estadoLabel = (v: PersonalVinculo) => {
                 <td class="px-2 py-2.5 text-center">
                   <div class="inline-flex items-center gap-0.5">
                     <PerfilVinculoPopover v-if="v.origen !== 'SUNAT'" modo="info" :vinculo="v"
+                      @registrar-renuncia="emit('registrarRenuncia', $event)"
+                      @ver-documento="emit('verDocumento', $event)" @ver-eventos="emit('verEventos', $event)"
+                      @crear-evento="emit('crearEvento', $event)" />
+                    <PerfilVinculoPopover v-if="v.origen !== 'SUNAT' && v.eventos && v.eventos.length > 0" modo="eventos" :vinculo="v"
                       @registrar-renuncia="emit('registrarRenuncia', $event)"
                       @ver-documento="emit('verDocumento', $event)" @ver-eventos="emit('verEventos', $event)"
                       @crear-evento="emit('crearEvento', $event)" />
