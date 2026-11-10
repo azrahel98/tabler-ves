@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Modal from '@/components/ui/modal/Modal.vue'
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import Button from '@/components/ui/button/Button.vue'
 import { type PersonalArchivo, getFileDownloadUrl } from '@/services/personal'
@@ -134,9 +135,7 @@ const handleAbrirNuevaPestana = () => {
 </script>
 
 <template>
-  <div v-if="isOpen"
-    class="fixed inset-0 z-50 flex items-center justify-center p-2 bg-neutral-900/70 backdrop-blur-xs"
-    role="dialog" aria-modal="true" aria-labelledby="visor-titulo" @click.self="emit('close')">
+  <Modal :is-open="isOpen" labelledby="visor-titulo" @close="emit('close')">
     <div class="bg-card border border-border shadow-2xl overflow-hidden flex flex-col transition-all duration-200"
       :class="isFullscreen
         ? 'fixed inset-2 rounded-xl z-50'
@@ -227,5 +226,5 @@ const handleAbrirNuevaPestana = () => {
         </div>
       </div>
     </div>
-  </div>
+  </Modal>
 </template>

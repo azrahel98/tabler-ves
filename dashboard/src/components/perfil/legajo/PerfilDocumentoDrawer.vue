@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Modal from '@/components/ui/modal/Modal.vue'
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import Badge from '@/components/ui/badge/Badge.vue'
 import Button from '@/components/ui/button/Button.vue'
@@ -110,20 +111,9 @@ const handleConfirmarEliminar = () => {
 </script>
 
 <template>
-  <div v-if="isOpen" class="fixed inset-0 z-50 overflow-hidden" role="dialog" aria-modal="true">
-    <transition appear enter-active-class="transition-opacity duration-300 ease-out" enter-from-class="opacity-0"
-      enter-to-class="opacity-100" leave-active-class="transition-opacity duration-200 ease-in"
-      leave-from-class="opacity-100" leave-to-class="opacity-0">
-      <div class="fixed inset-0 bg-neutral-900/60 backdrop-blur-xs" @click="!isDeleting && emit('close')"></div>
-    </transition>
-
-    <div class="fixed inset-y-0 right-0 max-w-full flex pl-10">
-      <transition appear enter-active-class="transform transition ease-out duration-300"
-        enter-from-class="translate-x-full" enter-to-class="translate-x-0"
-        leave-active-class="transform transition ease-in duration-250" leave-from-class="translate-x-0"
-        leave-to-class="translate-x-full">
+  <Modal :is-open="isOpen" placement="right" :persistent="isDeleting" @close="emit('close')">
         <aside v-if="isOpen && documento"
-          class="w-screen max-w-md bg-card border-l border-border shadow-2xl flex flex-col z-10 overflow-hidden text-xs">
+          class="w-screen max-w-md h-full bg-card border-l border-border shadow-2xl flex flex-col z-10 overflow-hidden text-xs">
           <div class="p-4 border-b border-border flex items-center justify-between shrink-0 bg-muted/20">
             <div class="flex items-center gap-3 min-w-0">
               <div class="size-9 rounded-xl flex items-center justify-center shrink-0 border" :class="{
@@ -334,7 +324,5 @@ const handleConfirmarEliminar = () => {
             </Button>
           </div>
         </aside>
-      </transition>
-    </div>
-  </div>
+  </Modal>
 </template>

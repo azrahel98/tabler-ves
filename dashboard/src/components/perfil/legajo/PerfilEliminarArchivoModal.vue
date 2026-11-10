@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Modal from '@/components/ui/modal/Modal.vue'
 import Button from '@/components/ui/button/Button.vue'
 import { type PersonalArchivo } from '@/services/personal'
 import {
@@ -31,16 +32,7 @@ const handleClose = (isDeleting: boolean) => {
 </script>
 
 <template>
-  <div
-    v-if="isOpen"
-    role="dialog"
-    aria-modal="true"
-    aria-labelledby="modal-eliminar-title"
-    tabindex="-1"
-    class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-neutral-900/65 backdrop-blur-xs focus:outline-hidden"
-    @click.self="handleClose(isDeleting)"
-    @keydown.esc="handleClose(isDeleting)"
-  >
+  <Modal :is-open="isOpen" :persistent="isDeleting" labelledby="modal-eliminar-title" @close="emit('close')">
     <div
       class="w-full max-w-md bg-card border border-border rounded-2xl shadow-2xl overflow-hidden text-xs flex flex-col"
     >
@@ -135,5 +127,5 @@ const handleClose = (isDeleting: boolean) => {
         </Button>
       </div>
     </div>
-  </div>
+  </Modal>
 </template>

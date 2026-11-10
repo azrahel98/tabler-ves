@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Modal from '@/components/ui/modal/Modal.vue'
 import { ref, computed, watch } from 'vue'
 import Button from '@/components/ui/button/Button.vue'
 import SearchSelect, { type SelectOption } from '@/components/ui/form/SearchSelect.vue'
@@ -150,11 +151,7 @@ const onSubmit = () => {
 </script>
 
 <template>
-  <div v-if="isOpen" role="dialog" aria-modal="true" aria-labelledby="modal-edit-profile-title"
-    tabindex="-1"
-    class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-neutral-900/60 backdrop-blur-xs focus:outline-hidden"
-    @click.self="handleRequestClose"
-    @keydown.esc="handleRequestClose">
+  <Modal :is-open="isOpen" labelledby="modal-edit-profile-title" @close="handleRequestClose">
     <div class="w-full max-w-xl bg-card border border-border rounded-2xl shadow-xl overflow-hidden text-xs">
       <div v-if="showConfirmDiscard"
         class="p-4 bg-amber-500/10 border-b border-amber-500/20 text-xs flex flex-wrap items-center justify-between gap-3">
@@ -268,5 +265,5 @@ const onSubmit = () => {
         </div>
       </form>
     </div>
-  </div>
+  </Modal>
 </template>

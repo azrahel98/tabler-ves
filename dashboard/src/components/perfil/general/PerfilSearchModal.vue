@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Modal from '@/components/ui/modal/Modal.vue'
 import { ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import Button from '@/components/ui/button/Button.vue'
@@ -82,11 +83,7 @@ const irANuevoTrabajador = () => {
 </script>
 
 <template>
-  <div v-if="isOpen" role="dialog" aria-modal="true" aria-labelledby="modal-search-title"
-    tabindex="-1"
-    class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-neutral-900/60 backdrop-blur-xs focus:outline-hidden"
-    @click.self="emit('close')"
-    @keydown.esc="emit('close')">
+  <Modal :is-open="isOpen" labelledby="modal-search-title" @close="emit('close')">
     <div class="w-full max-w-lg bg-card border border-border rounded-2xl shadow-xl overflow-hidden text-xs">
       <div class="p-4 border-b border-border flex items-center justify-between">
         <h3 id="modal-search-title" class="font-bold text-foreground text-sm flex items-center gap-2">
@@ -150,5 +147,5 @@ const irANuevoTrabajador = () => {
         </Button>
       </div>
     </div>
-  </div>
+  </Modal>
 </template>

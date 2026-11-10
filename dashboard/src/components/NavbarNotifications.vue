@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onUnmounted } from 'vue'
+import { HSDropdown } from 'preline/non-auto'
 import { useRouter } from 'vue-router'
 import { formatDistanceToNow, parseISO } from 'date-fns'
 import { es } from 'date-fns/locale'
@@ -17,25 +17,16 @@ import { getPersonalAvatarUrl } from '@/services/personal'
 
 const router = useRouter()
 const notifStore = useNotificacionesStore()
-const isOpen = ref(false)
+const DROPDOWN_ID = '#notif-dropdown'
 
-function toggleDropdown() {
-  isOpen.value = !isOpen.value
-  if (isOpen.value) {
-    if (!notifStore.isConnected || notifStore.notificaciones.length === 0) {
-      notifStore.cargarNotificaciones()
-    }
-    window.addEventListener('keydown', handleKeydown)
-  } else {
-    window.removeEventListener('keydown', handleKeydown)
+function onOpen() {
+  if (!notifStore.isConnected || notifStore.notificaciones.length === 0) {
+    notifStore.cargarNotificaciones()
   }
 }
 
 function closeDropdown() {
-  if (isOpen.value) {
-    isOpen.value = false
-    window.removeEventListener('keydown', handleKeydown)
-  }
+  HSDropdown.getInstance(DROPDOWN_ID, true)?.element.close()
 }
 
 function handleNotificationClick(notif: Notificacion) {
@@ -67,23 +58,14 @@ function formatearTiempo(fechaIso: string): string {
   }
 }
 
-function handleKeydown(e: KeyboardEvent) {
-  if (e.key === 'Escape' && isOpen.value) {
-    closeDropdown()
-  }
-}
-
-onUnmounted(() => {
-  window.removeEventListener('keydown', handleKeydown)
-})
 </script>
 
 <template>
-  <div class="relative">
-    <button type="button"
-      class="relative size-9 flex items-center justify-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted focus:outline-hidden transition"
+  <div id="notif-dropdown" class="hs-dropdown [--placement:bottom-right] [--auto-close:inside] relative inline-flex">
+    <button type="button" aria-haspopup="menu" aria-expanded="false" @click="onOpen"
+      class="hs-dropdown-toggle relative size-9 flex items-center justify-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted focus:outline-hidden transition"
       :title="notifStore.totalNoLeidas > 0 ? `${notifStore.totalNoLeidas} notificaciones no leídas` : 'Notificaciones'"
-      aria-label="Abrir panel de notificaciones" :aria-expanded="isOpen" @click="toggleDropdown">
+      aria-label="Abrir panel de notificaciones">
       <IconBell class="size-4" :stroke-width="2" />
       <span v-if="notifStore.totalNoLeidas > 0"
         class="absolute -top-1 -right-1 min-w-4.5 h-4.5 px-1 bg-rose-500 text-white text-micro font-bold rounded-full flex items-center justify-center ring-2 ring-navbar animate-in fade-in zoom-in">
@@ -93,14 +75,8 @@ onUnmounted(() => {
         title="Canal en vivo conectado"></span>
     </button>
 
-    <div v-if="isOpen" class="fixed inset-0 z-40" @click="closeDropdown"></div>
-
-    <Transition enter-active-class="transition ease-out duration-200"
-      enter-from-class="opacity-0 scale-95 -translate-y-1" enter-to-class="opacity-100 scale-100 translate-y-0"
-      leave-active-class="transition ease-in duration-150" leave-from-class="opacity-100 scale-100 translate-y-0"
-      leave-to-class="opacity-0 scale-95 -translate-y-1">
-      <div v-if="isOpen"
-        class="absolute right-0 mt-2 w-80 sm:w-96 bg-card border border-border rounded-2xl shadow-2xl py-0 z-50 overflow-hidden flex flex-col text-xs animate-in fade-in">
+    <div role="menu" aria-orientation="vertical"
+        class="hs-dropdown-menu hs-dropdown-open:opacity-100 transition-[opacity,margin] duration hidden opacity-0 w-80 sm:w-96 bg-card border border-border rounded-2xl shadow-2xl py-0 z-50 overflow-hidden flex-col text-xs">
         <div class="px-4 py-3 border-b border-border bg-card flex items-center justify-between gap-2">
           <div class="flex items-center gap-2">
             <h3 class="font-semibold text-foreground text-sm">Notificaciones</h3>
@@ -207,7 +183,6 @@ onUnmounted(() => {
               'notificaciones' }}
           </span>
         </div>
-      </div>
-    </Transition>
+    </div>
   </div>
 </template>

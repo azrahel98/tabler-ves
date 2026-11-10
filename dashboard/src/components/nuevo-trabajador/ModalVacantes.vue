@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Modal from '@/components/ui/modal/Modal.vue'
 import { ref, computed } from 'vue'
 import Badge from '@/components/ui/badge/Badge.vue'
 import Button from '@/components/ui/button/Button.vue'
@@ -38,17 +39,7 @@ const onSeleccionar = (vacante: VacanteOption) => {
 </script>
 
 <template>
-  <div
-    v-if="isOpen"
-    class="fixed inset-0 z-50 overflow-y-auto"
-    role="dialog"
-    aria-modal="true"
-    aria-labelledby="modal-vacantes-title"
-    aria-describedby="modal-vacantes-desc"
-    @keydown.escape.window="cerrarModal"
-  >
-    <div class="fixed inset-0 bg-neutral-900/60 backdrop-blur-xs" @click="cerrarModal"></div>
-    <div class="flex min-h-full items-center justify-center p-4">
+  <Modal :is-open="isOpen" labelledby="modal-vacantes-title" @close="cerrarModal">
       <div class="relative w-full max-w-2xl rounded-2xl bg-card border border-border shadow-2xl p-5 space-y-4">
         <div class="flex items-center justify-between border-b border-border pb-3">
           <div class="space-y-0.5">
@@ -118,6 +109,5 @@ const onSeleccionar = (vacante: VacanteOption) => {
           </div>
         </div>
       </div>
-    </div>
-  </div>
+  </Modal>
 </template>

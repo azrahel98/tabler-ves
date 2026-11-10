@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useThemeStore } from '@/stores/theme'
@@ -25,8 +24,6 @@ const router = useRouter()
 const authStore = useAuthStore()
 const themeStore = useThemeStore()
 const notifStore = useNotificacionesStore()
-
-const isUserMenuOpen = ref(false)
 
 const handleLogout = () => {
   notifStore.resetear()
@@ -66,10 +63,10 @@ const handleLogout = () => {
 
       <div class="h-5 sm:h-6 w-px bg-border mx-0.5 sm:mx-1"></div>
 
-      <div class="relative">
-        <button type="button"
-          class="flex items-center gap-2 p-1 rounded-lg hover:bg-muted focus:outline-hidden transition cursor-pointer"
-          @click="isUserMenuOpen = !isUserMenuOpen">
+      <div class="hs-dropdown [--placement:bottom-right] relative inline-flex">
+        <button id="user-menu-btn" type="button" aria-haspopup="menu" aria-expanded="false" aria-label="Menú de usuario"
+          class="hs-dropdown-toggle flex items-center gap-2 p-1 rounded-lg hover:bg-muted focus:outline-hidden transition cursor-pointer"
+          >
           <img
             :src="authStore.user?.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=256&auto=format&fit=crop'"
             alt="Avatar de usuario" class="size-7 sm:size-8 rounded-full object-cover border border-border" />
@@ -84,10 +81,8 @@ const handleLogout = () => {
           <IconChevronDown class="size-3.5 text-muted-foreground hidden md:block" :stroke-width="2" />
         </button>
 
-        <div v-if="isUserMenuOpen" class="fixed inset-0 z-40" @click="isUserMenuOpen = false"></div>
-
-        <div v-if="isUserMenuOpen"
-          class="absolute inset-e-0 mt-2 w-56 bg-card border border-border rounded-xl shadow-lg py-1.5 z-50 text-xs">
+        <div role="menu" aria-orientation="vertical" aria-labelledby="user-menu-btn"
+          class="hs-dropdown-menu hs-dropdown-open:opacity-100 transition-[opacity,margin] duration hidden opacity-0 w-56 bg-card border border-border rounded-xl shadow-lg py-1.5 z-50 text-xs" >
           <div class="px-4 py-2 border-b border-border">
             <p class="font-semibold text-foreground">{{ authStore.user?.name || 'Administrador' }}</p>
             <p class="text-muted-foreground truncate">{{ authStore.user?.email || 'admin@crmpulse.com' }}</p>
@@ -96,8 +91,7 @@ const handleLogout = () => {
           <div class="py-1">
 
             <router-link to="/panel"
-              class="flex items-center gap-2.5 px-4 py-2 text-foreground hover:bg-muted transition"
-              @click="isUserMenuOpen = false">
+              class="flex items-center gap-2.5 px-4 py-2 text-foreground hover:bg-muted transition">
               <IconLayoutDashboard class="size-4 text-muted-foreground" :stroke-width="2" />
               <span>Panel Principal</span>
             </router-link>

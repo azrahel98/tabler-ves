@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Modal from '@/components/ui/modal/Modal.vue'
 import { ref, watch, computed } from 'vue'
 import Button from '@/components/ui/button/Button.vue'
 import {
@@ -190,16 +191,7 @@ const handleSubmit = () => {
 </script>
 
 <template>
-  <div
-    v-if="isOpen"
-    role="dialog"
-    aria-modal="true"
-    aria-labelledby="modal-subir-archivo-title"
-    tabindex="-1"
-    class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-neutral-900/65 backdrop-blur-xs focus:outline-hidden"
-    @click.self="handleClose"
-    @keydown.esc="handleClose"
-  >
+  <Modal :is-open="isOpen" labelledby="modal-subir-archivo-title" @close="handleClose">
     <div
       class="w-full max-w-xl bg-card border border-border rounded-2xl shadow-2xl overflow-hidden text-xs max-h-[92vh] flex flex-col"
     >
@@ -454,5 +446,5 @@ const handleSubmit = () => {
         </Button>
       </div>
     </div>
-  </div>
+  </Modal>
 </template>

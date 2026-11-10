@@ -1,3 +1,5 @@
+import { nextTick } from 'vue'
+import { HSStaticMethods } from 'preline/non-auto'
 import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import DashboardLayout from '@/components/DashboardLayout.vue'
@@ -125,3 +127,10 @@ router.beforeEach((to, _from, next) => {
   next()
 })
 
+
+router.afterEach(async (_to, _from, failure) => {
+  if (failure) return
+  await nextTick()
+  HSStaticMethods.cleanCollection(['dropdown', 'tooltip', 'tabs', 'collapse', 'accordion'])
+  HSStaticMethods.autoInit(['dropdown', 'tooltip', 'tabs', 'collapse', 'accordion'])
+})

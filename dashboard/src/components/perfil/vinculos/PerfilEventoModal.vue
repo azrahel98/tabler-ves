@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Modal from '@/components/ui/modal/Modal.vue'
 import { ref, watch, computed } from 'vue'
 import Button from '@/components/ui/button/Button.vue'
 import Badge from '@/components/ui/badge/Badge.vue'
@@ -550,18 +551,7 @@ const handleSubmit = () => {
 </script>
 
 <template>
-  <div v-if="isOpen" class="fixed inset-0 z-50 overflow-y-auto" role="dialog" aria-modal="true">
-    <transition appear enter-active-class="transition-opacity duration-250 ease-out" enter-from-class="opacity-0"
-      enter-to-class="opacity-100" leave-active-class="transition-opacity duration-200 ease-in"
-      leave-from-class="opacity-100" leave-to-class="opacity-0">
-      <div class="fixed inset-0 bg-neutral-900/60 backdrop-blur-xs" @click="!isSaving && emit('close')"></div>
-    </transition>
-
-    <div class="flex min-h-screen items-center justify-center p-3 text-center">
-      <transition appear enter-active-class="transform transition ease-out duration-300"
-        enter-from-class="scale-95 opacity-0" enter-to-class="scale-100 opacity-100"
-        leave-active-class="transform transition ease-in duration-200" leave-from-class="scale-100 opacity-100"
-        leave-to-class="scale-95 opacity-0">
+  <Modal :is-open="isOpen" :persistent="isSaving" @close="emit('close')">
         <div
           class="relative w-full max-w-xl rounded-2xl bg-card border border-border shadow-2xl text-left flex flex-col max-h-[90vh] overflow-hidden"
           @click.stop>
@@ -1093,7 +1083,5 @@ const handleSubmit = () => {
             </Button>
           </div>
         </div>
-      </transition>
-    </div>
-  </div>
+  </Modal>
 </template>

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Modal from '@/components/ui/modal/Modal.vue'
 import { ref, watch, onMounted, onUnmounted } from 'vue'
 import Badge from '@/components/ui/badge/Badge.vue'
 import Button from '@/components/ui/button/Button.vue'
@@ -137,20 +138,9 @@ const mismoDocumento = (ev: EventoVinculoDetalle): boolean => {
 </script>
 
 <template>
-  <div v-if="isOpen" class="fixed inset-0 z-50 overflow-hidden" role="dialog" aria-modal="true">
-    <transition appear enter-active-class="transition-opacity duration-300 ease-out" enter-from-class="opacity-0"
-      enter-to-class="opacity-100" leave-active-class="transition-opacity duration-200 ease-in"
-      leave-from-class="opacity-100" leave-to-class="opacity-0">
-      <div class="fixed inset-0 bg-neutral-900/60 backdrop-blur-xs" @click="!isDeleting && emit('close')"></div>
-    </transition>
-
-    <div class="fixed inset-y-0 right-0 max-w-full flex pl-6">
-      <transition appear enter-active-class="transform transition ease-out duration-300"
-        enter-from-class="translate-x-full" enter-to-class="translate-x-0"
-        leave-active-class="transform transition ease-in duration-250" leave-from-class="translate-x-0"
-        leave-to-class="translate-x-full">
+  <Modal :is-open="isOpen" placement="right" :persistent="isDeleting" @close="emit('close')">
         <aside v-if="isOpen && vinculo"
-          class="w-screen max-w-md bg-card border-l border-border shadow-2xl flex flex-col z-10 overflow-hidden text-xs">
+          class="w-screen max-w-md h-full bg-card border-l border-border shadow-2xl flex flex-col z-10 overflow-hidden text-xs">
           
           <header class="px-5 py-4 border-b border-border flex items-center justify-between shrink-0 bg-muted/15">
             <div class="flex items-center gap-3 min-w-0">
@@ -446,7 +436,5 @@ const mismoDocumento = (ev: EventoVinculoDetalle): boolean => {
             </Button>
           </footer>
         </aside>
-      </transition>
-    </div>
-  </div>
+  </Modal>
 </template>
