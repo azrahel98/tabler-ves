@@ -627,8 +627,8 @@ watch(
         @copy-to-clipboard="copyToClipboard"
       />
 
-      <div class="bg-card border border-border rounded-2xl shadow-xs p-4 sm:p-5 flex flex-col lg:flex-row gap-5 lg:gap-6">
-        <aside class="lg:w-72 xl:w-80 shrink-0 lg:border-e lg:border-border lg:pe-6">
+      <div class="flex flex-col lg:flex-row lg:items-start gap-5">
+        <aside class="lg:w-72 xl:w-80 shrink-0 bg-card border border-border rounded-2xl shadow-xs p-4 sm:p-5">
           <PerfilInfoContacto
             :perfil="perfil"
             :contacto="contacto"
