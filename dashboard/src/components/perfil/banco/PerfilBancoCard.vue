@@ -1,127 +1,105 @@
 <script setup lang="ts">
-import Card from '@/components/ui/card/Card.vue'
-import Badge from '@/components/ui/badge/Badge.vue'
+import { computed } from 'vue'
 import type { PersonalBanco } from '@/services/personal'
-import {
-  IconBuildingBank,
-  IconCheck,
-  IconCopy,
-} from '@tabler/icons-vue'
+import { IconBuildingBank, IconCheck, IconCopy } from '@tabler/icons-vue'
 
 interface Props {
   banco: PersonalBanco | null
   copiedField?: string | null
 }
 
-withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<Props>(), {
   copiedField: null,
 })
 
 const emit = defineEmits<{
   (e: 'copyToClipboard', text: string, fieldId: string): void
 }>()
+
+const activa = computed(() => props.banco?.estado === 1)
+const inicial = computed(() => (props.banco?.banco || '?').trim().slice(0, 2).toUpperCase())
 </script>
 
 <template>
-  <Card class="space-y-3">
-    <div class="flex flex-wrap items-center justify-between gap-2.5 border-b border-border pb-3">
-      <span class="text-sm font-bold text-foreground tracking-wider flex items-center gap-2">
-        <IconBuildingBank class="size-3.5 text-primary shrink-0" />
-        <h3 class="font-semibold text-foreground tracking-tight text-sm">Información Bancaria</h3>
-      </span>
-
-      <span v-if="banco" class="px-2 py-0.5 rounded bg-muted text-meta font-mono text-muted-foreground font-medium shrink-0">
-        1 registro
-      </span>
-    </div>
-
-    <p class="text-xs text-muted-foreground -mt-1 pb-1">
-      Cuentas registradas para abono de planillas y viáticos
-    </p>
-
-    <div v-if="banco" class="overflow-hidden rounded-xl border border-border bg-card">
-      <div class="overflow-x-auto">
-        <table class="w-full text-left text-xs" aria-label="Tabla de información bancaria">
-          <thead
-            class="border-b border-border bg-muted/30 text-micro font-semibold uppercase tracking-wider text-muted-foreground select-none">
-            <tr>
-              <th scope="col" class="px-3 py-2.5 font-semibold">Banco / Entidad</th>
-              <th scope="col" class="px-3 py-2.5 font-semibold">Tipo de Cuenta</th>
-              <th scope="col" class="px-3 py-2.5 font-semibold">Número de Cuenta</th>
-              <th scope="col" class="px-3 py-2.5 font-semibold">Código Interbancario (CCI)</th>
-              <th scope="col" class="px-3 py-2.5 text-center font-semibold">Estado</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-border">
-            <tr class="transition-colors hover:bg-muted/40">
-              <td class="px-3 py-2.5 min-w-0">
-                <span class="font-semibold text-foreground text-meta block wrap-break-word break-words"
-                  :title="banco.banco">
-                  {{ banco.banco }}
-                </span>
-                <span class="text-micro text-muted-foreground block wrap-break-word break-words mt-0.5"
-                  :title="banco.tipo_cuenta">
-                  {{ banco.tipo_cuenta }}
-                </span>
-                <div class="flex items-center gap-1.5 mt-1 font-mono text-micro text-muted-foreground">
-                  <span>CCI: {{ banco.cci }}</span>
-                </div>
-              </td>
-
-              <td class="px-3 py-2.5 min-w-0">
-                <span class="text-meta text-muted-foreground block wrap-break-word break-words"
-                  :title="banco.tipo_cuenta">
-                  {{ banco.tipo_cuenta }}
-                </span>
-              </td>
-
-              <td class="px-3 py-2.5 whitespace-nowrap">
-                <div class="flex items-center gap-1.5 font-mono font-medium text-foreground text-meta">
-                  <span>{{ banco.numero_cuenta }}</span>
-                  <button
-                    type="button"
-                    class="text-muted-foreground hover:text-primary transition cursor-pointer shrink-0"
-                    title="Copiar número de cuenta al portapapeles"
-                    aria-label="Copiar número de cuenta al portapapeles"
-                    @click="emit('copyToClipboard', banco.numero_cuenta, 'banco-cuenta')"
-                  >
-                    <IconCheck v-if="copiedField === 'banco-cuenta'" class="size-3.5 text-emerald-600 dark:text-emerald-400" />
-                    <IconCopy v-else class="size-3.5" />
-                  </button>
-                </div>
-              </td>
-
-              <td class="px-3 py-2.5 whitespace-nowrap">
-                <div class="flex items-center gap-1.5 font-mono font-medium text-foreground text-meta">
-                  <span>{{ banco.cci }}</span>
-                  <button
-                    type="button"
-                    class="text-muted-foreground hover:text-primary transition cursor-pointer shrink-0"
-                    title="Copiar CCI al portapapeles"
-                    aria-label="Copiar CCI al portapapeles"
-                    @click="emit('copyToClipboard', banco.cci, 'banco-cci')"
-                  >
-                    <IconCheck v-if="copiedField === 'banco-cci'" class="size-3.5 text-emerald-600 dark:text-emerald-400" />
-                    <IconCopy v-else class="size-3.5" />
-                  </button>
-                </div>
-              </td>
-
-              <td class="px-3 py-2.5 text-center whitespace-nowrap">
-                <Badge :variant="banco.estado === 1 ? 'success' : 'secondary'" size="xs" class="text-micro">
-                  {{ banco.estado === 1 ? 'Activa' : 'Inactiva' }}
-                </Badge>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+  <div class="rounded-xl border border-border bg-card overflow-hidden">
+    <div class="px-5 py-4 border-b border-border flex items-center justify-between gap-3">
+      <div class="min-w-0">
+        <h3 class="text-title font-semibold text-foreground tracking-tight">Información bancaria</h3>
+        <p class="text-xs text-muted-foreground">Cuenta registrada para el abono de planillas y viáticos</p>
       </div>
+      <span v-if="banco" class="text-xs text-muted-foreground shrink-0">1 registro</span>
     </div>
 
-    <div v-else class="text-xs text-muted-foreground py-8 text-center space-y-2">
+    <div v-if="banco" class="overflow-x-auto">
+      <table class="w-full text-left text-xs" aria-label="Información bancaria">
+        <thead class="text-sm text-foreground">
+          <tr class="border-b border-border">
+            <th scope="col" class="px-5 py-3 font-medium">Banco</th>
+            <th scope="col" class="px-3 py-3 font-medium">Número de cuenta</th>
+            <th scope="col" class="px-3 py-3 font-medium">Código interbancario (CCI)</th>
+            <th scope="col" class="px-3 py-3 font-medium">Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="hover:bg-muted/40 transition-colors">
+            <td class="px-5 py-3 min-w-0">
+              <div class="flex items-center gap-3">
+                <span
+                  class="size-10 rounded-full bg-primary text-primary-foreground text-xs font-semibold flex items-center justify-center shrink-0 select-none"
+                  aria-hidden="true">
+                  {{ inicial }}
+                </span>
+                <div class="min-w-0">
+                  <p class="font-semibold text-foreground text-sm wrap-break-word" :title="banco.banco">{{ banco.banco }}</p>
+                  <p v-if="banco.tipo_cuenta" class="text-muted-foreground text-meta" :title="banco.tipo_cuenta">
+                    {{ banco.tipo_cuenta }}
+                  </p>
+                </div>
+              </div>
+            </td>
+
+            <td class="px-3 py-3 whitespace-nowrap">
+              <div class="flex items-center gap-2 font-mono text-foreground">
+                <IconBuildingBank class="size-4 text-primary shrink-0" />
+                <span>{{ banco.numero_cuenta || '-' }}</span>
+                <button v-if="banco.numero_cuenta" type="button"
+                  class="size-7 inline-flex items-center justify-center rounded-md text-muted-foreground hover:text-primary hover:bg-muted transition cursor-pointer shrink-0"
+                  title="Copiar número de cuenta al portapapeles" aria-label="Copiar número de cuenta al portapapeles"
+                  @click="emit('copyToClipboard', banco.numero_cuenta, 'banco-cuenta')">
+                  <IconCheck v-if="copiedField === 'banco-cuenta'" class="size-3.5 text-emerald-600 dark:text-emerald-400" />
+                  <IconCopy v-else class="size-3.5" />
+                </button>
+              </div>
+            </td>
+
+            <td class="px-3 py-3 whitespace-nowrap">
+              <div class="flex items-center gap-2 font-mono text-foreground">
+                <span>{{ banco.cci || '-' }}</span>
+                <button v-if="banco.cci" type="button"
+                  class="size-7 inline-flex items-center justify-center rounded-md text-muted-foreground hover:text-primary hover:bg-muted transition cursor-pointer shrink-0"
+                  title="Copiar CCI al portapapeles" aria-label="Copiar CCI al portapapeles"
+                  @click="emit('copyToClipboard', banco.cci, 'banco-cci')">
+                  <IconCheck v-if="copiedField === 'banco-cci'" class="size-3.5 text-emerald-600 dark:text-emerald-400" />
+                  <IconCopy v-else class="size-3.5" />
+                </button>
+              </div>
+            </td>
+
+            <td class="px-3 py-3 whitespace-nowrap">
+              <div class="flex items-center gap-2">
+                <span class="size-2 rounded-full shrink-0" :class="activa ? 'bg-emerald-500' : 'bg-rose-500'"></span>
+                <span class="text-foreground">{{ activa ? 'Activa' : 'Inactiva' }}</span>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div v-else class="text-xs text-muted-foreground py-12 text-center space-y-2">
       <IconBuildingBank class="size-8 mx-auto text-muted-foreground/40" />
       <p class="font-semibold text-foreground">Sin información bancaria registrada</p>
       <p>El servidor público no tiene asignada una cuenta de haberes para depósito de planillas.</p>
     </div>
-  </Card>
+  </div>
 </template>
