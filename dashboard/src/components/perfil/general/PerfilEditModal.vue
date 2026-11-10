@@ -173,38 +173,38 @@ const onSubmit = () => {
       <form id="perfil-edit-form" class="p-4 space-y-4 overflow-y-auto" @submit.prevent="onSubmit">
         <div class="grid grid-cols-[repeat(auto-fit,minmax(14rem,1fr))] gap-4">
           <div class="space-y-1.5">
-            <label class="font-semibold text-foreground">Nombre Completo</label>
+            <label class="hs-label">Nombre Completo</label>
             <input v-model="editForm.nombre" type="text"
-              class="w-full h-9 px-3 text-meta rounded-lg border border-border bg-muted text-muted-foreground cursor-not-allowed"
+              class="hs-input px-3 bg-muted text-muted-foreground cursor-not-allowed"
               disabled />
 
           </div>
 
           <div class="space-y-1.5">
-            <label class="font-semibold text-foreground">Número de DNI</label>
+            <label class="hs-label">Número de DNI</label>
             <input v-model="editForm.dni" type="text"
-              class="w-full h-9 px-3 text-meta rounded-lg border border-border bg-muted text-muted-foreground cursor-not-allowed"
+              class="hs-input px-3 bg-muted text-muted-foreground cursor-not-allowed"
               disabled />
           </div>
 
           <div class="space-y-1.5">
-            <label class="font-semibold text-foreground">Teléfono de Contacto</label>
+            <label class="hs-label">Teléfono de Contacto</label>
             <input v-model="editForm.telf" type="text" placeholder="Ej. 987654321"
-              class="w-full h-9 px-3 text-meta rounded-lg border bg-background-1 text-foreground focus:outline-hidden focus:border-primary"
-              :class="formErrors.telf ? 'border-rose-500' : 'border-border'" />
+              class="hs-input px-3"
+              :class="formErrors.telf ? 'border-rose-500' : ''" />
             <p v-if="formErrors.telf" class="text-micro text-rose-500 font-medium">{{ formErrors.telf }}</p>
           </div>
 
           <div class="space-y-1.5">
-            <label class="font-semibold text-foreground">Correo Electrónico</label>
+            <label class="hs-label">Correo Electrónico</label>
             <input v-model="editForm.email" type="email" placeholder="ejemplo@gob.pe"
-              class="w-full h-9 px-3 text-meta rounded-lg border bg-background-1 text-foreground focus:outline-hidden focus:border-primary"
-              :class="formErrors.email ? 'border-rose-500' : 'border-border'" />
+              class="hs-input px-3"
+              :class="formErrors.email ? 'border-rose-500' : ''" />
             <p v-if="formErrors.email" class="text-micro text-rose-500 font-medium">{{ formErrors.email }}</p>
           </div>
 
           <div class="space-y-1.5">
-            <label class="font-semibold text-foreground">Distrito de Residencia</label>
+            <label class="hs-label">Distrito de Residencia</label>
             <SearchSelect
               id="perfil-edit-distrito"
               v-model="editForm.distrito"
@@ -222,20 +222,20 @@ const onSubmit = () => {
           </div>
 
           <div class="space-y-1.5">
-            <label class="font-semibold text-foreground">Región / Departamento</label>
+            <label class="hs-label">Región / Departamento</label>
             <input
               :value="editForm.region"
               type="text"
               disabled
-              class="w-full h-9 px-3 text-meta rounded-lg border border-border bg-muted text-muted-foreground cursor-not-allowed"
+              class="hs-input px-3 bg-muted text-muted-foreground cursor-not-allowed"
             />
           </div>
         </div>
 
         <div class="space-y-1.5">
-          <label class="font-semibold text-foreground">Dirección Domiciliaria</label>
+          <label class="hs-label">Dirección Domiciliaria</label>
           <input v-model="editForm.direccion" type="text" placeholder="Avenida, jirón, calle, número y urbanización"
-            class="w-full h-9 px-3 text-meta rounded-lg border border-border bg-background-1 text-foreground focus:outline-hidden focus:border-primary" />
+            class="hs-input px-3" />
         </div>
 
       </form>

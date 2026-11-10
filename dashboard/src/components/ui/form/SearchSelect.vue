@@ -321,10 +321,10 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="space-y-1 w-full">
-    <div v-if="label" class="flex items-center justify-between gap-1 mb-1">
+    <div v-if="label" class="flex items-center justify-between gap-1 mb-1.5">
       <label
         :for="id"
-        class="block font-medium text-foreground text-xs select-none"
+        class="hs-label mb-0 select-none"
       >
         {{ label }} <span v-if="required" class="text-destructive">*</span>
       </label>
@@ -349,10 +349,9 @@ onBeforeUnmount(() => {
         :placeholder="inputPlaceholder"
         :disabled="disabled"
         :required="required && !selectedOption"
-        class="w-full rounded-lg border bg-background text-foreground text-xs pl-8 pr-14 focus:outline-hidden focus:ring-2 focus:ring-primary/20 focus:border-primary disabled:opacity-50 disabled:cursor-not-allowed"
+        class="hs-input pl-8 pr-14 disabled:cursor-not-allowed"
         :class="[
-          size === 'sm' ? 'h-8' : 'h-9',
-          errorMessage ? 'border-destructive' : 'border-border',
+          errorMessage ? 'border-destructive' : '',
         ]"
         @input="handleInput"
         @focus="handleFocus"

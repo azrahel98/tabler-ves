@@ -671,12 +671,12 @@ const handleSubmit = () => {
 
                   <div class="grid grid-cols-[repeat(auto-fit,minmax(14rem,1fr))] gap-3">
                     <div>
-                      <label class="block font-medium text-foreground mb-1 text-meta">
+                      <label class="hs-label">
                         Tipo de Documento <span class="text-rose-500">*</span>
                       </label>
                       <select v-model="docSalida.tipoDocumento"
-                        class="w-full rounded-lg border bg-background px-3 py-2 text-meta focus:ring-2 focus:ring-primary focus:outline-hidden transition-colors cursor-pointer"
-                        :class="formErrors.tipoDocumentoSalida ? 'border-rose-500 ring-rose-500' : 'border-border'">
+                        class="hs-input px-3 cursor-pointer"
+                        :class="formErrors.tipoDocumentoSalida ? 'border-rose-500 ring-rose-500' : ''">
                         <option value="" disabled>Seleccione tipo de documento</option>
                         <option v-for="td in tiposDocumento" :key="td.id" :value="td.id">
                           {{ td.nombre }} {{ td.sigla ? `(${td.sigla})` : '' }}
@@ -688,35 +688,35 @@ const handleSubmit = () => {
                     </div>
 
                     <div>
-                      <label class="block font-medium text-foreground mb-1 text-meta">
+                      <label class="hs-label">
                         Año <span class="text-rose-500">*</span>
                       </label>
                       <input v-model.number="docSalida.añoDocumento" type="number" min="1950" max="2099"
-                        class="w-full rounded-lg border bg-background px-3 py-2 text-meta focus:ring-2 focus:ring-primary focus:outline-hidden font-mono"
-                        :class="formErrors.añoDocumentoSalida ? 'border-rose-500 ring-rose-500' : 'border-border'" />
+                        class="hs-input px-3 font-mono"
+                        :class="formErrors.añoDocumentoSalida ? 'border-rose-500 ring-rose-500' : ''" />
                     </div>
                   </div>
 
                   <div class="grid grid-cols-[repeat(auto-fit,minmax(14rem,1fr))] gap-3">
                     <div>
-                      <label class="block font-medium text-foreground mb-1 text-meta">
+                      <label class="hs-label">
                         Número de Documento <span class="text-rose-500">*</span>
                       </label>
                       <input v-model.number="docSalida.numeroDocumento" type="number" min="1" placeholder="Ej. 189"
-                        class="w-full rounded-lg border bg-background px-3 py-2 text-meta focus:ring-2 focus:ring-primary focus:outline-hidden font-mono"
-                        :class="formErrors.numeroDocumentoSalida ? 'border-rose-500 ring-rose-500' : 'border-border'" />
+                        class="hs-input px-3 font-mono"
+                        :class="formErrors.numeroDocumentoSalida ? 'border-rose-500 ring-rose-500' : ''" />
                       <p v-if="formErrors.numeroDocumentoSalida" class="text-rose-500 text-micro mt-1">
                         {{ formErrors.numeroDocumentoSalida }}
                       </p>
                     </div>
 
                     <div>
-                      <label class="block font-medium text-foreground mb-1 text-meta">
+                      <label class="hs-label">
                         Fecha de Término <span class="text-rose-500">*</span>
                       </label>
                       <input v-model="docSalida.fecha" type="date"
-                        class="w-full rounded-lg border bg-background px-3 py-2 text-meta focus:ring-2 focus:ring-primary focus:outline-hidden font-mono"
-                        :class="formErrors.fechaSalida ? 'border-rose-500 ring-rose-500' : 'border-border'" />
+                        class="hs-input px-3 font-mono"
+                        :class="formErrors.fechaSalida ? 'border-rose-500 ring-rose-500' : ''" />
                       <p v-if="formErrors.fechaSalida" class="text-rose-500 text-micro mt-1">
                         {{ formErrors.fechaSalida }}
                       </p>
@@ -731,13 +731,13 @@ const handleSubmit = () => {
                   </div>
 
                   <div>
-                    <label class="block font-medium text-foreground mb-1 text-meta">
+                    <label class="hs-label">
                       Descripción de Cierre <span class="text-rose-500">*</span>
                     </label>
                     <textarea v-model="docSalida.descripcion" rows="2"
                       placeholder="Detalles de la conclusión del evento..."
-                      class="w-full rounded-lg border bg-background p-2.5 text-meta focus:ring-2 focus:ring-primary focus:outline-hidden leading-relaxed"
-                      :class="formErrors.descripcionSalida ? 'border-rose-500 ring-rose-500' : 'border-border'"></textarea>
+                      class="hs-input"
+                      :class="formErrors.descripcionSalida ? 'border-rose-500 ring-rose-500' : ''"></textarea>
                     <p v-if="formErrors.descripcionSalida" class="text-rose-500 text-micro mt-1">
                       {{ formErrors.descripcionSalida }}
                     </p>
@@ -770,12 +770,12 @@ const handleSubmit = () => {
 
               <div v-if="tabModoEvento === 'editar'" class="space-y-3 pt-1">
                 <div>
-                  <label class="block font-medium text-foreground mb-1 text-meta">
+                  <label class="hs-label">
                     Tipo de Evento o Movimiento <span class="text-rose-500">*</span>
                   </label>
                   <select v-model="tipoEvento"
-                    class="w-full rounded-lg border bg-background px-3 py-2 text-meta focus:ring-2 focus:ring-primary focus:outline-hidden transition-colors cursor-pointer"
-                    :class="formErrors.tipoEvento ? 'border-rose-500 ring-rose-500' : 'border-border'">
+                    class="hs-input px-3 cursor-pointer"
+                    :class="formErrors.tipoEvento ? 'border-rose-500 ring-rose-500' : ''">
                     <option v-for="t in tiposEvento" :key="t.value" :value="t.value">
                       {{ t.label }}
                     </option>
@@ -805,12 +805,12 @@ const handleSubmit = () => {
 
             <div v-if="!esModoExistente" class="space-y-3">
               <div>
-                <label class="block font-medium text-foreground mb-1 text-meta">
+                <label class="hs-label">
                   Tipo de Evento o Movimiento <span class="text-rose-500">*</span>
                 </label>
                 <select v-model="tipoEvento"
-                  class="w-full rounded-lg border bg-background px-3 py-2 text-meta focus:ring-2 focus:ring-primary focus:outline-hidden transition-colors cursor-pointer"
-                  :class="formErrors.tipoEvento ? 'border-rose-500 ring-rose-500' : 'border-border'">
+                  class="hs-input px-3 cursor-pointer"
+                  :class="formErrors.tipoEvento ? 'border-rose-500 ring-rose-500' : ''">
                   <option v-for="t in tiposEvento" :key="t.value" :value="t.value">
                     {{ t.label }}
                   </option>
@@ -845,24 +845,24 @@ const handleSubmit = () => {
 
                 <div class="grid grid-cols-[repeat(auto-fit,minmax(14rem,1fr))] gap-3">
                   <div>
-                    <label class="block font-medium text-foreground mb-1 text-meta">
+                    <label class="hs-label">
                       {{ esVacaciones ? 'Fecha de inicio' : 'Vigencia desde' }} <span v-if="requiereVigencia" class="text-rose-500">*</span>
                     </label>
                     <input v-model="fechaDesde" type="date"
-                      class="w-full rounded-lg border bg-background px-3 py-2 text-meta focus:ring-2 focus:ring-primary focus:outline-hidden font-mono"
-                      :class="formErrors.fechaDesde ? 'border-rose-500 ring-rose-500' : 'border-border'" />
+                      class="hs-input px-3 font-mono"
+                      :class="formErrors.fechaDesde ? 'border-rose-500 ring-rose-500' : ''" />
                     <p v-if="formErrors.fechaDesde" class="text-rose-500 text-micro mt-1">
                       {{ formErrors.fechaDesde }}
                     </p>
                   </div>
 
                   <div>
-                    <label class="block font-medium text-foreground mb-1 text-meta">
+                    <label class="hs-label">
                       {{ esVacaciones ? 'Fecha de fin' : 'Vigencia hasta' }} <span v-if="esVacaciones" class="text-rose-500">*</span>
                     </label>
                     <input v-model="fechaHasta" type="date"
-                      class="w-full rounded-lg border bg-background px-3 py-2 text-meta focus:ring-2 focus:ring-primary focus:outline-hidden font-mono"
-                      :class="formErrors.fechaHasta ? 'border-rose-500 ring-rose-500' : 'border-border'" />
+                      class="hs-input px-3 font-mono"
+                      :class="formErrors.fechaHasta ? 'border-rose-500 ring-rose-500' : ''" />
                     <p v-if="formErrors.fechaHasta" class="text-rose-500 text-micro mt-1">
                       {{ formErrors.fechaHasta }}
                     </p>
@@ -906,7 +906,7 @@ const handleSubmit = () => {
                   <div class="relative">
                     <input v-model="encargadoSearchQuery" type="text"
                       placeholder="Buscar trabajador por nombres o apellidos..."
-                      class="w-full rounded-lg border border-border bg-background px-3 py-2 pl-8 text-meta focus:ring-2 focus:ring-primary focus:outline-hidden"
+                      class="hs-input px-3 pl-8"
                       @input="onSearchEncargadoInput" />
                     <IconSearch class="size-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
                     <span v-if="isSearchingEncargado" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-micro text-muted-foreground">
@@ -955,12 +955,12 @@ const handleSubmit = () => {
 
                 <div class="grid grid-cols-[repeat(auto-fit,minmax(14rem,1fr))] gap-3">
                   <div>
-                    <label class="block font-medium text-foreground mb-1 text-meta">
+                    <label class="hs-label">
                       Tipo de Documento <span class="text-rose-500">*</span>
                     </label>
                     <select v-model="docInicio.tipoDocumento"
-                      class="w-full rounded-lg border bg-background px-3 py-2 text-meta focus:ring-2 focus:ring-primary focus:outline-hidden transition-colors cursor-pointer"
-                      :class="formErrors.tipoDocumentoInicio ? 'border-rose-500 ring-rose-500' : 'border-border'">
+                      class="hs-input px-3 cursor-pointer"
+                      :class="formErrors.tipoDocumentoInicio ? 'border-rose-500 ring-rose-500' : ''">
                       <option value="" disabled>Seleccione tipo de documento</option>
                       <option v-for="td in tiposDocumento" :key="td.id" :value="td.id">
                         {{ td.nombre }} {{ td.sigla ? `(${td.sigla})` : '' }}
@@ -972,35 +972,35 @@ const handleSubmit = () => {
                   </div>
 
                   <div>
-                    <label class="block font-medium text-foreground mb-1 text-meta">
+                    <label class="hs-label">
                       Año <span class="text-rose-500">*</span>
                     </label>
                     <input v-model.number="docInicio.añoDocumento" type="number" min="1950" max="2099"
-                      class="w-full rounded-lg border bg-background px-3 py-2 text-meta focus:ring-2 focus:ring-primary focus:outline-hidden font-mono"
-                      :class="formErrors.añoDocumentoInicio ? 'border-rose-500 ring-rose-500' : 'border-border'" />
+                      class="hs-input px-3 font-mono"
+                      :class="formErrors.añoDocumentoInicio ? 'border-rose-500 ring-rose-500' : ''" />
                   </div>
                 </div>
 
                 <div class="grid grid-cols-[repeat(auto-fit,minmax(14rem,1fr))] gap-3">
                   <div>
-                    <label class="block font-medium text-foreground mb-1 text-meta">
+                    <label class="hs-label">
                       Número de Documento <span class="text-rose-500">*</span>
                     </label>
                     <input v-model.number="docInicio.numeroDocumento" type="number" min="1" placeholder="Ej. 124"
-                      class="w-full rounded-lg border bg-background px-3 py-2 text-meta focus:ring-2 focus:ring-primary focus:outline-hidden font-mono"
-                      :class="formErrors.numeroDocumentoInicio ? 'border-rose-500 ring-rose-500' : 'border-border'" />
+                      class="hs-input px-3 font-mono"
+                      :class="formErrors.numeroDocumentoInicio ? 'border-rose-500 ring-rose-500' : ''" />
                     <p v-if="formErrors.numeroDocumentoInicio" class="text-rose-500 text-micro mt-1">
                       {{ formErrors.numeroDocumentoInicio }}
                     </p>
                   </div>
 
                   <div>
-                    <label class="block font-medium text-foreground mb-1 text-meta">
+                    <label class="hs-label">
                       Fecha de Documento <span class="text-rose-500">*</span>
                     </label>
                     <input v-model="docInicio.fecha" type="date"
-                      class="w-full rounded-lg border bg-background px-3 py-2 text-meta focus:ring-2 focus:ring-primary focus:outline-hidden font-mono"
-                      :class="formErrors.fechaInicio ? 'border-rose-500 ring-rose-500' : 'border-border'" />
+                      class="hs-input px-3 font-mono"
+                      :class="formErrors.fechaInicio ? 'border-rose-500 ring-rose-500' : ''" />
                     <p v-if="formErrors.fechaInicio" class="text-rose-500 text-micro mt-1">
                       {{ formErrors.fechaInicio }}
                     </p>
@@ -1015,20 +1015,20 @@ const handleSubmit = () => {
                 </div>
 
                 <div>
-                  <label class="block font-medium text-foreground mb-1 text-meta">
+                  <label class="hs-label">
                     Fecha Válida / Vigencia (Opcional)
                   </label>
                   <input v-model="docInicio.fechaValida" type="date"
-                    class="w-full rounded-lg border border-border bg-background px-3 py-2 text-meta focus:ring-2 focus:ring-primary focus:outline-hidden font-mono" />
+                    class="hs-input px-3 font-mono" />
                 </div>
 
                 <div>
-                  <label class="block font-medium text-foreground mb-1 text-meta">
+                  <label class="hs-label">
                     Descripción / Asunto del Documento <span class="text-rose-500">*</span>
                   </label>
                   <textarea v-model="docInicio.descripcion" rows="2" placeholder="Motivo o detalle del evento..."
-                    class="w-full rounded-lg border bg-background p-2.5 text-meta focus:ring-2 focus:ring-primary focus:outline-hidden leading-relaxed"
-                    :class="formErrors.descripcionInicio ? 'border-rose-500 ring-rose-500' : 'border-border'"></textarea>
+                    class="hs-input"
+                    :class="formErrors.descripcionInicio ? 'border-rose-500 ring-rose-500' : ''"></textarea>
                   <p v-if="formErrors.descripcionInicio" class="text-rose-500 text-micro mt-1">
                     {{ formErrors.descripcionInicio }}
                   </p>

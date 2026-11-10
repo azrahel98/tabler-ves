@@ -287,15 +287,15 @@ const handleSubmit = () => {
         <form id="renuncia-form" class="space-y-4" @submit.prevent="handleSubmit">
           <div class="grid grid-cols-[repeat(auto-fit,minmax(14rem,1fr))] gap-3">
             <div class="space-y-1">
-              <label for="renuncia-tipo-doc" class="block font-medium text-foreground text-[11.5px]">
+              <label for="renuncia-tipo-doc" class="hs-label">
                 Tipo de Documento <span class="text-rose-500">*</span>
               </label>
               <select
                 id="renuncia-tipo-doc"
                 v-model="formData.tipoDocumento"
                 :disabled="isLoadingCatalogos || isSaving"
-                class="w-full h-9 px-2.5 rounded-lg border bg-background text-foreground text-meta focus:outline-hidden focus:ring-2 focus:ring-primary focus:border-primary transition"
-                :class="formErrors.tipoDocumento ? 'border-destructive' : 'border-input'"
+                class="hs-input px-2.5"
+                :class="formErrors.tipoDocumento ? 'border-destructive' : ''"
               >
                 <option v-if="isLoadingCatalogos" disabled value="">
                   Cargando tipos de documentos...
@@ -310,7 +310,7 @@ const handleSubmit = () => {
             </div>
 
             <div v-if="!esSunat" class="space-y-1">
-              <label for="renuncia-num-doc" class="block font-medium text-foreground text-[11.5px]">
+              <label for="renuncia-num-doc" class="hs-label">
                 Número de Documento <span class="text-rose-500">*</span>
               </label>
               <input
@@ -321,8 +321,8 @@ const handleSubmit = () => {
                 step="1"
                 placeholder="Ej. 456"
                 :disabled="isSaving"
-                class="w-full h-9 px-2.5 rounded-lg border bg-background text-foreground text-meta focus:outline-hidden focus:ring-2 focus:ring-primary focus:border-primary transition font-mono"
-                :class="formErrors.numeroDocumento ? 'border-destructive' : 'border-input'"
+                class="hs-input px-2.5 font-mono"
+                :class="formErrors.numeroDocumento ? 'border-destructive' : ''"
               />
               <p v-if="formErrors.numeroDocumento" class="text-micro text-destructive font-medium">
                 {{ formErrors.numeroDocumento }}
@@ -330,7 +330,7 @@ const handleSubmit = () => {
             </div>
 
             <div v-if="!esSunat" class="space-y-1">
-              <label for="renuncia-anio-doc" class="block font-medium text-foreground text-[11.5px]">
+              <label for="renuncia-anio-doc" class="hs-label">
                 Año <span class="text-rose-500">*</span>
               </label>
               <input
@@ -341,8 +341,8 @@ const handleSubmit = () => {
                 max="2050"
                 step="1"
                 :disabled="isSaving"
-                class="w-full h-9 px-2.5 rounded-lg border bg-background text-foreground text-meta focus:outline-hidden focus:ring-2 focus:ring-primary focus:border-primary transition font-mono"
-                :class="formErrors.añoDocumento ? 'border-destructive' : 'border-input'"
+                class="hs-input px-2.5 font-mono"
+                :class="formErrors.añoDocumento ? 'border-destructive' : ''"
               />
               <p v-if="formErrors.añoDocumento" class="text-micro text-destructive font-medium">
                 {{ formErrors.añoDocumento }}
@@ -362,7 +362,7 @@ const handleSubmit = () => {
 
           <div v-if="necesitaArea" class="space-y-2 p-3 rounded-xl bg-muted/20 border border-border/70">
             <div class="flex items-center justify-between">
-              <label for="renuncia-buscar-area" class="font-semibold text-foreground text-meta flex items-center gap-1.5">
+              <label for="renuncia-buscar-area" class="hs-label flex items-center gap-1.5">
                 <IconBuildingSkyscraper class="size-3.5 text-muted-foreground" />
                 Área de Emisión del Documento
                 <span class="text-rose-500">*</span>
@@ -378,7 +378,7 @@ const handleSubmit = () => {
                 type="text"
                 placeholder="Buscar área por nombre o sigla (ej. Gerencia, Recursos)..."
                 :disabled="isLoadingCatalogos || isSaving"
-                class="w-full h-8 pl-8 pr-3 rounded-lg border border-input bg-background text-foreground text-meta focus:outline-hidden focus:ring-2 focus:ring-primary focus:border-primary transition"
+                class="hs-input pl-8 pr-3"
               />
             </div>
 
@@ -386,8 +386,8 @@ const handleSubmit = () => {
               id="renuncia-area-select"
               v-model="formData.areaId"
               :disabled="isLoadingCatalogos || isSaving"
-              class="w-full h-9 px-2.5 rounded-lg border bg-background text-foreground text-meta focus:outline-hidden focus:ring-2 focus:ring-primary focus:border-primary transition"
-              :class="formErrors.areaId ? 'border-destructive' : 'border-input'"
+              class="hs-input px-2.5"
+              :class="formErrors.areaId ? 'border-destructive' : ''"
             >
               <option value="" disabled>Seleccione el área del documento...</option>
               <option
@@ -425,7 +425,7 @@ const handleSubmit = () => {
 
           <div class="grid grid-cols-[repeat(auto-fit,minmax(14rem,1fr))] gap-3">
             <div class="space-y-1">
-              <label for="renuncia-fecha" class="block font-medium text-foreground text-[11.5px]">
+              <label for="renuncia-fecha" class="hs-label">
                 Fecha de Renuncia / Cese <span class="text-rose-500">*</span>
               </label>
               <input
@@ -433,8 +433,8 @@ const handleSubmit = () => {
                 v-model="formData.fecha"
                 type="date"
                 :disabled="isSaving"
-                class="w-full h-9 px-2.5 rounded-lg border bg-background text-foreground text-meta focus:outline-hidden focus:ring-2 focus:ring-primary focus:border-primary transition font-mono"
-                :class="formErrors.fecha ? 'border-destructive' : 'border-input'"
+                class="hs-input px-2.5 font-mono"
+                :class="formErrors.fecha ? 'border-destructive' : ''"
               />
               <p v-if="formErrors.fecha" class="text-micro text-destructive font-medium">
                 {{ formErrors.fecha }}
@@ -442,7 +442,7 @@ const handleSubmit = () => {
             </div>
 
             <div v-if="!esSunat" class="space-y-1">
-              <label for="renuncia-fecha-valida" class="block font-medium text-foreground text-[11.5px]">
+              <label for="renuncia-fecha-valida" class="hs-label">
                 Fecha Válida <span class="text-muted-foreground font-normal">(Opcional)</span>
               </label>
               <input
@@ -450,14 +450,14 @@ const handleSubmit = () => {
                 v-model="formData.fechaValida"
                 type="date"
                 :disabled="isSaving"
-                class="w-full h-9 px-2.5 rounded-lg border bg-background text-foreground text-meta focus:outline-hidden focus:ring-2 focus:ring-primary focus:border-primary transition font-mono border-input"
+                class="hs-input px-2.5 font-mono"
               />
             </div>
           </div>
 
           <div class="space-y-1.5">
             <div class="flex items-center justify-between">
-              <label for="renuncia-descripcion" class="block font-medium text-foreground text-[11.5px]">
+              <label for="renuncia-descripcion" class="hs-label">
                 Descripción / Motivo <span class="text-rose-500">*</span>
               </label>
               <span v-if="esSunat" class="text-micro text-muted-foreground font-medium">
@@ -472,8 +472,8 @@ const handleSubmit = () => {
               placeholder="Indique los detalles o justificación de la renuncia o término de funciones..."
               :disabled="isSaving || esSunat"
               :readonly="esSunat"
-              class="w-full p-2.5 rounded-lg border bg-background text-foreground text-meta focus:outline-hidden focus:ring-2 focus:ring-primary focus:border-primary transition resize-none disabled:bg-muted/50 disabled:text-muted-foreground disabled:cursor-not-allowed"
-              :class="formErrors.descripcion ? 'border-destructive' : 'border-input'"
+              class="hs-input resize-none disabled:bg-muted/50 disabled:text-muted-foreground disabled:cursor-not-allowed"
+              :class="formErrors.descripcion ? 'border-destructive' : ''"
             ></textarea>
             <p v-if="formErrors.descripcion" class="text-micro text-destructive font-medium">
               {{ formErrors.descripcion }}

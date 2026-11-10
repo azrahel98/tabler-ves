@@ -205,7 +205,7 @@ const handleSubmit = () => {
 
         <div class="space-y-3.5">
           <div class="space-y-1.5">
-            <label for="doc-tipo" class="font-semibold text-foreground text-meta flex items-center gap-1.5">
+            <label for="doc-tipo" class="hs-label flex items-center gap-1.5">
               <IconFileDescription class="size-3.5 text-muted-foreground" />
               Tipo de Documento
               <span class="text-destructive">*</span>
@@ -215,8 +215,8 @@ const handleSubmit = () => {
               id="doc-tipo"
               v-model="formData.tipoDocumentoId"
               :disabled="isLoadingCatalogos || isSaving"
-              class="w-full h-9 px-3 rounded-lg border bg-background text-foreground text-meta focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition"
-              :class="formErrors.tipoDocumentoId ? 'border-destructive' : 'border-input'"
+              class="hs-input px-3"
+              :class="formErrors.tipoDocumentoId ? 'border-destructive' : ''"
             >
               <option value="" disabled>Seleccione el tipo de documento...</option>
               <option
@@ -234,7 +234,7 @@ const handleSubmit = () => {
 
           <div v-if="necesitaArea" class="space-y-1.5 transition-all">
             <div class="flex items-center justify-between">
-              <label for="doc-area" class="font-semibold text-foreground text-meta flex items-center gap-1.5">
+              <label for="doc-area" class="hs-label flex items-center gap-1.5">
                 <IconBuildingSkyscraper class="size-3.5 text-muted-foreground" />
                 Área de Procedencia / Emisión
                 <span class="text-destructive">*</span>
@@ -246,8 +246,8 @@ const handleSubmit = () => {
               id="doc-area"
               v-model="formData.areaId"
               :disabled="isLoadingCatalogos || isSaving"
-              class="w-full h-9 px-3 rounded-lg border bg-background text-foreground text-meta focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition"
-              :class="formErrors.areaId ? 'border-destructive' : 'border-input'"
+              class="hs-input px-3"
+              :class="formErrors.areaId ? 'border-destructive' : ''"
             >
               <option value="" disabled>Seleccione el área correspondiente...</option>
               <option
@@ -275,7 +275,7 @@ const handleSubmit = () => {
 
           <div class="grid grid-cols-[repeat(auto-fit,minmax(14rem,1fr))] gap-3">
             <div class="space-y-1.5">
-              <label for="doc-numero" class="font-semibold text-foreground text-meta flex items-center gap-1.5">
+              <label for="doc-numero" class="hs-label flex items-center gap-1.5">
                 <IconHash class="size-3.5 text-muted-foreground" />
                 Número
                 <span class="text-destructive">*</span>
@@ -287,8 +287,8 @@ const handleSubmit = () => {
                 min="1"
                 placeholder="Ej. 123"
                 :disabled="isSaving"
-                class="w-full h-9 px-3 rounded-lg border bg-background text-foreground text-meta focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition font-mono"
-                :class="formErrors.numeroDocumento ? 'border-destructive' : 'border-input'"
+                class="hs-input px-3 font-mono"
+                :class="formErrors.numeroDocumento ? 'border-destructive' : ''"
               />
               <p v-if="formErrors.numeroDocumento" class="text-micro text-destructive">
                 {{ formErrors.numeroDocumento }}
@@ -296,7 +296,7 @@ const handleSubmit = () => {
             </div>
 
             <div class="space-y-1.5">
-              <label for="doc-año" class="font-semibold text-foreground text-meta flex items-center gap-1.5">
+              <label for="doc-año" class="hs-label flex items-center gap-1.5">
                 <IconCalendar class="size-3.5 text-muted-foreground" />
                 Año
                 <span class="text-destructive">*</span>
@@ -308,8 +308,8 @@ const handleSubmit = () => {
                 min="1980"
                 max="2050"
                 :disabled="isSaving"
-                class="w-full h-9 px-3 rounded-lg border bg-background text-foreground text-meta focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition font-mono"
-                :class="formErrors.añoDocumento ? 'border-destructive' : 'border-input'"
+                class="hs-input px-3 font-mono"
+                :class="formErrors.añoDocumento ? 'border-destructive' : ''"
               />
               <p v-if="formErrors.añoDocumento" class="text-micro text-destructive">
                 {{ formErrors.añoDocumento }}
@@ -319,7 +319,7 @@ const handleSubmit = () => {
 
           <div class="grid grid-cols-[repeat(auto-fit,minmax(14rem,1fr))] gap-3">
             <div class="space-y-1.5">
-              <label for="doc-fecha" class="font-semibold text-foreground text-meta flex items-center gap-1.5">
+              <label for="doc-fecha" class="hs-label flex items-center gap-1.5">
                 <IconCalendar class="size-3.5 text-muted-foreground" />
                 Fecha de Emisión
                 <span class="text-destructive">*</span>
@@ -329,8 +329,8 @@ const handleSubmit = () => {
                 v-model="formData.fecha"
                 type="date"
                 :disabled="isSaving"
-                class="w-full h-9 px-3 rounded-lg border bg-background text-foreground text-meta focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition"
-                :class="formErrors.fecha ? 'border-destructive' : 'border-input'"
+                class="hs-input px-3"
+                :class="formErrors.fecha ? 'border-destructive' : ''"
               />
               <p v-if="formErrors.fecha" class="text-micro text-destructive">
                 {{ formErrors.fecha }}
@@ -338,7 +338,7 @@ const handleSubmit = () => {
             </div>
 
             <div class="space-y-1.5">
-              <label for="doc-fecha-valida" class="font-semibold text-foreground text-meta flex items-center gap-1.5">
+              <label for="doc-fecha-valida" class="hs-label flex items-center gap-1.5">
                 <IconCalendar class="size-3.5 text-muted-foreground" />
                 Fecha de Vigencia
                 <span class="text-muted-foreground font-normal">(Opcional)</span>
@@ -348,13 +348,13 @@ const handleSubmit = () => {
                 v-model="formData.fechaValida"
                 type="date"
                 :disabled="isSaving"
-                class="w-full h-9 px-3 rounded-lg border border-input bg-background text-foreground text-meta focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition"
+                class="hs-input px-3"
               />
             </div>
           </div>
 
           <div class="space-y-1.5">
-            <label for="doc-descripcion" class="font-semibold text-foreground text-meta flex items-center gap-1.5">
+            <label for="doc-descripcion" class="hs-label flex items-center gap-1.5">
               <IconFileDescription class="size-3.5 text-muted-foreground" />
               Descripción / Asunto
               <span class="text-destructive">*</span>
@@ -365,8 +365,8 @@ const handleSubmit = () => {
               rows="3"
               placeholder="Ingrese el asunto, motivo o resolución del documento..."
               :disabled="isSaving"
-              class="w-full p-3 rounded-lg border bg-background text-foreground text-meta focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition resize-none"
-              :class="formErrors.descripcion ? 'border-destructive' : 'border-input'"
+              class="hs-input resize-none"
+              :class="formErrors.descripcion ? 'border-destructive' : ''"
             ></textarea>
             <p v-if="formErrors.descripcion" class="text-micro text-destructive">
               {{ formErrors.descripcion }}

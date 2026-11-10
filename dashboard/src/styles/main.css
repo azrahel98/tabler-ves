@@ -830,3 +830,21 @@
   --text-title: 0.9375rem;
   --text-kpi: 1.125rem;
 }
+
+/* Input de Preline (https://preline.co/docs/components/input.html), variante compacta. */
+@layer components {
+  .hs-input {
+    @apply block w-full py-1.5 px-3 rounded-lg bg-layer border border-layer-line text-meta text-foreground
+      placeholder:text-muted-foreground-1 focus:border-primary-focus focus:ring-primary-focus
+      disabled:opacity-50 disabled:pointer-events-none;
+  }
+  select.hs-input {
+    padding-inline-end: 2rem;
+  }
+  textarea.hs-input {
+    line-height: 1.5;
+  }
+  .hs-label {
+    @apply block mb-1.5 text-meta font-medium text-foreground;
+  }
+}

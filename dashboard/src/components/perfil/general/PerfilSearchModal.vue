@@ -100,7 +100,7 @@ const irANuevoTrabajador = () => {
         <div class="flex gap-2">
           <input v-model="searchQuery" type="text" placeholder="Buscar por nombre, apellido o número de DNI..."
             aria-label="Término de búsqueda de servidor"
-            class="flex-1 h-9 px-3 text-meta rounded-lg border border-border bg-background-1 text-foreground placeholder:text-muted-foreground focus:outline-hidden focus:border-primary"
+            class="hs-input flex-1 px-3"
             @keyup.enter="handleSearch" />
           <Button size="sm" variant="primary" :disabled="isSearching || searchQuery.trim().length < 3" @click="handleSearch">
             <span>{{ isSearching ? 'Buscando...' : 'Buscar' }}</span>

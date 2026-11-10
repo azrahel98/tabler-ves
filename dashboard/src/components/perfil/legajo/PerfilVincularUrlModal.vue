@@ -115,7 +115,7 @@ const handleSubmit = () => {
         </div>
 
         <div class="space-y-1.5">
-          <label for="url-externa" class="block font-medium text-foreground text-meta">
+          <label for="url-externa" class="hs-label">
             URL del documento PDF <span class="text-destructive">*</span>
           </label>
           <div class="relative">
@@ -125,7 +125,7 @@ const handleSubmit = () => {
               v-model="url"
               type="url"
               placeholder="https://transparencia.munives.gob.pe/documentos/archivo.pdf"
-              class="w-full h-9 pl-9 pr-3 rounded-lg border text-meta bg-background focus:outline-hidden focus:ring-1 transition"
+              class="hs-input pl-9 pr-3"
               :class="formErrors.url ? 'border-destructive focus:ring-destructive' : 'border-border focus:ring-primary'"
             />
           </div>
@@ -139,7 +139,7 @@ const handleSubmit = () => {
         </div>
 
         <div class="space-y-1.5">
-          <label for="nombre-archivo" class="block font-medium text-foreground text-meta">
+          <label for="nombre-archivo" class="hs-label">
             Nombre del archivo <span class="text-destructive">*</span>
           </label>
           <div class="relative">
@@ -149,7 +149,7 @@ const handleSubmit = () => {
               v-model="fileName"
               type="text"
               placeholder="resolucion_123_2024.pdf"
-              class="w-full h-9 pl-9 pr-3 rounded-lg border text-meta bg-background focus:outline-hidden focus:ring-1 transition"
+              class="hs-input pl-9 pr-3"
               :class="formErrors.fileName ? 'border-destructive focus:ring-destructive' : 'border-border focus:ring-primary'"
             />
           </div>

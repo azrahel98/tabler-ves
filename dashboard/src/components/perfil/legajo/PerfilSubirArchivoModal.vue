@@ -215,7 +215,7 @@ const handleSubmit = () => {
         </div>
 
         <div v-if="modo === 'file'" class="space-y-2">
-          <label class="block font-medium text-foreground text-meta">
+          <label class="hs-label">
             Seleccionar archivo PDF <span class="text-destructive">*</span>
           </label>
           <div
@@ -269,7 +269,7 @@ const handleSubmit = () => {
           </p>
 
           <div v-if="selectedFile" class="space-y-1.5 pt-1">
-            <label for="subir-nombre-archivo-local" class="block font-medium text-foreground text-meta">
+            <label for="subir-nombre-archivo-local" class="hs-label">
               Nombre para el archivo en legajo <span class="text-destructive">*</span>
             </label>
             <div class="relative">
@@ -279,7 +279,7 @@ const handleSubmit = () => {
                 v-model="fileName"
                 type="text"
                 placeholder="documento.pdf"
-                class="w-full h-9 pl-9 pr-3 rounded-lg border text-meta bg-background focus:outline-hidden focus:ring-1 transition"
+                class="hs-input pl-9 pr-3"
                 :class="formErrors.fileName ? 'border-destructive focus:ring-destructive' : 'border-border focus:ring-primary'"
               />
             </div>
@@ -295,7 +295,7 @@ const handleSubmit = () => {
 
         <div v-else class="space-y-3">
           <div class="space-y-1.5">
-            <label for="subir-url-externa" class="block font-medium text-foreground text-meta">
+            <label for="subir-url-externa" class="hs-label">
               URL del PDF externo <span class="text-destructive">*</span>
             </label>
             <div class="relative">
@@ -305,7 +305,7 @@ const handleSubmit = () => {
                 v-model="url"
                 type="url"
                 placeholder="https://transparencia.munives.gob.pe/documentos/archivo.pdf"
-                class="w-full h-9 pl-9 pr-3 rounded-lg border text-meta bg-background focus:outline-hidden focus:ring-1 transition"
+                class="hs-input pl-9 pr-3"
                 :class="formErrors.url ? 'border-destructive focus:ring-destructive' : 'border-border focus:ring-primary'"
               />
             </div>
@@ -319,7 +319,7 @@ const handleSubmit = () => {
           </div>
 
           <div class="space-y-1.5">
-            <label for="subir-nombre-archivo" class="block font-medium text-foreground text-meta">
+            <label for="subir-nombre-archivo" class="hs-label">
               Nombre para el archivo <span class="text-destructive">*</span>
             </label>
             <div class="relative">
@@ -329,7 +329,7 @@ const handleSubmit = () => {
                 v-model="fileName"
                 type="text"
                 placeholder="resolucion_123_2024.pdf"
-                class="w-full h-9 pl-9 pr-3 rounded-lg border text-meta bg-background focus:outline-hidden focus:ring-1 transition"
+                class="hs-input pl-9 pr-3"
                 :class="formErrors.fileName ? 'border-destructive focus:ring-destructive' : 'border-border focus:ring-primary'"
               />
             </div>
@@ -342,7 +342,7 @@ const handleSubmit = () => {
 
         <div class="pt-2 border-t border-border/60 space-y-2">
           <div class="flex items-center justify-between">
-            <label for="select-doc-vincular" class="block font-medium text-foreground text-meta">
+            <label for="select-doc-vincular" class="hs-label">
               Vincular a Documento Formal (Opcional)
             </label>
             <span class="text-micro text-muted-foreground">
@@ -354,7 +354,7 @@ const handleSubmit = () => {
             <select
               id="select-doc-vincular"
               v-model="selectedDocumentoId"
-              class="w-full h-9 px-3 rounded-lg border border-border bg-background text-meta text-foreground focus:outline-hidden focus:ring-1 focus:ring-primary transition cursor-pointer"
+              class="hs-input px-3 cursor-pointer"
             >
               <option value="">-- Ninguno (Archivo independiente del legajo) --</option>
               <option
