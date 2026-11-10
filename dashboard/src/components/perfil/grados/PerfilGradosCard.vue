@@ -66,18 +66,18 @@ const inicial = (g: PersonalGrado) => (g.abrv?.trim() || g.profesion?.trim() || 
 
 <template>
   <div class="rounded-xl border border-border bg-card overflow-hidden">
-    <div class="px-5 py-4 border-b border-border flex items-center justify-between gap-3">
-      <h3 class="text-title font-semibold text-foreground tracking-tight">Estudios y formación académica</h3>
-      <span class="text-xs text-muted-foreground">
+    <div class="px-4 py-2.5 border-b border-border flex items-center justify-between gap-3">
+      <h3 class="text-xs font-semibold text-foreground tracking-tight">Estudios y formación académica</h3>
+      <span class="text-meta text-muted-foreground">
         {{ grados.length }} {{ grados.length === 1 ? 'registro' : 'registros' }}
       </span>
     </div>
 
     <template v-if="grados.length > 0">
-      <div class="px-4 py-3 overflow-x-auto">
+      <div class="px-3 py-2 overflow-x-auto">
         <nav class="flex gap-1 min-w-max" role="tablist" aria-label="Filtrar por nivel académico">
           <button v-for="t in tabs" :key="t.id" type="button" role="tab" :aria-selected="nivelActivo === t.id"
-            class="px-3 py-2 rounded-lg text-xs whitespace-nowrap cursor-pointer transition focus:outline-hidden focus-visible:ring-2 focus-visible:ring-primary"
+            class="px-2.5 py-1 rounded-md text-meta whitespace-nowrap cursor-pointer transition focus:outline-hidden focus-visible:ring-2 focus-visible:ring-primary"
             :class="nivelActivo === t.id ? 'bg-muted text-foreground font-medium' : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'"
             @click="nivelActivo = t.id">
             {{ t.label }} ({{ t.count }})
@@ -87,11 +87,11 @@ const inicial = (g: PersonalGrado) => (g.abrv?.trim() || g.profesion?.trim() || 
 
       <div class="overflow-x-auto">
         <table class="w-full text-left text-xs" aria-label="Estudios y formación académica">
-          <thead class="text-sm text-foreground">
+          <thead class="text-meta text-muted-foreground">
             <tr class="border-b border-border">
-              <th scope="col" class="px-5 py-3 font-medium">Estudio</th>
-              <th scope="col" class="px-3 py-3 font-medium">Institución</th>
-              <th scope="col" class="px-3 py-3 font-medium" :aria-sort="sortDir === 'asc' ? 'ascending' : 'descending'">
+              <th scope="col" class="px-4 py-2 font-medium">Estudio</th>
+              <th scope="col" class="px-3 py-2 font-medium">Institución</th>
+              <th scope="col" class="px-3 py-2 font-medium" :aria-sort="sortDir === 'asc' ? 'ascending' : 'descending'">
                 <button type="button" class="inline-flex items-center gap-1.5 cursor-pointer hover:text-primary transition"
                   @click="toggleSort">
                   Nivel y fecha de grado
@@ -102,28 +102,28 @@ const inicial = (g: PersonalGrado) => (g.abrv?.trim() || g.profesion?.trim() || 
           </thead>
           <tbody>
             <tr v-for="g in filtrados" :key="g.id" class="border-b border-border last:border-b-0 hover:bg-muted/40 transition-colors">
-              <td class="px-5 py-3 min-w-0">
+              <td class="px-4 py-2.5 min-w-0">
                 <div class="flex items-center gap-3">
                   <span
-                    class="size-10 rounded-full text-white text-xs font-semibold flex items-center justify-center shrink-0 select-none"
+                    class="size-8 rounded-full text-white text-meta font-semibold flex items-center justify-center shrink-0 select-none"
                     :class="nivelTone(g.nivel_academico).avatar" aria-hidden="true">
                     {{ inicial(g) }}
                   </span>
                   <div class="min-w-0">
-                    <p class="font-semibold text-foreground text-sm wrap-break-word" :title="g.profesion">{{ g.profesion }}</p>
+                    <p class="font-semibold text-foreground text-xs wrap-break-word" :title="g.profesion">{{ g.profesion }}</p>
                     <p v-if="g.abrv" class="text-muted-foreground uppercase font-mono text-meta">{{ g.abrv }}</p>
                   </div>
                 </div>
               </td>
 
-              <td class="px-3 py-3 min-w-0">
+              <td class="px-3 py-2.5 min-w-0">
                 <div class="flex items-center gap-2.5">
-                  <IconBuildingSkyscraper class="size-4 text-primary shrink-0" />
+                  <IconBuildingSkyscraper class="size-3.5 text-primary shrink-0" />
                   <span class="text-foreground wrap-break-word" :title="g.universidad">{{ g.universidad || '-' }}</span>
                 </div>
               </td>
 
-              <td class="px-3 py-3 whitespace-nowrap">
+              <td class="px-3 py-2.5 whitespace-nowrap">
                 <div class="flex items-center gap-2">
                   <span class="size-2 rounded-full shrink-0" :class="nivelTone(g.nivel_academico).dot"></span>
                   <span class="text-foreground">{{ g.nivel_academico || 'Sin nivel' }}</span>
@@ -136,7 +136,7 @@ const inicial = (g: PersonalGrado) => (g.abrv?.trim() || g.profesion?.trim() || 
         </table>
       </div>
 
-      <div class="px-5 py-3 border-t border-border text-xs text-muted-foreground inline-flex w-full items-center gap-1.5">
+      <div class="px-4 py-2 border-t border-border text-meta text-muted-foreground inline-flex w-full items-center gap-1.5">
         <IconArrowsSort class="size-3.5" />
         Ordenado por fecha de grado, {{ sortDir === 'desc' ? 'más recientes primero' : 'más antiguos primero' }}
       </div>

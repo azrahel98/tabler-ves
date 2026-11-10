@@ -534,7 +534,7 @@ watch(
 </script>
 
 <template>
-  <div class="mx-auto w-full max-w-6xl space-y-6 px-4 pb-16">
+  <div class="mx-auto w-full max-w-6xl space-y-4 px-4 pb-16">
     <div
       v-if="loadError"
       role="alert"
@@ -610,7 +610,7 @@ watch(
       </Button>
     </div>
 
-    <div v-else class="space-y-6">
+    <div v-else class="space-y-4">
       <PerfilHeader
         :perfil="perfil"
         :vinculo-activo="vinculoActivo"
@@ -627,8 +627,8 @@ watch(
         @copy-to-clipboard="copyToClipboard"
       />
 
-      <div class="flex flex-col lg:flex-row lg:items-start gap-5">
-        <aside class="lg:w-72 xl:w-80 shrink-0 bg-card border border-border rounded-2xl shadow-xs p-4 sm:p-5">
+      <div class="flex flex-col lg:flex-row lg:items-start gap-4">
+        <aside class="lg:w-64 xl:w-72 shrink-0 bg-card border border-border rounded-xl shadow-xs p-3 sm:p-4">
           <PerfilInfoContacto
             :perfil="perfil"
             :contacto="contacto"

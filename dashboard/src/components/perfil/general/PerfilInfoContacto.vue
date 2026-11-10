@@ -34,17 +34,17 @@ const calcularEdad = calculateAge
 </script>
 
 <template>
-  <div class="space-y-5 text-xs">
+  <div class="space-y-4 text-meta">
     <section class="space-y-3">
       <div class="flex items-center justify-between">
-        <h3 class="font-semibold text-foreground text-sm">Acerca del servidor</h3>
+        <h3 class="font-semibold text-foreground text-xs">Acerca del servidor</h3>
         <button type="button" class="text-primary hover:underline font-medium inline-flex items-center gap-1 cursor-pointer"
           @click="emit('openEditModal')">
           <IconEdit class="size-3.5" /> Editar
         </button>
       </div>
 
-      <ul class="space-y-2.5">
+      <ul class="space-y-2">
         <li class="flex items-center gap-3" title="DNI">
           <IconId class="size-4 text-muted-foreground shrink-0" />
           <span class="font-mono text-foreground">{{ perfil?.dni || '-' }}</span>
@@ -100,7 +100,7 @@ const calcularEdad = calculateAge
 
     <section class="space-y-3">
       <div class="flex items-center justify-between">
-        <h3 class="font-semibold text-foreground text-sm">Contacto de emergencia</h3>
+        <h3 class="font-semibold text-foreground text-xs">Contacto de emergencia</h3>
         <Badge v-if="contacto" variant="outline" size="sm">Registrado</Badge>
       </div>
 

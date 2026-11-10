@@ -95,12 +95,12 @@ const puedeRenunciar = computed(() => v.value.estado.toLowerCase() !== 'inactivo
       role="dialog" aria-label="Información del vínculo laboral">
       <div class="bg-card border border-border rounded-2xl shadow-xl overflow-hidden text-left">
         <div class="p-4 flex items-start gap-3">
-          <div class="size-11 rounded-full bg-primary/10 text-primary border border-primary/20 flex items-center justify-center shrink-0">
-            <IconBriefcase class="size-5" />
+          <div class="size-9 rounded-full bg-primary/10 text-primary border border-primary/20 flex items-center justify-center shrink-0">
+            <IconBriefcase class="size-4" />
           </div>
           <div class="min-w-0 flex-1">
             <div class="flex items-start justify-between gap-2">
-              <h4 class="font-semibold text-foreground text-sm leading-snug wrap-break-word min-w-0">
+              <h4 class="font-semibold text-foreground text-xs leading-snug wrap-break-word min-w-0">
                 {{ v.cargo || 'Vínculo laboral' }}
               </h4>
               <Badge :variant="badgeVariant" size="xs" class="shrink-0 rounded-full">{{ estadoLabel }}</Badge>
@@ -174,7 +174,7 @@ const puedeRenunciar = computed(() => v.value.estado.toLowerCase() !== 'inactivo
       <div class="bg-card border border-border rounded-2xl shadow-xl overflow-hidden text-left">
         <div class="px-4 py-3 flex items-center justify-between gap-2 border-b border-border">
           <div class="min-w-0">
-            <p class="font-semibold text-foreground text-sm">Eventos laborales ({{ v.eventos?.length || 0 }})</p>
+            <p class="font-semibold text-foreground text-xs">Eventos laborales ({{ v.eventos?.length || 0 }})</p>
             <p class="text-muted-foreground truncate" :title="v.cargo || ''">{{ v.cargo || 'Vínculo laboral' }}</p>
           </div>
           <button type="button"
@@ -224,7 +224,7 @@ const puedeRenunciar = computed(() => v.value.estado.toLowerCase() !== 'inactivo
       role="menu" aria-label="Acciones del vínculo laboral">
       <div class="bg-card border border-border rounded-2xl shadow-xl overflow-hidden text-left">
         <div class="px-4 py-3 border-b border-border">
-          <p class="font-semibold text-foreground text-sm">Acciones</p>
+          <p class="font-semibold text-foreground text-xs">Acciones</p>
           <p class="text-muted-foreground truncate" :title="v.cargo || ''">{{ v.cargo || 'Vínculo laboral' }}</p>
         </div>
         <div class="p-1.5">

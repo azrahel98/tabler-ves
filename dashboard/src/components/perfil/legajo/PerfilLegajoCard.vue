@@ -142,17 +142,17 @@ const total = computed(() => filteredAndSortedArchivos.value.length)
 
 <template>
   <div class="space-y-6">
-    <div class="rounded-xl border border-border bg-card p-4 sm:p-5">
-      <div class="flex flex-wrap items-center justify-between gap-3">
-        <h3 class="text-title font-semibold text-foreground tracking-tight">
+    <div class="rounded-xl border border-border bg-card p-3 sm:p-4">
+      <div class="flex flex-wrap items-center justify-between gap-2">
+        <h3 class="text-xs font-semibold text-foreground tracking-tight">
           {{ total }} {{ total === 1 ? 'resultado' : 'resultados' }}
         </h3>
 
         <div class="flex items-center gap-2">
           <button type="button"
-            class="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg bg-primary text-primary-foreground text-xs font-semibold hover:bg-primary-hover transition cursor-pointer shrink-0"
+            class="inline-flex items-center gap-1.5 px-3 h-control-sm rounded-md bg-primary text-primary-foreground text-meta font-semibold hover:bg-primary-hover transition cursor-pointer shrink-0"
             @click="emit('subirArchivo')">
-            <IconUpload class="size-4" />
+            <IconUpload class="size-3.5" />
             Subir archivo
           </button>
 
@@ -174,11 +174,11 @@ const total = computed(() => filteredAndSortedArchivos.value.length)
         </div>
       </div>
 
-      <div class="mt-4 pt-4 border-t border-border flex flex-wrap items-center justify-between gap-3">
+      <div class="mt-3 pt-3 border-t border-border flex flex-wrap items-center justify-between gap-3">
         <label class="relative flex-1 min-w-48 max-w-lg">
-          <IconSearch class="size-4 absolute start-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+          <IconSearch class="size-3.5 absolute start-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
           <input v-model="searchQuery" type="search" placeholder="Buscar por nombre de archivo"
-            class="w-full ps-9 pe-3 py-2 rounded-lg bg-muted border-transparent text-xs text-foreground placeholder:text-muted-foreground focus:bg-card focus:border-primary focus:ring-primary" />
+            class="w-full ps-8 pe-3 h-control-sm py-0 rounded-md bg-muted border-transparent text-meta text-foreground placeholder:text-muted-foreground focus:bg-card focus:border-primary focus:ring-primary" />
         </label>
 
         <div class="flex flex-wrap items-center gap-1">
@@ -189,12 +189,12 @@ const total = computed(() => filteredAndSortedArchivos.value.length)
         </div>
       </div>
 
-      <div class="mt-4 pt-4 border-t border-border">
+      <div class="mt-3 pt-3 border-t border-border">
         <template v-if="total > 0">
-          <ul v-if="viewMode === 'list'" class="space-y-3">
+          <ul v-if="viewMode === 'list'" class="space-y-2">
             <li v-for="archivo in filteredAndSortedArchivos" :key="archivo.id"
-              class="group flex items-center gap-3 rounded-xl border border-border bg-card px-3 py-3 hover:border-primary/40 transition">
-              <div class="size-10 rounded-lg border border-border bg-card flex items-center justify-center shrink-0"
+              class="group flex items-center gap-3 rounded-lg border border-border bg-card px-2.5 py-2 hover:border-primary/40 transition">
+              <div class="size-8 rounded-md border border-border bg-card flex items-center justify-center shrink-0"
                 :class="archivo.external_url ? 'text-primary' : 'text-rose-500'">
                 <IconLink v-if="archivo.external_url" class="size-5" />
                 <IconFileTypePdf v-else class="size-5" />
@@ -202,11 +202,11 @@ const total = computed(() => filteredAndSortedArchivos.value.length)
 
               <div class="min-w-0 flex-1">
                 <button type="button"
-                  class="block max-w-full text-left text-xs font-semibold text-foreground hover:text-primary truncate transition cursor-pointer"
+                  class="block max-w-full text-left text-meta font-semibold text-foreground hover:text-primary truncate transition cursor-pointer"
                   :title="archivo.original_name" @click="handleAbrirArchivo(archivo)">
                   {{ archivo.original_name }}
                 </button>
-                <p class="text-meta text-muted-foreground truncate">{{ subtitulo(archivo) }}</p>
+                <p class="text-micro text-muted-foreground truncate">{{ subtitulo(archivo) }}</p>
               </div>
 
               <Badge v-if="archivo.documento_id" variant="outline" size="xs" class="hidden sm:inline-flex shrink-0">
@@ -232,11 +232,11 @@ const total = computed(() => filteredAndSortedArchivos.value.length)
             </li>
           </ul>
 
-          <ul v-else class="grid grid-cols-[repeat(auto-fill,minmax(15rem,1fr))] gap-4">
+          <ul v-else class="grid grid-cols-[repeat(auto-fill,minmax(15rem,1fr))] gap-3">
             <li v-for="archivo in filteredAndSortedArchivos" :key="archivo.id"
               class="group relative rounded-xl border border-border bg-card overflow-hidden hover:border-primary/40 transition">
               <button type="button"
-                class="w-full h-36 sm:h-40 flex items-center justify-center bg-muted/40 cursor-pointer"
+                class="w-full h-24 sm:h-28 flex items-center justify-center bg-muted/40 cursor-pointer"
                 :aria-label="`Abrir ${archivo.original_name}`" @click="handleAbrirArchivo(archivo)">
                 <IconLink v-if="archivo.external_url" class="size-12 text-primary/50" :stroke-width="1.25" />
                 <IconFileTypePdf v-else class="size-12 text-rose-400/70" :stroke-width="1.25" />
@@ -261,16 +261,16 @@ const total = computed(() => filteredAndSortedArchivos.value.length)
               </div>
 
               <div class="flex items-center gap-3 p-3 border-t border-border">
-                <div class="size-10 rounded-lg border border-border bg-card flex items-center justify-center shrink-0"
+                <div class="size-8 rounded-md border border-border bg-card flex items-center justify-center shrink-0"
                   :class="archivo.external_url ? 'text-primary' : 'text-rose-500'">
                   <IconLink v-if="archivo.external_url" class="size-5" />
                   <IconFileTypePdf v-else class="size-5" />
                 </div>
                 <div class="min-w-0">
-                  <p class="text-xs font-semibold text-foreground truncate" :title="archivo.original_name">
+                  <p class="text-meta font-semibold text-foreground truncate" :title="archivo.original_name">
                     {{ archivo.original_name }}
                   </p>
-                  <p class="text-meta text-muted-foreground truncate">{{ subtitulo(archivo) }}</p>
+                  <p class="text-micro text-muted-foreground truncate">{{ subtitulo(archivo) }}</p>
                 </div>
               </div>
             </li>

@@ -80,8 +80,8 @@ const handleTabKeyDown = (event: KeyboardEvent) => {
 </script>
 
 <template>
-  <div class="bg-card border border-border rounded-2xl shadow-xs p-4 sm:p-5">
-    <figure class="m-0 h-32 sm:h-40 rounded-xl overflow-hidden" aria-hidden="true">
+  <div class="bg-card border border-border rounded-xl shadow-xs p-3 sm:p-4">
+    <figure class="m-0 h-20 sm:h-28 rounded-lg overflow-hidden" aria-hidden="true">
       <svg class="w-full h-full" preserveAspectRatio="none" viewBox="0 0 1113 161" fill="none" xmlns="http://www.w3.org/2000/svg">
         <g clip-path="url(#perfil-banner-clip)">
           <rect x="1" width="1112" height="348" fill="#B2E7FE" />
@@ -95,28 +95,28 @@ const handleTabKeyDown = (event: KeyboardEvent) => {
       </svg>
     </figure>
 
-    <div class="-mt-20 sm:-mt-24 flex flex-col items-center text-center px-2">
+    <div class="-mt-8 sm:-mt-10 flex flex-col items-center text-center px-2">
       <div class="relative">
         <div
-          class="size-24 sm:size-30 rounded-full bg-primary/10 text-primary ring-4 ring-card border border-border flex items-center justify-center overflow-hidden shadow-xs">
+          class="size-16 sm:size-20 rounded-full bg-primary/10 text-primary ring-4 ring-card border border-border flex items-center justify-center overflow-hidden shadow-xs">
           <img v-if="!avatarError && avatarUrl" v-auth-src="avatarUrl" :alt="perfil?.nombre || 'Foto del servidor'"
             class="size-full object-cover" @error="avatarError = true" />
           <span v-else class="text-kpi font-bold tracking-tight select-none">{{ userInitials }}</span>
         </div>
         <span
-          class="absolute bottom-1 -right-1 size-7 rounded-full ring-2 ring-card flex items-center justify-center text-white"
+          class="absolute bottom-0 -right-0.5 size-5 rounded-full ring-2 ring-card flex items-center justify-center text-white"
           :class="vinculoActivo ? 'bg-emerald-500' : 'bg-muted-foreground'"
           :title="vinculoActivo ? 'Vínculo laboral activo' : 'Sin vínculo activo'">
-          <IconCheck v-if="vinculoActivo" class="size-3.5" :stroke-width="3" />
-          <IconUser v-else class="size-3.5" />
+          <IconCheck v-if="vinculoActivo" class="size-3" :stroke-width="3" />
+          <IconUser v-else class="size-3" />
         </span>
       </div>
 
-      <h1 class="mt-3 text-title font-bold text-foreground tracking-tight break-words">
+      <h1 class="mt-2 text-xs sm:text-sm font-bold text-foreground tracking-tight break-words">
         {{ perfil?.nombre || 'Cargando datos del servidor...' }}
       </h1>
 
-      <div class="mt-1.5 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
+      <div class="mt-1 flex flex-wrap items-center justify-center gap-x-3 gap-y-0.5 text-meta text-muted-foreground">
         <button type="button"
           class="inline-flex items-center gap-1.5 font-mono hover:text-foreground transition cursor-pointer"
           title="Copiar número de DNI al portapapeles"
@@ -136,15 +136,15 @@ const handleTabKeyDown = (event: KeyboardEvent) => {
       </div>
     </div>
 
-    <div class="mt-5 flex flex-wrap items-center justify-between gap-3">
+    <div class="mt-3 flex flex-wrap items-center justify-between gap-2">
       <div class="overflow-x-auto -mx-1 px-1 max-w-full">
         <nav class="flex gap-1 min-w-max" role="tablist" aria-label="Pestañas del legajo" @keydown="handleTabKeyDown">
           <button v-for="t in tabs" :key="t.id" type="button" role="tab" :aria-selected="activeTab === t.id"
             :tabindex="activeTab === t.id ? 0 : -1"
-            class="inline-flex items-center gap-2 px-3 py-2 rounded-lg text-xs cursor-pointer transition focus:outline-hidden focus-visible:ring-2 focus-visible:ring-primary"
+            class="inline-flex items-center gap-1.5 px-2.5 h-control-sm rounded-md text-meta cursor-pointer transition focus:outline-hidden focus-visible:ring-2 focus-visible:ring-primary"
             :class="activeTab === t.id ? 'bg-muted text-foreground font-semibold' : 'text-muted-foreground hover:text-foreground hover:bg-muted/50 font-medium'"
             @click="emit('update:activeTab', t.id)">
-            <component :is="t.icon" class="size-4" />
+            <component :is="t.icon" class="size-3.5" />
             <span>{{ t.label }}</span>
             <span v-if="t.count !== undefined" class="px-1.5 py-0.5 text-micro rounded-full bg-card border border-border text-foreground">
               {{ t.count }}
@@ -154,7 +154,7 @@ const handleTabKeyDown = (event: KeyboardEvent) => {
       </div>
 
       <button type="button"
-        class="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-border bg-card text-xs font-semibold text-foreground shadow-xs hover:bg-muted transition cursor-pointer"
+        class="inline-flex items-center gap-1.5 px-2.5 h-control-sm rounded-md border border-border bg-card text-meta font-semibold text-foreground shadow-xs hover:bg-muted transition cursor-pointer"
         @click="emit('openEditModal')">
         <IconEdit class="size-3.5" />
         <span>Editar ficha</span>

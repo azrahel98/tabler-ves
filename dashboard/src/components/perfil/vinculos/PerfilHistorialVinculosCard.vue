@@ -124,7 +124,7 @@ const estadoLabel = (v: PersonalVinculo) => {
   <div class="rounded-xl border border-border bg-card overflow-hidden">
     <div class="flex items-center gap-1 px-3 border-b border-border overflow-x-auto" role="tablist" aria-label="Filtrar vínculos">
       <button v-for="t in tabsFiltro" :key="t.id" type="button" role="tab" :aria-selected="filtro === t.id"
-        class="relative inline-flex items-center gap-2 px-3 py-3 text-xs whitespace-nowrap cursor-pointer transition focus:outline-hidden focus-visible:ring-2 focus-visible:ring-primary rounded-md"
+        class="relative inline-flex items-center gap-2 px-3 py-2.5 text-meta whitespace-nowrap cursor-pointer transition focus:outline-hidden focus-visible:ring-2 focus-visible:ring-primary rounded-md"
         :class="filtro === t.id ? 'text-foreground font-semibold after:absolute after:inset-x-2 after:-bottom-px after:h-0.5 after:bg-foreground' : 'text-muted-foreground hover:text-foreground font-medium'"
         @click="setFiltro(t.id)">
         {{ t.label }}
@@ -132,11 +132,11 @@ const estadoLabel = (v: PersonalVinculo) => {
       </button>
     </div>
 
-    <div class="p-3 flex flex-wrap items-center justify-between gap-3">
+    <div class="p-2.5 flex flex-wrap items-center justify-between gap-3">
       <label class="relative flex-1 min-w-48 max-w-xl">
-        <IconSearch class="size-4 absolute start-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+        <IconSearch class="size-3.5 absolute start-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
         <input v-model="busqueda" type="search" placeholder="Buscar por cargo, área, régimen o plaza"
-          class="w-full ps-9 pe-3 py-2 rounded-lg bg-muted border-transparent text-xs text-foreground placeholder:text-muted-foreground focus:bg-card focus:border-primary focus:ring-primary"
+          class="w-full ps-8 pe-3 h-control-sm py-0 rounded-md bg-muted border-transparent text-meta text-foreground placeholder:text-muted-foreground focus:bg-card focus:border-primary focus:ring-primary"
           @input="page = 1" />
       </label>
       <div class="hidden md:flex items-center gap-3 text-meta text-muted-foreground">
@@ -149,7 +149,7 @@ const estadoLabel = (v: PersonalVinculo) => {
     <div v-if="vinculos.length > 0" class="border-t border-border">
       <div class="overflow-x-auto">
         <table class="w-full text-left text-xs" aria-label="Tabla de historial de vínculos laborales">
-          <thead class="border-b border-border text-xs text-muted-foreground select-none">
+          <thead class="border-b border-border text-meta text-muted-foreground select-none">
             <tr>
               <th scope="col" :aria-sort="ariaSort('cargo')" class="px-3 py-3 font-medium ">
                 <button type="button" class="inline-flex items-center gap-1.5 cursor-pointer hover:text-foreground transition" @click="setSort('cargo')">
