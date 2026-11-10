@@ -34,10 +34,10 @@ const calcularEdad = calculateAge
 </script>
 
 <template>
-  <div class="space-y-4 text-meta">
+  <div class="space-y-4 text-micro">
     <section class="space-y-3">
       <div class="flex items-center justify-between">
-        <h3 class="font-semibold text-foreground text-xs">Acerca del servidor</h3>
+        <h3 class="font-semibold text-foreground text-meta">Acerca del servidor</h3>
         <button type="button" class="text-primary hover:underline font-medium inline-flex items-center gap-1 cursor-pointer"
           @click="emit('openEditModal')">
           <IconEdit class="size-3.5" /> Editar
@@ -100,7 +100,7 @@ const calcularEdad = calculateAge
 
     <section class="space-y-3">
       <div class="flex items-center justify-between">
-        <h3 class="font-semibold text-foreground text-xs">Contacto de emergencia</h3>
+        <h3 class="font-semibold text-foreground text-meta">Contacto de emergencia</h3>
         <Badge v-if="contacto" variant="outline" size="sm">Registrado</Badge>
       </div>
 

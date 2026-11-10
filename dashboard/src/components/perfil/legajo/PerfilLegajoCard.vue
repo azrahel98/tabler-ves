@@ -144,13 +144,13 @@ const total = computed(() => filteredAndSortedArchivos.value.length)
   <div class="space-y-6">
     <div class="rounded-xl border border-border bg-card p-3 sm:p-4">
       <div class="flex flex-wrap items-center justify-between gap-2">
-        <h3 class="text-xs font-semibold text-foreground tracking-tight">
+        <h3 class="text-meta font-semibold text-foreground tracking-tight">
           {{ total }} {{ total === 1 ? 'resultado' : 'resultados' }}
         </h3>
 
         <div class="flex items-center gap-2">
           <button type="button"
-            class="inline-flex items-center gap-1.5 px-3 h-control-sm rounded-md bg-primary text-primary-foreground text-meta font-semibold hover:bg-primary-hover transition cursor-pointer shrink-0"
+            class="inline-flex items-center gap-1.5 px-3 h-control-sm rounded-md bg-primary text-primary-foreground text-micro font-semibold hover:bg-primary-hover transition cursor-pointer shrink-0"
             @click="emit('subirArchivo')">
             <IconUpload class="size-3.5" />
             Subir archivo
@@ -178,7 +178,7 @@ const total = computed(() => filteredAndSortedArchivos.value.length)
         <label class="relative flex-1 min-w-48 max-w-lg">
           <IconSearch class="size-3.5 absolute start-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
           <input v-model="searchQuery" type="search" placeholder="Buscar por nombre de archivo"
-            class="w-full ps-8 pe-3 h-control-sm py-0 rounded-md bg-muted border-transparent text-meta text-foreground placeholder:text-muted-foreground focus:bg-card focus:border-primary focus:ring-primary" />
+            class="w-full ps-8 pe-3 h-control-sm py-0 rounded-md bg-muted border-transparent text-micro text-foreground placeholder:text-muted-foreground focus:bg-card focus:border-primary focus:ring-primary" />
         </label>
 
         <div class="flex flex-wrap items-center gap-1">
@@ -202,7 +202,7 @@ const total = computed(() => filteredAndSortedArchivos.value.length)
 
               <div class="min-w-0 flex-1">
                 <button type="button"
-                  class="block max-w-full text-left text-meta font-semibold text-foreground hover:text-primary truncate transition cursor-pointer"
+                  class="block max-w-full text-left text-micro font-semibold text-foreground hover:text-primary truncate transition cursor-pointer"
                   :title="archivo.original_name" @click="handleAbrirArchivo(archivo)">
                   {{ archivo.original_name }}
                 </button>
@@ -267,7 +267,7 @@ const total = computed(() => filteredAndSortedArchivos.value.length)
                   <IconFileTypePdf v-else class="size-5" />
                 </div>
                 <div class="min-w-0">
-                  <p class="text-meta font-semibold text-foreground truncate" :title="archivo.original_name">
+                  <p class="text-micro font-semibold text-foreground truncate" :title="archivo.original_name">
                     {{ archivo.original_name }}
                   </p>
                   <p class="text-micro text-muted-foreground truncate">{{ subtitulo(archivo) }}</p>
@@ -277,7 +277,7 @@ const total = computed(() => filteredAndSortedArchivos.value.length)
           </ul>
         </template>
 
-        <div v-else class="text-xs text-muted-foreground py-10 text-center space-y-2">
+        <div v-else class="text-meta text-muted-foreground py-10 text-center space-y-2">
           <IconFileText class="size-8 mx-auto text-muted-foreground/40" />
           <p class="font-semibold text-foreground">No se encontraron archivos</p>
           <p>

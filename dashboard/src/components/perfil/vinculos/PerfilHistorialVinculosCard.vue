@@ -124,7 +124,7 @@ const estadoLabel = (v: PersonalVinculo) => {
   <div class="rounded-xl border border-border bg-card overflow-hidden">
     <div class="flex items-center gap-1 px-3 border-b border-border overflow-x-auto" role="tablist" aria-label="Filtrar vínculos">
       <button v-for="t in tabsFiltro" :key="t.id" type="button" role="tab" :aria-selected="filtro === t.id"
-        class="relative inline-flex items-center gap-2 px-3 py-2.5 text-meta whitespace-nowrap cursor-pointer transition focus:outline-hidden focus-visible:ring-2 focus-visible:ring-primary rounded-md"
+        class="relative inline-flex items-center gap-2 px-3 py-2.5 text-micro whitespace-nowrap cursor-pointer transition focus:outline-hidden focus-visible:ring-2 focus-visible:ring-primary rounded-md"
         :class="filtro === t.id ? 'text-foreground font-semibold after:absolute after:inset-x-2 after:-bottom-px after:h-0.5 after:bg-foreground' : 'text-muted-foreground hover:text-foreground font-medium'"
         @click="setFiltro(t.id)">
         {{ t.label }}
@@ -136,10 +136,10 @@ const estadoLabel = (v: PersonalVinculo) => {
       <label class="relative flex-1 min-w-48 max-w-xl">
         <IconSearch class="size-3.5 absolute start-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
         <input v-model="busqueda" type="search" placeholder="Buscar por cargo, área, régimen o plaza"
-          class="w-full ps-8 pe-3 h-control-sm py-0 rounded-md bg-muted border-transparent text-meta text-foreground placeholder:text-muted-foreground focus:bg-card focus:border-primary focus:ring-primary"
+          class="w-full ps-8 pe-3 h-control-sm py-0 rounded-md bg-muted border-transparent text-micro text-foreground placeholder:text-muted-foreground focus:bg-card focus:border-primary focus:ring-primary"
           @input="page = 1" />
       </label>
-      <div class="hidden md:flex items-center gap-3 text-meta text-muted-foreground">
+      <div class="hidden md:flex items-center gap-3 text-micro text-muted-foreground">
         <span class="inline-flex items-center gap-1.5"><span class="size-2 rounded-full bg-emerald-500"></span> Vigente</span>
         <span class="inline-flex items-center gap-1.5"><span class="size-2 rounded-full bg-amber-500"></span> Sin doc. salida</span>
         <span class="inline-flex items-center gap-1.5"><span class="size-2 rounded-full bg-muted-foreground/40"></span> Concluido</span>
@@ -148,8 +148,8 @@ const estadoLabel = (v: PersonalVinculo) => {
 
     <div v-if="vinculos.length > 0" class="border-t border-border">
       <div class="overflow-x-auto">
-        <table class="w-full text-left text-xs" aria-label="Tabla de historial de vínculos laborales">
-          <thead class="border-b border-border text-meta text-muted-foreground select-none">
+        <table class="w-full text-left text-meta" aria-label="Tabla de historial de vínculos laborales">
+          <thead class="border-b border-border text-micro text-muted-foreground select-none">
             <tr>
               <th scope="col" :aria-sort="ariaSort('cargo')" class="px-3 py-3 font-medium ">
                 <button type="button" class="inline-flex items-center gap-1.5 cursor-pointer hover:text-foreground transition" @click="setSort('cargo')">
@@ -212,7 +212,7 @@ const estadoLabel = (v: PersonalVinculo) => {
 
                     <div class="min-w-0 flex-1">
                       <div class="flex items-center gap-1.5 flex-wrap">
-                        <span class="font-medium text-foreground text-meta block wrap-break-word"
+                        <span class="font-medium text-foreground text-micro block wrap-break-word"
                           :title="v.cargo || (v.origen === 'SUNAT' ? 'Vínculo declarado en SUNAT' : '-')">
                           {{ v.cargo || (v.origen === 'SUNAT' ? 'Vínculo SUNAT (T-Registro)' : '-') }}
                         </span>
@@ -225,19 +225,19 @@ const estadoLabel = (v: PersonalVinculo) => {
                   </div>
                 </td>
 
-                <td class="px-3 py-2.5 text-meta text-foreground max-w-56">
+                <td class="px-3 py-2.5 text-micro text-foreground max-w-56">
                   <span class="line-clamp-2" :title="v.area || undefined">{{ v.area || '-' }}</span>
                 </td>
 
                 <td class="px-3 py-2.5 whitespace-nowrap">
-                  <span class="font-mono text-muted-foreground text-meta">
+                  <span class="font-mono text-muted-foreground text-micro">
                     {{ formatDate(v.fecha_ingreso) }}
                   </span>
                 </td>
 
                 <td class="px-3 py-2.5 whitespace-nowrap">
                   <span
-                    :class="v.fecha_salida ? 'font-mono text-muted-foreground text-meta' : 'text-meta font-medium text-emerald-600 dark:text-emerald-400'">
+                    :class="v.fecha_salida ? 'font-mono text-muted-foreground text-micro' : 'text-micro font-medium text-emerald-600 dark:text-emerald-400'">
                     {{ v.fecha_salida ? formatDate(v.fecha_salida) : 'Vigente' }}
                   </span>
                 </td>
@@ -247,7 +247,7 @@ const estadoLabel = (v: PersonalVinculo) => {
                 </td>
 
                 <td
-                  class="px-3 py-2.5 text-right font-mono font-medium text-foreground tabular-nums text-xs whitespace-nowrap">
+                  class="px-3 py-2.5 text-right font-mono font-medium text-foreground tabular-nums text-meta whitespace-nowrap">
                   {{ v.origen === 'SUNAT' ? '-' : formatMoneda(v.sueldo) }}
                 </td>
 
@@ -273,11 +273,11 @@ const estadoLabel = (v: PersonalVinculo) => {
         </table>
       </div>
 
-      <div v-if="sortedVinculos.length === 0" class="py-10 text-center text-xs text-muted-foreground">
+      <div v-if="sortedVinculos.length === 0" class="py-10 text-center text-meta text-muted-foreground">
         Ningún vínculo coincide con el filtro o la búsqueda.
       </div>
 
-      <div class="px-4 py-3 border-t border-border flex flex-wrap items-center justify-between gap-3 text-xs">
+      <div class="px-4 py-3 border-t border-border flex flex-wrap items-center justify-between gap-3 text-meta">
         <span class="text-muted-foreground"><span class="font-semibold text-foreground">{{ filtrados.length }}</span> {{ filtrados.length === 1 ? 'resultado' : 'resultados' }}</span>
         <nav v-if="totalPages > 1" class="flex items-center gap-2 text-muted-foreground" aria-label="Paginación">
           <button type="button" class="size-8 inline-flex items-center justify-center rounded-lg hover:bg-muted disabled:opacity-40 disabled:pointer-events-none cursor-pointer"
@@ -294,7 +294,7 @@ const estadoLabel = (v: PersonalVinculo) => {
       </div>
     </div>
 
-    <div v-else class="text-xs text-muted-foreground py-8 text-center space-y-2">
+    <div v-else class="text-meta text-muted-foreground py-8 text-center space-y-2">
       <IconBriefcase class="size-8 mx-auto text-muted-foreground/40" />
       <p class="font-semibold text-foreground">Sin historial de vínculos laborales</p>
       <p>No se registran resoluciones de designación o contratos en el sistema.</p>

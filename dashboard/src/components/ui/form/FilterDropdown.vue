@@ -54,14 +54,14 @@ const select = (value: string) => {
 <template>
   <div ref="root" class="hs-dropdown [--placement:bottom-right] --prevent-on-load-init relative inline-flex">
     <button type="button" aria-haspopup="menu" aria-expanded="false" :aria-label="ariaLabel"
-      class="hs-dropdown-toggle inline-flex items-center gap-1.5 px-2 py-1.5 rounded-lg text-xs text-muted-foreground hover:text-foreground hover:bg-muted transition cursor-pointer focus:outline-hidden focus-visible:ring-2 focus-visible:ring-primary">
+      class="hs-dropdown-toggle inline-flex items-center gap-1.5 px-2 py-1.5 rounded-lg text-meta text-muted-foreground hover:text-foreground hover:bg-muted transition cursor-pointer focus:outline-hidden focus-visible:ring-2 focus-visible:ring-primary">
       <span v-if="prefix" class="text-foreground">{{ prefix }}</span>
       <span :class="prefix || !isDefault ? 'text-foreground' : ''">{{ triggerLabel }}</span>
       <IconChevronDown class="size-3.5" />
     </button>
 
     <div
-      class="hs-dropdown-menu hs-dropdown-open:opacity-100 transition-[opacity,margin] duration hidden opacity-0 min-w-48 z-50 bg-card border border-border rounded-xl shadow-lg p-1.5 text-xs"
+      class="hs-dropdown-menu hs-dropdown-open:opacity-100 transition-[opacity,margin] duration hidden opacity-0 min-w-48 z-50 bg-card border border-border rounded-xl shadow-lg p-1.5 text-meta"
       role="menu">
       <button v-for="o in options" :key="o.value" type="button" role="menuitemradio"
         :aria-checked="o.value === modelValue"

@@ -112,11 +112,11 @@ const handleTabKeyDown = (event: KeyboardEvent) => {
         </span>
       </div>
 
-      <h1 class="mt-2 text-xs sm:text-sm font-bold text-foreground tracking-tight break-words">
+      <h1 class="mt-2 text-meta sm:text-xs font-bold text-foreground tracking-tight break-words">
         {{ perfil?.nombre || 'Cargando datos del servidor...' }}
       </h1>
 
-      <div class="mt-1 flex flex-wrap items-center justify-center gap-x-3 gap-y-0.5 text-meta text-muted-foreground">
+      <div class="mt-1 flex flex-wrap items-center justify-center gap-x-3 gap-y-0.5 text-micro text-muted-foreground">
         <button type="button"
           class="inline-flex items-center gap-1.5 font-mono hover:text-foreground transition cursor-pointer"
           title="Copiar número de DNI al portapapeles"
@@ -141,7 +141,7 @@ const handleTabKeyDown = (event: KeyboardEvent) => {
         <nav class="flex gap-1 min-w-max" role="tablist" aria-label="Pestañas del legajo" @keydown="handleTabKeyDown">
           <button v-for="t in tabs" :key="t.id" type="button" role="tab" :aria-selected="activeTab === t.id"
             :tabindex="activeTab === t.id ? 0 : -1"
-            class="inline-flex items-center gap-1.5 px-2.5 h-control-sm rounded-md text-meta cursor-pointer transition focus:outline-hidden focus-visible:ring-2 focus-visible:ring-primary"
+            class="inline-flex items-center gap-1.5 px-2.5 h-control-sm rounded-md text-micro cursor-pointer transition focus:outline-hidden focus-visible:ring-2 focus-visible:ring-primary"
             :class="activeTab === t.id ? 'bg-muted text-foreground font-semibold' : 'text-muted-foreground hover:text-foreground hover:bg-muted/50 font-medium'"
             @click="emit('update:activeTab', t.id)">
             <component :is="t.icon" class="size-3.5" />
@@ -154,7 +154,7 @@ const handleTabKeyDown = (event: KeyboardEvent) => {
       </div>
 
       <button type="button"
-        class="inline-flex items-center gap-1.5 px-2.5 h-control-sm rounded-md border border-border bg-card text-meta font-semibold text-foreground shadow-xs hover:bg-muted transition cursor-pointer"
+        class="inline-flex items-center gap-1.5 px-2.5 h-control-sm rounded-md border border-border bg-card text-micro font-semibold text-foreground shadow-xs hover:bg-muted transition cursor-pointer"
         @click="emit('openEditModal')">
         <IconEdit class="size-3.5" />
         <span>Editar ficha</span>

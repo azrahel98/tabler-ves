@@ -150,10 +150,10 @@ const handleAbrirNuevaPestana = () => {
 
           <div class="min-w-0">
             <h3 id="visor-titulo"
-              class="font-bold text-foreground text-sm tracking-tight truncate max-w-md">
+              class="font-bold text-foreground text-xs tracking-tight truncate max-w-md">
               {{ tituloMostrado }}
             </h3>
-            <p v-if="archivo" class="text-meta text-muted-foreground font-mono truncate">
+            <p v-if="archivo" class="text-micro text-muted-foreground font-mono truncate">
               {{ archivo.original_name }} • {{ archivo.size || 'PDF' }}
             </p>
           </div>
@@ -185,8 +185,8 @@ const handleAbrirNuevaPestana = () => {
           class="absolute inset-0 z-10 flex flex-col items-center justify-center bg-card/85 backdrop-blur-xs space-y-3">
           <div class="size-10 rounded-full border-2 border-primary/20 border-t-primary animate-spin"></div>
           <div class="text-center space-y-1">
-            <p class="font-semibold text-foreground text-xs">Cargando documento con credenciales...</p>
-            <p class="text-meta text-muted-foreground">Validando token de sesión en el servidor de archivos</p>
+            <p class="font-semibold text-foreground text-meta">Cargando documento con credenciales...</p>
+            <p class="text-micro text-muted-foreground">Validando token de sesión en el servidor de archivos</p>
           </div>
         </div>
 
@@ -196,8 +196,8 @@ const handleAbrirNuevaPestana = () => {
             <IconAlertTriangle class="size-6" />
           </div>
           <div class="max-w-md space-y-1">
-            <h4 class="font-bold text-foreground text-sm">Error al cargar el documento</h4>
-            <p class="text-xs text-muted-foreground">{{ errorMensaje }}</p>
+            <h4 class="font-bold text-foreground text-xs">Error al cargar el documento</h4>
+            <p class="text-meta text-muted-foreground">{{ errorMensaje }}</p>
           </div>
           <Button size="xs" variant="outline" class="gap-1.5 cursor-pointer mt-2" @click="cargarDocumento">
             <IconRefresh class="size-3.5" />
@@ -209,8 +209,8 @@ const handleAbrirNuevaPestana = () => {
           <iframe :src="visorUrl" class="w-full flex-1 border-0" title="Vista previa del documento"></iframe>
 
           <div v-if="esUrlExterna"
-            class="px-4 py-2 border-t border-border bg-card flex items-center justify-between text-xs shrink-0">
-            <span class="text-muted-foreground text-meta">
+            class="px-4 py-2 border-t border-border bg-card flex items-center justify-between text-meta shrink-0">
+            <span class="text-muted-foreground text-micro">
               ¿Problemas para visualizar el enlace externo?
             </span>
             <Button size="xs" variant="outline" class="gap-1 cursor-pointer" @click="handleAbrirNuevaPestana">
@@ -220,7 +220,7 @@ const handleAbrirNuevaPestana = () => {
           </div>
         </div>
 
-        <div v-else class="flex-1 flex flex-col items-center justify-center text-muted-foreground text-xs space-y-2">
+        <div v-else class="flex-1 flex flex-col items-center justify-center text-muted-foreground text-meta space-y-2">
           <IconFileText class="size-10 text-muted-foreground/40" />
           <p>No se seleccionó ningún archivo para visualizar.</p>
         </div>

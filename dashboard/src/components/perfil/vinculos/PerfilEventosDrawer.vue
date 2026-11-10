@@ -140,7 +140,7 @@ const mismoDocumento = (ev: EventoVinculoDetalle): boolean => {
 <template>
   <Modal :is-open="isOpen" placement="right" :persistent="isDeleting" @close="emit('close')">
         <aside v-if="isOpen && vinculo"
-          class="w-screen max-w-md h-full bg-card border-l border-border shadow-2xl flex flex-col z-10 overflow-hidden text-xs">
+          class="w-screen max-w-md h-full bg-card border-l border-border shadow-2xl flex flex-col z-10 overflow-hidden text-meta">
           
           <header class="px-5 py-4 border-b border-border flex items-center justify-between shrink-0 bg-muted/15">
             <div class="flex items-center gap-3 min-w-0">
@@ -151,14 +151,14 @@ const mismoDocumento = (ev: EventoVinculoDetalle): boolean => {
 
               <div class="min-w-0">
                 <div class="flex items-center gap-2">
-                  <h3 class="font-bold text-foreground text-sm tracking-tight truncate">
+                  <h3 class="font-bold text-foreground text-xs tracking-tight truncate">
                     Eventos del Vínculo
                   </h3>
                   <Badge size="xs" variant="secondary">
                     {{ eventos.length }} {{ eventos.length === 1 ? 'evento' : 'eventos' }}
                   </Badge>
                 </div>
-                <p class="text-meta text-muted-foreground truncate mt-0.5">
+                <p class="text-micro text-muted-foreground truncate mt-0.5">
                   {{ vinculo.regimen }} &bull; Plaza {{ vinculo.codigo || '-' }} &bull; {{ vinculo.cargo }}
                 </p>
               </div>
@@ -190,8 +190,8 @@ const mismoDocumento = (ev: EventoVinculoDetalle): boolean => {
                 <IconAlertCircle class="size-6" />
               </div>
               <div class="space-y-1">
-                <h4 class="font-semibold text-foreground text-sm">Sin eventos registrados</h4>
-                <p class="text-muted-foreground text-xs max-w-xs mx-auto leading-relaxed">
+                <h4 class="font-semibold text-foreground text-xs">Sin eventos registrados</h4>
+                <p class="text-muted-foreground text-meta max-w-xs mx-auto leading-relaxed">
                   Este vínculo no registra rotaciones, encargaturas, suspensiones u otros eventos administrativos.
                 </p>
               </div>
@@ -252,8 +252,8 @@ const mismoDocumento = (ev: EventoVinculoDetalle): boolean => {
                 <!-- Detalle de encargo (periodo) -->
                 <div v-if="esEncargo(ev.tipo_evento) && ev.fecha_desde"
                   class="p-2.5 rounded-lg border border-amber-500/30 bg-amber-500/5 space-y-1">
-                  <div class="text-xs text-foreground font-medium">
-                    <span class="text-muted-foreground text-meta font-normal">Periodo: </span>
+                  <div class="text-meta text-foreground font-medium">
+                    <span class="text-muted-foreground text-micro font-normal">Periodo: </span>
                     <span>del {{ formatDate(ev.fecha_desde) }}</span>
                     <span v-if="ev.fecha_hasta"> al {{ formatDate(ev.fecha_hasta) }}</span>
                     <span v-else> en adelante</span>
@@ -266,7 +266,7 @@ const mismoDocumento = (ev: EventoVinculoDetalle): boolean => {
                     <IconBuildingSkyscraper class="size-3.5 text-primary shrink-0" />
                     <span class="truncate">{{ ev.nueva_area }}</span>
                   </div>
-                  <div v-if="ev.nuevo_cargo" class="text-muted-foreground text-meta truncate pl-5">
+                  <div v-if="ev.nuevo_cargo" class="text-muted-foreground text-micro truncate pl-5">
                     {{ ev.nuevo_cargo }}
                   </div>
                 </div>
@@ -282,7 +282,7 @@ const mismoDocumento = (ev: EventoVinculoDetalle): boolean => {
                   <div v-if="mismoDocumento(ev)"
                     class="p-2.5 rounded-lg border border-border/70 bg-muted/20 space-y-1.5">
                     <div class="flex items-center justify-between gap-2">
-                      <p class="font-semibold text-xs text-foreground truncate"
+                      <p class="font-semibold text-meta text-foreground truncate"
                         :title="getDocLabel(ev.tipo_doc_inicio || ev.tipo_doc_salida, ev.numero_doc_inicio || ev.numero_doc_salida)">
                         {{ getDocLabel(ev.tipo_doc_inicio || ev.tipo_doc_salida, ev.numero_doc_inicio || ev.numero_doc_salida) }}
                       </p>
@@ -292,14 +292,14 @@ const mismoDocumento = (ev: EventoVinculoDetalle): boolean => {
                       </span>
                     </div>
 
-                    <div class="flex items-center gap-1.5 text-meta text-muted-foreground">
+                    <div class="flex items-center gap-1.5 text-micro text-muted-foreground">
                       <span>Inicio {{ ev.fecha_inicio ? formatDate(ev.fecha_inicio) : '-' }}</span>
                       <IconArrowRight class="size-3 text-muted-foreground shrink-0" />
                       <span>Cierre {{ ev.fecha_salida ? formatDate(ev.fecha_salida) : '-' }}</span>
                     </div>
 
                     <p v-if="ev.descrip_inicio || ev.descrip_salida"
-                      class="text-muted-foreground text-meta leading-relaxed line-clamp-2"
+                      class="text-muted-foreground text-micro leading-relaxed line-clamp-2"
                       :title="(ev.descrip_inicio || ev.descrip_salida) || undefined">
                       {{ ev.descrip_inicio || ev.descrip_salida }}
                     </p>
@@ -324,11 +324,11 @@ const mismoDocumento = (ev: EventoVinculoDetalle): boolean => {
                             {{ ev.fecha_inicio ? formatDate(ev.fecha_inicio) : '-' }}
                           </span>
                         </div>
-                        <p class="font-semibold text-xs text-foreground truncate"
+                        <p class="font-semibold text-meta text-foreground truncate"
                           :title="getDocLabel(ev.tipo_doc_inicio, ev.numero_doc_inicio)">
                           {{ getDocLabel(ev.tipo_doc_inicio, ev.numero_doc_inicio) }}
                         </p>
-                        <p v-if="ev.descrip_inicio" class="text-muted-foreground text-meta leading-relaxed line-clamp-2"
+                        <p v-if="ev.descrip_inicio" class="text-muted-foreground text-micro leading-relaxed line-clamp-2"
                           :title="ev.descrip_inicio || undefined">
                           {{ ev.descrip_inicio }}
                         </p>
@@ -351,11 +351,11 @@ const mismoDocumento = (ev: EventoVinculoDetalle): boolean => {
                             {{ ev.fecha_salida ? formatDate(ev.fecha_salida) : '-' }}
                           </span>
                         </div>
-                        <p class="font-semibold text-xs text-foreground truncate"
+                        <p class="font-semibold text-meta text-foreground truncate"
                           :title="getDocLabel(ev.tipo_doc_salida, ev.numero_doc_salida)">
                           {{ getDocLabel(ev.tipo_doc_salida, ev.numero_doc_salida) }}
                         </p>
-                        <p v-if="ev.descrip_salida" class="text-muted-foreground text-meta leading-relaxed line-clamp-2"
+                        <p v-if="ev.descrip_salida" class="text-muted-foreground text-micro leading-relaxed line-clamp-2"
                           :title="ev.descrip_salida || undefined">
                           {{ ev.descrip_salida }}
                         </p>
@@ -373,7 +373,7 @@ const mismoDocumento = (ev: EventoVinculoDetalle): boolean => {
                         <span class="text-micro text-muted-foreground font-medium block">
                           Cierre pendiente
                         </span>
-                        <p class="text-meta text-muted-foreground/70 italic">
+                        <p class="text-micro text-muted-foreground/70 italic">
                           Sin documento de cierre registrado
                         </p>
                       </div>
@@ -383,14 +383,14 @@ const mismoDocumento = (ev: EventoVinculoDetalle): boolean => {
 
                 <div v-if="eventoAEliminarId !== ev.id"
                   class="flex items-center justify-end gap-2 pt-2 border-t border-border/60">
-                  <Button size="xs" variant="outline" class="gap-1.5 cursor-pointer text-meta" :disabled="isDeleting"
+                  <Button size="xs" variant="outline" class="gap-1.5 cursor-pointer text-micro" :disabled="isDeleting"
                     @click="emit('editarEvento', ev)">
                     <IconEdit class="size-3" />
                     <span>{{ esEstadoActivo(ev.estado) ? 'Cerrar / Editar' : 'Detalles' }}</span>
                   </Button>
 
                   <Button size="xs" variant="outline"
-                    class="gap-1.5 text-destructive hover:text-destructive hover:bg-destructive/10 border-destructive/30 cursor-pointer text-meta"
+                    class="gap-1.5 text-destructive hover:text-destructive hover:bg-destructive/10 border-destructive/30 cursor-pointer text-micro"
                     :disabled="isDeleting" @click="eventoAEliminarId = ev.id">
                     <IconTrash class="size-3" />
                     <span>Eliminar</span>
@@ -399,22 +399,22 @@ const mismoDocumento = (ev: EventoVinculoDetalle): boolean => {
 
                 <div v-else class="p-3 rounded-lg border border-destructive/40 bg-destructive/10 space-y-2.5">
                   <div class="space-y-1">
-                    <p class="font-semibold text-destructive text-xs flex items-center gap-1.5">
+                    <p class="font-semibold text-destructive text-meta flex items-center gap-1.5">
                       <IconAlertCircle class="size-3.5 shrink-0" />
                       ¿Eliminar evento #{{ ev.id }}?
                     </p>
-                    <p class="text-meta text-foreground/90 leading-relaxed">
+                    <p class="text-micro text-foreground/90 leading-relaxed">
                       Se removerá permanentemente el registro de este evento laboral.
                     </p>
                   </div>
 
                   <div class="flex items-center justify-end gap-2 pt-1">
-                    <Button size="xs" variant="outline" class="cursor-pointer text-meta" :disabled="isDeleting"
+                    <Button size="xs" variant="outline" class="cursor-pointer text-micro" :disabled="isDeleting"
                       @click="eventoAEliminarId = null">
                       Cancelar
                     </Button>
                     <Button size="xs"
-                      class="bg-destructive hover:bg-destructive/90 text-destructive-foreground gap-1 cursor-pointer text-meta"
+                      class="bg-destructive hover:bg-destructive/90 text-destructive-foreground gap-1 cursor-pointer text-micro"
                       :disabled="isDeleting" @click="handleConfirmarEliminar(ev.id)">
                       <IconTrash class="size-3" />
                       <span>{{ isDeleting ? 'Eliminando...' : 'Sí, eliminar' }}</span>

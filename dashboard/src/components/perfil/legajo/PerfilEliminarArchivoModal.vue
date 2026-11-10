@@ -34,7 +34,7 @@ const handleClose = (isDeleting: boolean) => {
 <template>
   <Modal :is-open="isOpen" :persistent="isDeleting" labelledby="modal-eliminar-title" @close="emit('close')">
     <div
-      class="w-full max-w-md bg-card border border-border rounded-2xl shadow-2xl overflow-hidden text-xs flex flex-col"
+      class="w-full max-w-md bg-card border border-border rounded-2xl shadow-2xl overflow-hidden text-meta flex flex-col"
     >
       <div class="p-4 border-b border-border flex items-center justify-between bg-destructive/5 shrink-0">
         <div class="flex items-center gap-2.5 min-w-0">
@@ -44,10 +44,10 @@ const handleClose = (isDeleting: boolean) => {
             <IconTrash class="size-4.5" aria-hidden="true" />
           </div>
           <div class="min-w-0">
-            <h3 id="modal-eliminar-title" class="font-bold text-foreground text-sm tracking-tight truncate">
+            <h3 id="modal-eliminar-title" class="font-bold text-foreground text-xs tracking-tight truncate">
               Eliminar Archivo del Legajo
             </h3>
-            <p class="text-meta text-muted-foreground truncate">
+            <p class="text-micro text-muted-foreground truncate">
               Esta acción no se puede deshacer
             </p>
           </div>
@@ -68,11 +68,11 @@ const handleClose = (isDeleting: boolean) => {
         <div v-if="archivo" class="p-3.5 rounded-xl border border-border bg-muted/20 space-y-2">
           <div class="flex items-center gap-2 min-w-0">
             <IconFileText class="size-4 text-primary shrink-0" />
-            <span class="font-semibold text-foreground text-xs truncate" :title="archivo.original_name">
+            <span class="font-semibold text-foreground text-meta truncate" :title="archivo.original_name">
               {{ archivo.original_name }}
             </span>
           </div>
-          <div class="flex items-center gap-2 text-meta text-muted-foreground">
+          <div class="flex items-center gap-2 text-micro text-muted-foreground">
             <span v-if="archivo.external_url" class="inline-flex items-center gap-1 text-primary">
               <IconLink class="size-3" />
               <span>Enlace URL externo</span>
@@ -83,7 +83,7 @@ const handleClose = (isDeleting: boolean) => {
           </div>
         </div>
 
-        <div class="p-3 rounded-xl bg-destructive/10 border border-destructive/20 text-destructive text-meta flex items-start gap-2.5">
+        <div class="p-3 rounded-xl bg-destructive/10 border border-destructive/20 text-destructive text-micro flex items-start gap-2.5">
           <IconAlertTriangle class="size-4 shrink-0 mt-0.5" />
           <div class="space-y-1">
             <p class="font-medium text-foreground">

@@ -67,8 +67,8 @@ const inicial = (g: PersonalGrado) => (g.abrv?.trim() || g.profesion?.trim() || 
 <template>
   <div class="rounded-xl border border-border bg-card overflow-hidden">
     <div class="px-4 py-2.5 border-b border-border flex items-center justify-between gap-3">
-      <h3 class="text-xs font-semibold text-foreground tracking-tight">Estudios y formación académica</h3>
-      <span class="text-meta text-muted-foreground">
+      <h3 class="text-meta font-semibold text-foreground tracking-tight">Estudios y formación académica</h3>
+      <span class="text-micro text-muted-foreground">
         {{ grados.length }} {{ grados.length === 1 ? 'registro' : 'registros' }}
       </span>
     </div>
@@ -77,7 +77,7 @@ const inicial = (g: PersonalGrado) => (g.abrv?.trim() || g.profesion?.trim() || 
       <div class="px-3 py-2 overflow-x-auto">
         <nav class="flex gap-1 min-w-max" role="tablist" aria-label="Filtrar por nivel académico">
           <button v-for="t in tabs" :key="t.id" type="button" role="tab" :aria-selected="nivelActivo === t.id"
-            class="px-2.5 py-1 rounded-md text-meta whitespace-nowrap cursor-pointer transition focus:outline-hidden focus-visible:ring-2 focus-visible:ring-primary"
+            class="px-2.5 py-1 rounded-md text-micro whitespace-nowrap cursor-pointer transition focus:outline-hidden focus-visible:ring-2 focus-visible:ring-primary"
             :class="nivelActivo === t.id ? 'bg-muted text-foreground font-medium' : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'"
             @click="nivelActivo = t.id">
             {{ t.label }} ({{ t.count }})
@@ -86,8 +86,8 @@ const inicial = (g: PersonalGrado) => (g.abrv?.trim() || g.profesion?.trim() || 
       </div>
 
       <div class="overflow-x-auto">
-        <table class="w-full text-left text-xs" aria-label="Estudios y formación académica">
-          <thead class="text-meta text-muted-foreground">
+        <table class="w-full text-left text-meta" aria-label="Estudios y formación académica">
+          <thead class="text-micro text-muted-foreground">
             <tr class="border-b border-border">
               <th scope="col" class="px-4 py-2 font-medium">Estudio</th>
               <th scope="col" class="px-3 py-2 font-medium">Institución</th>
@@ -105,13 +105,13 @@ const inicial = (g: PersonalGrado) => (g.abrv?.trim() || g.profesion?.trim() || 
               <td class="px-4 py-2.5 min-w-0">
                 <div class="flex items-center gap-3">
                   <span
-                    class="size-8 rounded-full text-white text-meta font-semibold flex items-center justify-center shrink-0 select-none"
+                    class="size-8 rounded-full text-white text-micro font-semibold flex items-center justify-center shrink-0 select-none"
                     :class="nivelTone(g.nivel_academico).avatar" aria-hidden="true">
                     {{ inicial(g) }}
                   </span>
                   <div class="min-w-0">
-                    <p class="font-semibold text-foreground text-xs wrap-break-word" :title="g.profesion">{{ g.profesion }}</p>
-                    <p v-if="g.abrv" class="text-muted-foreground uppercase font-mono text-meta">{{ g.abrv }}</p>
+                    <p class="font-semibold text-foreground text-meta wrap-break-word" :title="g.profesion">{{ g.profesion }}</p>
+                    <p v-if="g.abrv" class="text-muted-foreground uppercase font-mono text-micro">{{ g.abrv }}</p>
                   </div>
                 </div>
               </td>
@@ -136,13 +136,13 @@ const inicial = (g: PersonalGrado) => (g.abrv?.trim() || g.profesion?.trim() || 
         </table>
       </div>
 
-      <div class="px-4 py-2 border-t border-border text-meta text-muted-foreground inline-flex w-full items-center gap-1.5">
+      <div class="px-4 py-2 border-t border-border text-micro text-muted-foreground inline-flex w-full items-center gap-1.5">
         <IconArrowsSort class="size-3.5" />
         Ordenado por fecha de grado, {{ sortDir === 'desc' ? 'más recientes primero' : 'más antiguos primero' }}
       </div>
     </template>
 
-    <div v-else class="text-xs text-muted-foreground py-12 text-center space-y-2">
+    <div v-else class="text-meta text-muted-foreground py-12 text-center space-y-2">
       <IconSchool class="size-8 mx-auto text-muted-foreground/40" />
       <p class="font-semibold text-foreground">Sin estudios registrados</p>
       <p>No constan títulos universitarios, grados o colegiaturas en el legajo.</p>

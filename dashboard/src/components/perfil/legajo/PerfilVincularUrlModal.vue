@@ -103,7 +103,7 @@ const handleSubmit = () => {
 <template>
   <Modal :is-open="isOpen" labelledby="modal-vincular-title" @close="handleClose">
     <div
-      class="w-full max-w-lg bg-card border border-border rounded-2xl shadow-2xl overflow-hidden text-xs max-h-[92vh] flex flex-col"
+      class="w-full max-w-lg bg-card border border-border rounded-2xl shadow-2xl overflow-hidden text-meta max-h-[92vh] flex flex-col"
     >
       <div class="p-4 border-b border-border flex items-center justify-between bg-muted/20 shrink-0">
         <div class="flex items-center gap-2.5 min-w-0">
@@ -113,10 +113,10 @@ const handleSubmit = () => {
             <IconLink class="size-4.5" aria-hidden="true" />
           </div>
           <div class="min-w-0">
-            <h3 id="modal-vincular-title" class="font-bold text-foreground text-sm tracking-tight truncate">
+            <h3 id="modal-vincular-title" class="font-bold text-foreground text-xs tracking-tight truncate">
               Vincular PDF al Documento
             </h3>
-            <p class="text-meta text-muted-foreground truncate">
+            <p class="text-micro text-muted-foreground truncate">
               Asociar una URL externa al acto administrativo
             </p>
           </div>
@@ -138,15 +138,15 @@ const handleSubmit = () => {
           <div class="flex items-center justify-between gap-2">
             <div class="flex items-center gap-2 min-w-0">
               <IconFileText class="size-4 text-primary shrink-0" />
-              <span class="font-semibold text-foreground text-xs truncate">{{ documento.sigla }}</span>
+              <span class="font-semibold text-foreground text-meta truncate">{{ documento.sigla }}</span>
             </div>
-            <span class="font-mono text-meta text-muted-foreground shrink-0">{{ formatDate(documento.fecha) }}</span>
+            <span class="font-mono text-micro text-muted-foreground shrink-0">{{ formatDate(documento.fecha) }}</span>
           </div>
-          <p class="text-meta text-muted-foreground leading-relaxed">{{ documento.descripcion }}</p>
+          <p class="text-micro text-muted-foreground leading-relaxed">{{ documento.descripcion }}</p>
         </div>
 
         <div class="space-y-1.5">
-          <label for="url-externa" class="block font-medium text-foreground text-xs">
+          <label for="url-externa" class="block font-medium text-foreground text-meta">
             URL del documento PDF <span class="text-destructive">*</span>
           </label>
           <div class="relative">
@@ -156,11 +156,11 @@ const handleSubmit = () => {
               v-model="url"
               type="url"
               placeholder="https://transparencia.munives.gob.pe/documentos/archivo.pdf"
-              class="w-full h-9 pl-9 pr-3 rounded-lg border text-xs bg-background focus:outline-hidden focus:ring-1 transition"
+              class="w-full h-9 pl-9 pr-3 rounded-lg border text-meta bg-background focus:outline-hidden focus:ring-1 transition"
               :class="formErrors.url ? 'border-destructive focus:ring-destructive' : 'border-border focus:ring-primary'"
             />
           </div>
-          <p v-if="formErrors.url" class="text-meta text-destructive flex items-center gap-1 mt-1">
+          <p v-if="formErrors.url" class="text-micro text-destructive flex items-center gap-1 mt-1">
             <IconAlertTriangle class="size-3 shrink-0" />
             <span>{{ formErrors.url }}</span>
           </p>
@@ -170,7 +170,7 @@ const handleSubmit = () => {
         </div>
 
         <div class="space-y-1.5">
-          <label for="nombre-archivo" class="block font-medium text-foreground text-xs">
+          <label for="nombre-archivo" class="block font-medium text-foreground text-meta">
             Nombre del archivo <span class="text-destructive">*</span>
           </label>
           <div class="relative">
@@ -180,11 +180,11 @@ const handleSubmit = () => {
               v-model="fileName"
               type="text"
               placeholder="resolucion_123_2024.pdf"
-              class="w-full h-9 pl-9 pr-3 rounded-lg border text-xs bg-background focus:outline-hidden focus:ring-1 transition"
+              class="w-full h-9 pl-9 pr-3 rounded-lg border text-meta bg-background focus:outline-hidden focus:ring-1 transition"
               :class="formErrors.fileName ? 'border-destructive focus:ring-destructive' : 'border-border focus:ring-primary'"
             />
           </div>
-          <p v-if="formErrors.fileName" class="text-meta text-destructive flex items-center gap-1 mt-1">
+          <p v-if="formErrors.fileName" class="text-micro text-destructive flex items-center gap-1 mt-1">
             <IconAlertTriangle class="size-3 shrink-0" />
             <span>{{ formErrors.fileName }}</span>
           </p>

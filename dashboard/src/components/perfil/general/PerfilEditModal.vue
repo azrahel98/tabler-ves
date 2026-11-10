@@ -152,12 +152,12 @@ const onSubmit = () => {
 
 <template>
   <Modal :is-open="isOpen" labelledby="modal-edit-profile-title" @close="handleRequestClose">
-    <div class="w-full max-w-xl bg-card border border-border rounded-2xl shadow-xl overflow-hidden text-xs">
+    <div class="w-full max-w-xl bg-card border border-border rounded-2xl shadow-xl overflow-hidden text-meta">
       <div v-if="showConfirmDiscard"
-        class="p-4 bg-amber-500/10 border-b border-amber-500/20 text-xs flex flex-wrap items-center justify-between gap-3">
+        class="p-4 bg-amber-500/10 border-b border-amber-500/20 text-meta flex flex-wrap items-center justify-between gap-3">
         <div class="space-y-0.5">
           <p class="font-bold text-amber-700 dark:text-amber-400">¿Desea descartar los cambios no guardados?</p>
-          <p class="text-muted-foreground text-meta">Si cierra ahora, perderá las modificaciones realizadas en la
+          <p class="text-muted-foreground text-micro">Si cierra ahora, perderá las modificaciones realizadas en la
             ficha.</p>
         </div>
         <div class="flex items-center gap-2 shrink-0">
@@ -172,11 +172,11 @@ const onSubmit = () => {
 
       <div class="p-4 border-b border-border flex items-center justify-between">
         <div>
-          <h3 id="modal-edit-profile-title" class="font-bold text-foreground text-sm flex items-center gap-2">
+          <h3 id="modal-edit-profile-title" class="font-bold text-foreground text-xs flex items-center gap-2">
             <IconEdit class="size-4 text-primary" />
             <span>Actualizar Ficha del Servidor</span>
           </h3>
-          <p class="text-meta text-muted-foreground mt-0.5">
+          <p class="text-micro text-muted-foreground mt-0.5">
             Modifique los datos de contacto y residencia. El DNI es un identificador inmutable.
           </p>
         </div>
@@ -191,7 +191,7 @@ const onSubmit = () => {
           <div class="space-y-1.5">
             <label class="font-semibold text-foreground">Nombre Completo</label>
             <input v-model="editForm.nombre" type="text"
-              class="w-full h-9 px-3 text-xs rounded-lg border border-border bg-muted text-muted-foreground cursor-not-allowed"
+              class="w-full h-9 px-3 text-meta rounded-lg border border-border bg-muted text-muted-foreground cursor-not-allowed"
               disabled />
 
           </div>
@@ -199,24 +199,24 @@ const onSubmit = () => {
           <div class="space-y-1.5">
             <label class="font-semibold text-foreground">Número de DNI</label>
             <input v-model="editForm.dni" type="text"
-              class="w-full h-9 px-3 text-xs rounded-lg border border-border bg-muted text-muted-foreground cursor-not-allowed"
+              class="w-full h-9 px-3 text-meta rounded-lg border border-border bg-muted text-muted-foreground cursor-not-allowed"
               disabled />
           </div>
 
           <div class="space-y-1.5">
             <label class="font-semibold text-foreground">Teléfono de Contacto</label>
             <input v-model="editForm.telf" type="text" placeholder="Ej. 987654321"
-              class="w-full h-9 px-3 text-xs rounded-lg border bg-background-1 text-foreground focus:outline-hidden focus:border-primary"
+              class="w-full h-9 px-3 text-meta rounded-lg border bg-background-1 text-foreground focus:outline-hidden focus:border-primary"
               :class="formErrors.telf ? 'border-rose-500' : 'border-border'" />
-            <p v-if="formErrors.telf" class="text-meta text-rose-500 font-medium">{{ formErrors.telf }}</p>
+            <p v-if="formErrors.telf" class="text-micro text-rose-500 font-medium">{{ formErrors.telf }}</p>
           </div>
 
           <div class="space-y-1.5">
             <label class="font-semibold text-foreground">Correo Electrónico</label>
             <input v-model="editForm.email" type="email" placeholder="ejemplo@gob.pe"
-              class="w-full h-9 px-3 text-xs rounded-lg border bg-background-1 text-foreground focus:outline-hidden focus:border-primary"
+              class="w-full h-9 px-3 text-meta rounded-lg border bg-background-1 text-foreground focus:outline-hidden focus:border-primary"
               :class="formErrors.email ? 'border-rose-500' : 'border-border'" />
-            <p v-if="formErrors.email" class="text-meta text-rose-500 font-medium">{{ formErrors.email }}</p>
+            <p v-if="formErrors.email" class="text-micro text-rose-500 font-medium">{{ formErrors.email }}</p>
           </div>
 
           <div class="space-y-1.5">
@@ -231,7 +231,7 @@ const onSubmit = () => {
             />
             <p
               v-if="distritoNoValidoOriginal"
-              class="text-meta text-amber-600 dark:text-amber-400 font-medium"
+              class="text-micro text-amber-600 dark:text-amber-400 font-medium"
             >
               Valor actual "{{ distritoNoValidoOriginal }}" no es un distrito válido; seleccione uno.
             </p>
@@ -243,7 +243,7 @@ const onSubmit = () => {
               :value="editForm.region"
               type="text"
               disabled
-              class="w-full h-9 px-3 text-xs rounded-lg border border-border bg-muted text-muted-foreground cursor-not-allowed"
+              class="w-full h-9 px-3 text-meta rounded-lg border border-border bg-muted text-muted-foreground cursor-not-allowed"
             />
           </div>
         </div>
@@ -251,7 +251,7 @@ const onSubmit = () => {
         <div class="space-y-1.5">
           <label class="font-semibold text-foreground">Dirección Domiciliaria</label>
           <input v-model="editForm.direccion" type="text" placeholder="Avenida, jirón, calle, número y urbanización"
-            class="w-full h-9 px-3 text-xs rounded-lg border border-border bg-background-1 text-foreground focus:outline-hidden focus:border-primary" />
+            class="w-full h-9 px-3 text-meta rounded-lg border border-border bg-background-1 text-foreground focus:outline-hidden focus:border-primary" />
         </div>
 
         <div class="pt-3 border-t border-border flex items-center justify-end gap-2">

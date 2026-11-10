@@ -243,7 +243,7 @@ const handleSubmit = () => {
 <template>
   <Modal :is-open="isOpen" labelledby="modal-renuncia-title" @close="handleClose">
     <div
-      class="w-full max-w-xl bg-card border border-border rounded-2xl shadow-2xl overflow-hidden text-xs max-h-[92vh] flex flex-col"
+      class="w-full max-w-xl bg-card border border-border rounded-2xl shadow-2xl overflow-hidden text-meta max-h-[92vh] flex flex-col"
     >
       <div class="p-4 border-b border-border flex items-center justify-between bg-muted/20 shrink-0">
         <div class="flex items-center gap-2.5 min-w-0">
@@ -253,10 +253,10 @@ const handleSubmit = () => {
             <IconFileX class="size-4.5" aria-hidden="true" />
           </div>
           <div class="min-w-0">
-            <h3 id="modal-renuncia-title" class="font-bold text-foreground text-sm tracking-tight truncate">
+            <h3 id="modal-renuncia-title" class="font-bold text-foreground text-xs tracking-tight truncate">
               Registrar Renuncia / Cese de Vínculo
             </h3>
-            <p class="text-meta text-muted-foreground truncate">
+            <p class="text-micro text-muted-foreground truncate">
               Formalización de la conclusión laboral mediante acto administrativo
             </p>
           </div>
@@ -276,7 +276,7 @@ const handleSubmit = () => {
       <div class="p-4 overflow-y-auto space-y-4 flex-1">
         <div
           v-if="formErrors.general"
-          class="p-3 rounded-xl bg-destructive/10 border border-destructive/20 text-destructive text-xs flex items-center gap-2"
+          class="p-3 rounded-xl bg-destructive/10 border border-destructive/20 text-destructive text-meta flex items-center gap-2"
         >
           <IconAlertTriangle class="size-4 shrink-0" />
           <span>{{ formErrors.general }}</span>
@@ -285,8 +285,8 @@ const handleSubmit = () => {
         <div v-if="vinculo" class="p-3.5 rounded-xl bg-muted/40 border border-border/80 space-y-2.5">
           <div class="flex flex-wrap items-center justify-between gap-2">
             <div class="flex items-center gap-2 min-w-0">
-              <span class="font-bold text-foreground text-xs truncate">{{ servidorNombre || 'Servidor' }}</span>
-              <span v-if="servidorDni" class="font-mono text-muted-foreground text-meta">
+              <span class="font-bold text-foreground text-meta truncate">{{ servidorNombre || 'Servidor' }}</span>
+              <span v-if="servidorDni" class="font-mono text-muted-foreground text-micro">
                 (DNI {{ servidorDni }})
               </span>
             </div>
@@ -294,7 +294,7 @@ const handleSubmit = () => {
           </div>
 
           <div
-            class="grid grid-cols-[repeat(auto-fit,minmax(14rem,1fr))] gap-2 text-meta text-muted-foreground pt-1 border-t border-border/60"
+            class="grid grid-cols-[repeat(auto-fit,minmax(14rem,1fr))] gap-2 text-micro text-muted-foreground pt-1 border-t border-border/60"
           >
             <div class="flex items-center gap-1.5 truncate">
               <IconBriefcase class="size-3.5 text-muted-foreground shrink-0" />
@@ -325,7 +325,7 @@ const handleSubmit = () => {
                 id="renuncia-tipo-doc"
                 v-model="formData.tipoDocumento"
                 :disabled="isLoadingCatalogos || isSaving"
-                class="w-full h-9 px-2.5 rounded-lg border bg-background text-foreground text-xs focus:outline-hidden focus:ring-2 focus:ring-primary focus:border-primary transition"
+                class="w-full h-9 px-2.5 rounded-lg border bg-background text-foreground text-meta focus:outline-hidden focus:ring-2 focus:ring-primary focus:border-primary transition"
                 :class="formErrors.tipoDocumento ? 'border-destructive' : 'border-input'"
               >
                 <option v-if="isLoadingCatalogos" disabled value="">
@@ -352,7 +352,7 @@ const handleSubmit = () => {
                 step="1"
                 placeholder="Ej. 456"
                 :disabled="isSaving"
-                class="w-full h-9 px-2.5 rounded-lg border bg-background text-foreground text-xs focus:outline-hidden focus:ring-2 focus:ring-primary focus:border-primary transition font-mono"
+                class="w-full h-9 px-2.5 rounded-lg border bg-background text-foreground text-meta focus:outline-hidden focus:ring-2 focus:ring-primary focus:border-primary transition font-mono"
                 :class="formErrors.numeroDocumento ? 'border-destructive' : 'border-input'"
               />
               <p v-if="formErrors.numeroDocumento" class="text-micro text-destructive font-medium">
@@ -372,7 +372,7 @@ const handleSubmit = () => {
                 max="2050"
                 step="1"
                 :disabled="isSaving"
-                class="w-full h-9 px-2.5 rounded-lg border bg-background text-foreground text-xs focus:outline-hidden focus:ring-2 focus:ring-primary focus:border-primary transition font-mono"
+                class="w-full h-9 px-2.5 rounded-lg border bg-background text-foreground text-meta focus:outline-hidden focus:ring-2 focus:ring-primary focus:border-primary transition font-mono"
                 :class="formErrors.añoDocumento ? 'border-destructive' : 'border-input'"
               />
               <p v-if="formErrors.añoDocumento" class="text-micro text-destructive font-medium">
@@ -383,7 +383,7 @@ const handleSubmit = () => {
 
           <div
             v-if="esSunat"
-            class="p-2.5 rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-700 dark:text-blue-300 text-meta flex items-center gap-2"
+            class="p-2.5 rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-700 dark:text-blue-300 text-micro flex items-center gap-2"
           >
             <IconCheck class="size-3.5 text-blue-600 dark:text-blue-400 shrink-0" />
             <span>
@@ -393,7 +393,7 @@ const handleSubmit = () => {
 
           <div v-if="necesitaArea" class="space-y-2 p-3 rounded-xl bg-muted/20 border border-border/70">
             <div class="flex items-center justify-between">
-              <label for="renuncia-buscar-area" class="font-semibold text-foreground text-xs flex items-center gap-1.5">
+              <label for="renuncia-buscar-area" class="font-semibold text-foreground text-meta flex items-center gap-1.5">
                 <IconBuildingSkyscraper class="size-3.5 text-muted-foreground" />
                 Área de Emisión del Documento
                 <span class="text-rose-500">*</span>
@@ -409,7 +409,7 @@ const handleSubmit = () => {
                 type="text"
                 placeholder="Buscar área por nombre o sigla (ej. Gerencia, Recursos)..."
                 :disabled="isLoadingCatalogos || isSaving"
-                class="w-full h-8 pl-8 pr-3 rounded-lg border border-input bg-background text-foreground text-xs focus:outline-hidden focus:ring-2 focus:ring-primary focus:border-primary transition"
+                class="w-full h-8 pl-8 pr-3 rounded-lg border border-input bg-background text-foreground text-meta focus:outline-hidden focus:ring-2 focus:ring-primary focus:border-primary transition"
               />
             </div>
 
@@ -417,7 +417,7 @@ const handleSubmit = () => {
               id="renuncia-area-select"
               v-model="formData.areaId"
               :disabled="isLoadingCatalogos || isSaving"
-              class="w-full h-9 px-2.5 rounded-lg border bg-background text-foreground text-xs focus:outline-hidden focus:ring-2 focus:ring-primary focus:border-primary transition"
+              class="w-full h-9 px-2.5 rounded-lg border bg-background text-foreground text-meta focus:outline-hidden focus:ring-2 focus:ring-primary focus:border-primary transition"
               :class="formErrors.areaId ? 'border-destructive' : 'border-input'"
             >
               <option value="" disabled>Seleccione el área del documento...</option>
@@ -430,7 +430,7 @@ const handleSubmit = () => {
               </option>
             </select>
 
-            <div v-if="areaSeleccionada" class="text-meta text-muted-foreground flex items-center gap-1.5">
+            <div v-if="areaSeleccionada" class="text-micro text-muted-foreground flex items-center gap-1.5">
               <IconCheck class="size-3.5 text-emerald-500 shrink-0" />
               <span>
                 Área seleccionada:
@@ -446,7 +446,7 @@ const handleSubmit = () => {
 
           <div
             v-else-if="formData.tipoDocumento && !esSunat"
-            class="p-2.5 rounded-lg bg-muted/40 border border-border/60 text-muted-foreground text-meta flex items-center gap-2"
+            class="p-2.5 rounded-lg bg-muted/40 border border-border/60 text-muted-foreground text-micro flex items-center gap-2"
           >
             <IconCheck class="size-3.5 text-emerald-500 shrink-0" />
             <span>
@@ -464,7 +464,7 @@ const handleSubmit = () => {
                 v-model="formData.fecha"
                 type="date"
                 :disabled="isSaving"
-                class="w-full h-9 px-2.5 rounded-lg border bg-background text-foreground text-xs focus:outline-hidden focus:ring-2 focus:ring-primary focus:border-primary transition font-mono"
+                class="w-full h-9 px-2.5 rounded-lg border bg-background text-foreground text-meta focus:outline-hidden focus:ring-2 focus:ring-primary focus:border-primary transition font-mono"
                 :class="formErrors.fecha ? 'border-destructive' : 'border-input'"
               />
               <p v-if="formErrors.fecha" class="text-micro text-destructive font-medium">
@@ -481,7 +481,7 @@ const handleSubmit = () => {
                 v-model="formData.fechaValida"
                 type="date"
                 :disabled="isSaving"
-                class="w-full h-9 px-2.5 rounded-lg border bg-background text-foreground text-xs focus:outline-hidden focus:ring-2 focus:ring-primary focus:border-primary transition font-mono border-input"
+                class="w-full h-9 px-2.5 rounded-lg border bg-background text-foreground text-meta focus:outline-hidden focus:ring-2 focus:ring-primary focus:border-primary transition font-mono border-input"
               />
             </div>
           </div>
@@ -503,7 +503,7 @@ const handleSubmit = () => {
               placeholder="Indique los detalles o justificación de la renuncia o término de funciones..."
               :disabled="isSaving || esSunat"
               :readonly="esSunat"
-              class="w-full p-2.5 rounded-lg border bg-background text-foreground text-xs focus:outline-hidden focus:ring-2 focus:ring-primary focus:border-primary transition resize-none disabled:bg-muted/50 disabled:text-muted-foreground disabled:cursor-not-allowed"
+              class="w-full p-2.5 rounded-lg border bg-background text-foreground text-meta focus:outline-hidden focus:ring-2 focus:ring-primary focus:border-primary transition resize-none disabled:bg-muted/50 disabled:text-muted-foreground disabled:cursor-not-allowed"
               :class="formErrors.descripcion ? 'border-destructive' : 'border-input'"
             ></textarea>
             <p v-if="formErrors.descripcion" class="text-micro text-destructive font-medium">

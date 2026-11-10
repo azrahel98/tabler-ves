@@ -562,11 +562,11 @@ const handleSubmit = () => {
                 <IconFileCode class="size-4.5" />
               </div>
               <div class="min-w-0">
-                <h3 class="font-bold text-title text-foreground tracking-tight truncate">
+                <h3 class="font-bold text-sm text-foreground tracking-tight truncate">
                   {{ esModoExistente ? (esEventoFinalizado ? 'Detalles del Evento Laboral' : 'Gestionar Evento Laboral')
                     : 'Registrar Nuevo Evento Laboral' }}
                 </h3>
-                <p class="text-xs text-muted-foreground truncate">
+                <p class="text-meta text-muted-foreground truncate">
                   {{ vinculo ? `${vinculo.cargo} • ${vinculo.area || 'Sin área'}` : 'Vínculo laboral' }}
                 </p>
               </div>
@@ -579,13 +579,13 @@ const handleSubmit = () => {
             </button>
           </div>
 
-          <form id="evento-form" class="p-5 overflow-y-auto min-h-0 flex-1 space-y-4 text-xs"
+          <form id="evento-form" class="p-5 overflow-y-auto min-h-0 flex-1 space-y-4 text-meta"
             @submit.prevent="handleSubmit">
             <div v-if="esModoExistente && evento" class="space-y-3">
               <div class="p-3.5 rounded-xl border border-border bg-muted/20 space-y-2">
                 <div class="flex items-center justify-between gap-2">
                   <div class="flex items-center gap-2">
-                    <span class="text-meta font-semibold uppercase tracking-wider text-muted-foreground">Evento
+                    <span class="text-micro font-semibold uppercase tracking-wider text-muted-foreground">Evento
                       Actual</span>
                     <Badge size="xs" :variant="evento.estado?.toLowerCase() === 'activo' ? 'success' : 'secondary'">
                       {{ evento.estado?.toLowerCase() === 'activo' ? 'Activo' : 'Finalizado' }}
@@ -596,36 +596,36 @@ const handleSubmit = () => {
                   </span>
                 </div>
 
-                <div class="grid grid-cols-2 gap-2 text-xs pt-1">
+                <div class="grid grid-cols-2 gap-2 text-meta pt-1">
                   <div>
-                    <span class="text-muted-foreground block text-meta">Tipo de Evento:</span>
+                    <span class="text-muted-foreground block text-micro">Tipo de Evento:</span>
                     <span class="font-medium text-foreground capitalize block">
                       {{ getTipoEventoLabel(evento.tipo_evento) }}
                     </span>
                   </div>
                   <div>
-                    <span class="text-muted-foreground block text-meta">Fecha de Inicio:</span>
+                    <span class="text-muted-foreground block text-micro">Fecha de Inicio:</span>
                     <span class="font-mono text-foreground font-medium block">
                       {{ evento.fecha_inicio ? formatDate(evento.fecha_inicio) : '-' }}
                     </span>
                   </div>
                   <div class="col-span-2">
-                    <span class="text-muted-foreground block text-meta">Documento de Sustento:</span>
+                    <span class="text-muted-foreground block text-micro">Documento de Sustento:</span>
                     <span class="font-medium text-foreground truncate block"
                       :title="[evento.tipo_doc_inicio, evento.numero_doc_inicio].filter(Boolean).join(' N° ') || '-'">
                       {{ [evento.tipo_doc_inicio, evento.numero_doc_inicio].filter(Boolean).join(' N° ') || '-' }}
                     </span>
                   </div>
                   <div v-if="evento.nueva_area" class="col-span-2">
-                    <span class="text-muted-foreground block text-meta">Área Asignada:</span>
+                    <span class="text-muted-foreground block text-micro">Área Asignada:</span>
                     <span class="font-medium text-foreground block">{{ evento.nueva_area }}</span>
                   </div>
                   <div v-if="evento.nuevo_cargo" class="col-span-2">
-                    <span class="text-muted-foreground block text-meta">Cargo Asignado:</span>
+                    <span class="text-muted-foreground block text-micro">Cargo Asignado:</span>
                     <span class="font-medium text-foreground block">{{ evento.nuevo_cargo }}</span>
                   </div>
                   <div v-if="evento.fecha_desde" class="col-span-2">
-                    <span class="text-muted-foreground block text-meta">Vigencia de Encargo:</span>
+                    <span class="text-muted-foreground block text-micro">Vigencia de Encargo:</span>
                     <span class="font-mono text-foreground font-medium block">
                       Del {{ formatDate(evento.fecha_desde) }}{{ evento.fecha_hasta ? ` al ${formatDate(evento.fecha_hasta)}` : ' en adelante' }}
                     </span>
@@ -633,17 +633,17 @@ const handleSubmit = () => {
                 </div>
 
                 <div v-if="esEventoFinalizado" class="border-t border-border/60 pt-2 space-y-1">
-                  <div class="flex items-center justify-between text-meta">
+                  <div class="flex items-center justify-between text-micro">
                     <span class="text-muted-foreground font-medium">Término de Evento:</span>
                     <span class="font-mono text-foreground font-medium">
                       {{ evento.fecha_salida ? formatDate(evento.fecha_salida) : '-' }}
                     </span>
                   </div>
-                  <p class="font-medium text-foreground text-xs truncate">
+                  <p class="font-medium text-foreground text-meta truncate">
                     {{ [evento.tipo_doc_salida, evento.numero_doc_salida].filter(Boolean).join(' N° ') ||
                       'Mismo documento de inicio' }}
                   </p>
-                  <p v-if="evento.descrip_salida" class="text-muted-foreground text-meta leading-relaxed">
+                  <p v-if="evento.descrip_salida" class="text-muted-foreground text-micro leading-relaxed">
                     {{ evento.descrip_salida }}
                   </p>
                 </div>
@@ -651,14 +651,14 @@ const handleSubmit = () => {
 
               <div class="flex rounded-xl p-1 bg-muted/40 border border-border">
                 <button type="button"
-                  class="flex-1 py-1.5 px-3 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center justify-center gap-1.5"
+                  class="flex-1 py-1.5 px-3 rounded-lg text-meta font-semibold transition-all cursor-pointer flex items-center justify-center gap-1.5"
                   :class="tabModoEvento === 'cierre' ? 'bg-card text-foreground shadow-xs border border-border' : 'text-muted-foreground hover:text-foreground'"
                   @click="tabModoEvento = 'cierre'">
                   <IconFileCheck class="size-3.5" />
                   <span>{{ esEventoFinalizado ? 'Detalle de Cierre' : 'Finalizar / Cerrar' }}</span>
                 </button>
                 <button type="button"
-                  class="flex-1 py-1.5 px-3 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center justify-center gap-1.5"
+                  class="flex-1 py-1.5 px-3 rounded-lg text-meta font-semibold transition-all cursor-pointer flex items-center justify-center gap-1.5"
                   :class="tabModoEvento === 'editar' ? 'bg-card text-foreground shadow-xs border border-border' : 'text-muted-foreground hover:text-foreground'"
                   @click="tabModoEvento = 'editar'">
                   <IconEdit class="size-3.5" />
@@ -668,20 +668,20 @@ const handleSubmit = () => {
 
               <div v-if="tabModoEvento === 'cierre' && !esEventoFinalizado" class="space-y-3 pt-1">
                 <div class="space-y-2">
-                  <span class="block font-medium text-foreground text-xs">Modalidad de Cierre de Evento</span>
+                  <span class="block font-medium text-foreground text-meta">Modalidad de Cierre de Evento</span>
                   <div class="grid grid-cols-2 gap-2">
                     <label class="p-2.5 rounded-xl border flex items-center gap-2 cursor-pointer transition-colors"
                       :class="accionCierre === 'salida' ? 'border-primary bg-primary/5 text-primary' : 'border-border bg-card text-foreground'">
                       <input v-model="accionCierre" type="radio" value="salida" class="sr-only" />
                       <IconFileCheck class="size-4 shrink-0" />
-                      <span class="text-xs font-medium">Registrar Doc. Término</span>
+                      <span class="text-meta font-medium">Registrar Doc. Término</span>
                     </label>
 
                     <label class="p-2.5 rounded-xl border flex items-center gap-2 cursor-pointer transition-colors"
                       :class="accionCierre === 'mismo' ? 'border-primary bg-primary/5 text-primary' : 'border-border bg-card text-foreground'">
                       <input v-model="accionCierre" type="radio" value="mismo" class="sr-only" />
                       <IconCheck class="size-4 shrink-0" />
-                      <span class="text-xs font-medium">Mismo Doc. Inicio</span>
+                      <span class="text-meta font-medium">Mismo Doc. Inicio</span>
                     </label>
                   </div>
                 </div>
@@ -689,60 +689,60 @@ const handleSubmit = () => {
                 <div v-if="accionCierre === 'salida'" class="space-y-3 pt-2 border-t border-border/70">
                   <div class="flex items-center gap-2">
                     <IconFileCheck class="size-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
-                    <span class="font-semibold text-foreground text-xs uppercase tracking-wider">
+                    <span class="font-semibold text-foreground text-meta uppercase tracking-wider">
                       Documento Sustentatorio de Cierre / Término
                     </span>
                   </div>
 
                   <div class="grid grid-cols-[repeat(auto-fit,minmax(14rem,1fr))] gap-3">
                     <div>
-                      <label class="block font-medium text-foreground mb-1 text-xs">
+                      <label class="block font-medium text-foreground mb-1 text-meta">
                         Tipo de Documento <span class="text-rose-500">*</span>
                       </label>
                       <select v-model="docSalida.tipoDocumento"
-                        class="w-full rounded-lg border bg-background px-3 py-2 text-xs focus:ring-2 focus:ring-primary focus:outline-hidden transition-colors cursor-pointer"
+                        class="w-full rounded-lg border bg-background px-3 py-2 text-meta focus:ring-2 focus:ring-primary focus:outline-hidden transition-colors cursor-pointer"
                         :class="formErrors.tipoDocumentoSalida ? 'border-rose-500 ring-rose-500' : 'border-border'">
                         <option value="" disabled>Seleccione tipo de documento</option>
                         <option v-for="td in tiposDocumento" :key="td.id" :value="td.id">
                           {{ td.nombre }} {{ td.sigla ? `(${td.sigla})` : '' }}
                         </option>
                       </select>
-                      <p v-if="formErrors.tipoDocumentoSalida" class="text-rose-500 text-meta mt-1">
+                      <p v-if="formErrors.tipoDocumentoSalida" class="text-rose-500 text-micro mt-1">
                         {{ formErrors.tipoDocumentoSalida }}
                       </p>
                     </div>
 
                     <div>
-                      <label class="block font-medium text-foreground mb-1 text-xs">
+                      <label class="block font-medium text-foreground mb-1 text-meta">
                         Año <span class="text-rose-500">*</span>
                       </label>
                       <input v-model.number="docSalida.añoDocumento" type="number" min="1950" max="2099"
-                        class="w-full rounded-lg border bg-background px-3 py-2 text-xs focus:ring-2 focus:ring-primary focus:outline-hidden font-mono"
+                        class="w-full rounded-lg border bg-background px-3 py-2 text-meta focus:ring-2 focus:ring-primary focus:outline-hidden font-mono"
                         :class="formErrors.añoDocumentoSalida ? 'border-rose-500 ring-rose-500' : 'border-border'" />
                     </div>
                   </div>
 
                   <div class="grid grid-cols-[repeat(auto-fit,minmax(14rem,1fr))] gap-3">
                     <div>
-                      <label class="block font-medium text-foreground mb-1 text-xs">
+                      <label class="block font-medium text-foreground mb-1 text-meta">
                         Número de Documento <span class="text-rose-500">*</span>
                       </label>
                       <input v-model.number="docSalida.numeroDocumento" type="number" min="1" placeholder="Ej. 189"
-                        class="w-full rounded-lg border bg-background px-3 py-2 text-xs focus:ring-2 focus:ring-primary focus:outline-hidden font-mono"
+                        class="w-full rounded-lg border bg-background px-3 py-2 text-meta focus:ring-2 focus:ring-primary focus:outline-hidden font-mono"
                         :class="formErrors.numeroDocumentoSalida ? 'border-rose-500 ring-rose-500' : 'border-border'" />
-                      <p v-if="formErrors.numeroDocumentoSalida" class="text-rose-500 text-meta mt-1">
+                      <p v-if="formErrors.numeroDocumentoSalida" class="text-rose-500 text-micro mt-1">
                         {{ formErrors.numeroDocumentoSalida }}
                       </p>
                     </div>
 
                     <div>
-                      <label class="block font-medium text-foreground mb-1 text-xs">
+                      <label class="block font-medium text-foreground mb-1 text-meta">
                         Fecha de Término <span class="text-rose-500">*</span>
                       </label>
                       <input v-model="docSalida.fecha" type="date"
-                        class="w-full rounded-lg border bg-background px-3 py-2 text-xs focus:ring-2 focus:ring-primary focus:outline-hidden font-mono"
+                        class="w-full rounded-lg border bg-background px-3 py-2 text-meta focus:ring-2 focus:ring-primary focus:outline-hidden font-mono"
                         :class="formErrors.fechaSalida ? 'border-rose-500 ring-rose-500' : 'border-border'" />
-                      <p v-if="formErrors.fechaSalida" class="text-rose-500 text-meta mt-1">
+                      <p v-if="formErrors.fechaSalida" class="text-rose-500 text-micro mt-1">
                         {{ formErrors.fechaSalida }}
                       </p>
                     </div>
@@ -756,14 +756,14 @@ const handleSubmit = () => {
                   </div>
 
                   <div>
-                    <label class="block font-medium text-foreground mb-1 text-xs">
+                    <label class="block font-medium text-foreground mb-1 text-meta">
                       Descripción de Cierre <span class="text-rose-500">*</span>
                     </label>
                     <textarea v-model="docSalida.descripcion" rows="2"
                       placeholder="Detalles de la conclusión del evento..."
-                      class="w-full rounded-lg border bg-background p-2.5 text-xs focus:ring-2 focus:ring-primary focus:outline-hidden leading-relaxed"
+                      class="w-full rounded-lg border bg-background p-2.5 text-meta focus:ring-2 focus:ring-primary focus:outline-hidden leading-relaxed"
                       :class="formErrors.descripcionSalida ? 'border-rose-500 ring-rose-500' : 'border-border'"></textarea>
-                    <p v-if="formErrors.descripcionSalida" class="text-rose-500 text-meta mt-1">
+                    <p v-if="formErrors.descripcionSalida" class="text-rose-500 text-micro mt-1">
                       {{ formErrors.descripcionSalida }}
                     </p>
                   </div>
@@ -772,8 +772,8 @@ const handleSubmit = () => {
                 <div v-else class="p-3.5 rounded-xl border border-border/80 bg-muted/20 flex items-start gap-2.5">
                   <IconCheck class="size-4.5 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
                   <div class="space-y-0.5">
-                    <p class="font-medium text-foreground text-xs">Cierre con Documento de Inicio</p>
-                    <p class="text-muted-foreground text-meta leading-relaxed">
+                    <p class="font-medium text-foreground text-meta">Cierre con Documento de Inicio</p>
+                    <p class="text-muted-foreground text-micro leading-relaxed">
                       Se utilizará el mismo documento de inicio registrado anteriormente para marcar la finalización de
                       este evento y actualizar el estado laboral del trabajador.
                     </p>
@@ -783,11 +783,11 @@ const handleSubmit = () => {
 
               <div v-if="tabModoEvento === 'cierre' && esEventoFinalizado"
                 class="p-3.5 rounded-xl border border-border/80 bg-muted/10 space-y-2">
-                <div class="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-semibold text-xs">
+                <div class="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-semibold text-meta">
                   <IconCheck class="size-4" />
                   <span>Este evento ya se encuentra finalizado</span>
                 </div>
-                <p class="text-muted-foreground text-meta leading-relaxed">
+                <p class="text-muted-foreground text-micro leading-relaxed">
                   Si deseas rectificar el tipo de evento, el área o el cargo asignados, selecciona la pestaña <strong
                     class="text-foreground">Modificar Datos</strong> en la parte superior.
                 </p>
@@ -795,17 +795,17 @@ const handleSubmit = () => {
 
               <div v-if="tabModoEvento === 'editar'" class="space-y-3 pt-1">
                 <div>
-                  <label class="block font-medium text-foreground mb-1 text-xs">
+                  <label class="block font-medium text-foreground mb-1 text-meta">
                     Tipo de Evento o Movimiento <span class="text-rose-500">*</span>
                   </label>
                   <select v-model="tipoEvento"
-                    class="w-full rounded-lg border bg-background px-3 py-2 text-xs focus:ring-2 focus:ring-primary focus:outline-hidden transition-colors cursor-pointer"
+                    class="w-full rounded-lg border bg-background px-3 py-2 text-meta focus:ring-2 focus:ring-primary focus:outline-hidden transition-colors cursor-pointer"
                     :class="formErrors.tipoEvento ? 'border-rose-500 ring-rose-500' : 'border-border'">
                     <option v-for="t in tiposEvento" :key="t.value" :value="t.value">
                       {{ t.label }}
                     </option>
                   </select>
-                  <p v-if="formErrors.tipoEvento" class="text-rose-500 text-meta mt-1">
+                  <p v-if="formErrors.tipoEvento" class="text-rose-500 text-micro mt-1">
                     {{ formErrors.tipoEvento }}
                   </p>
                 </div>
@@ -830,17 +830,17 @@ const handleSubmit = () => {
 
             <div v-if="!esModoExistente" class="space-y-3">
               <div>
-                <label class="block font-medium text-foreground mb-1 text-xs">
+                <label class="block font-medium text-foreground mb-1 text-meta">
                   Tipo de Evento o Movimiento <span class="text-rose-500">*</span>
                 </label>
                 <select v-model="tipoEvento"
-                  class="w-full rounded-lg border bg-background px-3 py-2 text-xs focus:ring-2 focus:ring-primary focus:outline-hidden transition-colors cursor-pointer"
+                  class="w-full rounded-lg border bg-background px-3 py-2 text-meta focus:ring-2 focus:ring-primary focus:outline-hidden transition-colors cursor-pointer"
                   :class="formErrors.tipoEvento ? 'border-rose-500 ring-rose-500' : 'border-border'">
                   <option v-for="t in tiposEvento" :key="t.value" :value="t.value">
                     {{ t.label }}
                   </option>
                 </select>
-                <p v-if="formErrors.tipoEvento" class="text-rose-500 text-meta mt-1">
+                <p v-if="formErrors.tipoEvento" class="text-rose-500 text-micro mt-1">
                   {{ formErrors.tipoEvento }}
                 </p>
               </div>
@@ -863,38 +863,38 @@ const handleSubmit = () => {
 
               <!-- Campos específicos para vigencia (encargaturas y vacaciones) -->
               <div class="p-3.5 rounded-xl border border-amber-500/30 bg-amber-500/5 space-y-3">
-                <div class="flex items-center gap-2 text-amber-600 dark:text-amber-400 font-semibold text-xs">
+                <div class="flex items-center gap-2 text-amber-600 dark:text-amber-400 font-semibold text-meta">
                   <IconUser class="size-4" />
                   <span>{{ esVacaciones ? 'Periodo de Vacaciones' : esEncargo ? 'Datos de la Encargatura' : 'Vigencia del Evento' }}</span>
                 </div>
 
                 <div class="grid grid-cols-[repeat(auto-fit,minmax(14rem,1fr))] gap-3">
                   <div>
-                    <label class="block font-medium text-foreground mb-1 text-xs">
+                    <label class="block font-medium text-foreground mb-1 text-meta">
                       {{ esVacaciones ? 'Fecha de inicio' : 'Vigencia desde' }} <span v-if="requiereVigencia" class="text-rose-500">*</span>
                     </label>
                     <input v-model="fechaDesde" type="date"
-                      class="w-full rounded-lg border bg-background px-3 py-2 text-xs focus:ring-2 focus:ring-primary focus:outline-hidden font-mono"
+                      class="w-full rounded-lg border bg-background px-3 py-2 text-meta focus:ring-2 focus:ring-primary focus:outline-hidden font-mono"
                       :class="formErrors.fechaDesde ? 'border-rose-500 ring-rose-500' : 'border-border'" />
-                    <p v-if="formErrors.fechaDesde" class="text-rose-500 text-meta mt-1">
+                    <p v-if="formErrors.fechaDesde" class="text-rose-500 text-micro mt-1">
                       {{ formErrors.fechaDesde }}
                     </p>
                   </div>
 
                   <div>
-                    <label class="block font-medium text-foreground mb-1 text-xs">
+                    <label class="block font-medium text-foreground mb-1 text-meta">
                       {{ esVacaciones ? 'Fecha de fin' : 'Vigencia hasta' }} <span v-if="esVacaciones" class="text-rose-500">*</span>
                     </label>
                     <input v-model="fechaHasta" type="date"
-                      class="w-full rounded-lg border bg-background px-3 py-2 text-xs focus:ring-2 focus:ring-primary focus:outline-hidden font-mono"
+                      class="w-full rounded-lg border bg-background px-3 py-2 text-meta focus:ring-2 focus:ring-primary focus:outline-hidden font-mono"
                       :class="formErrors.fechaHasta ? 'border-rose-500 ring-rose-500' : 'border-border'" />
-                    <p v-if="formErrors.fechaHasta" class="text-rose-500 text-meta mt-1">
+                    <p v-if="formErrors.fechaHasta" class="text-rose-500 text-micro mt-1">
                       {{ formErrors.fechaHasta }}
                     </p>
                   </div>
                 </div>
 
-                <p v-if="!requiereVigencia" class="text-meta text-muted-foreground">
+                <p v-if="!requiereVigencia" class="text-micro text-muted-foreground">
                   Opcional. Si la resolución fija el inicio y el término del evento, completa ambas fechas y marca la casilla de documento único más abajo.
                 </p>
               </div>
@@ -902,7 +902,7 @@ const handleSubmit = () => {
               <!-- Encargo temporal del puesto (opcional) -->
               <div v-if="esVacaciones && !esModoExistente"
                 class="p-3.5 rounded-xl border border-sky-500/30 bg-sky-500/5 space-y-3">
-                <div class="flex items-center gap-2 text-sky-600 dark:text-sky-400 font-semibold text-xs">
+                <div class="flex items-center gap-2 text-sky-600 dark:text-sky-400 font-semibold text-meta">
                   <IconUser class="size-4" />
                   <span>Encargo temporal del puesto (opcional)</span>
                 </div>
@@ -911,12 +911,12 @@ const handleSubmit = () => {
                 <div v-if="encargadoSeleccionado"
                   class="flex items-center justify-between p-2.5 rounded-lg bg-card border border-border">
                   <div class="flex items-center gap-2">
-                    <div class="size-7 rounded-md bg-primary/10 text-primary flex items-center justify-center font-bold text-xs">
+                    <div class="size-7 rounded-md bg-primary/10 text-primary flex items-center justify-center font-bold text-meta">
                       <IconUser class="size-4" />
                     </div>
                     <div>
-                      <p class="font-semibold text-foreground text-xs">{{ encargadoSeleccionado.nombre }}</p>
-                      <p class="text-meta font-mono text-muted-foreground">DNI: {{ encargadoSeleccionado.dni }}</p>
+                      <p class="font-semibold text-foreground text-meta">{{ encargadoSeleccionado.nombre }}</p>
+                      <p class="text-micro font-mono text-muted-foreground">DNI: {{ encargadoSeleccionado.dni }}</p>
                     </div>
                   </div>
                   <button type="button"
@@ -931,7 +931,7 @@ const handleSubmit = () => {
                   <div class="relative">
                     <input v-model="encargadoSearchQuery" type="text"
                       placeholder="Buscar trabajador por nombres o apellidos..."
-                      class="w-full rounded-lg border border-border bg-background px-3 py-2 pl-8 text-xs focus:ring-2 focus:ring-primary focus:outline-hidden"
+                      class="w-full rounded-lg border border-border bg-background px-3 py-2 pl-8 text-meta focus:ring-2 focus:ring-primary focus:outline-hidden"
                       @input="onSearchEncargadoInput" />
                     <IconSearch class="size-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
                     <span v-if="isSearchingEncargado" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-micro text-muted-foreground">
@@ -940,7 +940,7 @@ const handleSubmit = () => {
                   </div>
 
                   <!-- Error inline si intenta elegir al propio titular u otro error -->
-                  <p v-if="encargadoError" class="text-rose-500 text-meta">
+                  <p v-if="encargadoError" class="text-rose-500 text-micro">
                     {{ encargadoError }}
                   </p>
 
@@ -948,11 +948,11 @@ const handleSubmit = () => {
                   <div v-if="encargadoSearchResults.length > 0"
                     class="max-h-40 overflow-y-auto divide-y divide-border border border-border rounded-lg bg-card shadow-xs">
                     <button v-for="res in encargadoSearchResults" :key="res.dni" type="button"
-                      class="w-full p-2 text-left hover:bg-muted/50 flex items-center justify-between cursor-pointer transition text-xs"
+                      class="w-full p-2 text-left hover:bg-muted/50 flex items-center justify-between cursor-pointer transition text-meta"
                       @click="seleccionarEncargado(res)">
                       <div>
                         <p class="font-medium text-foreground">{{ res.nombre }}</p>
-                        <p class="text-meta font-mono text-muted-foreground">DNI: {{ res.dni }}</p>
+                        <p class="text-micro font-mono text-muted-foreground">DNI: {{ res.dni }}</p>
                       </div>
                       <Badge :variant="res.estado === 'activo' ? 'success' : 'secondary'" size="xs">
                         {{ res.estado }}
@@ -960,12 +960,12 @@ const handleSubmit = () => {
                     </button>
                   </div>
                   <div v-else-if="encargadoSearchQuery.trim().length >= 3 && !isSearchingEncargado"
-                    class="py-2 text-center text-meta text-muted-foreground">
+                    class="py-2 text-center text-micro text-muted-foreground">
                     No se encontraron trabajadores.
                   </div>
                 </div>
 
-                <p class="text-meta text-muted-foreground">
+                <p class="text-micro text-muted-foreground">
                   Se registrará un encargo de puesto con el mismo documento y el mismo periodo, heredando el área y el cargo del titular.
                 </p>
               </div>
@@ -973,60 +973,60 @@ const handleSubmit = () => {
               <div class="space-y-3 pt-2 border-t border-border/70">
                 <div class="flex items-center gap-2">
                   <IconFileText class="size-4 text-primary shrink-0" />
-                  <span class="font-semibold text-foreground text-xs uppercase tracking-wider">
+                  <span class="font-semibold text-foreground text-meta uppercase tracking-wider">
                     Documento Sustentatorio de Inicio
                   </span>
                 </div>
 
                 <div class="grid grid-cols-[repeat(auto-fit,minmax(14rem,1fr))] gap-3">
                   <div>
-                    <label class="block font-medium text-foreground mb-1 text-xs">
+                    <label class="block font-medium text-foreground mb-1 text-meta">
                       Tipo de Documento <span class="text-rose-500">*</span>
                     </label>
                     <select v-model="docInicio.tipoDocumento"
-                      class="w-full rounded-lg border bg-background px-3 py-2 text-xs focus:ring-2 focus:ring-primary focus:outline-hidden transition-colors cursor-pointer"
+                      class="w-full rounded-lg border bg-background px-3 py-2 text-meta focus:ring-2 focus:ring-primary focus:outline-hidden transition-colors cursor-pointer"
                       :class="formErrors.tipoDocumentoInicio ? 'border-rose-500 ring-rose-500' : 'border-border'">
                       <option value="" disabled>Seleccione tipo de documento</option>
                       <option v-for="td in tiposDocumento" :key="td.id" :value="td.id">
                         {{ td.nombre }} {{ td.sigla ? `(${td.sigla})` : '' }}
                       </option>
                     </select>
-                    <p v-if="formErrors.tipoDocumentoInicio" class="text-rose-500 text-meta mt-1">
+                    <p v-if="formErrors.tipoDocumentoInicio" class="text-rose-500 text-micro mt-1">
                       {{ formErrors.tipoDocumentoInicio }}
                     </p>
                   </div>
 
                   <div>
-                    <label class="block font-medium text-foreground mb-1 text-xs">
+                    <label class="block font-medium text-foreground mb-1 text-meta">
                       Año <span class="text-rose-500">*</span>
                     </label>
                     <input v-model.number="docInicio.añoDocumento" type="number" min="1950" max="2099"
-                      class="w-full rounded-lg border bg-background px-3 py-2 text-xs focus:ring-2 focus:ring-primary focus:outline-hidden font-mono"
+                      class="w-full rounded-lg border bg-background px-3 py-2 text-meta focus:ring-2 focus:ring-primary focus:outline-hidden font-mono"
                       :class="formErrors.añoDocumentoInicio ? 'border-rose-500 ring-rose-500' : 'border-border'" />
                   </div>
                 </div>
 
                 <div class="grid grid-cols-[repeat(auto-fit,minmax(14rem,1fr))] gap-3">
                   <div>
-                    <label class="block font-medium text-foreground mb-1 text-xs">
+                    <label class="block font-medium text-foreground mb-1 text-meta">
                       Número de Documento <span class="text-rose-500">*</span>
                     </label>
                     <input v-model.number="docInicio.numeroDocumento" type="number" min="1" placeholder="Ej. 124"
-                      class="w-full rounded-lg border bg-background px-3 py-2 text-xs focus:ring-2 focus:ring-primary focus:outline-hidden font-mono"
+                      class="w-full rounded-lg border bg-background px-3 py-2 text-meta focus:ring-2 focus:ring-primary focus:outline-hidden font-mono"
                       :class="formErrors.numeroDocumentoInicio ? 'border-rose-500 ring-rose-500' : 'border-border'" />
-                    <p v-if="formErrors.numeroDocumentoInicio" class="text-rose-500 text-meta mt-1">
+                    <p v-if="formErrors.numeroDocumentoInicio" class="text-rose-500 text-micro mt-1">
                       {{ formErrors.numeroDocumentoInicio }}
                     </p>
                   </div>
 
                   <div>
-                    <label class="block font-medium text-foreground mb-1 text-xs">
+                    <label class="block font-medium text-foreground mb-1 text-meta">
                       Fecha de Documento <span class="text-rose-500">*</span>
                     </label>
                     <input v-model="docInicio.fecha" type="date"
-                      class="w-full rounded-lg border bg-background px-3 py-2 text-xs focus:ring-2 focus:ring-primary focus:outline-hidden font-mono"
+                      class="w-full rounded-lg border bg-background px-3 py-2 text-meta focus:ring-2 focus:ring-primary focus:outline-hidden font-mono"
                       :class="formErrors.fechaInicio ? 'border-rose-500 ring-rose-500' : 'border-border'" />
-                    <p v-if="formErrors.fechaInicio" class="text-rose-500 text-meta mt-1">
+                    <p v-if="formErrors.fechaInicio" class="text-rose-500 text-micro mt-1">
                       {{ formErrors.fechaInicio }}
                     </p>
                   </div>
@@ -1040,21 +1040,21 @@ const handleSubmit = () => {
                 </div>
 
                 <div>
-                  <label class="block font-medium text-foreground mb-1 text-xs">
+                  <label class="block font-medium text-foreground mb-1 text-meta">
                     Fecha Válida / Vigencia (Opcional)
                   </label>
                   <input v-model="docInicio.fechaValida" type="date"
-                    class="w-full rounded-lg border border-border bg-background px-3 py-2 text-xs focus:ring-2 focus:ring-primary focus:outline-hidden font-mono" />
+                    class="w-full rounded-lg border border-border bg-background px-3 py-2 text-meta focus:ring-2 focus:ring-primary focus:outline-hidden font-mono" />
                 </div>
 
                 <div>
-                  <label class="block font-medium text-foreground mb-1 text-xs">
+                  <label class="block font-medium text-foreground mb-1 text-meta">
                     Descripción / Asunto del Documento <span class="text-rose-500">*</span>
                   </label>
                   <textarea v-model="docInicio.descripcion" rows="2" placeholder="Motivo o detalle del evento..."
-                    class="w-full rounded-lg border bg-background p-2.5 text-xs focus:ring-2 focus:ring-primary focus:outline-hidden leading-relaxed"
+                    class="w-full rounded-lg border bg-background p-2.5 text-meta focus:ring-2 focus:ring-primary focus:outline-hidden leading-relaxed"
                     :class="formErrors.descripcionInicio ? 'border-rose-500 ring-rose-500' : 'border-border'"></textarea>
-                  <p v-if="formErrors.descripcionInicio" class="text-rose-500 text-meta mt-1">
+                  <p v-if="formErrors.descripcionInicio" class="text-rose-500 text-micro mt-1">
                     {{ formErrors.descripcionInicio }}
                   </p>
                 </div>
@@ -1062,7 +1062,7 @@ const handleSubmit = () => {
                 <div class="flex items-center gap-2.5 pt-1">
                   <input id="check-mismo-doc" v-model="mismoDocumento" type="checkbox"
                     class="size-4 rounded border-border text-primary focus:ring-primary cursor-pointer" />
-                  <label for="check-mismo-doc" class="text-xs text-foreground cursor-pointer select-none">
+                  <label for="check-mismo-doc" class="text-meta text-foreground cursor-pointer select-none">
                     El documento define el inicio y término del evento simultáneamente (mismo documento)
                   </label>
                 </div>

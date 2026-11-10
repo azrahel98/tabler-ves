@@ -84,9 +84,9 @@ const irANuevoTrabajador = () => {
 
 <template>
   <Modal :is-open="isOpen" labelledby="modal-search-title" @close="emit('close')">
-    <div class="w-full max-w-lg bg-card border border-border rounded-2xl shadow-xl overflow-hidden text-xs">
+    <div class="w-full max-w-lg bg-card border border-border rounded-2xl shadow-xl overflow-hidden text-meta">
       <div class="p-4 border-b border-border flex items-center justify-between">
-        <h3 id="modal-search-title" class="font-bold text-foreground text-sm flex items-center gap-2">
+        <h3 id="modal-search-title" class="font-bold text-foreground text-xs flex items-center gap-2">
           <IconSearch class="size-4 text-primary" />
           <span>Buscar Servidor Público</span>
         </h3>
@@ -100,7 +100,7 @@ const irANuevoTrabajador = () => {
         <div class="flex gap-2">
           <input v-model="searchQuery" type="text" placeholder="Buscar por nombre, apellido o número de DNI..."
             aria-label="Término de búsqueda de servidor"
-            class="flex-1 h-9 px-3 text-xs rounded-lg border border-border bg-background-1 text-foreground placeholder:text-muted-foreground focus:outline-hidden focus:border-primary"
+            class="flex-1 h-9 px-3 text-meta rounded-lg border border-border bg-background-1 text-foreground placeholder:text-muted-foreground focus:outline-hidden focus:border-primary"
             @keyup.enter="handleSearch" />
           <Button size="sm" variant="primary" :disabled="isSearching || searchQuery.trim().length < 3" @click="handleSearch">
             <span>{{ isSearching ? 'Buscando...' : 'Buscar' }}</span>
@@ -118,14 +118,14 @@ const irANuevoTrabajador = () => {
             @click="onSelectWorker(res.dni)">
             <div class="flex items-center gap-3">
               <div
-                class="size-8 rounded-lg bg-primary/10 border border-primary/20 text-primary flex items-center justify-center shrink-0 text-xs font-bold overflow-hidden">
+                class="size-8 rounded-lg bg-primary/10 border border-primary/20 text-primary flex items-center justify-center shrink-0 text-meta font-bold overflow-hidden">
                 <img v-auth-src="getPersonalAvatarUrl(res.dni)" :alt="res.nombre" class="size-full object-cover"
                   @error="($event.target as HTMLElement).style.display = 'none'" />
 
               </div>
               <div>
                 <p class="font-semibold text-foreground">{{ res.nombre }}</p>
-                <p class="font-mono text-muted-foreground text-meta">DNI: {{ res.dni }}</p>
+                <p class="font-mono text-muted-foreground text-micro">DNI: {{ res.dni }}</p>
               </div>
             </div>
             <Badge :variant="res.estado === 'activo' ? 'success' : 'secondary'" size="sm">
@@ -140,8 +140,8 @@ const irANuevoTrabajador = () => {
       </div>
 
       <div class="p-3 bg-muted/20 border-t border-border flex items-center justify-between">
-        <span class="text-meta text-muted-foreground">¿El servidor no está registrado?</span>
-        <Button size="xs" variant="outline" class="gap-1.5 text-xs text-primary border-primary/20 cursor-pointer" @click="irANuevoTrabajador">
+        <span class="text-micro text-muted-foreground">¿El servidor no está registrado?</span>
+        <Button size="xs" variant="outline" class="gap-1.5 text-meta text-primary border-primary/20 cursor-pointer" @click="irANuevoTrabajador">
           <IconUserPlus class="size-3.5" />
           <span>Registrar Nuevo Servidor</span>
         </Button>

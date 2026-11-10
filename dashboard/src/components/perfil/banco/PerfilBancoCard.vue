@@ -24,15 +24,15 @@ const inicial = computed(() => (props.banco?.banco || '?').trim().slice(0, 2).to
   <div class="rounded-xl border border-border bg-card overflow-hidden">
     <div class="px-4 py-2.5 border-b border-border flex items-center justify-between gap-3">
       <div class="min-w-0">
-        <h3 class="text-xs font-semibold text-foreground tracking-tight">Información bancaria</h3>
-        <p class="text-meta text-muted-foreground">Cuenta registrada para el abono de planillas y viáticos</p>
+        <h3 class="text-meta font-semibold text-foreground tracking-tight">Información bancaria</h3>
+        <p class="text-micro text-muted-foreground">Cuenta registrada para el abono de planillas y viáticos</p>
       </div>
-      <span v-if="banco" class="text-meta text-muted-foreground shrink-0">1 registro</span>
+      <span v-if="banco" class="text-micro text-muted-foreground shrink-0">1 registro</span>
     </div>
 
     <div v-if="banco" class="overflow-x-auto">
-      <table class="w-full text-left text-xs" aria-label="Información bancaria">
-        <thead class="text-meta text-muted-foreground">
+      <table class="w-full text-left text-meta" aria-label="Información bancaria">
+        <thead class="text-micro text-muted-foreground">
           <tr class="border-b border-border">
             <th scope="col" class="px-4 py-2 font-medium">Banco</th>
             <th scope="col" class="px-3 py-2 font-medium">Número de cuenta</th>
@@ -45,13 +45,13 @@ const inicial = computed(() => (props.banco?.banco || '?').trim().slice(0, 2).to
             <td class="px-4 py-2.5 min-w-0">
               <div class="flex items-center gap-3">
                 <span
-                  class="size-8 rounded-full bg-primary text-primary-foreground text-meta font-semibold flex items-center justify-center shrink-0 select-none"
+                  class="size-8 rounded-full bg-primary text-primary-foreground text-micro font-semibold flex items-center justify-center shrink-0 select-none"
                   aria-hidden="true">
                   {{ inicial }}
                 </span>
                 <div class="min-w-0">
-                  <p class="font-semibold text-foreground text-xs wrap-break-word" :title="banco.banco">{{ banco.banco }}</p>
-                  <p v-if="banco.tipo_cuenta" class="text-muted-foreground text-meta" :title="banco.tipo_cuenta">
+                  <p class="font-semibold text-foreground text-meta wrap-break-word" :title="banco.banco">{{ banco.banco }}</p>
+                  <p v-if="banco.tipo_cuenta" class="text-muted-foreground text-micro" :title="banco.tipo_cuenta">
                     {{ banco.tipo_cuenta }}
                   </p>
                 </div>
@@ -96,7 +96,7 @@ const inicial = computed(() => (props.banco?.banco || '?').trim().slice(0, 2).to
       </table>
     </div>
 
-    <div v-else class="text-xs text-muted-foreground py-12 text-center space-y-2">
+    <div v-else class="text-meta text-muted-foreground py-12 text-center space-y-2">
       <IconBuildingBank class="size-8 mx-auto text-muted-foreground/40" />
       <p class="font-semibold text-foreground">Sin información bancaria registrada</p>
       <p>El servidor público no tiene asignada una cuenta de haberes para depósito de planillas.</p>

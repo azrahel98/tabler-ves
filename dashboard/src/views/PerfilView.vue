@@ -538,7 +538,7 @@ watch(
     <div
       v-if="loadError"
       role="alert"
-      class="p-4 rounded-xl bg-destructive/10 border border-destructive/20 text-destructive flex items-center justify-between gap-3 text-xs"
+      class="p-4 rounded-xl bg-destructive/10 border border-destructive/20 text-destructive flex items-center justify-between gap-3 text-meta"
     >
       <div class="flex items-center gap-2.5">
         <IconAlertCircle class="size-4.5 shrink-0" aria-hidden="true" />
@@ -550,7 +550,7 @@ watch(
       <Button
         variant="outline"
         size="sm"
-        class="gap-1.5 shrink-0 text-xs cursor-pointer"
+        class="gap-1.5 shrink-0 text-meta cursor-pointer"
         @click="loadWorkerData(currentDni)"
       >
         <IconRefresh class="size-3.5" aria-hidden="true" />
@@ -600,8 +600,8 @@ watch(
       class="text-center py-16 bg-card border border-border rounded-2xl p-8 space-y-3"
     >
       <IconUser class="size-12 mx-auto text-muted-foreground/40" />
-      <h3 class="text-title font-bold text-foreground">Ficha del servidor no encontrada</h3>
-      <p class="text-xs text-muted-foreground max-w-sm mx-auto">
+      <h3 class="text-sm font-bold text-foreground">Ficha del servidor no encontrada</h3>
+      <p class="text-meta text-muted-foreground max-w-sm mx-auto">
         No se encontró información registrada para el DNI solicitado. Puede buscar otro servidor en el sistema.
       </p>
       <Button size="sm" variant="primary" @click="isSearchModalOpen = true">

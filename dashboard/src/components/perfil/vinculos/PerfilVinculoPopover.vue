@@ -91,7 +91,7 @@ const puedeRenunciar = computed(() => v.value.estado.toLowerCase() !== 'inactivo
 
     <!-- Popover de información: solo muestra los datos que existen -->
     <div v-if="modo === 'info'"
-      class="hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible hidden invisible opacity-0 transition-opacity z-50 w-[min(24rem,calc(100vw-2rem))] text-xs"
+      class="hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible hidden invisible opacity-0 transition-opacity z-50 w-[min(24rem,calc(100vw-2rem))] text-meta"
       role="dialog" aria-label="Información del vínculo laboral">
       <div class="bg-card border border-border rounded-2xl shadow-xl overflow-hidden text-left">
         <div class="p-4 flex items-start gap-3">
@@ -100,12 +100,12 @@ const puedeRenunciar = computed(() => v.value.estado.toLowerCase() !== 'inactivo
           </div>
           <div class="min-w-0 flex-1">
             <div class="flex items-start justify-between gap-2">
-              <h4 class="font-semibold text-foreground text-xs leading-snug wrap-break-word min-w-0">
+              <h4 class="font-semibold text-foreground text-meta leading-snug wrap-break-word min-w-0">
                 {{ v.cargo || 'Vínculo laboral' }}
               </h4>
               <Badge :variant="badgeVariant" size="xs" class="shrink-0 rounded-full">{{ estadoLabel }}</Badge>
             </div>
-            <p v-if="v.codigo" class="text-muted-foreground mt-0.5 font-mono text-meta">
+            <p v-if="v.codigo" class="text-muted-foreground mt-0.5 font-mono text-micro">
               Plaza AIRHSP: {{ v.codigo }}
             </p>
           </div>
@@ -169,16 +169,16 @@ const puedeRenunciar = computed(() => v.value.estado.toLowerCase() !== 'inactivo
 
     <!-- Popover de eventos -->
     <div v-else-if="modo === 'eventos'"
-      class="hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible hidden invisible opacity-0 transition-opacity z-50 w-[min(24rem,calc(100vw-2rem))] text-xs"
+      class="hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible hidden invisible opacity-0 transition-opacity z-50 w-[min(24rem,calc(100vw-2rem))] text-meta"
       role="dialog" aria-label="Eventos del vínculo laboral">
       <div class="bg-card border border-border rounded-2xl shadow-xl overflow-hidden text-left">
         <div class="px-4 py-3 flex items-center justify-between gap-2 border-b border-border">
           <div class="min-w-0">
-            <p class="font-semibold text-foreground text-xs">Eventos laborales ({{ v.eventos?.length || 0 }})</p>
+            <p class="font-semibold text-foreground text-meta">Eventos laborales ({{ v.eventos?.length || 0 }})</p>
             <p class="text-muted-foreground truncate" :title="v.cargo || ''">{{ v.cargo || 'Vínculo laboral' }}</p>
           </div>
           <button type="button"
-            class="text-meta text-primary hover:underline font-medium inline-flex items-center gap-1 cursor-pointer shrink-0"
+            class="text-micro text-primary hover:underline font-medium inline-flex items-center gap-1 cursor-pointer shrink-0"
             @click="run(() => emit('verEventos', v))">
             Gestionar <IconExternalLink class="size-3 opacity-70" />
           </button>
@@ -186,7 +186,7 @@ const puedeRenunciar = computed(() => v.value.estado.toLowerCase() !== 'inactivo
         <div class="p-3 max-h-80 overflow-y-auto">
           <ul class="space-y-1.5">
             <li v-for="ev in v.eventos" :key="ev.id"
-              class="p-2 rounded-lg bg-muted/50 border border-border/50 text-meta space-y-1">
+              class="p-2 rounded-lg bg-muted/50 border border-border/50 text-micro space-y-1">
               <div class="flex flex-wrap items-center gap-1.5">
                 <Badge variant="outline" size="xs" class="font-semibold uppercase text-micro">
                   {{ getTipoEventoLabel(ev.tipo_evento) }}
@@ -220,11 +220,11 @@ const puedeRenunciar = computed(() => v.value.estado.toLowerCase() !== 'inactivo
 
     <!-- Popover de acciones -->
     <div v-else
-      class="hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible hidden invisible opacity-0 transition-opacity z-50 w-60 text-xs"
+      class="hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible hidden invisible opacity-0 transition-opacity z-50 w-60 text-meta"
       role="menu" aria-label="Acciones del vínculo laboral">
       <div class="bg-card border border-border rounded-2xl shadow-xl overflow-hidden text-left">
         <div class="px-4 py-3 border-b border-border">
-          <p class="font-semibold text-foreground text-xs">Acciones</p>
+          <p class="font-semibold text-foreground text-meta">Acciones</p>
           <p class="text-muted-foreground truncate" :title="v.cargo || ''">{{ v.cargo || 'Vínculo laboral' }}</p>
         </div>
         <div class="p-1.5">

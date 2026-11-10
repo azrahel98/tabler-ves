@@ -193,7 +193,7 @@ const handleSubmit = () => {
 <template>
   <Modal :is-open="isOpen" labelledby="modal-subir-archivo-title" @close="handleClose">
     <div
-      class="w-full max-w-xl bg-card border border-border rounded-2xl shadow-2xl overflow-hidden text-xs max-h-[92vh] flex flex-col"
+      class="w-full max-w-xl bg-card border border-border rounded-2xl shadow-2xl overflow-hidden text-meta max-h-[92vh] flex flex-col"
     >
       <div class="p-4 border-b border-border flex items-center justify-between bg-muted/20 shrink-0">
         <div class="flex items-center gap-2.5 min-w-0">
@@ -203,10 +203,10 @@ const handleSubmit = () => {
             <IconUpload class="size-4.5" aria-hidden="true" />
           </div>
           <div class="min-w-0">
-            <h3 id="modal-subir-archivo-title" class="font-bold text-foreground text-sm tracking-tight truncate">
+            <h3 id="modal-subir-archivo-title" class="font-bold text-foreground text-xs tracking-tight truncate">
               Subir Archivo al Legajo
             </h3>
-            <p class="text-meta text-muted-foreground truncate">
+            <p class="text-micro text-muted-foreground truncate">
               Incorporar nuevo documento PDF al expediente digital
             </p>
           </div>
@@ -224,7 +224,7 @@ const handleSubmit = () => {
       </div>
 
       <div class="p-5 space-y-4 overflow-y-auto">
-        <div class="flex items-center p-1 bg-muted/30 border border-border rounded-xl text-xs">
+        <div class="flex items-center p-1 bg-muted/30 border border-border rounded-xl text-meta">
           <button
             type="button"
             class="flex-1 py-1.5 px-3 rounded-lg font-medium transition cursor-pointer flex items-center justify-center gap-2"
@@ -246,7 +246,7 @@ const handleSubmit = () => {
         </div>
 
         <div v-if="modo === 'file'" class="space-y-2">
-          <label class="block font-medium text-foreground text-xs">
+          <label class="block font-medium text-foreground text-meta">
             Seleccionar archivo PDF <span class="text-destructive">*</span>
           </label>
           <div
@@ -275,7 +275,7 @@ const handleSubmit = () => {
               <IconFileText v-else class="size-5" />
             </div>
             <div v-if="selectedFile" class="space-y-0.5">
-              <p class="font-medium text-foreground text-xs truncate max-w-sm">
+              <p class="font-medium text-foreground text-meta truncate max-w-sm">
                 {{ selectedFile.name }}
               </p>
               <p class="text-micro text-muted-foreground font-mono">
@@ -286,7 +286,7 @@ const handleSubmit = () => {
               </span>
             </div>
             <div v-else class="space-y-1">
-              <p class="font-medium text-foreground text-xs">
+              <p class="font-medium text-foreground text-meta">
                 Arrastra tu PDF aquí o <span class="text-primary underline">haz clic para examinar</span>
               </p>
               <p class="text-micro text-muted-foreground">
@@ -294,13 +294,13 @@ const handleSubmit = () => {
               </p>
             </div>
           </div>
-          <p v-if="formErrors.file" class="text-meta text-destructive flex items-center gap-1 mt-1">
+          <p v-if="formErrors.file" class="text-micro text-destructive flex items-center gap-1 mt-1">
             <IconAlertTriangle class="size-3 shrink-0" />
             <span>{{ formErrors.file }}</span>
           </p>
 
           <div v-if="selectedFile" class="space-y-1.5 pt-1">
-            <label for="subir-nombre-archivo-local" class="block font-medium text-foreground text-xs">
+            <label for="subir-nombre-archivo-local" class="block font-medium text-foreground text-meta">
               Nombre para el archivo en legajo <span class="text-destructive">*</span>
             </label>
             <div class="relative">
@@ -310,11 +310,11 @@ const handleSubmit = () => {
                 v-model="fileName"
                 type="text"
                 placeholder="documento.pdf"
-                class="w-full h-9 pl-9 pr-3 rounded-lg border text-xs bg-background focus:outline-hidden focus:ring-1 transition"
+                class="w-full h-9 pl-9 pr-3 rounded-lg border text-meta bg-background focus:outline-hidden focus:ring-1 transition"
                 :class="formErrors.fileName ? 'border-destructive focus:ring-destructive' : 'border-border focus:ring-primary'"
               />
             </div>
-            <p v-if="formErrors.fileName" class="text-meta text-destructive flex items-center gap-1 mt-1">
+            <p v-if="formErrors.fileName" class="text-micro text-destructive flex items-center gap-1 mt-1">
               <IconAlertTriangle class="size-3 shrink-0" />
               <span>{{ formErrors.fileName }}</span>
             </p>
@@ -326,7 +326,7 @@ const handleSubmit = () => {
 
         <div v-else class="space-y-3">
           <div class="space-y-1.5">
-            <label for="subir-url-externa" class="block font-medium text-foreground text-xs">
+            <label for="subir-url-externa" class="block font-medium text-foreground text-meta">
               URL del PDF externo <span class="text-destructive">*</span>
             </label>
             <div class="relative">
@@ -336,11 +336,11 @@ const handleSubmit = () => {
                 v-model="url"
                 type="url"
                 placeholder="https://transparencia.munives.gob.pe/documentos/archivo.pdf"
-                class="w-full h-9 pl-9 pr-3 rounded-lg border text-xs bg-background focus:outline-hidden focus:ring-1 transition"
+                class="w-full h-9 pl-9 pr-3 rounded-lg border text-meta bg-background focus:outline-hidden focus:ring-1 transition"
                 :class="formErrors.url ? 'border-destructive focus:ring-destructive' : 'border-border focus:ring-primary'"
               />
             </div>
-            <p v-if="formErrors.url" class="text-meta text-destructive flex items-center gap-1 mt-1">
+            <p v-if="formErrors.url" class="text-micro text-destructive flex items-center gap-1 mt-1">
               <IconAlertTriangle class="size-3 shrink-0" />
               <span>{{ formErrors.url }}</span>
             </p>
@@ -350,7 +350,7 @@ const handleSubmit = () => {
           </div>
 
           <div class="space-y-1.5">
-            <label for="subir-nombre-archivo" class="block font-medium text-foreground text-xs">
+            <label for="subir-nombre-archivo" class="block font-medium text-foreground text-meta">
               Nombre para el archivo <span class="text-destructive">*</span>
             </label>
             <div class="relative">
@@ -360,11 +360,11 @@ const handleSubmit = () => {
                 v-model="fileName"
                 type="text"
                 placeholder="resolucion_123_2024.pdf"
-                class="w-full h-9 pl-9 pr-3 rounded-lg border text-xs bg-background focus:outline-hidden focus:ring-1 transition"
+                class="w-full h-9 pl-9 pr-3 rounded-lg border text-meta bg-background focus:outline-hidden focus:ring-1 transition"
                 :class="formErrors.fileName ? 'border-destructive focus:ring-destructive' : 'border-border focus:ring-primary'"
               />
             </div>
-            <p v-if="formErrors.fileName" class="text-meta text-destructive flex items-center gap-1 mt-1">
+            <p v-if="formErrors.fileName" class="text-micro text-destructive flex items-center gap-1 mt-1">
               <IconAlertTriangle class="size-3 shrink-0" />
               <span>{{ formErrors.fileName }}</span>
             </p>
@@ -373,7 +373,7 @@ const handleSubmit = () => {
 
         <div class="pt-2 border-t border-border/60 space-y-2">
           <div class="flex items-center justify-between">
-            <label for="select-doc-vincular" class="block font-medium text-foreground text-xs">
+            <label for="select-doc-vincular" class="block font-medium text-foreground text-meta">
               Vincular a Documento Formal (Opcional)
             </label>
             <span class="text-micro text-muted-foreground">
@@ -385,7 +385,7 @@ const handleSubmit = () => {
             <select
               id="select-doc-vincular"
               v-model="selectedDocumentoId"
-              class="w-full h-9 px-3 rounded-lg border border-border bg-background text-xs text-foreground focus:outline-hidden focus:ring-1 focus:ring-primary transition cursor-pointer"
+              class="w-full h-9 px-3 rounded-lg border border-border bg-background text-meta text-foreground focus:outline-hidden focus:ring-1 focus:ring-primary transition cursor-pointer"
             >
               <option value="">-- Ninguno (Archivo independiente del legajo) --</option>
               <option
@@ -400,7 +400,7 @@ const handleSubmit = () => {
 
           <div
             v-if="documentoSeleccionadoInfo"
-            class="p-2.5 rounded-lg border border-primary/20 bg-primary/5 text-meta flex items-center justify-between gap-2"
+            class="p-2.5 rounded-lg border border-primary/20 bg-primary/5 text-micro flex items-center justify-between gap-2"
           >
             <div class="flex items-center gap-2 min-w-0">
               <IconLink class="size-3.5 text-primary shrink-0" />
