@@ -20,6 +20,8 @@ interface Props {
   /** `center` = modal centrado; `right` = drawer lateral derecho. */
   placement?: 'center' | 'right'
   labelledby?: string
+  /** Clase extra en el contenedor (ej. escala tipográfica de una vista). */
+  scopeClass?: string
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -88,6 +90,7 @@ onBeforeUnmount(() => {
     <div
       :id="id"
       ref="el"
+      :class="scopeClass"
       class="hs-overlay hidden --prevent-on-load-init [--overlay-backdrop:static] size-full fixed top-0 start-0 z-80 overflow-x-hidden overflow-y-auto pointer-events-none"
       role="dialog"
       aria-modal="true"

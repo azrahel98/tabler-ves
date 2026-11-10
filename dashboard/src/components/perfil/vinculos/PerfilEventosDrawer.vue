@@ -138,7 +138,7 @@ const mismoDocumento = (ev: EventoVinculoDetalle): boolean => {
 </script>
 
 <template>
-  <Modal :is-open="isOpen" placement="right" :persistent="isDeleting" @close="emit('close')">
+  <Modal scope-class="perfil-scope" :is-open="isOpen" placement="right" :persistent="isDeleting" @close="emit('close')">
         <aside v-if="isOpen && vinculo"
           class="w-screen max-w-md h-full bg-card border-l border-border shadow-2xl flex flex-col z-10 overflow-hidden text-meta">
           

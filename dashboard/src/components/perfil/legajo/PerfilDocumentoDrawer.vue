@@ -111,7 +111,7 @@ const handleConfirmarEliminar = () => {
 </script>
 
 <template>
-  <Modal :is-open="isOpen" placement="right" :persistent="isDeleting" @close="emit('close')">
+  <Modal scope-class="perfil-scope" :is-open="isOpen" placement="right" :persistent="isDeleting" @close="emit('close')">
         <aside v-if="isOpen && documento"
           class="w-screen max-w-md h-full bg-card border-l border-border shadow-2xl flex flex-col z-10 overflow-hidden text-meta">
           <div class="p-4 border-b border-border flex items-center justify-between shrink-0 bg-muted/20">

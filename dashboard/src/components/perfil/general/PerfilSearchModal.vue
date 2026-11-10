@@ -83,7 +83,7 @@ const irANuevoTrabajador = () => {
 </script>
 
 <template>
-  <Modal :is-open="isOpen" labelledby="modal-search-title" @close="emit('close')">
+  <Modal scope-class="perfil-scope" :is-open="isOpen" labelledby="modal-search-title" @close="emit('close')">
     <div class="w-full max-w-lg bg-card border border-border rounded-2xl shadow-xl overflow-hidden text-meta">
       <div class="p-4 border-b border-border flex items-center justify-between">
         <h3 id="modal-search-title" class="font-bold text-foreground text-xs flex items-center gap-2">

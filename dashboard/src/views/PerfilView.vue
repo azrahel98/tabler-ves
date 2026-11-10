@@ -534,7 +534,7 @@ watch(
 </script>
 
 <template>
-  <div class="mx-auto w-full max-w-6xl space-y-4 px-4 pb-16">
+  <div class="perfil-scope mx-auto w-full max-w-6xl space-y-4 px-4 pb-16">
     <div
       v-if="loadError"
       role="alert"

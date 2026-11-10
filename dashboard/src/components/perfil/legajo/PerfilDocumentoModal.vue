@@ -181,7 +181,7 @@ const handleSubmit = () => {
 </script>
 
 <template>
-  <Modal :is-open="isOpen" labelledby="modal-documento-title" @close="handleClose">
+  <Modal scope-class="perfil-scope" :is-open="isOpen" labelledby="modal-documento-title" @close="handleClose">
     <div
       class="w-full max-w-xl bg-card border border-border rounded-2xl shadow-2xl overflow-hidden text-meta max-h-[92vh] flex flex-col"
     >

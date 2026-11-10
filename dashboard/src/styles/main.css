@@ -819,3 +819,14 @@
     background-color: var(--scrollbar-thumb);
   }
 }
+
+/* Escala tipográfica compacta para la vista de perfil (y sus modales/drawers). */
+.perfil-scope {
+  --text-nano: 0.5625rem;
+  --text-micro: 0.625rem;
+  --text-meta: 0.6875rem;
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-title: 0.9375rem;
+  --text-kpi: 1.125rem;
+}

@@ -32,7 +32,7 @@ const handleClose = (isDeleting: boolean) => {
 </script>
 
 <template>
-  <Modal :is-open="isOpen" :persistent="isDeleting" labelledby="modal-eliminar-title" @close="emit('close')">
+  <Modal scope-class="perfil-scope" :is-open="isOpen" :persistent="isDeleting" labelledby="modal-eliminar-title" @close="emit('close')">
     <div
       class="w-full max-w-md bg-card border border-border rounded-2xl shadow-2xl overflow-hidden text-meta flex flex-col"
     >
