@@ -81,28 +81,30 @@ const handleTabKeyDown = (event: KeyboardEvent) => {
 
 <template>
   <div class="bg-card border border-border rounded-2xl shadow-xs p-4 sm:p-5">
-    <div class="relative h-32 sm:h-40 rounded-xl overflow-hidden bg-sky-200" aria-hidden="true">
-      <svg class="absolute inset-0 size-full" viewBox="0 0 1000 160" preserveAspectRatio="xMidYMid slice">
-        <rect width="1000" height="160" class="fill-sky-200" />
-        <polygon points="0,30 70,0 300,0 140,160 0,160" class="fill-orange-400" />
-        <polygon points="40,0 260,0 150,160 -10,160" class="fill-primary" opacity="0.95" />
-        <polygon points="0,0 70,0 0,60" class="fill-cyan-400" />
-        <polygon points="260,160 320,60 380,160" class="fill-cyan-400" />
-        <polygon points="470,0 1000,0 1000,160 190,160" class="fill-sky-200" />
-        <polygon points="440,0 640,0 330,95" class="fill-orange-400" />
+    <figure class="m-0 h-32 sm:h-40 rounded-xl overflow-hidden" aria-hidden="true">
+      <svg class="w-full h-full" preserveAspectRatio="none" viewBox="0 0 1113 161" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <g clip-path="url(#perfil-banner-clip)">
+          <rect x="1" width="1112" height="348" fill="#B2E7FE" />
+          <rect width="185.209" height="704.432" transform="matrix(0.50392 0.86375 -0.860909 0.508759 435.452 -177.87)" fill="#FF8F5D" />
+          <rect width="184.653" height="378.667" transform="matrix(0.849839 -0.527043 0.522157 0.852849 -10.4556 -16.4521)" fill="#3ECEED" />
+          <rect width="184.653" height="189.175" transform="matrix(0.849839 -0.527043 0.522157 0.852849 35.4456 58.5195)" fill="#4C48FF" />
+        </g>
+        <defs>
+          <clipPath id="perfil-banner-clip"><rect x="0.5" width="1112" height="161" rx="12" fill="white" /></clipPath>
+        </defs>
       </svg>
-    </div>
+    </figure>
 
-    <div class="-mt-12 sm:-mt-14 flex flex-col items-center text-center px-2">
+    <div class="-mt-20 sm:-mt-24 flex flex-col items-center text-center px-2">
       <div class="relative">
         <div
-          class="size-24 sm:size-28 rounded-full bg-primary/10 text-primary ring-4 ring-card border border-border flex items-center justify-center overflow-hidden shadow-xs">
+          class="size-24 sm:size-30 rounded-full bg-primary/10 text-primary ring-4 ring-card border border-border flex items-center justify-center overflow-hidden shadow-xs">
           <img v-if="!avatarError && avatarUrl" v-auth-src="avatarUrl" :alt="perfil?.nombre || 'Foto del servidor'"
             class="size-full object-cover" @error="avatarError = true" />
           <span v-else class="text-kpi font-bold tracking-tight select-none">{{ userInitials }}</span>
         </div>
         <span
-          class="absolute bottom-1 right-1 size-6 rounded-full ring-2 ring-card flex items-center justify-center text-white"
+          class="absolute bottom-1 -right-1 size-7 rounded-full ring-2 ring-card flex items-center justify-center text-white"
           :class="vinculoActivo ? 'bg-emerald-500' : 'bg-muted-foreground'"
           :title="vinculoActivo ? 'Vínculo laboral activo' : 'Sin vínculo activo'">
           <IconCheck v-if="vinculoActivo" class="size-3.5" :stroke-width="3" />
