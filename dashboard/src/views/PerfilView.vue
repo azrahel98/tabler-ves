@@ -534,7 +534,7 @@ watch(
 </script>
 
 <template>
-  <div class="mx-auto w-full max-w-5xl space-y-6 px-4 pb-16">
+  <div class="mx-auto w-full max-w-6xl space-y-6 px-4 pb-16">
     <div
       v-if="loadError"
       role="alert"
@@ -627,8 +627,8 @@ watch(
         @copy-to-clipboard="copyToClipboard"
       />
 
-      <div class="flex flex-wrap gap-6">
-        <div class="basis-[16rem] grow min-w-0">
+      <div class="bg-card border border-border rounded-2xl shadow-xs p-4 sm:p-5 flex flex-col lg:flex-row gap-5 lg:gap-6">
+        <aside class="lg:w-72 xl:w-80 shrink-0 lg:border-e lg:border-border lg:pe-6">
           <PerfilInfoContacto
             :perfil="perfil"
             :contacto="contacto"
@@ -636,9 +636,9 @@ watch(
             @open-edit-modal="isEditModalOpen = true"
             @copy-to-clipboard="copyToClipboard"
           />
-        </div>
+        </aside>
 
-        <div class="basis-[30rem] grow-[5] min-w-0">
+        <div class="flex-1 min-w-0">
           <PerfilVinculoActualCard
             v-if="activeTab === 'perfil'"
             :vinculo-activo="vinculoActivo"

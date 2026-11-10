@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import Card from '@/components/ui/card/Card.vue'
 import Badge from '@/components/ui/badge/Badge.vue'
 import type { PersonalPerfil, PersonalContacto } from '@/services/personal'
 import { formatDate, calculateAge } from '@/utils/date'
@@ -15,6 +14,7 @@ import {
   IconEdit,
   IconCheck,
   IconCopy,
+  IconHome,
 } from '@tabler/icons-vue'
 
 interface Props {
@@ -34,151 +34,91 @@ const calcularEdad = calculateAge
 </script>
 
 <template>
-  <div class="space-y-6">
-    <Card class="space-y-3">
-      <div class="flex items-center justify-between border-b border-border pb-3">
-        <span class="text-sm font-bold text-foreground tracking-wider flex items-center gap-2">
-          <IconUser class="size-3.5 text-primary" />
-          <h3 class="font-semibold text-foreground tracking-tight text-sm">Información de Contacto</h3>
-        </span>
-        <button type="button"
-          class="text-xs text-primary hover:underline font-medium inline-flex items-center gap-1 cursor-pointer"
+  <div class="space-y-5 text-xs">
+    <section class="space-y-3">
+      <div class="flex items-center justify-between">
+        <h3 class="font-semibold text-foreground text-sm">Acerca del servidor</h3>
+        <button type="button" class="text-primary hover:underline font-medium inline-flex items-center gap-1 cursor-pointer"
           @click="emit('openEditModal')">
           <IconEdit class="size-3.5" /> Editar
         </button>
       </div>
 
-      <div class="space-y-3.5 text-xs">
-        <div class="flex items-start justify-between gap-3">
-          <span class="text-muted-foreground flex items-center gap-1.5 shrink-0">
-            <IconId class="size-4 text-muted-foreground" /> DNI:
-          </span>
-          <div class="flex items-center gap-1.5 font-mono font-medium text-foreground">
-            <span>{{ perfil?.dni || '-' }}</span>
-            <button type="button" class="text-muted-foreground hover:text-primary transition cursor-pointer"
-              title="Copiar número de DNI al portapapeles" aria-label="Copiar número de DNI al portapapeles"
-              @click="emit('copyToClipboard', perfil?.dni || '', 'dni-info')">
-              <IconCheck v-if="copiedField === 'dni-info'" class="size-3.5 text-emerald-600 dark:text-emerald-400" />
-              <IconCopy v-else class="size-3.5" />
-            </button>
-          </div>
-        </div>
-
-        <div class="flex items-start justify-between gap-3">
-          <span class="text-muted-foreground flex items-center gap-1.5 shrink-0">
-            <IconShieldCheck class="size-4 text-muted-foreground" /> RUC:
-          </span>
-          <span class="font-mono font-medium text-foreground">
-            {{ perfil?.ruc || 'No registrado' }}
-          </span>
-        </div>
-
-        <div class="flex items-start justify-between gap-3">
-          <span class="text-muted-foreground flex items-center gap-1.5 shrink-0">
-            <IconCalendar class="size-4 text-muted-foreground" /> Nacimiento:
-          </span>
-          <span class="font-medium text-foreground text-right">
+      <ul class="space-y-2.5">
+        <li class="flex items-center gap-3" title="DNI">
+          <IconId class="size-4 text-muted-foreground shrink-0" />
+          <span class="font-mono text-foreground">{{ perfil?.dni || '-' }}</span>
+          <button type="button" class="text-muted-foreground hover:text-primary transition cursor-pointer"
+            title="Copiar número de DNI al portapapeles" aria-label="Copiar número de DNI al portapapeles"
+            @click="emit('copyToClipboard', perfil?.dni || '', 'dni-info')">
+            <IconCheck v-if="copiedField === 'dni-info'" class="size-3.5 text-emerald-600 dark:text-emerald-400" />
+            <IconCopy v-else class="size-3.5" />
+          </button>
+        </li>
+        <li class="flex items-center gap-3" title="RUC">
+          <IconShieldCheck class="size-4 text-muted-foreground shrink-0" />
+          <span class="font-mono text-foreground">{{ perfil?.ruc || 'RUC no registrado' }}</span>
+        </li>
+        <li class="flex items-center gap-3" title="Fecha de nacimiento">
+          <IconCalendar class="size-4 text-muted-foreground shrink-0" />
+          <span class="text-foreground">
             {{ formatDate(perfil?.nacimiento) }}
-            <span v-if="calcularEdad(perfil?.nacimiento)" class="text-muted-foreground">
-              ({{ calcularEdad(perfil?.nacimiento) }} años)
-            </span>
+            <span v-if="calcularEdad(perfil?.nacimiento)" class="text-muted-foreground">({{ calcularEdad(perfil?.nacimiento) }} años)</span>
           </span>
-        </div>
-
-        <div class="flex items-start justify-between gap-3">
-          <span class="text-muted-foreground flex items-center gap-1.5 shrink-0">
-            <IconUser class="size-4 text-muted-foreground" /> Sexo:
-          </span>
-          <span class="font-medium text-foreground">
-            {{ perfil?.sexo === 'F' ? 'Femenino' : perfil?.sexo === 'M' ? 'Masculino' : '-' }}
-          </span>
-        </div>
-
-        <div class="border-t border-border/60 my-2 pt-2"></div>
-
-        <div class="flex items-start justify-between gap-3">
-          <span class="text-muted-foreground flex items-center gap-1.5 shrink-0">
-            <IconPhone class="size-4 text-muted-foreground" /> Teléfono:
-          </span>
-          <a v-if="perfil?.telf" :href="'tel:' + perfil.telf" class="font-medium text-primary hover:underline">
-            {{ perfil.telf }}
-          </a>
-          <button v-else type="button" class="text-primary hover:underline text-xs" @click="emit('openEditModal')">
-            Registrar teléfono
-          </button>
-        </div>
-
-        <div class="flex items-start justify-between gap-3">
-          <span class="text-muted-foreground flex items-center gap-1.5 shrink-0">
-            <IconMail class="size-4 text-muted-foreground" /> Correo:
-          </span>
-          <a v-if="perfil?.email" :href="'mailto:' + perfil.email"
-            class="font-medium text-primary hover:underline text-[11.4px] wrap-break-word max-w-44"
-            :title="perfil.email">
-            {{ perfil.email }}
-          </a>
-          <button v-else type="button" class="text-primary hover:underline text-xs" @click="emit('openEditModal')">
-            Registrar correo
-          </button>
-        </div>
-
-        <div class="flex items-start justify-between gap-3">
-          <span class="text-muted-foreground flex items-center gap-1.5 shrink-0">
-            <IconMapPin class="size-4 text-muted-foreground" /> Distrito:
-          </span>
-          <span class="font-medium text-[11.4px] text-foreground text-right">
-            <router-link
-              v-if="perfil?.distrito"
-              :to="{ path: '/personal/distrito', query: { distrito: perfil.distrito } }"
-              class="text-primary hover:underline cursor-pointer"
-              title="Ver trabajadores del distrito"
-            >{{ perfil.distrito }}</router-link>
+        </li>
+        <li class="flex items-center gap-3" title="Sexo">
+          <IconUser class="size-4 text-muted-foreground shrink-0" />
+          <span class="text-foreground">{{ perfil?.sexo === 'F' ? 'Femenino' : perfil?.sexo === 'M' ? 'Masculino' : '-' }}</span>
+        </li>
+        <li class="flex items-center gap-3" title="Teléfono">
+          <IconPhone class="size-4 text-muted-foreground shrink-0" />
+          <a v-if="perfil?.telf" :href="'tel:' + perfil.telf" class="text-primary hover:underline">{{ perfil.telf }}</a>
+          <button v-else type="button" class="text-primary hover:underline cursor-pointer" @click="emit('openEditModal')">Registrar teléfono</button>
+        </li>
+        <li class="flex items-center gap-3 min-w-0" title="Correo electrónico">
+          <IconMail class="size-4 text-muted-foreground shrink-0" />
+          <a v-if="perfil?.email" :href="'mailto:' + perfil.email" class="text-primary hover:underline truncate">{{ perfil.email }}</a>
+          <button v-else type="button" class="text-primary hover:underline cursor-pointer" @click="emit('openEditModal')">Registrar correo</button>
+        </li>
+        <li class="flex items-center gap-3" title="Distrito">
+          <IconMapPin class="size-4 text-muted-foreground shrink-0" />
+          <span class="text-foreground">
+            <router-link v-if="perfil?.distrito" :to="{ path: '/personal/distrito', query: { distrito: perfil.distrito } }"
+              class="text-primary hover:underline" title="Ver trabajadores del distrito">{{ perfil.distrito }}</router-link>
             <template v-else>-</template>
-            ({{ perfil?.region || 'LIMA' }})
+            <span class="text-muted-foreground"> ({{ perfil?.region || 'LIMA' }})</span>
           </span>
-        </div>
+        </li>
+        <li class="flex items-start gap-3" title="Dirección">
+          <IconHome class="size-4 text-muted-foreground shrink-0 mt-0.5" />
+          <span class="text-foreground break-words">{{ perfil?.direccion || 'Sin dirección domiciliaria registrada' }}</span>
+        </li>
+      </ul>
+    </section>
 
-        <div class="flex flex-col gap-1">
-          <span class="text-muted-foreground flex items-center gap-1.5">
-            <IconMapPin class="size-4 text-muted-foreground" /> Dirección:
-          </span>
-          <span
-            class="font-medium text-foreground bg-muted/40 p-2 rounded-lg border border-border/50 text-[11.4px] break-words">
-            {{ perfil?.direccion || 'Sin dirección domiciliaria registrada' }}
-          </span>
-        </div>
-      </div>
-    </Card>
+    <div class="border-t border-border"></div>
 
-    <Card class="p-5 space-y-4">
-      <div class="border-b border-border pb-3 flex items-center justify-between">
-        <h2 class="font-semibold text-foreground tracking-tight text-sm flex gap-2">
-          <IconHeartHandshake class="size-4 text-rose-500" />
-          <span>Contacto de Emergencia</span>
-        </h2>
+    <section class="space-y-3">
+      <div class="flex items-center justify-between">
+        <h3 class="font-semibold text-foreground text-sm">Contacto de emergencia</h3>
         <Badge v-if="contacto" variant="outline" size="sm">Registrado</Badge>
       </div>
 
-      <div v-if="contacto" class="space-y-3 text-xs">
-        <div class="flex items-center justify-between">
-          <span class="text-muted-foreground">Nombre:</span>
+      <ul v-if="contacto" class="space-y-2.5">
+        <li class="flex items-center gap-3" title="Nombre">
+          <IconHeartHandshake class="size-4 text-rose-500 shrink-0" />
           <span class="font-semibold text-foreground">{{ contacto.nombre }}</span>
-        </div>
-        <div class="flex items-center justify-between">
-          <span class="text-muted-foreground">Parentesco:</span>
+        </li>
+        <li class="flex items-center gap-3" title="Parentesco">
+          <IconUser class="size-4 text-muted-foreground shrink-0" />
           <span class="px-2 py-0.5 rounded bg-muted text-foreground font-medium">{{ contacto.relacion }}</span>
-        </div>
-        <div class="flex items-center justify-between">
-          <span class="text-muted-foreground">Teléfono:</span>
-          <a :href="'tel:' + contacto.telefono"
-            class="font-semibold text-primary hover:underline flex items-center gap-1">
-            <IconPhone class="size-3.5" /> {{ contacto.telefono }}
-          </a>
-        </div>
-      </div>
-      <div v-else class="text-xs text-muted-foreground py-2 text-center">
-        No se encontró contacto de emergencia registrado para este servidor.
-      </div>
-    </Card>
+        </li>
+        <li class="flex items-center gap-3" title="Teléfono">
+          <IconPhone class="size-4 text-muted-foreground shrink-0" />
+          <a :href="'tel:' + contacto.telefono" class="font-semibold text-primary hover:underline">{{ contacto.telefono }}</a>
+        </li>
+      </ul>
+      <p v-else class="text-muted-foreground">No se encontró contacto de emergencia registrado para este servidor.</p>
+    </section>
   </div>
 </template>
