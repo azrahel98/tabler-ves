@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import Card from '@/components/ui/card/Card.vue'
 import Badge from '@/components/ui/badge/Badge.vue'
 import Button from '@/components/ui/button/Button.vue'
 import {
@@ -31,6 +30,11 @@ import {
   IconFileCertificate,
   IconExternalLink,
   IconCalendarPlus,
+  IconSearch,
+  IconArrowsSort,
+  IconChevronUp,
+  IconChevronLeft,
+  IconChevronRight,
 } from '@tabler/icons-vue'
 
 interface Props {
@@ -46,7 +50,15 @@ const emit = defineEmits<{
   (e: 'crearEvento', vinculo: PersonalVinculo): void
 }>()
 
-const sortOrder = ref<'desc' | 'asc'>('desc')
+type FiltroVinculo = 'todos' | 'vigentes' | 'concluidos'
+type SortKey = 'cargo' | 'area' | 'ingreso' | 'cese' | 'sueldo'
+
+const PAGE_SIZE = 8
+const filtro = ref<FiltroVinculo>('todos')
+const busqueda = ref('')
+const sortKey = ref<SortKey>('ingreso')
+const sortDir = ref<'desc' | 'asc'>('desc')
+const page = ref(1)
 const expandedIds = ref<Set<number | string>>(new Set())
 
 const toggleExpand = (id: number | string) => {
@@ -71,52 +83,146 @@ const getBadgeVariant = (type: VinculoStatusType): 'success' | 'warning' | 'seco
   return 'secondary'
 }
 
-const sortedVinculos = computed(() => {
-  return [...props.vinculos].sort((a, b) => {
-    const dateA = parseDateSafe(a.fecha_ingreso)?.getTime() || 0
-    const dateB = parseDateSafe(b.fecha_ingreso)?.getTime() || 0
-    return sortOrder.value === 'desc' ? dateB - dateA : dateA - dateB
+const esVigente = (v: PersonalVinculo) => getVinculoStatusType(v) === 'success'
+
+const conteos = computed(() => ({
+  todos: props.vinculos.length,
+  vigentes: props.vinculos.filter(esVigente).length,
+  concluidos: props.vinculos.filter((v) => !esVigente(v)).length,
+}))
+
+const tabsFiltro = computed(() => [
+  { id: 'todos' as const, label: 'Todos', count: conteos.value.todos },
+  { id: 'vigentes' as const, label: 'Vigentes', count: conteos.value.vigentes },
+  { id: 'concluidos' as const, label: 'Concluidos', count: conteos.value.concluidos },
+])
+
+const normalizar = (t: string | null | undefined) =>
+  (t || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase()
+
+const sortValue = (v: PersonalVinculo, key: SortKey): number | string => {
+  switch (key) {
+    case 'cargo': return normalizar(v.cargo)
+    case 'area': return normalizar(v.area)
+    case 'ingreso': return parseDateSafe(v.fecha_ingreso)?.getTime() || 0
+    case 'cese': return v.fecha_salida ? parseDateSafe(v.fecha_salida)?.getTime() || 0 : Number.MAX_SAFE_INTEGER
+    case 'sueldo': return Number(v.sueldo) || 0
+  }
+}
+
+const filtrados = computed(() => {
+  const q = normalizar(busqueda.value.trim())
+  const list = props.vinculos.filter((v) => {
+    if (filtro.value === 'vigentes' && !esVigente(v)) return false
+    if (filtro.value === 'concluidos' && esVigente(v)) return false
+    if (!q) return true
+    return normalizar([v.cargo, v.area, v.regimen, v.codigo].join(' ')).includes(q)
+  })
+  const dir = sortDir.value === 'desc' ? -1 : 1
+  return list.sort((a, b) => {
+    const A = sortValue(a, sortKey.value)
+    const B = sortValue(b, sortKey.value)
+    return (A < B ? -1 : A > B ? 1 : 0) * dir
   })
 })
+
+const totalPages = computed(() => Math.max(1, Math.ceil(filtrados.value.length / PAGE_SIZE)))
+const sortedVinculos = computed(() => {
+  const p = Math.min(page.value, totalPages.value)
+  return filtrados.value.slice((p - 1) * PAGE_SIZE, p * PAGE_SIZE)
+})
+
+const setSort = (key: SortKey) => {
+  if (sortKey.value === key) sortDir.value = sortDir.value === 'desc' ? 'asc' : 'desc'
+  else {
+    sortKey.value = key
+    sortDir.value = key === 'cargo' || key === 'area' ? 'asc' : 'desc'
+  }
+  page.value = 1
+}
+
+const setFiltro = (f: FiltroVinculo) => {
+  filtro.value = f
+  page.value = 1
+}
+
+const ariaSort = (key: SortKey) =>
+  sortKey.value === key ? (sortDir.value === 'asc' ? 'ascending' : 'descending') : 'none'
+
+const estadoLabel = (v: PersonalVinculo) => {
+  const t = getVinculoStatusType(v)
+  return t === 'success' ? 'Vigente' : t === 'warning' ? 'Sin doc. salida' : 'Concluido'
+}
 </script>
 
 <template>
-  <Card class="space-y-3">
-    <div class="flex flex-wrap items-center justify-between gap-2.5 border-b border-border pb-3">
-      <span class="text-sm font-bold text-foreground tracking-wider flex items-center gap-2">
-        <IconBriefcase class="size-3.5 text-primary shrink-0" />
-        <h3 class="font-semibold text-foreground tracking-tight text-sm">Historial de Vínculos Laborales</h3>
-      </span>
+  <div class="rounded-xl border border-border bg-card overflow-hidden">
+    <div class="flex items-center gap-1 px-3 border-b border-border overflow-x-auto" role="tablist" aria-label="Filtrar vínculos">
+      <button v-for="t in tabsFiltro" :key="t.id" type="button" role="tab" :aria-selected="filtro === t.id"
+        class="relative inline-flex items-center gap-2 px-3 py-3 text-xs whitespace-nowrap cursor-pointer transition focus:outline-hidden focus-visible:ring-2 focus-visible:ring-primary rounded-md"
+        :class="filtro === t.id ? 'text-foreground font-semibold after:absolute after:inset-x-2 after:-bottom-px after:h-0.5 after:bg-foreground' : 'text-muted-foreground hover:text-foreground font-medium'"
+        @click="setFiltro(t.id)">
+        {{ t.label }}
+        <span class="text-micro text-muted-foreground">{{ t.count }}</span>
+      </button>
     </div>
 
-    <div class="flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground -mt-1 pb-1">
-      <p class="truncate">Registros históricos de vinculación contractual, rotaciones y cambios de área</p>
-      <div class="flex items-center gap-3 text-meta shrink-0">
-        <span class="inline-flex items-center gap-1.5" title="Vínculo laboral vigente">
-          <span class="size-2 rounded-full bg-emerald-500"></span> Activo
-        </span>
-        <span class="inline-flex items-center gap-1.5" title="Inactivo sin documento formal de salida">
-          <span class="size-2 rounded-full bg-amber-500"></span> Sin doc. salida
-        </span>
-        <span class="inline-flex items-center gap-1.5" title="Vínculo concluido con documento">
-          <span class="size-2 rounded-full bg-muted-foreground/40"></span> Concluido
-        </span>
+    <div class="p-3 flex flex-wrap items-center justify-between gap-3">
+      <label class="relative flex-1 min-w-48 max-w-xl">
+        <IconSearch class="size-4 absolute start-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+        <input v-model="busqueda" type="search" placeholder="Buscar por cargo, área, régimen o plaza"
+          class="w-full ps-9 pe-3 py-2 rounded-lg bg-muted border-transparent text-xs text-foreground placeholder:text-muted-foreground focus:bg-card focus:border-primary focus:ring-primary"
+          @input="page = 1" />
+      </label>
+      <div class="hidden md:flex items-center gap-3 text-meta text-muted-foreground">
+        <span class="inline-flex items-center gap-1.5"><span class="size-2 rounded-full bg-emerald-500"></span> Vigente</span>
+        <span class="inline-flex items-center gap-1.5"><span class="size-2 rounded-full bg-amber-500"></span> Sin doc. salida</span>
+        <span class="inline-flex items-center gap-1.5"><span class="size-2 rounded-full bg-muted-foreground/40"></span> Concluido</span>
       </div>
     </div>
 
-    <div v-if="vinculos.length > 0" class="overflow-hidden rounded-xl border border-border bg-card">
+    <div v-if="vinculos.length > 0" class="border-t border-border">
       <div class="overflow-x-auto">
         <table class="w-full text-left text-xs" aria-label="Tabla de historial de vínculos laborales">
-          <thead
-            class="border-b border-border bg-muted/30 text-meta font-semibold uppercase tracking-wider text-muted-foreground select-none">
+          <thead class="border-b border-border text-xs text-muted-foreground select-none">
             <tr>
-              <th scope="col" class="px-3 py-2.5 font-semibold">Cargo</th>
-              <th scope="col" class="px-3 py-2.5 font-semibold">Ingreso</th>
-              <th scope="col" class="px-3 py-2.5 font-semibold">Cese</th>
-              <th scope="col" class="px-3 py-2.5 text-right font-semibold">Sueldo</th>
-              <th scope="col" class="px-2 py-2.5 text-center w-10">
-                <span class="sr-only">Detalle</span>
+              <th scope="col" :aria-sort="ariaSort('cargo')" class="px-3 py-3 font-medium ">
+                <button type="button" class="inline-flex items-center gap-1.5 cursor-pointer hover:text-foreground transition" @click="setSort('cargo')">
+                  Cargo
+                  <IconChevronUp v-if="sortKey === 'cargo'" class="size-3 transition-transform" :class="sortDir === 'desc' ? 'rotate-180' : ''" />
+                  <IconArrowsSort v-else class="size-3 opacity-60" />
+                </button>
               </th>
+              <th scope="col" :aria-sort="ariaSort('area')" class="px-3 py-3 font-medium ">
+                <button type="button" class="inline-flex items-center gap-1.5 cursor-pointer hover:text-foreground transition" @click="setSort('area')">
+                  Área
+                  <IconChevronUp v-if="sortKey === 'area'" class="size-3 transition-transform" :class="sortDir === 'desc' ? 'rotate-180' : ''" />
+                  <IconArrowsSort v-else class="size-3 opacity-60" />
+                </button>
+              </th>
+              <th scope="col" :aria-sort="ariaSort('ingreso')" class="px-3 py-3 font-medium ">
+                <button type="button" class="inline-flex items-center gap-1.5 cursor-pointer hover:text-foreground transition" @click="setSort('ingreso')">
+                  Ingreso
+                  <IconChevronUp v-if="sortKey === 'ingreso'" class="size-3 transition-transform" :class="sortDir === 'desc' ? 'rotate-180' : ''" />
+                  <IconArrowsSort v-else class="size-3 opacity-60" />
+                </button>
+              </th>
+              <th scope="col" :aria-sort="ariaSort('cese')" class="px-3 py-3 font-medium ">
+                <button type="button" class="inline-flex items-center gap-1.5 cursor-pointer hover:text-foreground transition" @click="setSort('cese')">
+                  Cese
+                  <IconChevronUp v-if="sortKey === 'cese'" class="size-3 transition-transform" :class="sortDir === 'desc' ? 'rotate-180' : ''" />
+                  <IconArrowsSort v-else class="size-3 opacity-60" />
+                </button>
+              </th>
+              <th scope="col" class="px-3 py-3 font-medium">Estado</th>
+              <th scope="col" :aria-sort="ariaSort('sueldo')" class="px-3 py-3 font-medium text-right">
+                <button type="button" class="inline-flex items-center gap-1.5 cursor-pointer hover:text-foreground transition" @click="setSort('sueldo')">
+                  Sueldo
+                  <IconChevronUp v-if="sortKey === 'sueldo'" class="size-3 transition-transform" :class="sortDir === 'desc' ? 'rotate-180' : ''" />
+                  <IconArrowsSort v-else class="size-3 opacity-60" />
+                </button>
+              </th>
+              <th scope="col" class="px-2 py-3 text-center w-10"><span class="sr-only">Detalle</span></th>
             </tr>
           </thead>
           <tbody class="divide-y divide-border">
@@ -163,12 +269,12 @@ const sortedVinculos = computed(() => {
                           <span>{{ v.eventos.length }} {{ v.eventos.length === 1 ? 'evento' : 'eventos' }}</span>
                         </span>
                       </div>
-                      <span class="text-micro text-muted-foreground block font-mono mt-0.5">
-                        {{ formatDate(v.fecha_ingreso) }} &bull; {{ v.fecha_salida ? formatDate(v.fecha_salida) :
-                          'Vigente' }}
-                      </span>
                     </div>
                   </div>
+                </td>
+
+                <td class="px-3 py-2.5 text-meta text-foreground max-w-56">
+                  <span class="line-clamp-2" :title="v.area || undefined">{{ v.area || '-' }}</span>
                 </td>
 
                 <td class="px-3 py-2.5 whitespace-nowrap">
@@ -182,6 +288,10 @@ const sortedVinculos = computed(() => {
                     :class="v.fecha_salida ? 'font-mono text-muted-foreground text-meta' : 'text-meta font-medium text-emerald-600 dark:text-emerald-400'">
                     {{ v.fecha_salida ? formatDate(v.fecha_salida) : 'Vigente' }}
                   </span>
+                </td>
+
+                <td class="px-3 py-2.5 whitespace-nowrap">
+                  <Badge :variant="getBadgeVariant(getVinculoStatusType(v))" size="xs">{{ estadoLabel(v) }}</Badge>
                 </td>
 
                 <td
@@ -201,7 +311,7 @@ const sortedVinculos = computed(() => {
               </tr>
 
               <tr v-if="v.origen !== 'SUNAT' && isExpanded(v.id)" class="bg-muted/15 border-b border-border/80">
-                <td colspan="5" class="p-2.5">
+                <td colspan="7" class="p-2.5">
                   <div class="p-3 rounded-xl bg-card border border-border/70 space-y-3 text-xs">
                     <div
                       class="flex flex-wrap items-center justify-between gap-2 pb-2.5 border-b border-border/60">
@@ -500,6 +610,26 @@ const sortedVinculos = computed(() => {
           </tbody>
         </table>
       </div>
+
+      <div v-if="sortedVinculos.length === 0" class="py-10 text-center text-xs text-muted-foreground">
+        Ningún vínculo coincide con el filtro o la búsqueda.
+      </div>
+
+      <div class="px-4 py-3 border-t border-border flex flex-wrap items-center justify-between gap-3 text-xs">
+        <span class="text-muted-foreground"><span class="font-semibold text-foreground">{{ filtrados.length }}</span> {{ filtrados.length === 1 ? 'resultado' : 'resultados' }}</span>
+        <nav v-if="totalPages > 1" class="flex items-center gap-2 text-muted-foreground" aria-label="Paginación">
+          <button type="button" class="size-8 inline-flex items-center justify-center rounded-lg hover:bg-muted disabled:opacity-40 disabled:pointer-events-none cursor-pointer"
+            :disabled="page <= 1" aria-label="Página anterior" @click="page--">
+            <IconChevronLeft class="size-4" />
+          </button>
+          <span class="min-w-8 h-8 px-2 inline-flex items-center justify-center rounded-lg bg-muted text-foreground font-medium">{{ Math.min(page, totalPages) }}</span>
+          <span>de {{ totalPages }}</span>
+          <button type="button" class="size-8 inline-flex items-center justify-center rounded-lg hover:bg-muted disabled:opacity-40 disabled:pointer-events-none cursor-pointer"
+            :disabled="page >= totalPages" aria-label="Página siguiente" @click="page++">
+            <IconChevronRight class="size-4" />
+          </button>
+        </nav>
+      </div>
     </div>
 
     <div v-else class="text-xs text-muted-foreground py-8 text-center space-y-2">
@@ -507,5 +637,5 @@ const sortedVinculos = computed(() => {
       <p class="font-semibold text-foreground">Sin historial de vínculos laborales</p>
       <p>No se registran resoluciones de designación o contratos en el sistema.</p>
     </div>
-  </Card>
+  </div>
 </template>
