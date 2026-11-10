@@ -1,21 +1,21 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { format } from 'date-fns'
-import Card from '@/components/ui/card/Card.vue'
+import { es } from 'date-fns/locale'
 import Badge from '@/components/ui/badge/Badge.vue'
-import Button from '@/components/ui/button/Button.vue'
+import FilterDropdown from '@/components/ui/form/FilterDropdown.vue'
 import { type PersonalArchivo, type PersonalDocumento } from '@/services/personal'
 import { getApiBaseUrl } from '@/services/api'
 import { parseDateSafe, formatDate } from '@/utils/date'
 import {
   IconLayoutGrid,
-  IconList,
+  IconMenu2,
   IconEye,
   IconExternalLink,
   IconSearch,
-  IconUser,
   IconFileCheck,
   IconFileText,
+  IconFileTypePdf,
   IconLink,
   IconUpload,
   IconTrash,
@@ -37,12 +37,39 @@ const emit = defineEmits<{
 }>()
 
 function getArchivoDeDocumento(docId: number): PersonalArchivo | undefined {
-  return props.archivos.find(a => a.documento_id === docId)
+  return props.archivos.find((a) => a.documento_id === docId)
 }
 
 const viewMode = ref<'list' | 'grid'>('list')
-const selectedSort = ref<string>('newest')
-const searchQuery = ref<string>('')
+const searchQuery = ref('')
+const filtroTipo = ref('todos')
+const filtroFecha = ref('todas')
+const filtroVinculo = ref('todos')
+const selectedSort = ref('newest')
+
+const tipoOptions = [
+  { value: 'todos', label: 'Tipo' },
+  { value: 'pdf', label: 'Archivo PDF' },
+  { value: 'enlace', label: 'Enlace externo' },
+]
+const fechaOptions = [
+  { value: 'todas', label: 'Fecha' },
+  { value: '30d', label: 'Últimos 30 días' },
+  { value: 'anio', label: 'Este año' },
+  { value: 'antes', label: 'Años anteriores' },
+]
+const vinculoOptions = [
+  { value: 'todos', label: 'Todos los archivos' },
+  { value: 'con_doc', label: 'Con documento formal' },
+  { value: 'sin_doc', label: 'Sin documento formal' },
+]
+const sortOptions = [
+  { value: 'newest', label: 'Más recientes' },
+  { value: 'oldest', label: 'Más antiguos' },
+  { value: 'name_asc', label: 'Nombre (A-Z)' },
+  { value: 'name_desc', label: 'Nombre (Z-A)' },
+  { value: 'size', label: 'Tamaño' },
+]
 
 function parseSizeToKb(sizeStr?: string): number {
   if (!sizeStr) return 0
@@ -56,35 +83,14 @@ function parseSizeToKb(sizeStr?: string): number {
 
 function formatFileDate(val: string | null | undefined): string {
   const d = parseDateSafe(val)
-  if (!d) return '-'
-  return format(d, 'MMM d, yyyy')
+  if (!d) return ''
+  return format(d, "d 'de' MMM yyyy", { locale: es })
 }
 
-function getAccessDetails(archivo: PersonalArchivo) {
-  const access = archivo.access || 'Todos'
-  const isOnlyYou = access.toLowerCase().includes('solo tú') || access.toLowerCase().includes('only you')
-
-  if (isOnlyYou) {
-    return {
-      isOnlyYou: true,
-      label: access,
-      initial: 'U',
-    }
-  }
-
-  const match = access.match(/\d+/)
-  const membersCount = archivo.access_members || (match ? Number(match[0]) : null)
-  let initial = 'M'
-  if (membersCount === 2) initial = 'R'
-  else if (membersCount === 4) initial = 'A'
-  else if (membersCount === 9) initial = 'D'
-  else if (archivo.usuario_subida) initial = archivo.usuario_subida.charAt(0).toUpperCase()
-
-  return {
-    isOnlyYou: false,
-    label: access,
-    initial,
-  }
+function subtitulo(a: PersonalArchivo): string {
+  return [a.usuario_subida, formatFileDate(a.fecha_subida), a.external_url ? null : a.size]
+    .filter(Boolean)
+    .join(' · ')
 }
 
 function handleOpenFile(archivo: PersonalArchivo) {
@@ -103,267 +109,209 @@ function handleAbrirArchivo(archivo: PersonalArchivo) {
 }
 
 const filteredAndSortedArchivos = computed(() => {
-  let result = [...props.archivos]
+  const now = Date.now()
+  const currentYear = new Date().getFullYear()
+  const q = searchQuery.value.toLowerCase().trim()
 
-  if (searchQuery.value.trim()) {
-    const q = searchQuery.value.toLowerCase().trim()
-    result = result.filter(a => a.original_name.toLowerCase().includes(q))
-  }
-
-  result.sort((a, b) => {
-    if (selectedSort.value === 'newest') {
-      const dateA = parseDateSafe(a.fecha_subida)?.getTime() || 0
-      const dateB = parseDateSafe(b.fecha_subida)?.getTime() || 0
-      return dateB - dateA
+  const result = props.archivos.filter((a) => {
+    if (q && !a.original_name.toLowerCase().includes(q)) return false
+    if (filtroTipo.value === 'pdf' && a.external_url) return false
+    if (filtroTipo.value === 'enlace' && !a.external_url) return false
+    if (filtroVinculo.value === 'con_doc' && !a.documento_id) return false
+    if (filtroVinculo.value === 'sin_doc' && a.documento_id) return false
+    if (filtroFecha.value !== 'todas') {
+      const d = parseDateSafe(a.fecha_subida)
+      if (!d) return false
+      if (filtroFecha.value === '30d' && now - d.getTime() > 30 * 86400000) return false
+      if (filtroFecha.value === 'anio' && d.getFullYear() !== currentYear) return false
+      if (filtroFecha.value === 'antes' && d.getFullYear() >= currentYear) return false
     }
-    if (selectedSort.value === 'oldest') {
-      const dateA = parseDateSafe(a.fecha_subida)?.getTime() || 0
-      const dateB = parseDateSafe(b.fecha_subida)?.getTime() || 0
-      return dateA - dateB
-    }
-    if (selectedSort.value === 'name_asc') {
-      return a.original_name.localeCompare(b.original_name)
-    }
-    if (selectedSort.value === 'name_desc') {
-      return b.original_name.localeCompare(a.original_name)
-    }
-    if (selectedSort.value === 'size') {
-      return parseSizeToKb(b.size) - parseSizeToKb(a.size)
-    }
-    return 0
+    return true
   })
 
+  const time = (a: PersonalArchivo) => parseDateSafe(a.fecha_subida)?.getTime() || 0
+  result.sort((a, b) => {
+    switch (selectedSort.value) {
+      case 'oldest': return time(a) - time(b)
+      case 'name_asc': return a.original_name.localeCompare(b.original_name)
+      case 'name_desc': return b.original_name.localeCompare(a.original_name)
+      case 'size': return parseSizeToKb(b.size) - parseSizeToKb(a.size)
+      default: return time(b) - time(a)
+    }
+  })
   return result
 })
+
+const total = computed(() => filteredAndSortedArchivos.value.length)
 </script>
 
 <template>
   <div class="space-y-6">
-    <Card class="space-y-3">
-      <div class="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-3">
+    <div class="rounded-xl border border-border bg-card p-4 sm:p-5">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <h3 class="text-title font-semibold text-foreground tracking-tight">
+          {{ total }} {{ total === 1 ? 'resultado' : 'resultados' }}
+        </h3>
+
         <div class="flex items-center gap-2">
-          <IconFileText class="size-3.5 text-primary shrink-0" />
-          <h3 class="text-sm font-semibold tracking-tight text-foreground">Archivos Digitales del Legajo</h3>
-          <span
-            class="px-2 py-0.5 rounded bg-rose-500/10 text-rose-600 dark:text-rose-400 text-meta font-mono font-medium shrink-0">
-            {{ filteredAndSortedArchivos.length }} PDF{{ filteredAndSortedArchivos.length === 1 ? '' : 's' }}
-          </span>
-        </div>
-
-        <div class="flex flex-wrap items-center gap-2.5">
-          <div class="relative">
-            <IconSearch class="size-3.5 text-muted-foreground absolute left-2.5 top-1/2 -translate-y-1/2" />
-            <input v-model="searchQuery" type="text" placeholder="Buscar archivo PDF..."
-              class="h-7.5 pl-7 pr-2.5 text-meta rounded-lg border border-border bg-background/50 focus:bg-background focus:outline-hidden focus:ring-1 focus:ring-primary w-40 transition" />
-          </div>
-
-
-          <div class="inline-flex items-center rounded-lg border border-border p-0.5 bg-muted/20">
-            <button type="button" class="p-1 rounded-md transition cursor-pointer"
-              :class="viewMode === 'list' ? 'bg-card text-foreground shadow-xs' : 'text-muted-foreground hover:text-foreground'"
-              title="Vista en lista" @click="viewMode = 'list'">
-              <IconList class="size-3.5" />
-            </button>
-            <button type="button" class="p-1 rounded-md transition cursor-pointer"
-              :class="viewMode === 'grid' ? 'bg-card text-foreground shadow-xs' : 'text-muted-foreground hover:text-foreground'"
-              title="Vista en cuadrícula" @click="viewMode = 'grid'">
-              <IconLayoutGrid class="size-3.5" />
-            </button>
-          </div>
-
-          <Button type="button" variant="primary" size="xs" class="gap-1.5 cursor-pointer text-xs shrink-0"
+          <button type="button"
+            class="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg bg-primary text-primary-foreground text-xs font-semibold hover:bg-primary-hover transition cursor-pointer shrink-0"
             @click="emit('subirArchivo')">
-            <IconUpload class="size-3.5" />
-            <span>Subir</span>
-          </Button>
+            <IconUpload class="size-4" />
+            Subir archivo
+          </button>
+
+          <div class="inline-flex items-center rounded-lg border border-border p-0.5 bg-card" role="group"
+            aria-label="Tipo de vista">
+            <button type="button" class="p-1.5 rounded-md transition cursor-pointer"
+              :class="viewMode === 'grid' ? 'bg-muted text-foreground' : 'text-muted-foreground hover:text-foreground'"
+              title="Vista en cuadrícula" aria-label="Vista en cuadrícula" :aria-pressed="viewMode === 'grid'"
+              @click="viewMode = 'grid'">
+              <IconLayoutGrid class="size-4" />
+            </button>
+            <button type="button" class="p-1.5 rounded-md transition cursor-pointer"
+              :class="viewMode === 'list' ? 'bg-muted text-foreground' : 'text-muted-foreground hover:text-foreground'"
+              title="Vista en lista" aria-label="Vista en lista" :aria-pressed="viewMode === 'list'"
+              @click="viewMode = 'list'">
+              <IconMenu2 class="size-4" />
+            </button>
+          </div>
         </div>
       </div>
 
-      <div v-if="filteredAndSortedArchivos.length > 0">
-        <div v-if="viewMode === 'list'" class="overflow-hidden rounded-xl border border-border bg-card">
-          <div class="overflow-x-auto">
-            <table class="w-full text-left text-xs" aria-label="Tabla de archivos digitales">
-              <thead
-                class="border-b border-border bg-muted/30 text-micro font-semibold uppercase tracking-wider text-muted-foreground select-none">
-                <tr>
-                  <th scope="col" class="px-3 py-2 font-semibold w-[48%]">Nombre</th>
-                  <th scope="col" class="px-3 py-2 font-semibold w-[14%]">Tamaño</th>
-                  <th scope="col" class="px-3 py-2 font-semibold w-[22%]">Acceso</th>
-                  <th scope="col" class="px-3 py-2 font-semibold w-[16%] text-left">Modificado
-                  </th>
-                </tr>
-              </thead>
-              <tbody class="divide-y divide-border text-xs">
-                <tr v-for="archivo in filteredAndSortedArchivos" :key="archivo.id"
-                  class="group hover:bg-muted/40 transition-colors">
-                  <td class="px-3 py-2 min-w-0">
-                    <div class="flex items-center gap-2.5">
-                      <div class="shrink-0 flex items-center justify-center">
-                        <svg class="size-6 shrink-0 drop-shadow-2xs" viewBox="0 0 24 24" fill="none"
-                          xmlns="http://www.w3.org/2000/svg">
-                          <path
-                            d="M6 2C4.89543 2 4 2.89543 4 4V20C4 21.1046 4.89543 22 6 22H18C19.1046 22 20 21.1046 20 20V8L14 2H6Z"
-                            class="fill-rose-50 dark:fill-rose-950/60 stroke-rose-400 dark:stroke-rose-500"
-                            stroke-width="1.5" stroke-linejoin="round" />
-                          <path d="M14 2V8H20" class="stroke-rose-400 dark:stroke-rose-500" stroke-width="1.5"
-                            stroke-linejoin="round" />
-                          <rect x="6.5" y="12" width="11" height="6.5" rx="1.5"
-                            class="fill-rose-600 dark:fill-rose-500" />
-                          <text x="12" y="16.7" fill="white" font-size="4.2" font-weight="bold"
-                            font-family="system-ui, -apple-system, sans-serif" text-anchor="middle"
-                            letter-spacing="0.3">PDF</text>
-                        </svg>
-                      </div>
-                      <button type="button" @click="handleOpenFile(archivo)"
-                        class="font-medium text-foreground hover:text-primary transition-colors truncate max-w-sm block text-meta text-left cursor-pointer"
-                        :title="archivo.original_name">
-                        {{ archivo.original_name }}
-                      </button>
-                    </div>
-                  </td>
+      <div class="mt-4 pt-4 border-t border-border flex flex-wrap items-center justify-between gap-3">
+        <label class="relative flex-1 min-w-48 max-w-lg">
+          <IconSearch class="size-4 absolute start-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+          <input v-model="searchQuery" type="search" placeholder="Buscar por nombre de archivo"
+            class="w-full ps-9 pe-3 py-2 rounded-lg bg-muted border-transparent text-xs text-foreground placeholder:text-muted-foreground focus:bg-card focus:border-primary focus:ring-primary" />
+        </label>
 
-                  <td class="px-3 py-2 text-muted-foreground font-mono text-meta whitespace-nowrap">
-                    {{ archivo.size || '256 KB' }}
-                  </td>
-
-                  <td class="px-3 py-2 whitespace-nowrap">
-                    <div class="flex items-center gap-1.5">
-                      <div v-if="getAccessDetails(archivo).isOnlyYou"
-                        class="size-4 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 flex items-center justify-center shrink-0">
-                        <IconUser class="size-2.5" />
-                      </div>
-                      <div v-else
-                        class="size-4 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 text-nano font-bold flex items-center justify-center shrink-0">
-                        {{ getAccessDetails(archivo).initial }}
-                      </div>
-                      <span class="text-foreground text-meta font-normal">
-                        {{ getAccessDetails(archivo).label }}
-                      </span>
-                    </div>
-                  </td>
-
-                  <td class="px-3 py-2 text-muted-foreground text-left whitespace-nowrap">
-                    <div class="flex items-center justify-between gap-2">
-                      <span class="font-mono text-meta">{{ formatFileDate(archivo.fecha_subida) }}</span>
-                      <div class="flex items-center gap-1">
-                        <button type="button"
-                          class="opacity-0 group-hover:opacity-100 transition p-0.5 text-muted-foreground hover:text-primary rounded hover:bg-muted cursor-pointer"
-                          :title="archivo.external_url ? 'Abrir enlace externo' : 'Visualizar documento'"
-                          @click="handleAbrirArchivo(archivo)">
-                          <IconExternalLink v-if="archivo.external_url" class="size-3" />
-                          <IconEye v-else class="size-3" />
-                        </button>
-                        <button type="button"
-                          class="opacity-0 group-hover:opacity-100 transition p-0.5 text-muted-foreground hover:text-destructive rounded hover:bg-destructive/10 cursor-pointer"
-                          title="Eliminar archivo del legajo" @click="emit('eliminarArchivo', archivo)">
-                          <IconTrash class="size-3" />
-                        </button>
-                      </div>
-                    </div>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+        <div class="flex flex-wrap items-center gap-1">
+          <FilterDropdown v-model="filtroTipo" :options="tipoOptions" aria-label="Filtrar por tipo" />
+          <FilterDropdown v-model="filtroFecha" :options="fechaOptions" aria-label="Filtrar por fecha" />
+          <FilterDropdown v-model="filtroVinculo" :options="vinculoOptions" aria-label="Filtrar por vínculo" />
+          <FilterDropdown v-model="selectedSort" :options="sortOptions" prefix="Orden:" aria-label="Ordenar" />
         </div>
+      </div>
 
-        <div v-else class="grid grid-cols-[repeat(auto-fit,minmax(14rem,1fr))] gap-3">
-          <div v-for="archivo in filteredAndSortedArchivos" :key="archivo.id"
-            class="group rounded-xl border border-border bg-card p-3 hover:shadow-xs hover:border-primary/40 transition-all flex flex-col justify-between space-y-2.5">
-            <div class="flex items-start justify-between gap-2">
-              <div class="shrink-0 flex items-center justify-center">
-                <svg class="size-8.5 shrink-0 drop-shadow-2xs" viewBox="0 0 24 24" fill="none"
-                  xmlns="http://www.w3.org/2000/svg">
-                  <path
-                    d="M6 2C4.89543 2 4 2.89543 4 4V20C4 21.1046 4.89543 22 6 22H18C19.1046 22 20 21.1046 20 20V8L14 2H6Z"
-                    class="fill-rose-50 dark:fill-rose-950/60 stroke-rose-400 dark:stroke-rose-500" stroke-width="1.5"
-                    stroke-linejoin="round" />
-                  <path d="M14 2V8H20" class="stroke-rose-400 dark:stroke-rose-500" stroke-width="1.5"
-                    stroke-linejoin="round" />
-                  <rect x="6.5" y="12" width="11" height="6.5" rx="1.5" class="fill-rose-600 dark:fill-rose-500" />
-                  <text x="12" y="16.7" fill="white" font-size="4.2" font-weight="bold"
-                    font-family="system-ui, -apple-system, sans-serif" text-anchor="middle"
-                    letter-spacing="0.3">PDF</text>
-                </svg>
+      <div class="mt-4 pt-4 border-t border-border">
+        <template v-if="total > 0">
+          <ul v-if="viewMode === 'list'" class="space-y-3">
+            <li v-for="archivo in filteredAndSortedArchivos" :key="archivo.id"
+              class="group flex items-center gap-3 rounded-xl border border-border bg-card px-3 py-3 hover:border-primary/40 transition">
+              <div class="size-10 rounded-lg border border-border bg-card flex items-center justify-center shrink-0"
+                :class="archivo.external_url ? 'text-primary' : 'text-rose-500'">
+                <IconLink v-if="archivo.external_url" class="size-5" />
+                <IconFileTypePdf v-else class="size-5" />
               </div>
-              <div class="flex items-center gap-1">
+
+              <div class="min-w-0 flex-1">
                 <button type="button"
-                  class="p-1 rounded-md border border-border text-muted-foreground hover:text-primary hover:bg-muted transition cursor-pointer"
-                  :title="archivo.external_url ? 'Abrir enlace' : 'Visualizar documento'"
+                  class="block max-w-full text-left text-xs font-semibold text-foreground hover:text-primary truncate transition cursor-pointer"
+                  :title="archivo.original_name" @click="handleAbrirArchivo(archivo)">
+                  {{ archivo.original_name }}
+                </button>
+                <p class="text-meta text-muted-foreground truncate">{{ subtitulo(archivo) }}</p>
+              </div>
+
+              <Badge v-if="archivo.documento_id" variant="outline" size="xs" class="hidden sm:inline-flex shrink-0">
+                Documento formal
+              </Badge>
+
+              <div class="flex items-center gap-1 shrink-0 opacity-100 sm:opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition">
+                <button type="button"
+                  class="size-8 inline-flex items-center justify-center rounded-lg border border-border text-muted-foreground hover:text-primary hover:bg-muted transition cursor-pointer"
+                  :title="archivo.external_url ? 'Abrir enlace externo' : 'Visualizar documento'"
+                  :aria-label="archivo.external_url ? 'Abrir enlace externo' : 'Visualizar documento'"
                   @click="handleAbrirArchivo(archivo)">
-                  <IconExternalLink v-if="archivo.external_url" class="size-3" />
-                  <IconEye v-else class="size-3" />
+                  <IconExternalLink v-if="archivo.external_url" class="size-4" />
+                  <IconEye v-else class="size-4" />
                 </button>
                 <button type="button"
-                  class="p-1 rounded-md border border-border text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition cursor-pointer"
-                  title="Eliminar archivo del legajo" @click="emit('eliminarArchivo', archivo)">
-                  <IconTrash class="size-3" />
+                  class="size-8 inline-flex items-center justify-center rounded-lg border border-border text-rose-500 hover:bg-rose-500/10 transition cursor-pointer"
+                  title="Eliminar archivo del legajo" aria-label="Eliminar archivo del legajo"
+                  @click="emit('eliminarArchivo', archivo)">
+                  <IconTrash class="size-4" />
                 </button>
               </div>
-            </div>
+            </li>
+          </ul>
 
-            <div class="space-y-0.5">
-              <button type="button" @click="handleOpenFile(archivo)"
-                class="text-meta font-semibold text-foreground hover:text-primary transition line-clamp-2 block text-left cursor-pointer"
-                :title="archivo.original_name">
-                {{ archivo.original_name }}
+          <ul v-else class="grid grid-cols-[repeat(auto-fill,minmax(15rem,1fr))] gap-4">
+            <li v-for="archivo in filteredAndSortedArchivos" :key="archivo.id"
+              class="group relative rounded-xl border border-border bg-card overflow-hidden hover:border-primary/40 transition">
+              <button type="button"
+                class="w-full h-36 sm:h-40 flex items-center justify-center bg-muted/40 cursor-pointer"
+                :aria-label="`Abrir ${archivo.original_name}`" @click="handleAbrirArchivo(archivo)">
+                <IconLink v-if="archivo.external_url" class="size-12 text-primary/50" :stroke-width="1.25" />
+                <IconFileTypePdf v-else class="size-12 text-rose-400/70" :stroke-width="1.25" />
               </button>
-              <p class="text-micro text-muted-foreground font-mono">
-                {{ archivo.size || '256 KB' }}
-              </p>
-            </div>
 
-            <div
-              class="pt-1.5 border-t border-border/50 flex items-center justify-between text-micro text-muted-foreground">
-              <div class="flex items-center gap-1">
-                <div v-if="getAccessDetails(archivo).isOnlyYou"
-                  class="size-3.5 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 flex items-center justify-center shrink-0">
-                  <IconUser class="size-2" />
-                </div>
-                <div v-else
-                  class="size-3.5 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 text-nano font-bold flex items-center justify-center shrink-0">
-                  {{ getAccessDetails(archivo).initial }}
-                </div>
-                <span class="truncate max-w-20">{{ getAccessDetails(archivo).label }}</span>
+              <div class="absolute top-2.5 right-2.5 flex items-center rounded-xl bg-card border border-border shadow-md p-1 opacity-100 sm:opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition">
+                <button type="button"
+                  class="size-8 inline-flex items-center justify-center rounded-lg text-muted-foreground hover:text-primary hover:bg-muted transition cursor-pointer"
+                  :title="archivo.external_url ? 'Abrir enlace externo' : 'Visualizar documento'"
+                  :aria-label="archivo.external_url ? 'Abrir enlace externo' : 'Visualizar documento'"
+                  @click="handleAbrirArchivo(archivo)">
+                  <IconExternalLink v-if="archivo.external_url" class="size-4" />
+                  <IconEye v-else class="size-4" />
+                </button>
+                <span class="w-px h-5 bg-border mx-0.5"></span>
+                <button type="button"
+                  class="size-8 inline-flex items-center justify-center rounded-lg text-rose-500 hover:bg-rose-500/10 transition cursor-pointer"
+                  title="Eliminar archivo del legajo" aria-label="Eliminar archivo del legajo"
+                  @click="emit('eliminarArchivo', archivo)">
+                  <IconTrash class="size-4" />
+                </button>
               </div>
-              <span class="font-mono text-micro">{{ formatFileDate(archivo.fecha_subida) }}</span>
-            </div>
-          </div>
+
+              <div class="flex items-center gap-3 p-3 border-t border-border">
+                <div class="size-10 rounded-lg border border-border bg-card flex items-center justify-center shrink-0"
+                  :class="archivo.external_url ? 'text-primary' : 'text-rose-500'">
+                  <IconLink v-if="archivo.external_url" class="size-5" />
+                  <IconFileTypePdf v-else class="size-5" />
+                </div>
+                <div class="min-w-0">
+                  <p class="text-xs font-semibold text-foreground truncate" :title="archivo.original_name">
+                    {{ archivo.original_name }}
+                  </p>
+                  <p class="text-meta text-muted-foreground truncate">{{ subtitulo(archivo) }}</p>
+                </div>
+              </div>
+            </li>
+          </ul>
+        </template>
+
+        <div v-else class="text-xs text-muted-foreground py-10 text-center space-y-2">
+          <IconFileText class="size-8 mx-auto text-muted-foreground/40" />
+          <p class="font-semibold text-foreground">No se encontraron archivos</p>
+          <p>
+            {{ archivos.length === 0
+              ? 'Este legajo aún no tiene archivos digitales. Usa "Subir archivo" para agregar el primero.'
+              : 'No existen archivos que coincidan con los filtros o la búsqueda seleccionados.' }}
+          </p>
         </div>
       </div>
+    </div>
 
-      <div v-else class="text-xs text-muted-foreground py-8 text-center space-y-2">
-        <IconFileText class="size-8 mx-auto text-muted-foreground/40" />
-        <p class="font-semibold text-foreground">No se encontraron archivos</p>
-        <p>No existen documentos que coincidan con el filtro o término de búsqueda seleccionado.</p>
-      </div>
-    </Card>
-
-    <Card class="space-y-3">
-      <div class="flex items-center justify-between border-b border-border pb-3">
-        <div class="flex items-center gap-2">
-          <IconFileCheck class="size-3.5 text-primary shrink-0" />
-          <div>
-            <h3 class="font-semibold text-foreground tracking-tight text-sm">Documentos Formales de Legajo</h3>
-            <p class="text-xs text-muted-foreground">Resoluciones de alcaldía y disposiciones emitidas</p>
-          </div>
+    <div class="rounded-xl border border-border bg-card p-4 sm:p-5 space-y-3">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h3 class="text-title font-semibold text-foreground tracking-tight">Documentos formales</h3>
+          <p class="text-xs text-muted-foreground">Resoluciones de alcaldía y disposiciones emitidas</p>
         </div>
-        <div class="flex items-center gap-2">
-          <Badge variant="outline" size="xs">{{ documentos.length }} Registrados</Badge>
-
-        </div>
+        <Badge variant="outline" size="xs">{{ documentos.length }} {{ documentos.length === 1 ? 'registrado' : 'registrados' }}</Badge>
       </div>
 
       <div v-if="documentos.length > 0" class="overflow-hidden rounded-xl border border-border bg-card">
         <div class="overflow-x-auto">
           <table class="w-full text-left text-xs" aria-label="Tabla de documentos formales de legajo">
-            <thead
-              class="border-b border-border bg-muted/30 text-micro font-semibold uppercase tracking-wider text-muted-foreground select-none">
+            <thead class="border-b border-border text-xs text-muted-foreground select-none">
               <tr>
-                <th scope="col" class="px-3 py-2.5 font-semibold">Documento / Sigla</th>
-                <th scope="col" class="px-3 py-2.5 font-semibold">Descripción</th>
-                <th scope="col" class="px-3 py-2.5 font-semibold whitespace-nowrap">Fecha</th>
-                <th scope="col" class="px-3 py-2.5 text-right font-semibold whitespace-nowrap">Archivo PDF</th>
+                <th scope="col" class="px-3 py-3 font-medium">Documento / sigla</th>
+                <th scope="col" class="px-3 py-3 font-medium">Descripción</th>
+                <th scope="col" class="px-3 py-3 font-medium whitespace-nowrap">Fecha</th>
+                <th scope="col" class="px-3 py-3 text-right font-medium whitespace-nowrap">Archivo PDF</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-border">
@@ -410,6 +358,6 @@ const filteredAndSortedArchivos = computed(() => {
         <p class="font-semibold text-foreground">Sin resoluciones formalmente registradas</p>
         <p>No constan actos administrativos ni resoluciones asociadas a este legajo.</p>
       </div>
-    </Card>
+    </div>
   </div>
 </template>
