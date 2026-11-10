@@ -820,7 +820,7 @@
   }
 }
 
-/* Escala tipográfica compacta para la vista de perfil (y sus modales/drawers). */
+/* Escala tipográfica compacta, usada solo en la tarjeta "Último laboral actual". */
 .perfil-scope {
   --text-nano: 0.5625rem;
   --text-micro: 0.625rem;

@@ -59,7 +59,7 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <Card v-if="vinculoEfectivo" class="space-y-2.5">
+  <Card v-if="vinculoEfectivo" class="perfil-scope space-y-2.5">
     <div class="flex flex-wrap items-center justify-between gap-2.5 border-b border-border pb-2">
       <span class="text-xs font-bold text-foreground tracking-wider flex items-center gap-2">
         <IconBriefcase class="size-3.5 text-primary shrink-0" />

@@ -551,7 +551,7 @@ const handleSubmit = () => {
 </script>
 
 <template>
-  <Modal scope-class="perfil-scope" :is-open="isOpen" :persistent="isSaving" @close="emit('close')">
+  <Modal :is-open="isOpen" :persistent="isSaving" @close="emit('close')">
         <div
           class="relative w-full max-w-xl rounded-2xl bg-card border border-border shadow-2xl text-left flex flex-col max-h-[90vh] overflow-hidden"
           @click.stop>

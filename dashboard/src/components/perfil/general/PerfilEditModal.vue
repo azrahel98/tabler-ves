@@ -151,7 +151,7 @@ const onSubmit = () => {
 </script>
 
 <template>
-  <Modal scope-class="perfil-scope" :is-open="isOpen" labelledby="modal-edit-profile-title" @close="handleRequestClose">
+  <Modal :is-open="isOpen" labelledby="modal-edit-profile-title" @close="handleRequestClose">
     <div class="w-full max-w-xl bg-card border border-border rounded-2xl shadow-xl overflow-hidden text-meta">
       <div v-if="showConfirmDiscard"
         class="p-4 bg-amber-500/10 border-b border-amber-500/20 text-meta flex flex-wrap items-center justify-between gap-3">

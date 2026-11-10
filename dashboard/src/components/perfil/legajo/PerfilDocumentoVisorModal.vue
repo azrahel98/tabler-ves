@@ -135,7 +135,7 @@ const handleAbrirNuevaPestana = () => {
 </script>
 
 <template>
-  <Modal scope-class="perfil-scope" :is-open="isOpen" labelledby="visor-titulo" @close="emit('close')">
+  <Modal :is-open="isOpen" labelledby="visor-titulo" @close="emit('close')">
     <div class="bg-card border border-border shadow-2xl overflow-hidden flex flex-col transition-all duration-200"
       :class="isFullscreen
         ? 'fixed inset-2 rounded-xl z-50'
