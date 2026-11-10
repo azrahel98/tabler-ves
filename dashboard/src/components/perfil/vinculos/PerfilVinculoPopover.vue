@@ -19,9 +19,10 @@ import { formatDate } from '@/utils/date'
 import {
   IconBriefcase,
   IconInfoCircle,
+  IconDotsVertical,
+  IconNotes,
   IconBuildingSkyscraper,
   IconCalendar,
-  IconCalendarOff,
   IconCalendarPlus,
   IconFileText,
   IconFileCheck,
@@ -33,7 +34,7 @@ import {
   IconExternalLink,
 } from '@tabler/icons-vue'
 
-const props = defineProps<{ vinculo: PersonalVinculo }>()
+const props = withDefaults(defineProps<{ vinculo: PersonalVinculo; modo?: 'info' | 'acciones' }>(), { modo: 'info' })
 
 const emit = defineEmits<{
   (e: 'registrarRenuncia', vinculo: PersonalVinculo): void
@@ -70,6 +71,7 @@ const estadoLabel = computed(() =>
 )
 const docIngreso = computed(() => [v.value.doc_ingreso, v.value.numero_doc_ingreso].filter(Boolean).join(' N° '))
 const docSalida = computed(() => [v.value.doc_salida, v.value.numero_doc_salida].filter(Boolean).join(' N° '))
+const referencias = computed(() => [v.value.descrip_ingreso, v.value.descrip_salida].filter(Boolean).join(' · '))
 const puedeRenunciar = computed(() => v.value.estado.toLowerCase() !== 'inactivo')
 </script>
 
@@ -77,13 +79,16 @@ const puedeRenunciar = computed(() => v.value.estado.toLowerCase() !== 'inactivo
   <div ref="root" class="hs-tooltip [--trigger:click] [--placement:bottom-end] --prevent-on-load-init inline-block" @click.stop>
     <button type="button"
       class="hs-tooltip-toggle size-8 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition cursor-pointer inline-flex items-center justify-center focus:outline-hidden focus-visible:ring-2 focus-visible:ring-primary"
-      aria-haspopup="dialog" aria-label="Ver detalles del vínculo">
-      <IconInfoCircle class="size-4" />
+      aria-haspopup="dialog" :aria-label="modo === 'info' ? 'Ver información del vínculo' : 'Acciones del vínculo'"
+      :title="modo === 'info' ? 'Información' : 'Acciones'">
+      <IconInfoCircle v-if="modo === 'info'" class="size-4" />
+      <IconDotsVertical v-else class="size-4" />
     </button>
 
-    <div
+    <!-- Popover de información: solo muestra los datos que existen -->
+    <div v-if="modo === 'info'"
       class="hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible hidden invisible opacity-0 transition-opacity z-50 w-[min(24rem,calc(100vw-2rem))] text-xs"
-      role="dialog" aria-label="Detalle del vínculo laboral">
+      role="dialog" aria-label="Información del vínculo laboral">
       <div class="bg-card border border-border rounded-2xl shadow-xl overflow-hidden text-left">
         <div class="p-4 flex items-start gap-3">
           <div class="size-11 rounded-full bg-primary/10 text-primary border border-primary/20 flex items-center justify-center shrink-0">
@@ -92,26 +97,26 @@ const puedeRenunciar = computed(() => v.value.estado.toLowerCase() !== 'inactivo
           <div class="min-w-0 flex-1">
             <div class="flex items-start justify-between gap-2">
               <h4 class="font-semibold text-foreground text-sm leading-snug wrap-break-word min-w-0">
-                {{ v.cargo || '-' }}
+                {{ v.cargo || 'Vínculo laboral' }}
               </h4>
               <Badge :variant="badgeVariant" size="xs" class="shrink-0 rounded-full">{{ estadoLabel }}</Badge>
             </div>
-            <p class="text-muted-foreground mt-0.5 font-mono text-meta">
-              Plaza AIRHSP: {{ v.codigo || '-' }}
+            <p v-if="v.codigo" class="text-muted-foreground mt-0.5 font-mono text-meta">
+              Plaza AIRHSP: {{ v.codigo }}
             </p>
           </div>
         </div>
 
-        <div class="px-4 py-3 border-t border-border space-y-2.5 max-h-72 overflow-y-auto">
-          <div class="flex items-start gap-3" title="Área">
+        <div class="px-4 py-3 border-t border-border space-y-2.5 max-h-80 overflow-y-auto">
+          <div v-if="v.area" class="flex items-start gap-3" title="Área">
             <IconBuildingSkyscraper class="size-4 text-muted-foreground shrink-0 mt-0.5" />
-            <span class="text-foreground wrap-break-word min-w-0">{{ v.area || '-' }}</span>
+            <span class="text-foreground wrap-break-word min-w-0">{{ v.area }}</span>
           </div>
-          <div class="flex items-center gap-3" title="Régimen">
+          <div v-if="v.regimen" class="flex items-center gap-3" title="Régimen">
             <IconFileCertificate class="size-4 text-muted-foreground shrink-0" />
-            <span class="text-foreground">{{ v.regimen || '-' }}</span>
+            <span class="text-foreground">{{ v.regimen }}</span>
           </div>
-          <div class="flex items-center gap-3" title="Periodo del vínculo">
+          <div v-if="v.fecha_ingreso" class="flex items-center gap-3" title="Periodo del vínculo">
             <IconCalendar class="size-4 text-muted-foreground shrink-0" />
             <span class="text-foreground font-mono">
               {{ formatDate(v.fecha_ingreso) }}
@@ -121,25 +126,22 @@ const puedeRenunciar = computed(() => v.value.estado.toLowerCase() !== 'inactivo
               </span>
             </span>
           </div>
-          <div class="flex items-center gap-3" title="Documento de ingreso">
+          <div v-if="docIngreso" class="flex items-center gap-3" title="Documento de ingreso">
             <IconFileText class="size-4 text-muted-foreground shrink-0" />
-            <button v-if="docIngreso" type="button"
-              class="text-primary hover:underline inline-flex items-center gap-1 min-w-0 cursor-pointer"
+            <button type="button" class="text-primary hover:underline inline-flex items-center gap-1 min-w-0 cursor-pointer"
               @click="run(() => emit('verDocumento', { tipo: 'ingreso', vinculo: v }))">
               <span class="truncate">{{ docIngreso }}</span>
               <IconExternalLink class="size-3 shrink-0 opacity-70" />
             </button>
-            <span v-else class="text-muted-foreground">Sin documento de ingreso</span>
           </div>
-          <div class="flex items-center gap-3" title="Documento de salida">
+          <div v-if="docSalida" class="flex items-center gap-3" title="Documento de salida">
             <IconFileCheck class="size-4 text-muted-foreground shrink-0" />
-            <button v-if="docSalida" type="button"
+            <button type="button"
               class="text-amber-600 dark:text-amber-400 hover:underline inline-flex items-center gap-1 min-w-0 cursor-pointer"
               @click="run(() => emit('verDocumento', { tipo: 'salida', vinculo: v }))">
               <span class="truncate">{{ docSalida }}</span>
               <IconExternalLink class="size-3 shrink-0 opacity-70" />
             </button>
-            <span v-else class="text-muted-foreground">Sin documento de salida</span>
           </div>
           <div v-if="v.grupo_ocupacional" class="flex items-center gap-3" title="Grupo ocupacional">
             <IconBriefcase class="size-4 text-muted-foreground shrink-0" />
@@ -149,31 +151,28 @@ const puedeRenunciar = computed(() => v.value.estado.toLowerCase() !== 'inactivo
             <IconId class="size-4 text-muted-foreground shrink-0 mt-0.5" />
             <span class="text-foreground wrap-break-word min-w-0">{{ v.cargo_estructural }}</span>
           </div>
-          <div class="flex items-center gap-3" title="Afiliación sindical">
+          <div v-if="v.sindicato" class="flex items-center gap-3" title="Afiliación sindical">
             <IconShieldCheck class="size-4 text-muted-foreground shrink-0" />
-            <span class="text-foreground">{{ v.sindicato || 'No afiliado' }}</span>
+            <span class="text-foreground">{{ v.sindicato }}</span>
           </div>
-          <div v-if="v.descrip_ingreso || v.descrip_salida" class="flex items-start gap-3" title="Referencias">
-            <IconCalendarOff class="size-4 text-muted-foreground shrink-0 mt-0.5" />
-            <span class="text-muted-foreground wrap-break-word min-w-0">
-              {{ [v.descrip_ingreso, v.descrip_salida].filter(Boolean).join(' · ') }}
-            </span>
+          <div v-if="referencias" class="flex items-start gap-3" title="Referencias">
+            <IconNotes class="size-4 text-muted-foreground shrink-0 mt-0.5" />
+            <span class="text-muted-foreground wrap-break-word min-w-0">{{ referencias }}</span>
           </div>
 
-          <div class="pt-2.5 border-t border-border space-y-2">
+          <div v-if="v.eventos && v.eventos.length > 0" class="pt-2.5 border-t border-border space-y-2">
             <div class="flex items-center justify-between gap-2">
               <span class="text-meta font-semibold text-muted-foreground inline-flex items-center gap-1.5">
                 <IconFileCode class="size-3.5" />
-                Eventos ({{ v.eventos?.length || 0 }})
+                Eventos ({{ v.eventos.length }})
               </span>
-              <button v-if="v.eventos && v.eventos.length > 0" type="button"
+              <button type="button"
                 class="text-meta text-primary hover:underline font-medium inline-flex items-center gap-1 cursor-pointer"
                 @click="run(() => emit('verEventos', v))">
                 Gestionar <IconExternalLink class="size-3 opacity-70" />
               </button>
             </div>
-            <p v-if="!v.eventos || v.eventos.length === 0" class="text-muted-foreground">Sin eventos registrados.</p>
-            <ul v-else class="space-y-1.5">
+            <ul class="space-y-1.5">
               <li v-for="ev in v.eventos" :key="ev.id"
                 class="p-2 rounded-lg bg-muted/50 border border-border/50 text-meta space-y-1">
                 <div class="flex flex-wrap items-center gap-1.5">
@@ -205,16 +204,27 @@ const puedeRenunciar = computed(() => v.value.estado.toLowerCase() !== 'inactivo
             </ul>
           </div>
         </div>
+      </div>
+    </div>
 
-        <div class="px-4 py-3 bg-muted/60 border-t border-border flex flex-wrap items-center justify-between gap-2">
-          <button type="button"
-            class="inline-flex items-center gap-1.5 text-muted-foreground hover:text-foreground font-medium cursor-pointer"
+    <!-- Popover de acciones -->
+    <div v-else
+      class="hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible hidden invisible opacity-0 transition-opacity z-50 w-60 text-xs"
+      role="menu" aria-label="Acciones del vínculo laboral">
+      <div class="bg-card border border-border rounded-2xl shadow-xl overflow-hidden text-left">
+        <div class="px-4 py-3 border-b border-border">
+          <p class="font-semibold text-foreground text-sm">Acciones</p>
+          <p class="text-muted-foreground truncate" :title="v.cargo || ''">{{ v.cargo || 'Vínculo laboral' }}</p>
+        </div>
+        <div class="p-1.5">
+          <button type="button" role="menuitem"
+            class="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-foreground hover:bg-muted transition cursor-pointer text-left"
             @click="run(() => emit('crearEvento', v))">
-            <IconCalendarPlus class="size-4" />
+            <IconCalendarPlus class="size-4 text-muted-foreground" />
             Agregar evento
           </button>
-          <button v-if="puedeRenunciar" type="button"
-            class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-primary text-primary-foreground font-semibold hover:bg-primary-hover transition cursor-pointer"
+          <button v-if="puedeRenunciar" type="button" role="menuitem"
+            class="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-rose-600 dark:text-rose-400 hover:bg-rose-500/10 transition cursor-pointer text-left"
             @click="run(() => emit('registrarRenuncia', v))">
             <IconFileX class="size-4" />
             Registrar renuncia

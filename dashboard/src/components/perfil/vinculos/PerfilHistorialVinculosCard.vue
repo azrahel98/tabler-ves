@@ -188,7 +188,7 @@ const estadoLabel = (v: PersonalVinculo) => {
                   <IconArrowsSort v-else class="size-3 opacity-60" />
                 </button>
               </th>
-              <th scope="col" class="px-2 py-3 text-center w-10"><span class="sr-only">Detalle</span></th>
+              <th scope="col" class="px-2 py-3 text-center w-20"><span class="sr-only">Detalle</span></th>
             </tr>
           </thead>
           <tbody class="divide-y divide-border">
@@ -259,10 +259,16 @@ const estadoLabel = (v: PersonalVinculo) => {
                 </td>
 
                 <td class="px-2 py-2.5 text-center">
-                  <PerfilVinculoPopover v-if="v.origen !== 'SUNAT'" :vinculo="v"
-                    @registrar-renuncia="emit('registrarRenuncia', $event)"
-                    @ver-documento="emit('verDocumento', $event)" @ver-eventos="emit('verEventos', $event)"
-                    @crear-evento="emit('crearEvento', $event)" />
+                  <div class="inline-flex items-center gap-0.5">
+                    <PerfilVinculoPopover v-if="v.origen !== 'SUNAT'" modo="info" :vinculo="v"
+                      @registrar-renuncia="emit('registrarRenuncia', $event)"
+                      @ver-documento="emit('verDocumento', $event)" @ver-eventos="emit('verEventos', $event)"
+                      @crear-evento="emit('crearEvento', $event)" />
+                    <PerfilVinculoPopover v-if="v.origen !== 'SUNAT'" modo="acciones" :vinculo="v"
+                      @registrar-renuncia="emit('registrarRenuncia', $event)"
+                      @ver-documento="emit('verDocumento', $event)" @ver-eventos="emit('verEventos', $event)"
+                      @crear-evento="emit('crearEvento', $event)" />
+                  </div>
                 </td>
               </tr>
             </template>
