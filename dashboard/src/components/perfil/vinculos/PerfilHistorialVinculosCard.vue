@@ -134,7 +134,7 @@ const estadoLabel = (v: PersonalVinculo) => {
 
     <div class="p-2.5 flex flex-wrap items-center justify-between gap-3">
       <label class="relative flex-1 min-w-48 max-w-xl">
-        <IconSearch class="size-3.5 absolute start-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+        <IconSearch class="size-3 absolute start-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
         <input v-model="busqueda" type="search" placeholder="Buscar por cargo, área, régimen o plaza"
           class="w-full ps-8 pe-3 h-control-sm py-0 rounded-md bg-muted border-transparent text-micro text-foreground placeholder:text-muted-foreground focus:bg-card focus:border-primary focus:ring-primary"
           @input="page = 1" />
@@ -280,22 +280,22 @@ const estadoLabel = (v: PersonalVinculo) => {
       <div class="px-4 py-3 border-t border-border flex flex-wrap items-center justify-between gap-3 text-meta">
         <span class="text-muted-foreground"><span class="font-semibold text-foreground">{{ filtrados.length }}</span> {{ filtrados.length === 1 ? 'resultado' : 'resultados' }}</span>
         <nav v-if="totalPages > 1" class="flex items-center gap-2 text-muted-foreground" aria-label="Paginación">
-          <button type="button" class="size-8 inline-flex items-center justify-center rounded-lg hover:bg-muted disabled:opacity-40 disabled:pointer-events-none cursor-pointer"
+          <button type="button" class="size-7 inline-flex items-center justify-center rounded-lg hover:bg-muted disabled:opacity-40 disabled:pointer-events-none cursor-pointer"
             :disabled="page <= 1" aria-label="Página anterior" @click="page--">
-            <IconChevronLeft class="size-4" />
+            <IconChevronLeft class="size-3.5" />
           </button>
           <span class="min-w-8 h-8 px-2 inline-flex items-center justify-center rounded-lg bg-muted text-foreground font-medium">{{ Math.min(page, totalPages) }}</span>
           <span>de {{ totalPages }}</span>
-          <button type="button" class="size-8 inline-flex items-center justify-center rounded-lg hover:bg-muted disabled:opacity-40 disabled:pointer-events-none cursor-pointer"
+          <button type="button" class="size-7 inline-flex items-center justify-center rounded-lg hover:bg-muted disabled:opacity-40 disabled:pointer-events-none cursor-pointer"
             :disabled="page >= totalPages" aria-label="Página siguiente" @click="page++">
-            <IconChevronRight class="size-4" />
+            <IconChevronRight class="size-3.5" />
           </button>
         </nav>
       </div>
     </div>
 
     <div v-else class="text-meta text-muted-foreground py-8 text-center space-y-2">
-      <IconBriefcase class="size-8 mx-auto text-muted-foreground/40" />
+      <IconBriefcase class="size-7 mx-auto text-muted-foreground/40" />
       <p class="font-semibold text-foreground">Sin historial de vínculos laborales</p>
       <p>No se registran resoluciones de designación o contratos en el sistema.</p>
     </div>

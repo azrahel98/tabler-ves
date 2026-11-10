@@ -45,7 +45,7 @@ const inicial = computed(() => (props.banco?.banco || '?').trim().slice(0, 2).to
             <td class="px-4 py-2.5 min-w-0">
               <div class="flex items-center gap-3">
                 <span
-                  class="size-8 rounded-full bg-primary text-primary-foreground text-micro font-semibold flex items-center justify-center shrink-0 select-none"
+                  class="size-7 rounded-full bg-primary text-primary-foreground text-micro font-semibold flex items-center justify-center shrink-0 select-none"
                   aria-hidden="true">
                   {{ inicial }}
                 </span>
@@ -60,14 +60,14 @@ const inicial = computed(() => (props.banco?.banco || '?').trim().slice(0, 2).to
 
             <td class="px-3 py-2.5 whitespace-nowrap">
               <div class="flex items-center gap-2 font-mono text-foreground">
-                <IconBuildingBank class="size-3.5 text-primary shrink-0" />
+                <IconBuildingBank class="size-3 text-primary shrink-0" />
                 <span>{{ banco.numero_cuenta || '-' }}</span>
                 <button v-if="banco.numero_cuenta" type="button"
                   class="size-control-xs inline-flex items-center justify-center rounded-md text-muted-foreground hover:text-primary hover:bg-muted transition cursor-pointer shrink-0"
                   title="Copiar número de cuenta al portapapeles" aria-label="Copiar número de cuenta al portapapeles"
                   @click="emit('copyToClipboard', banco.numero_cuenta, 'banco-cuenta')">
-                  <IconCheck v-if="copiedField === 'banco-cuenta'" class="size-3.5 text-emerald-600 dark:text-emerald-400" />
-                  <IconCopy v-else class="size-3.5" />
+                  <IconCheck v-if="copiedField === 'banco-cuenta'" class="size-3 text-emerald-600 dark:text-emerald-400" />
+                  <IconCopy v-else class="size-3" />
                 </button>
               </div>
             </td>
@@ -79,8 +79,8 @@ const inicial = computed(() => (props.banco?.banco || '?').trim().slice(0, 2).to
                   class="size-control-xs inline-flex items-center justify-center rounded-md text-muted-foreground hover:text-primary hover:bg-muted transition cursor-pointer shrink-0"
                   title="Copiar CCI al portapapeles" aria-label="Copiar CCI al portapapeles"
                   @click="emit('copyToClipboard', banco.cci, 'banco-cci')">
-                  <IconCheck v-if="copiedField === 'banco-cci'" class="size-3.5 text-emerald-600 dark:text-emerald-400" />
-                  <IconCopy v-else class="size-3.5" />
+                  <IconCheck v-if="copiedField === 'banco-cci'" class="size-3 text-emerald-600 dark:text-emerald-400" />
+                  <IconCopy v-else class="size-3" />
                 </button>
               </div>
             </td>
@@ -97,7 +97,7 @@ const inicial = computed(() => (props.banco?.banco || '?').trim().slice(0, 2).to
     </div>
 
     <div v-else class="text-meta text-muted-foreground py-12 text-center space-y-2">
-      <IconBuildingBank class="size-8 mx-auto text-muted-foreground/40" />
+      <IconBuildingBank class="size-7 mx-auto text-muted-foreground/40" />
       <p class="font-semibold text-foreground">Sin información bancaria registrada</p>
       <p>El servidor público no tiene asignada una cuenta de haberes para depósito de planillas.</p>
     </div>

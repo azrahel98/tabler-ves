@@ -62,7 +62,7 @@ const emit = defineEmits<{
   <Card v-if="vinculoEfectivo" class="perfil-scope space-y-2.5">
     <div class="flex flex-wrap items-center justify-between gap-2.5 border-b border-border pb-2">
       <span class="text-xs font-bold text-foreground tracking-wider flex items-center gap-2">
-        <IconBriefcase class="size-3.5 text-primary shrink-0" />
+        <IconBriefcase class="size-3 text-primary shrink-0" />
         <h3 class="font-semibold text-foreground tracking-tight text-xs">Ultimo Laboral Actual</h3>
       </span>
     </div>
@@ -108,14 +108,14 @@ const emit = defineEmits<{
       <div class="space-y-1.5">
         <div class="grid grid-cols-[7.5rem_1fr] items-start gap-2.5">
           <span class="text-muted-foreground flex items-center gap-1.5 shrink-0 mt-0.5">
-            <IconCalendar class="size-4 text-muted-foreground shrink-0" /> Fecha Ingreso:
+            <IconCalendar class="size-3.5 text-muted-foreground shrink-0" /> Fecha Ingreso:
           </span>
           <span class="font-mono font-medium text-foreground">{{ formatDate(vinculoEfectivo.fecha_ingreso) }}</span>
         </div>
 
         <div class="grid grid-cols-[7.5rem_1fr] items-start gap-2.5">
           <span class="text-muted-foreground flex items-center gap-1.5 shrink-0 mt-0.5">
-            <IconFileText class="size-4 text-muted-foreground shrink-0" /> Doc. Ingreso:
+            <IconFileText class="size-3.5 text-muted-foreground shrink-0" /> Doc. Ingreso:
           </span>
           <button v-if="vinculoEfectivo.doc_ingreso || vinculoEfectivo.numero_doc_ingreso" type="button"
             class="text-left font-medium text-meta text-primary hover:underline truncate inline-flex items-center gap-1 cursor-pointer transition-colors"
@@ -130,7 +130,7 @@ const emit = defineEmits<{
 
         <div class="grid grid-cols-[7.5rem_1fr] items-start gap-2.5">
           <span class="text-muted-foreground flex items-center gap-1.5 shrink-0 mt-0.5">
-            <IconFileDescription class="size-4 text-muted-foreground shrink-0" /> Ref. Ingreso:
+            <IconFileDescription class="size-3.5 text-muted-foreground shrink-0" /> Ref. Ingreso:
           </span>
           <span class="font-medium text-foreground truncate" :title="vinculoEfectivo.descrip_ingreso || ''">
             {{ vinculoEfectivo.descrip_ingreso || '-' }}
@@ -139,7 +139,7 @@ const emit = defineEmits<{
 
         <div class="grid grid-cols-[7.5rem_1fr] items-start gap-2.5">
           <span class="text-muted-foreground flex items-center gap-1.5 shrink-0 mt-0.5">
-            <IconBriefcase class="size-4 text-muted-foreground shrink-0" /> G. Ocupacional:
+            <IconBriefcase class="size-3.5 text-muted-foreground shrink-0" /> G. Ocupacional:
           </span>
           <span class="font-medium text-foreground capitalize truncate">{{ vinculoEfectivo.grupo_ocupacional || '-'
           }}</span>
@@ -147,7 +147,7 @@ const emit = defineEmits<{
 
         <div class="grid grid-cols-[7.5rem_1fr] items-start gap-2.5">
           <span class="text-muted-foreground flex items-center gap-1.5 shrink-0 mt-0.5">
-            <IconId class="size-4 text-muted-foreground shrink-0" /> C. Estructural:
+            <IconId class="size-3.5 text-muted-foreground shrink-0" /> C. Estructural:
           </span>
           <span class="font-medium text-foreground wrap-break-word" :title="vinculoEfectivo.cargo_estructural || ''">
             {{ vinculoEfectivo.cargo_estructural || '-' }}
@@ -156,11 +156,11 @@ const emit = defineEmits<{
 
         <div class="grid grid-cols-[7.5rem_1fr] items-center gap-2.5">
           <span class="text-muted-foreground flex items-center gap-1.5 shrink-0">
-            <IconShieldCheck class="size-4 text-muted-foreground shrink-0" /> Afiliación:
+            <IconShieldCheck class="size-3.5 text-muted-foreground shrink-0" /> Afiliación:
           </span>
           <div class="flex items-center gap-2 min-w-0">
             <span
-              class="size-5 rounded-full bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center text-micro font-bold shrink-0">
+              class="size-4 rounded-full bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center text-micro font-bold shrink-0">
               {{ (vinculoEfectivo.sindicato || 'N')[0] }}
             </span>
             <span class="font-medium text-foreground truncate">{{ vinculoEfectivo.sindicato || 'No Afiliado' }}</span>
@@ -169,12 +169,12 @@ const emit = defineEmits<{
 
         <div class="grid grid-cols-[7.5rem_1fr] items-center gap-2.5">
           <span class="text-muted-foreground flex items-center gap-1.5 shrink-0">
-            <IconHistory class="size-4 text-muted-foreground shrink-0" /> Historial:
+            <IconHistory class="size-3.5 text-muted-foreground shrink-0" /> Historial:
           </span>
           <div class="flex items-center gap-2 min-w-0">
             <div class="flex items-center -space-x-1.5 overflow-hidden shrink-0">
               <span v-for="v in vinculosFiltrados.slice(0, 3)" :key="v.id"
-                class="size-5 rounded-full ring-2 ring-card bg-muted text-foreground flex items-center justify-center text-micro font-bold uppercase cursor-pointer"
+                class="size-4 rounded-full ring-2 ring-card bg-muted text-foreground flex items-center justify-center text-micro font-bold uppercase cursor-pointer"
                 :title="v.cargo" @click="emit('verHistorial')">
                 {{ v.cargo ? v.cargo[0] : 'V' }}
               </span>
@@ -191,7 +191,7 @@ const emit = defineEmits<{
         <div v-if="vinculoEfectivo.fecha_salida"
           class="grid grid-cols-[7.5rem_1fr] items-start gap-2.5">
           <span class="text-muted-foreground flex items-center gap-1.5 shrink-0 mt-0.5">
-            <IconCalendarOff class="size-4 text-muted-foreground shrink-0" /> Fecha Salida:
+            <IconCalendarOff class="size-3.5 text-muted-foreground shrink-0" /> Fecha Salida:
           </span>
           <span class="font-mono text-foreground font-medium">
             {{ formatDate(vinculoEfectivo.fecha_salida) }}
@@ -201,7 +201,7 @@ const emit = defineEmits<{
         <div v-if="vinculoEfectivo.doc_salida || vinculoEfectivo.numero_doc_salida"
           class="grid grid-cols-[7.5rem_1fr] items-start gap-2.5">
           <span class="text-muted-foreground flex items-center gap-1.5 shrink-0 mt-0.5">
-            <IconFileCheck class="size-4 text-muted-foreground shrink-0" /> Doc. Salida:
+            <IconFileCheck class="size-3.5 text-muted-foreground shrink-0" /> Doc. Salida:
           </span>
           <button type="button"
             class="text-left font-medium text-meta text-amber-600 dark:text-amber-400 hover:underline truncate inline-flex items-center gap-1 cursor-pointer transition-colors"
@@ -216,7 +216,7 @@ const emit = defineEmits<{
         <div v-if="vinculoEfectivo.descrip_salida"
           class="grid grid-cols-[7.5rem_1fr] items-start gap-2.5">
           <span class="text-muted-foreground flex items-center gap-1.5 shrink-0 mt-0.5">
-            <IconFileDescription class="size-4 text-muted-foreground shrink-0" /> Ref. Salida:
+            <IconFileDescription class="size-3.5 text-muted-foreground shrink-0" /> Ref. Salida:
           </span>
           <span class="font-medium text-foreground truncate" :title="vinculoEfectivo.descrip_salida">
             {{ vinculoEfectivo.descrip_salida }}
@@ -225,7 +225,7 @@ const emit = defineEmits<{
 
         <div class="grid grid-cols-[7.5rem_1fr] items-start gap-2.5">
           <span class="text-muted-foreground flex items-center gap-1.5 shrink-0 mt-0.5">
-            <IconAlertCircle class="size-4 text-muted-foreground shrink-0" /> Eventos:
+            <IconAlertCircle class="size-3.5 text-muted-foreground shrink-0" /> Eventos:
           </span>
           <div class="flex items-center gap-2 flex-wrap">
             <button type="button"
@@ -249,7 +249,7 @@ const emit = defineEmits<{
         <div v-if="vinculoEfectivo.doc_evento_tipo || vinculoEfectivo.numero_doc_evento"
           class="grid grid-cols-[7.5rem_1fr] items-start gap-2.5">
           <span class="text-muted-foreground flex items-center gap-1.5 shrink-0 mt-0.5">
-            <IconFileCode class="size-4 text-muted-foreground shrink-0" /> Doc. Evento:
+            <IconFileCode class="size-3.5 text-muted-foreground shrink-0" /> Doc. Evento:
           </span>
           <button type="button"
             class="text-left font-medium text-meta text-purple-600 dark:text-purple-400 hover:underline truncate inline-flex items-center gap-1 cursor-pointer transition-colors"
@@ -264,7 +264,7 @@ const emit = defineEmits<{
         <div v-if="vinculoEfectivo.fecha_evento"
           class="grid grid-cols-[7.5rem_1fr] items-start gap-2.5">
           <span class="text-muted-foreground flex items-center gap-1.5 shrink-0 mt-0.5">
-            <IconCalendar class="size-4 text-muted-foreground shrink-0" /> Fecha Evento:
+            <IconCalendar class="size-3.5 text-muted-foreground shrink-0" /> Fecha Evento:
           </span>
           <span class="font-medium font-mono text-foreground">{{ formatDate(vinculoEfectivo.fecha_evento) }}</span>
         </div>
@@ -272,7 +272,7 @@ const emit = defineEmits<{
         <div v-if="vinculoEfectivo.estado"
           class="grid grid-cols-[7.5rem_1fr] items-center gap-2.5">
           <span class="text-muted-foreground flex items-center gap-1.5 shrink-0">
-            <IconShieldCheck class="size-4 text-muted-foreground shrink-0" /> Estado:
+            <IconShieldCheck class="size-3.5 text-muted-foreground shrink-0" /> Estado:
           </span>
           <div>
             <Badge :variant="vinculoEfectivo.estado.toLowerCase() === 'activo' ? 'success' : 'secondary'" size="xs">
@@ -287,7 +287,7 @@ const emit = defineEmits<{
       class="pt-2 border-t border-border/70 space-y-1.5">
       <div class="flex items-center justify-between">
         <span class="text-meta font-semibold text-foreground flex items-center gap-1.5">
-          <IconFileCode class="size-3.5 text-purple-600 dark:text-purple-400 shrink-0" />
+          <IconFileCode class="size-3 text-purple-600 dark:text-purple-400 shrink-0" />
           Eventos ({{ vinculoEfectivo.eventos?.length || 0 }})
         </span>
         <div class="flex items-center gap-2">
@@ -363,7 +363,7 @@ const emit = defineEmits<{
   </Card>
 
   <Card v-else class="text-meta text-muted-foreground py-10 text-center space-y-2">
-    <IconBriefcase class="size-8 mx-auto text-muted-foreground/40" />
+    <IconBriefcase class="size-7 mx-auto text-muted-foreground/40" />
     <p class="font-semibold text-foreground text-xs">Sin vínculo laboral activo</p>
     <p>No se registra una vinculación laboral vigente en el sistema para este servidor.</p>
   </Card>

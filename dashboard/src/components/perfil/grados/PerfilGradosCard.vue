@@ -95,7 +95,7 @@ const inicial = (g: PersonalGrado) => (g.abrv?.trim() || g.profesion?.trim() || 
                 <button type="button" class="inline-flex items-center gap-1.5 cursor-pointer hover:text-primary transition"
                   @click="toggleSort">
                   Nivel y fecha de grado
-                  <IconChevronUp class="size-3.5 transition-transform" :class="sortDir === 'desc' ? 'rotate-180' : ''" />
+                  <IconChevronUp class="size-3 transition-transform" :class="sortDir === 'desc' ? 'rotate-180' : ''" />
                 </button>
               </th>
             </tr>
@@ -105,7 +105,7 @@ const inicial = (g: PersonalGrado) => (g.abrv?.trim() || g.profesion?.trim() || 
               <td class="px-4 py-2.5 min-w-0">
                 <div class="flex items-center gap-3">
                   <span
-                    class="size-8 rounded-full text-white text-micro font-semibold flex items-center justify-center shrink-0 select-none"
+                    class="size-7 rounded-full text-white text-micro font-semibold flex items-center justify-center shrink-0 select-none"
                     :class="nivelTone(g.nivel_academico).avatar" aria-hidden="true">
                     {{ inicial(g) }}
                   </span>
@@ -118,7 +118,7 @@ const inicial = (g: PersonalGrado) => (g.abrv?.trim() || g.profesion?.trim() || 
 
               <td class="px-3 py-2.5 min-w-0">
                 <div class="flex items-center gap-2.5">
-                  <IconBuildingSkyscraper class="size-3.5 text-primary shrink-0" />
+                  <IconBuildingSkyscraper class="size-3 text-primary shrink-0" />
                   <span class="text-foreground wrap-break-word" :title="g.universidad">{{ g.universidad || '-' }}</span>
                 </div>
               </td>
@@ -137,13 +137,13 @@ const inicial = (g: PersonalGrado) => (g.abrv?.trim() || g.profesion?.trim() || 
       </div>
 
       <div class="px-4 py-2 border-t border-border text-micro text-muted-foreground inline-flex w-full items-center gap-1.5">
-        <IconArrowsSort class="size-3.5" />
+        <IconArrowsSort class="size-3" />
         Ordenado por fecha de grado, {{ sortDir === 'desc' ? 'más recientes primero' : 'más antiguos primero' }}
       </div>
     </template>
 
     <div v-else class="text-meta text-muted-foreground py-12 text-center space-y-2">
-      <IconSchool class="size-8 mx-auto text-muted-foreground/40" />
+      <IconSchool class="size-7 mx-auto text-muted-foreground/40" />
       <p class="font-semibold text-foreground">Sin estudios registrados</p>
       <p>No constan títulos universitarios, grados o colegiaturas en el legajo.</p>
     </div>

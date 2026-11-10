@@ -638,7 +638,7 @@ watch(
           />
         </aside>
 
-        <div class="flex-1 min-w-0">
+        <div class="perfil-scope flex-1 min-w-0">
           <PerfilVinculoActualCard
             v-if="activeTab === 'perfil'"
             :vinculo-activo="vinculoActivo"

@@ -78,15 +78,15 @@ const puedeRenunciar = computed(() => v.value.estado.toLowerCase() !== 'inactivo
 <template>
   <div ref="root" class="hs-tooltip [--trigger:click] [--placement:bottom-end] --prevent-on-load-init inline-block" @click.stop>
     <button type="button"
-      class="hs-tooltip-toggle size-8 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition cursor-pointer inline-flex items-center justify-center focus:outline-hidden focus-visible:ring-2 focus-visible:ring-primary"
+      class="hs-tooltip-toggle size-7 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition cursor-pointer inline-flex items-center justify-center focus:outline-hidden focus-visible:ring-2 focus-visible:ring-primary"
       aria-haspopup="dialog" :aria-label="modo === 'info' ? 'Ver información del vínculo' : modo === 'eventos' ? 'Ver eventos del vínculo' : 'Acciones del vínculo'"
       :title="modo === 'info' ? 'Información' : modo === 'eventos' ? 'Eventos' : 'Acciones'">
-      <IconInfoCircle v-if="modo === 'info'" class="size-4" />
+      <IconInfoCircle v-if="modo === 'info'" class="size-3.5" />
       <span v-else-if="modo === 'eventos'" class="relative inline-flex">
-        <IconFileCode class="size-4" />
+        <IconFileCode class="size-3.5" />
         <span class="absolute -top-1.5 -right-2 min-w-3.5 h-3.5 px-0.5 rounded-full bg-purple-500 text-white text-nano font-bold flex items-center justify-center">{{ v.eventos?.length || 0 }}</span>
       </span>
-      <IconDotsVertical v-else class="size-4" />
+      <IconDotsVertical v-else class="size-3.5" />
     </button>
 
     <!-- Popover de información: solo muestra los datos que existen -->
@@ -95,8 +95,8 @@ const puedeRenunciar = computed(() => v.value.estado.toLowerCase() !== 'inactivo
       role="dialog" aria-label="Información del vínculo laboral">
       <div class="bg-card border border-border rounded-2xl shadow-xl overflow-hidden text-left">
         <div class="p-4 flex items-start gap-3">
-          <div class="size-9 rounded-full bg-primary/10 text-primary border border-primary/20 flex items-center justify-center shrink-0">
-            <IconBriefcase class="size-4" />
+          <div class="size-8 rounded-full bg-primary/10 text-primary border border-primary/20 flex items-center justify-center shrink-0">
+            <IconBriefcase class="size-3.5" />
           </div>
           <div class="min-w-0 flex-1">
             <div class="flex items-start justify-between gap-2">
@@ -113,15 +113,15 @@ const puedeRenunciar = computed(() => v.value.estado.toLowerCase() !== 'inactivo
 
         <div class="px-4 py-3 border-t border-border space-y-2.5 max-h-80 overflow-y-auto">
           <div v-if="v.area" class="flex items-start gap-3" title="Área">
-            <IconBuildingSkyscraper class="size-4 text-muted-foreground shrink-0 mt-0.5" />
+            <IconBuildingSkyscraper class="size-3.5 text-muted-foreground shrink-0 mt-0.5" />
             <span class="text-foreground wrap-break-word min-w-0">{{ v.area }}</span>
           </div>
           <div v-if="v.regimen" class="flex items-center gap-3" title="Régimen">
-            <IconFileCertificate class="size-4 text-muted-foreground shrink-0" />
+            <IconFileCertificate class="size-3.5 text-muted-foreground shrink-0" />
             <span class="text-foreground">{{ v.regimen }}</span>
           </div>
           <div v-if="v.fecha_ingreso" class="flex items-center gap-3" title="Periodo del vínculo">
-            <IconCalendar class="size-4 text-muted-foreground shrink-0" />
+            <IconCalendar class="size-3.5 text-muted-foreground shrink-0" />
             <span class="text-foreground font-mono">
               {{ formatDate(v.fecha_ingreso) }}
               <span class="text-muted-foreground">→</span>
@@ -131,7 +131,7 @@ const puedeRenunciar = computed(() => v.value.estado.toLowerCase() !== 'inactivo
             </span>
           </div>
           <div v-if="docIngreso" class="flex items-center gap-3" title="Documento de ingreso">
-            <IconFileText class="size-4 text-muted-foreground shrink-0" />
+            <IconFileText class="size-3.5 text-muted-foreground shrink-0" />
             <button type="button" class="text-primary hover:underline inline-flex items-center gap-1 min-w-0 cursor-pointer"
               @click="run(() => emit('verDocumento', { tipo: 'ingreso', vinculo: v }))">
               <span class="truncate">{{ docIngreso }}</span>
@@ -139,7 +139,7 @@ const puedeRenunciar = computed(() => v.value.estado.toLowerCase() !== 'inactivo
             </button>
           </div>
           <div v-if="docSalida" class="flex items-center gap-3" title="Documento de salida">
-            <IconFileCheck class="size-4 text-muted-foreground shrink-0" />
+            <IconFileCheck class="size-3.5 text-muted-foreground shrink-0" />
             <button type="button"
               class="text-amber-600 dark:text-amber-400 hover:underline inline-flex items-center gap-1 min-w-0 cursor-pointer"
               @click="run(() => emit('verDocumento', { tipo: 'salida', vinculo: v }))">
@@ -148,19 +148,19 @@ const puedeRenunciar = computed(() => v.value.estado.toLowerCase() !== 'inactivo
             </button>
           </div>
           <div v-if="v.grupo_ocupacional" class="flex items-center gap-3" title="Grupo ocupacional">
-            <IconBriefcase class="size-4 text-muted-foreground shrink-0" />
+            <IconBriefcase class="size-3.5 text-muted-foreground shrink-0" />
             <span class="text-foreground capitalize">{{ v.grupo_ocupacional }}</span>
           </div>
           <div v-if="v.cargo_estructural" class="flex items-start gap-3" title="Cargo estructural">
-            <IconId class="size-4 text-muted-foreground shrink-0 mt-0.5" />
+            <IconId class="size-3.5 text-muted-foreground shrink-0 mt-0.5" />
             <span class="text-foreground wrap-break-word min-w-0">{{ v.cargo_estructural }}</span>
           </div>
           <div v-if="v.sindicato" class="flex items-center gap-3" title="Afiliación sindical">
-            <IconShieldCheck class="size-4 text-muted-foreground shrink-0" />
+            <IconShieldCheck class="size-3.5 text-muted-foreground shrink-0" />
             <span class="text-foreground">{{ v.sindicato }}</span>
           </div>
           <div v-if="referencias" class="flex items-start gap-3" title="Referencias">
-            <IconNotes class="size-4 text-muted-foreground shrink-0 mt-0.5" />
+            <IconNotes class="size-3.5 text-muted-foreground shrink-0 mt-0.5" />
             <span class="text-muted-foreground wrap-break-word min-w-0">{{ referencias }}</span>
           </div>
         </div>
@@ -231,13 +231,13 @@ const puedeRenunciar = computed(() => v.value.estado.toLowerCase() !== 'inactivo
           <button type="button" role="menuitem"
             class="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-foreground hover:bg-muted transition cursor-pointer text-left"
             @click="run(() => emit('crearEvento', v))">
-            <IconCalendarPlus class="size-4 text-muted-foreground" />
+            <IconCalendarPlus class="size-3.5 text-muted-foreground" />
             Agregar evento
           </button>
           <button v-if="puedeRenunciar" type="button" role="menuitem"
             class="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-rose-600 dark:text-rose-400 hover:bg-rose-500/10 transition cursor-pointer text-left"
             @click="run(() => emit('registrarRenuncia', v))">
-            <IconFileX class="size-4" />
+            <IconFileX class="size-3.5" />
             Registrar renuncia
           </button>
         </div>

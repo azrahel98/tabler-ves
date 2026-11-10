@@ -57,7 +57,7 @@ const select = (value: string) => {
       class="hs-dropdown-toggle inline-flex items-center gap-1.5 px-2 py-1.5 rounded-lg text-meta text-muted-foreground hover:text-foreground hover:bg-muted transition cursor-pointer focus:outline-hidden focus-visible:ring-2 focus-visible:ring-primary">
       <span v-if="prefix" class="text-foreground">{{ prefix }}</span>
       <span :class="prefix || !isDefault ? 'text-foreground' : ''">{{ triggerLabel }}</span>
-      <IconChevronDown class="size-3.5" />
+      <IconChevronDown class="size-3" />
     </button>
 
     <div
@@ -68,7 +68,7 @@ const select = (value: string) => {
         class="w-full flex items-center justify-between gap-3 px-3 py-2 rounded-lg text-left cursor-pointer hover:bg-muted transition"
         :class="o.value === modelValue ? 'text-foreground font-semibold' : 'text-foreground'" @click="select(o.value)">
         <span>{{ o.label }}</span>
-        <IconCheck v-if="o.value === modelValue" class="size-3.5 text-primary" />
+        <IconCheck v-if="o.value === modelValue" class="size-3 text-primary" />
       </button>
     </div>
   </div>

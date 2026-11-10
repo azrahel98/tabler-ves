@@ -152,7 +152,7 @@ const total = computed(() => filteredAndSortedArchivos.value.length)
           <button type="button"
             class="inline-flex items-center gap-1.5 px-3 h-control-sm rounded-md bg-primary text-primary-foreground text-micro font-semibold hover:bg-primary-hover transition cursor-pointer shrink-0"
             @click="emit('subirArchivo')">
-            <IconUpload class="size-3.5" />
+            <IconUpload class="size-3" />
             Subir archivo
           </button>
 
@@ -162,13 +162,13 @@ const total = computed(() => filteredAndSortedArchivos.value.length)
               :class="viewMode === 'grid' ? 'bg-muted text-foreground' : 'text-muted-foreground hover:text-foreground'"
               title="Vista en cuadrícula" aria-label="Vista en cuadrícula" :aria-pressed="viewMode === 'grid'"
               @click="viewMode = 'grid'">
-              <IconLayoutGrid class="size-4" />
+              <IconLayoutGrid class="size-3.5" />
             </button>
             <button type="button" class="p-1.5 rounded-md transition cursor-pointer"
               :class="viewMode === 'list' ? 'bg-muted text-foreground' : 'text-muted-foreground hover:text-foreground'"
               title="Vista en lista" aria-label="Vista en lista" :aria-pressed="viewMode === 'list'"
               @click="viewMode = 'list'">
-              <IconMenu2 class="size-4" />
+              <IconMenu2 class="size-3.5" />
             </button>
           </div>
         </div>
@@ -176,7 +176,7 @@ const total = computed(() => filteredAndSortedArchivos.value.length)
 
       <div class="mt-3 pt-3 border-t border-border flex flex-wrap items-center justify-between gap-3">
         <label class="relative flex-1 min-w-48 max-w-lg">
-          <IconSearch class="size-3.5 absolute start-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+          <IconSearch class="size-3 absolute start-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
           <input v-model="searchQuery" type="search" placeholder="Buscar por nombre de archivo"
             class="w-full ps-8 pe-3 h-control-sm py-0 rounded-md bg-muted border-transparent text-micro text-foreground placeholder:text-muted-foreground focus:bg-card focus:border-primary focus:ring-primary" />
         </label>
@@ -194,10 +194,10 @@ const total = computed(() => filteredAndSortedArchivos.value.length)
           <ul v-if="viewMode === 'list'" class="space-y-2">
             <li v-for="archivo in filteredAndSortedArchivos" :key="archivo.id"
               class="group flex items-center gap-3 rounded-lg border border-border bg-card px-2.5 py-2 hover:border-primary/40 transition">
-              <div class="size-8 rounded-md border border-border bg-card flex items-center justify-center shrink-0"
+              <div class="size-7 rounded-md border border-border bg-card flex items-center justify-center shrink-0"
                 :class="archivo.external_url ? 'text-primary' : 'text-rose-500'">
-                <IconLink v-if="archivo.external_url" class="size-5" />
-                <IconFileTypePdf v-else class="size-5" />
+                <IconLink v-if="archivo.external_url" class="size-4" />
+                <IconFileTypePdf v-else class="size-4" />
               </div>
 
               <div class="min-w-0 flex-1">
@@ -215,18 +215,18 @@ const total = computed(() => filteredAndSortedArchivos.value.length)
 
               <div class="flex items-center gap-1 shrink-0 opacity-100 sm:opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition">
                 <button type="button"
-                  class="size-8 inline-flex items-center justify-center rounded-lg border border-border text-muted-foreground hover:text-primary hover:bg-muted transition cursor-pointer"
+                  class="size-7 inline-flex items-center justify-center rounded-lg border border-border text-muted-foreground hover:text-primary hover:bg-muted transition cursor-pointer"
                   :title="archivo.external_url ? 'Abrir enlace externo' : 'Visualizar documento'"
                   :aria-label="archivo.external_url ? 'Abrir enlace externo' : 'Visualizar documento'"
                   @click="handleAbrirArchivo(archivo)">
-                  <IconExternalLink v-if="archivo.external_url" class="size-4" />
-                  <IconEye v-else class="size-4" />
+                  <IconExternalLink v-if="archivo.external_url" class="size-3.5" />
+                  <IconEye v-else class="size-3.5" />
                 </button>
                 <button type="button"
-                  class="size-8 inline-flex items-center justify-center rounded-lg border border-border text-rose-500 hover:bg-rose-500/10 transition cursor-pointer"
+                  class="size-7 inline-flex items-center justify-center rounded-lg border border-border text-rose-500 hover:bg-rose-500/10 transition cursor-pointer"
                   title="Eliminar archivo del legajo" aria-label="Eliminar archivo del legajo"
                   @click="emit('eliminarArchivo', archivo)">
-                  <IconTrash class="size-4" />
+                  <IconTrash class="size-3.5" />
                 </button>
               </div>
             </li>
@@ -238,33 +238,33 @@ const total = computed(() => filteredAndSortedArchivos.value.length)
               <button type="button"
                 class="w-full h-24 sm:h-28 flex items-center justify-center bg-muted/40 cursor-pointer"
                 :aria-label="`Abrir ${archivo.original_name}`" @click="handleAbrirArchivo(archivo)">
-                <IconLink v-if="archivo.external_url" class="size-12 text-primary/50" :stroke-width="1.25" />
-                <IconFileTypePdf v-else class="size-12 text-rose-400/70" :stroke-width="1.25" />
+                <IconLink v-if="archivo.external_url" class="size-10 text-primary/50" :stroke-width="1.25" />
+                <IconFileTypePdf v-else class="size-10 text-rose-400/70" :stroke-width="1.25" />
               </button>
 
               <div class="absolute top-2.5 right-2.5 flex items-center rounded-xl bg-card border border-border shadow-md p-1 opacity-100 sm:opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition">
                 <button type="button"
-                  class="size-8 inline-flex items-center justify-center rounded-lg text-muted-foreground hover:text-primary hover:bg-muted transition cursor-pointer"
+                  class="size-7 inline-flex items-center justify-center rounded-lg text-muted-foreground hover:text-primary hover:bg-muted transition cursor-pointer"
                   :title="archivo.external_url ? 'Abrir enlace externo' : 'Visualizar documento'"
                   :aria-label="archivo.external_url ? 'Abrir enlace externo' : 'Visualizar documento'"
                   @click="handleAbrirArchivo(archivo)">
-                  <IconExternalLink v-if="archivo.external_url" class="size-4" />
-                  <IconEye v-else class="size-4" />
+                  <IconExternalLink v-if="archivo.external_url" class="size-3.5" />
+                  <IconEye v-else class="size-3.5" />
                 </button>
                 <span class="w-px h-5 bg-border mx-0.5"></span>
                 <button type="button"
-                  class="size-8 inline-flex items-center justify-center rounded-lg text-rose-500 hover:bg-rose-500/10 transition cursor-pointer"
+                  class="size-7 inline-flex items-center justify-center rounded-lg text-rose-500 hover:bg-rose-500/10 transition cursor-pointer"
                   title="Eliminar archivo del legajo" aria-label="Eliminar archivo del legajo"
                   @click="emit('eliminarArchivo', archivo)">
-                  <IconTrash class="size-4" />
+                  <IconTrash class="size-3.5" />
                 </button>
               </div>
 
               <div class="flex items-center gap-3 p-3 border-t border-border">
-                <div class="size-8 rounded-md border border-border bg-card flex items-center justify-center shrink-0"
+                <div class="size-7 rounded-md border border-border bg-card flex items-center justify-center shrink-0"
                   :class="archivo.external_url ? 'text-primary' : 'text-rose-500'">
-                  <IconLink v-if="archivo.external_url" class="size-5" />
-                  <IconFileTypePdf v-else class="size-5" />
+                  <IconLink v-if="archivo.external_url" class="size-4" />
+                  <IconFileTypePdf v-else class="size-4" />
                 </div>
                 <div class="min-w-0">
                   <p class="text-micro font-semibold text-foreground truncate" :title="archivo.original_name">
@@ -278,7 +278,7 @@ const total = computed(() => filteredAndSortedArchivos.value.length)
         </template>
 
         <div v-else class="text-meta text-muted-foreground py-10 text-center space-y-2">
-          <IconFileText class="size-8 mx-auto text-muted-foreground/40" />
+          <IconFileText class="size-7 mx-auto text-muted-foreground/40" />
           <p class="font-semibold text-foreground">No se encontraron archivos</p>
           <p>
             {{ archivos.length === 0
