@@ -105,7 +105,7 @@ const inicial = (g: PersonalGrado) => (g.abrv?.trim() || g.profesion?.trim() || 
               <td class="px-4 py-2.5 min-w-0">
                 <div class="flex items-center gap-3">
                   <span
-                    class="size-7 rounded-full text-white text-micro font-semibold flex items-center justify-center shrink-0 select-none"
+                    class="size-5 rounded-full text-white text-nano font-semibold flex items-center justify-center shrink-0 select-none"
                     :class="nivelTone(g.nivel_academico).avatar" aria-hidden="true">
                     {{ inicial(g) }}
                   </span>

@@ -45,7 +45,7 @@ const inicial = computed(() => (props.banco?.banco || '?').trim().slice(0, 2).to
             <td class="px-4 py-2.5 min-w-0">
               <div class="flex items-center gap-3">
                 <span
-                  class="size-7 rounded-full bg-primary text-primary-foreground text-micro font-semibold flex items-center justify-center shrink-0 select-none"
+                  class="size-5 rounded-full bg-primary text-primary-foreground text-nano font-semibold flex items-center justify-center shrink-0 select-none"
                   aria-hidden="true">
                   {{ inicial }}
                 </span>
