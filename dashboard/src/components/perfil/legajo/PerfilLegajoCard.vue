@@ -6,14 +6,13 @@ import Badge from '@/components/ui/badge/Badge.vue'
 import FilterDropdown from '@/components/ui/form/FilterDropdown.vue'
 import { type PersonalArchivo, type PersonalDocumento } from '@/services/personal'
 import { getApiBaseUrl } from '@/services/api'
-import { parseDateSafe, formatDate } from '@/utils/date'
+import { parseDateSafe } from '@/utils/date'
 import {
   IconLayoutGrid,
   IconMenu2,
   IconEye,
   IconExternalLink,
   IconSearch,
-  IconFileCheck,
   IconFileText,
   IconFileTypePdf,
   IconLink,
@@ -35,10 +34,6 @@ const emit = defineEmits<{
   (e: 'eliminarArchivo', archivo: PersonalArchivo): void
   (e: 'abrirVisor', archivo: PersonalArchivo): void
 }>()
-
-function getArchivoDeDocumento(docId: number): PersonalArchivo | undefined {
-  return props.archivos.find((a) => a.documento_id === docId)
-}
 
 const viewMode = ref<'list' | 'grid'>('list')
 const searchQuery = ref('')
@@ -291,72 +286,6 @@ const total = computed(() => filteredAndSortedArchivos.value.length)
               : 'No existen archivos que coincidan con los filtros o la búsqueda seleccionados.' }}
           </p>
         </div>
-      </div>
-    </div>
-
-    <div class="rounded-xl border border-border bg-card p-4 sm:p-5 space-y-3">
-      <div class="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h3 class="text-title font-semibold text-foreground tracking-tight">Documentos formales</h3>
-          <p class="text-xs text-muted-foreground">Resoluciones de alcaldía y disposiciones emitidas</p>
-        </div>
-        <Badge variant="outline" size="xs">{{ documentos.length }} {{ documentos.length === 1 ? 'registrado' : 'registrados' }}</Badge>
-      </div>
-
-      <div v-if="documentos.length > 0" class="overflow-hidden rounded-xl border border-border bg-card">
-        <div class="overflow-x-auto">
-          <table class="w-full text-left text-xs" aria-label="Tabla de documentos formales de legajo">
-            <thead class="border-b border-border text-xs text-muted-foreground select-none">
-              <tr>
-                <th scope="col" class="px-3 py-3 font-medium">Documento / sigla</th>
-                <th scope="col" class="px-3 py-3 font-medium">Descripción</th>
-                <th scope="col" class="px-3 py-3 font-medium whitespace-nowrap">Fecha</th>
-                <th scope="col" class="px-3 py-3 text-right font-medium whitespace-nowrap">Archivo PDF</th>
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-border">
-              <tr v-for="doc in documentos" :key="doc.id" class="transition-colors hover:bg-muted/40">
-                <td class="px-3 py-2.5 whitespace-nowrap align-top">
-                  <span class="font-semibold text-foreground text-meta block">{{ doc.sigla }}</span>
-                </td>
-                <td class="px-3 py-2.5 min-w-0 align-top">
-                  <p class="text-micro text-muted-foreground leading-relaxed">{{ doc.descripcion }}</p>
-                </td>
-                <td class="px-3 py-2.5 font-mono text-meta text-muted-foreground whitespace-nowrap align-top">
-                  {{ formatDate(doc.fecha) }}
-                </td>
-                <td class="px-3 py-2.5 text-right whitespace-nowrap align-top">
-                  <div v-if="getArchivoDeDocumento(doc.id)" class="inline-flex items-center gap-1.5 justify-end">
-                    <button type="button" @click="handleOpenFile(getArchivoDeDocumento(doc.id)!)"
-                      class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-meta font-medium bg-rose-500/10 text-rose-600 dark:text-rose-400 hover:bg-rose-500/20 transition-colors cursor-pointer"
-                      :title="getArchivoDeDocumento(doc.id)?.original_name">
-                      <IconFileText class="size-3 shrink-0" />
-                      <span>Ver PDF</span>
-                      <IconExternalLink class="size-2.5 opacity-70 shrink-0" />
-                    </button>
-                    <button type="button"
-                      class="p-1 text-muted-foreground hover:text-foreground hover:bg-muted rounded-md transition-colors cursor-pointer"
-                      title="Cambiar o vincular otra URL a este documento" @click="emit('vincularUrl', doc)">
-                      <IconLink class="size-3" />
-                    </button>
-                  </div>
-                  <button v-else type="button"
-                    class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-meta font-medium text-primary hover:bg-primary/10 border border-primary/20 hover:border-primary/40 transition-colors cursor-pointer"
-                    title="Vincular URL como PDF a este documento" @click="emit('vincularUrl', doc)">
-                    <IconLink class="size-3 shrink-0" />
-                    <span>Vincular URL</span>
-                  </button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <div v-else class="text-xs text-muted-foreground py-8 text-center space-y-2">
-        <IconFileCheck class="size-8 mx-auto text-muted-foreground/40" />
-        <p class="font-semibold text-foreground">Sin resoluciones formalmente registradas</p>
-        <p>No constan actos administrativos ni resoluciones asociadas a este legajo.</p>
       </div>
     </div>
   </div>
