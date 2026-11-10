@@ -1,13 +1,10 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import Badge from '@/components/ui/badge/Badge.vue'
-import Button from '@/components/ui/button/Button.vue'
+import PerfilVinculoPopover from './PerfilVinculoPopover.vue'
 import {
   formatMoneda,
   getVinculoStatusType,
-  getTipoEventoLabel,
-  getEstadoVigencia,
-  getEstadoVigenciaLabel,
   type PersonalVinculo,
   type VinculoStatusType,
   type EventoVinculoDetalle,
@@ -15,21 +12,7 @@ import {
 import { formatDate, parseDateSafe } from '@/utils/date'
 import {
   IconBriefcase,
-  IconCalendar,
-  IconCalendarOff,
-  IconFileText,
-  IconFileDescription,
-  IconFileCheck,
   IconFileCode,
-  IconFileX,
-  IconId,
-  IconShieldCheck,
-  IconAlertCircle,
-  IconChevronDown,
-  IconBuildingSkyscraper,
-  IconFileCertificate,
-  IconExternalLink,
-  IconCalendarPlus,
   IconSearch,
   IconArrowsSort,
   IconChevronUp,
@@ -59,23 +42,6 @@ const busqueda = ref('')
 const sortKey = ref<SortKey>('ingreso')
 const sortDir = ref<'desc' | 'asc'>('desc')
 const page = ref(1)
-const expandedIds = ref<Set<number | string>>(new Set())
-
-const toggleExpand = (id: number | string) => {
-  const vinculo = props.vinculos.find((v) => v.id === id)
-  if (vinculo?.origen === 'SUNAT') return
-  const next = new Set(expandedIds.value)
-  if (next.has(id)) {
-    next.delete(id)
-  } else {
-    next.add(id)
-  }
-  expandedIds.value = next
-}
-
-const isExpanded = (id: number | string): boolean => {
-  return expandedIds.value.has(id)
-}
 
 const getBadgeVariant = (type: VinculoStatusType): 'success' | 'warning' | 'secondary' => {
   if (type === 'success') return 'success'
@@ -227,14 +193,7 @@ const estadoLabel = (v: PersonalVinculo) => {
           </thead>
           <tbody class="divide-y divide-border">
             <template v-for="v in sortedVinculos" :key="v.id">
-              <tr :tabindex="v.origen === 'SUNAT' ? undefined : 0"
-                class="transition-colors focus-visible:bg-muted/50 focus-visible:outline-hidden" :class="[
-                  v.origen !== 'SUNAT' ? 'hover:bg-muted/40 cursor-pointer' : '',
-                  v.origen !== 'SUNAT' && isExpanded(v.id) ? 'bg-muted/25' : ''
-                ]" :aria-expanded="v.origen !== 'SUNAT' ? isExpanded(v.id) : undefined"
-                @click="v.origen !== 'SUNAT' && toggleExpand(v.id)"
-                @keydown.enter.prevent="v.origen !== 'SUNAT' && toggleExpand(v.id)"
-                @keydown.space.prevent="v.origen !== 'SUNAT' && toggleExpand(v.id)">
+              <tr class="transition-colors hover:bg-muted/40">
                 <td class="px-3 py-2.5 min-w-0">
                   <div class="flex items-start gap-2.5">
                     <span v-if="getVinculoStatusType(v) === 'success'" class="relative flex size-2 shrink-0 mt-1"
@@ -300,310 +259,10 @@ const estadoLabel = (v: PersonalVinculo) => {
                 </td>
 
                 <td class="px-2 py-2.5 text-center">
-                  <button v-if="v.origen !== 'SUNAT'" type="button"
-                    class="size-8 rounded-md text-muted-foreground hover:text-foreground transition-transform duration-200 cursor-pointer inline-flex items-center justify-center"
-                    :class="isExpanded(v.id) ? 'rotate-180 text-foreground' : ''"
-                    :aria-label="isExpanded(v.id) ? 'Contraer detalles' : 'Expandir detalles'"
-                    @click.stop="toggleExpand(v.id)">
-                    <IconChevronDown class="size-4" />
-                  </button>
-                </td>
-              </tr>
-
-              <tr v-if="v.origen !== 'SUNAT' && isExpanded(v.id)" class="bg-muted/15 border-b border-border/80">
-                <td colspan="7" class="p-2.5">
-                  <div class="p-3 rounded-xl bg-card border border-border/70 space-y-3 text-xs">
-                    <div
-                      class="flex flex-wrap items-center justify-between gap-2 pb-2.5 border-b border-border/60">
-                      <div class="flex items-center gap-2 flex-wrap">
-                        <Badge :variant="getBadgeVariant(getVinculoStatusType(v))" size="xs" class="gap-1.5">
-                          <span v-if="getVinculoStatusType(v) === 'success'"
-                            class="relative inline-flex size-1.5 rounded-full bg-emerald-500 shrink-0"></span>
-                          <span v-else-if="getVinculoStatusType(v) === 'warning'"
-                            class="relative inline-flex size-1.5 rounded-full bg-amber-500 shrink-0"></span>
-                          <span v-else class="inline-flex size-1.5 rounded-full bg-muted-foreground/50 shrink-0"></span>
-                          {{ getVinculoStatusType(v) === 'warning' ? `${v.estado} (sin doc. salida)` : v.estado }}
-                        </Badge>
-                        <span class="font-mono text-muted-foreground text-meta">
-                          Plaza AIRHSP: {{ v.codigo || '-' }}
-                        </span>
-                      </div>
-
-                      <div class="flex items-center gap-2 flex-wrap justify-end">
-                        <Button v-if="v.origen !== 'SUNAT'" size="xs" variant="outline"
-                          class="gap-1.5 cursor-pointer"
-                          @click.stop="emit('crearEvento', v)">
-                          <IconCalendarPlus class="size-3.5" />
-                          <span>Agregar Evento</span>
-                        </Button>
-                        <Button v-if="v.estado.toLowerCase() != 'inactivo' && v.origen !== 'SUNAT'" size="xs"
-                          variant="outline"
-                          class="gap-1.5 cursor-pointer hover:text-rose-600 dark:hover:text-rose-400 hover:border-rose-500/30 hover:bg-rose-500/5"
-                          @click.stop="emit('registrarRenuncia', v)">
-                          <IconFileX class="size-3.5" />
-                          <span>Registrar Renuncia</span>
-                        </Button>
-                      </div>
-                    </div>
-
-                    <div class="grid grid-cols-[repeat(auto-fit,minmax(14rem,1fr))] gap-x-8 gap-y-2.5 pt-0.5">
-                      <div class="space-y-2.5">
-                        <div
-                          class="grid grid-cols-[8rem_1fr] items-center gap-2">
-                          <span class="text-muted-foreground flex items-center gap-1.5 shrink-0">
-                            <IconBuildingSkyscraper class="size-3.5 text-muted-foreground/70 shrink-0" /> Área:
-                          </span>
-                          <span class="font-medium text-foreground wrap-break-word min-w-0" :title="v.area">
-                            {{ v.area || '-' }}
-                          </span>
-                        </div>
-
-                        <div
-                          class="grid grid-cols-[8rem_1fr] items-center gap-2">
-                          <span class="text-muted-foreground flex items-center gap-1.5 shrink-0">
-                            <IconCalendar class="size-3.5 text-muted-foreground/70 shrink-0" /> Fecha Ingreso:
-                          </span>
-                          <span class="font-mono font-medium text-foreground min-w-0">{{ formatDate(v.fecha_ingreso)
-                          }}</span>
-                        </div>
-
-                        <div
-                          class="grid grid-cols-[8rem_1fr] items-center gap-2">
-                          <span class="text-muted-foreground flex items-center gap-1.5 shrink-0">
-                            <IconFileText class="size-3.5 text-muted-foreground/70 shrink-0" /> Doc. Ingreso:
-                          </span>
-                          <button v-if="v.doc_ingreso || v.numero_doc_ingreso" type="button"
-                            class="text-left font-medium text-primary hover:underline truncate min-w-0 inline-flex items-center gap-1 cursor-pointer transition-colors"
-                            :title="[v.doc_ingreso, v.numero_doc_ingreso].filter(Boolean).join(' N° ') || '-'"
-                            @click.stop="emit('verDocumento', { tipo: 'ingreso', vinculo: v })">
-                            <span class="truncate">{{ [v.doc_ingreso, v.numero_doc_ingreso].filter(Boolean).join(' N° ')
-                              }}</span>
-                            <IconExternalLink class="size-3 shrink-0 opacity-70" />
-                          </button>
-                          <span v-else class="text-muted-foreground">-</span>
-                        </div>
-
-                        <div
-                          class="grid grid-cols-[8rem_1fr] items-center gap-2">
-                          <span class="text-muted-foreground flex items-center gap-1.5 shrink-0">
-                            <IconFileDescription class="size-3.5 text-muted-foreground/70 shrink-0" /> Ref. Ingreso:
-                          </span>
-                          <span class="font-medium text-foreground truncate min-w-0" :title="v.descrip_ingreso || ''">
-                            {{ v.descrip_ingreso || '-' }}
-                          </span>
-                        </div>
-
-                        <div
-                          class="grid grid-cols-[8rem_1fr] items-center gap-2">
-                          <span class="text-muted-foreground flex items-center gap-1.5 shrink-0">
-                            <IconBriefcase class="size-3.5 text-muted-foreground/70 shrink-0" /> G. Ocupacional:
-                          </span>
-                          <span class="font-medium text-foreground capitalize truncate min-w-0">{{ v.grupo_ocupacional
-                            || '-' }}</span>
-                        </div>
-
-                        <div
-                          class="grid grid-cols-[8rem_1fr] items-center gap-2">
-                          <span class="text-muted-foreground flex items-center gap-1.5 shrink-0">
-                            <IconId class="size-3.5 text-muted-foreground/70 shrink-0" /> C. Estructural:
-                          </span>
-                          <span class="font-medium text-foreground wrap-break-word min-w-0"
-                            :title="v.cargo_estructural || ''">
-                            {{ v.cargo_estructural || '-' }}
-                          </span>
-                        </div>
-
-                        <div
-                          class="grid grid-cols-[8rem_1fr] items-center gap-2">
-                          <span class="text-muted-foreground flex items-center gap-1.5 shrink-0">
-                            <IconShieldCheck class="size-3.5 text-muted-foreground/70 shrink-0" /> Afiliación:
-                          </span>
-                          <div class="flex items-center gap-2 min-w-0">
-                            <span
-                              class="size-5 rounded-full bg-muted text-muted-foreground flex items-center justify-center text-micro font-bold shrink-0">
-                              {{ (v.sindicato || 'N')[0] }}
-                            </span>
-                            <span class="font-medium text-foreground truncate min-w-0">{{ v.sindicato || 'No Afiliado'
-                            }}</span>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div class="space-y-2.5">
-                        <div
-                          class="grid grid-cols-[8rem_1fr] items-center gap-2">
-                          <span class="text-muted-foreground flex items-center gap-1.5 shrink-0">
-                            <IconFileCertificate class="size-3.5 text-muted-foreground/70 shrink-0" /> Régimen:
-                          </span>
-                          <span class="font-medium text-foreground truncate min-w-0" :title="v.regimen">
-                            {{ v.regimen || '-' }}
-                          </span>
-                        </div>
-
-                        <div
-                          class="grid grid-cols-[8rem_1fr] items-center gap-2">
-                          <span class="text-muted-foreground flex items-center gap-1.5 shrink-0">
-                            <IconCalendarOff class="size-3.5 text-muted-foreground/70 shrink-0" /> Fecha Cese:
-                          </span>
-                          <span class="min-w-0"
-                            :class="v.fecha_salida ? 'font-mono text-foreground font-medium' : 'text-emerald-600 dark:text-emerald-400 font-medium'">
-                            {{ v.fecha_salida ? formatDate(v.fecha_salida) : 'Vigente' }}
-                          </span>
-                        </div>
-
-                        <div
-                          class="grid grid-cols-[8rem_1fr] items-center gap-2">
-                          <span class="text-muted-foreground flex items-center gap-1.5 shrink-0">
-                            <IconFileCheck class="size-3.5 text-muted-foreground/70 shrink-0" /> Doc. Salida:
-                          </span>
-                          <button v-if="v.doc_salida || v.numero_doc_salida" type="button"
-                            class="text-left font-medium text-amber-600 dark:text-amber-400 hover:underline truncate min-w-0 inline-flex items-center gap-1 cursor-pointer transition-colors"
-                            :title="[v.doc_salida, v.numero_doc_salida].filter(Boolean).join(' N° ') || '-'"
-                            @click.stop="emit('verDocumento', { tipo: 'salida', vinculo: v })">
-                            <span class="truncate">{{ [v.doc_salida, v.numero_doc_salida].filter(Boolean).join(' N° ')
-                              }}</span>
-                            <IconExternalLink class="size-3 shrink-0 opacity-70" />
-                          </button>
-                          <span v-else class="text-muted-foreground">-</span>
-                        </div>
-
-                        <div
-                          class="grid grid-cols-[8rem_1fr] items-center gap-2">
-                          <span class="text-muted-foreground flex items-center gap-1.5 shrink-0">
-                            <IconFileDescription class="size-3.5 text-muted-foreground/70 shrink-0" /> Ref. Salida:
-                          </span>
-                          <span class="font-medium text-foreground truncate min-w-0" :title="v.descrip_salida || ''">
-                            {{ v.descrip_salida || '-' }}
-                          </span>
-                        </div>
-
-                        <div
-                          class="grid grid-cols-[8rem_1fr] items-center gap-2">
-                          <span class="text-muted-foreground flex items-center gap-1.5 shrink-0">
-                            <IconAlertCircle class="size-3.5 text-muted-foreground/70 shrink-0" /> Eventos:
-                          </span>
-                          <div class="flex items-center gap-2 flex-wrap min-w-0">
-                            <button type="button"
-                              class="text-left font-medium text-primary hover:underline truncate min-w-0 inline-flex items-center gap-1 cursor-pointer transition-colors"
-                              @click.stop="emit('verEventos', v)">
-                              <span class="truncate">
-                                {{ v.eventos && v.eventos.length > 0 ? `${v.eventos.length} ${v.eventos.length === 1 ?
-                                  'evento registrado' : 'eventos registrados'}` : 'Sin eventos' }}
-                              </span>
-                              <IconExternalLink class="size-3 shrink-0 opacity-70" />
-                            </button>
-                          </div>
-                        </div>
-
-                        <div v-if="v.doc_evento_tipo || v.numero_doc_evento"
-                          class="grid grid-cols-[8rem_1fr] items-center gap-2">
-                          <span class="text-muted-foreground flex items-center gap-1.5 shrink-0">
-                            <IconFileCode class="size-3.5 text-muted-foreground/70 shrink-0" /> Doc. Evento:
-                          </span>
-                          <button type="button"
-                            class="text-left font-medium text-primary hover:underline truncate min-w-0 inline-flex items-center gap-1 cursor-pointer transition-colors"
-                            :title="[v.doc_evento_tipo, v.numero_doc_evento].filter(Boolean).join(' N° ') || '-'"
-                            @click.stop="emit('verDocumento', { tipo: 'evento', vinculo: v })">
-                            <span class="truncate">{{
-                              [v.doc_evento_tipo, v.numero_doc_evento].filter(Boolean).join(' N°') }}</span>
-                            <IconExternalLink class="size-3 shrink-0 opacity-70" />
-                          </button>
-                        </div>
-
-                        <div v-if="v.fecha_evento"
-                          class="grid grid-cols-[8rem_1fr] items-center gap-2">
-                          <span class="text-muted-foreground flex items-center gap-1.5 shrink-0">
-                            <IconCalendar class="size-3.5 text-muted-foreground/70 shrink-0" /> Fecha Evento:
-                          </span>
-                          <span class="font-medium font-mono text-foreground min-w-0">
-                            {{ formatDate(v.fecha_evento) }}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div v-if="v.origen !== 'SUNAT' || (v.eventos && v.eventos.length >= 1)"
-                      class="pt-2.5 border-t border-border/60 space-y-2">
-                      <div class="flex items-center justify-between">
-                        <span class="text-meta font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
-                          <IconFileCode class="size-3.5 text-muted-foreground shrink-0" />
-                          Eventos Laborales Registrados ({{ v.eventos?.length || 0 }})
-                        </span>
-                        <div class="flex items-center gap-2">
-                          <button v-if="v.eventos && v.eventos.length > 0" type="button"
-                            class="text-meta text-primary hover:underline font-medium inline-flex items-center gap-1 cursor-pointer"
-                            @click.stop="emit('verEventos', v)">
-                            <span>Gestionar eventos</span>
-                            <IconExternalLink class="size-3 shrink-0 opacity-70" />
-                          </button>
-                        </div>
-                      </div>
-                      <div class="space-y-1.5">
-                        <div v-for="ev in v.eventos" :key="ev.id"
-                          class="flex flex-wrap items-center justify-between gap-1.5 p-2 rounded-lg bg-muted/40 border border-border/50 text-meta">
-                          <div class="flex items-center gap-2 flex-wrap min-w-0">
-                            <Badge variant="outline" size="xs"
-                              class="font-semibold uppercase text-micro">
-                              {{ getTipoEventoLabel(ev.tipo_evento) }}
-                            </Badge>
-                            <span v-if="getEstadoVigencia(ev) === 'cerrado'"
-                              class="inline-flex items-center gap-1 text-micro font-medium text-muted-foreground bg-muted px-1.5 py-0.5 rounded-md">
-                              {{ getEstadoVigenciaLabel('cerrado') }}
-                            </span>
-                            <span v-else-if="getEstadoVigencia(ev) === 'vencido'"
-                              class="inline-flex items-center gap-1 text-micro font-semibold text-amber-600 dark:text-amber-400 bg-amber-500/10 px-1.5 py-0.5 rounded-md"
-                              title="El evento sigue abierto en el registro porque no tiene documento de salida">
-                              <span class="size-1 rounded-full bg-amber-500"></span>
-                              {{ getEstadoVigenciaLabel('vencido') }}
-                            </span>
-                            <span v-else-if="getEstadoVigencia(ev) === 'futuro'"
-                              class="inline-flex items-center gap-1 text-micro font-medium text-muted-foreground border border-border px-1.5 py-0.5 rounded-md">
-                              {{ getEstadoVigenciaLabel('futuro') }}
-                            </span>
-                            <span v-else-if="getEstadoVigencia(ev) === 'sin_fechas'"
-                              class="inline-flex items-center gap-1 text-micro font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded-md">
-                              <span class="size-1 rounded-full bg-emerald-500"></span>
-                              {{ getEstadoVigenciaLabel('sin_fechas') }}
-                            </span>
-                            <span v-else
-                              class="inline-flex items-center gap-1 text-micro font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded-md">
-                              <span class="size-1 rounded-full bg-emerald-500"></span>
-                              {{ getEstadoVigenciaLabel('vigente') }}
-                            </span>
-                            <span v-if="ev.fecha_desde" class="text-muted-foreground text-micro font-medium">
-                              {{ ev.fecha_hasta ? `Periodo: ${formatDate(ev.fecha_desde)} - ${formatDate(ev.fecha_hasta)}` : `desde ${formatDate(ev.fecha_desde)} (sin término)` }}
-                            </span>
-                            <span v-if="ev.nueva_area" class="text-foreground text-meta truncate"
-                              :title="ev.nueva_area">
-                              Área: {{ ev.nueva_area }}
-                            </span>
-                            <span v-if="ev.nuevo_cargo" class="text-foreground text-meta truncate"
-                              :title="ev.nuevo_cargo">
-                              Cargo: {{ ev.nuevo_cargo }}
-                            </span>
-                          </div>
-                          <div class="flex items-center gap-2 shrink-0">
-                            <span v-if="ev.fecha_inicio" class="text-micro font-mono text-muted-foreground">
-                              {{ formatDate(ev.fecha_inicio) }}
-                            </span>
-                            <button v-if="ev.tipo_doc_inicio || ev.numero_doc_inicio" type="button"
-                              class="text-primary hover:underline text-meta font-medium inline-flex items-center gap-1 cursor-pointer"
-                              @click.stop="emit('verDocumento', { tipo: 'evento', vinculo: v, evento: ev })">
-                              <span>{{ [ev.tipo_doc_inicio, ev.numero_doc_inicio].filter(Boolean).join(' N° ') }}</span>
-                              <IconExternalLink class="size-3 shrink-0 opacity-70" />
-                            </button>
-                            <button v-if="ev.doc_salida_id || ev.numero_doc_salida" type="button"
-                              class="text-primary hover:underline text-meta font-medium inline-flex items-center gap-1 cursor-pointer"
-                              :title="[ev.tipo_doc_salida, ev.numero_doc_salida].filter(Boolean).join(' N° ') || undefined"
-                              @click.stop="emit('verDocumento', { tipo: 'evento', vinculo: v, evento: ev, doc: 'salida' })">
-                              <span>Doc. cierre</span>
-                              <IconExternalLink class="size-3 shrink-0 opacity-70" />
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                  <PerfilVinculoPopover v-if="v.origen !== 'SUNAT'" :vinculo="v"
+                    @registrar-renuncia="emit('registrarRenuncia', $event)"
+                    @ver-documento="emit('verDocumento', $event)" @ver-eventos="emit('verEventos', $event)"
+                    @crear-evento="emit('crearEvento', $event)" />
                 </td>
               </tr>
             </template>
