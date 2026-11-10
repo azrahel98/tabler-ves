@@ -10,7 +10,6 @@ import {
 import { formatDate } from '@/utils/date'
 import {
   IconUpload,
-  IconX,
   IconAlertTriangle,
   IconFileText,
   IconLink,
@@ -191,37 +190,7 @@ const handleSubmit = () => {
 </script>
 
 <template>
-  <Modal :is-open="isOpen" labelledby="modal-subir-archivo-title" @close="handleClose">
-    <div
-      class="w-full max-w-xl bg-card border border-border rounded-2xl shadow-2xl overflow-hidden text-meta max-h-[92vh] flex flex-col"
-    >
-      <div class="p-4 border-b border-border flex items-center justify-between bg-muted/20 shrink-0">
-        <div class="flex items-center gap-2.5 min-w-0">
-          <div
-            class="size-8 rounded-lg bg-primary/10 text-primary border border-primary/20 flex items-center justify-center shrink-0"
-          >
-            <IconUpload class="size-4.5" aria-hidden="true" />
-          </div>
-          <div class="min-w-0">
-            <h3 id="modal-subir-archivo-title" class="font-bold text-foreground text-xs tracking-tight truncate">
-              Subir Archivo al Legajo
-            </h3>
-            <p class="text-micro text-muted-foreground truncate">
-              Incorporar nuevo documento PDF al expediente digital
-            </p>
-          </div>
-        </div>
-
-        <button
-          type="button"
-          class="size-7 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted flex items-center justify-center transition-colors cursor-pointer shrink-0"
-          aria-label="Cerrar modal"
-          :disabled="isSaving"
-          @click="handleClose"
-        >
-          <IconX class="size-4" />
-        </button>
-      </div>
+  <Modal :is-open="isOpen" @close="handleClose" title="Subir Archivo al Legajo" subtitle="Incorporar nuevo documento PDF al expediente digital" size="xl">
 
       <div class="p-5 space-y-4 overflow-y-auto">
         <div class="flex items-center p-1 bg-muted/30 border border-border rounded-xl text-meta">
@@ -421,8 +390,7 @@ const handleSubmit = () => {
           </p>
         </div>
       </div>
-
-      <div class="p-4 border-t border-border bg-muted/20 flex items-center justify-end gap-2 shrink-0">
+    <template #footer>
         <Button
           type="button"
           variant="outline"
@@ -444,7 +412,6 @@ const handleSubmit = () => {
           <IconUpload class="size-3.5" />
           <span>{{ isSaving ? 'Guardando...' : 'Subir Archivo' }}</span>
         </Button>
-      </div>
-    </div>
+    </template>
   </Modal>
 </template>

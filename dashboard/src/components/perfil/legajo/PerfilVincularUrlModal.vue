@@ -9,7 +9,6 @@ import {
 import { formatDate } from '@/utils/date'
 import {
   IconLink,
-  IconX,
   IconAlertTriangle,
   IconFileText,
   IconWorld,
@@ -101,37 +100,7 @@ const handleSubmit = () => {
 </script>
 
 <template>
-  <Modal :is-open="isOpen" labelledby="modal-vincular-title" @close="handleClose">
-    <div
-      class="w-full max-w-lg bg-card border border-border rounded-2xl shadow-2xl overflow-hidden text-meta max-h-[92vh] flex flex-col"
-    >
-      <div class="p-4 border-b border-border flex items-center justify-between bg-muted/20 shrink-0">
-        <div class="flex items-center gap-2.5 min-w-0">
-          <div
-            class="size-8 rounded-lg bg-primary/10 text-primary border border-primary/20 flex items-center justify-center shrink-0"
-          >
-            <IconLink class="size-4.5" aria-hidden="true" />
-          </div>
-          <div class="min-w-0">
-            <h3 id="modal-vincular-title" class="font-bold text-foreground text-xs tracking-tight truncate">
-              Vincular PDF al Documento
-            </h3>
-            <p class="text-micro text-muted-foreground truncate">
-              Asociar una URL externa al acto administrativo
-            </p>
-          </div>
-        </div>
-
-        <button
-          type="button"
-          class="size-7 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted flex items-center justify-center transition-colors cursor-pointer shrink-0"
-          aria-label="Cerrar modal"
-          :disabled="isSaving"
-          @click="handleClose"
-        >
-          <IconX class="size-4" />
-        </button>
-      </div>
+  <Modal :is-open="isOpen" @close="handleClose" title="Vincular PDF al Documento" subtitle="Asociar una URL externa al acto administrativo" size="lg">
 
       <div class="p-5 space-y-4 overflow-y-auto">
         <div v-if="documento" class="p-3.5 rounded-xl border border-border bg-muted/20 space-y-2">
@@ -193,8 +162,7 @@ const handleSubmit = () => {
           </p>
         </div>
       </div>
-
-      <div class="p-4 border-t border-border bg-muted/20 flex items-center justify-end gap-2 shrink-0">
+    <template #footer>
         <Button
           type="button"
           variant="outline"
@@ -216,7 +184,6 @@ const handleSubmit = () => {
           <IconLink class="size-3.5" />
           <span>{{ isSaving ? 'Vinculando...' : 'Vincular PDF' }}</span>
         </Button>
-      </div>
-    </div>
+    </template>
   </Modal>
 </template>

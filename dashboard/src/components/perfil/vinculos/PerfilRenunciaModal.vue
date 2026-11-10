@@ -15,7 +15,6 @@ import {
 import { formatDate } from '@/utils/date'
 import {
   IconFileX,
-  IconX,
   IconAlertTriangle,
   IconBriefcase,
   IconBuildingSkyscraper,
@@ -241,37 +240,7 @@ const handleSubmit = () => {
 </script>
 
 <template>
-  <Modal :is-open="isOpen" labelledby="modal-renuncia-title" @close="handleClose">
-    <div
-      class="w-full max-w-xl bg-card border border-border rounded-2xl shadow-2xl overflow-hidden text-meta max-h-[92vh] flex flex-col"
-    >
-      <div class="p-4 border-b border-border flex items-center justify-between bg-muted/20 shrink-0">
-        <div class="flex items-center gap-2.5 min-w-0">
-          <div
-            class="size-8 rounded-lg bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20 flex items-center justify-center shrink-0"
-          >
-            <IconFileX class="size-4.5" aria-hidden="true" />
-          </div>
-          <div class="min-w-0">
-            <h3 id="modal-renuncia-title" class="font-bold text-foreground text-xs tracking-tight truncate">
-              Registrar Renuncia / Cese de Vínculo
-            </h3>
-            <p class="text-micro text-muted-foreground truncate">
-              Formalización de la conclusión laboral mediante acto administrativo
-            </p>
-          </div>
-        </div>
-
-        <button
-          type="button"
-          class="size-7 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted flex items-center justify-center transition-colors cursor-pointer shrink-0"
-          aria-label="Cerrar modal"
-          :disabled="isSaving"
-          @click="handleClose"
-        >
-          <IconX class="size-4" />
-        </button>
-      </div>
+  <Modal :is-open="isOpen" @close="handleClose" title="Registrar Renuncia / Cese de Vínculo" subtitle="Formalización de la conclusión laboral mediante acto administrativo" size="xl">
 
       <div class="p-4 overflow-y-auto space-y-4 flex-1">
         <div
@@ -512,8 +481,7 @@ const handleSubmit = () => {
           </div>
         </form>
       </div>
-
-      <div class="p-4 border-t border-border flex items-center justify-end gap-2.5 bg-muted/10 shrink-0">
+    <template #footer>
         <Button
           variant="outline"
           size="sm"
@@ -534,7 +502,6 @@ const handleSubmit = () => {
           <IconFileX class="size-3.5" />
           <span>{{ isSaving ? 'Registrando...' : 'Confirmar Renuncia' }}</span>
         </Button>
-      </div>
-    </div>
+    </template>
   </Modal>
 </template>

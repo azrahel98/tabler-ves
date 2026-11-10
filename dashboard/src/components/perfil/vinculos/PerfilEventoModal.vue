@@ -26,7 +26,6 @@ import {
   IconX,
   IconFileText,
   IconCheck,
-  IconFileCode,
   IconFileCheck,
   IconEdit,
   IconUser,
@@ -551,35 +550,11 @@ const handleSubmit = () => {
 </script>
 
 <template>
-  <Modal :is-open="isOpen" :persistent="isSaving" @close="emit('close')">
-        <div
-          class="relative w-full max-w-xl rounded-2xl bg-card border border-border shadow-2xl text-left flex flex-col max-h-[90vh] overflow-hidden"
-          @click.stop>
-          <div class="px-5 py-4 border-b border-border flex items-center justify-between shrink-0 bg-card">
-            <div class="flex items-center gap-2.5 min-w-0">
-              <div
-                class="size-8 rounded-lg bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center border border-purple-500/20 shrink-0">
-                <IconFileCode class="size-4.5" />
-              </div>
-              <div class="min-w-0">
-                <h3 class="font-bold text-sm text-foreground tracking-tight truncate">
-                  {{ esModoExistente ? (esEventoFinalizado ? 'Detalles del Evento Laboral' : 'Gestionar Evento Laboral')
-                    : 'Registrar Nuevo Evento Laboral' }}
-                </h3>
-                <p class="text-meta text-muted-foreground truncate">
-                  {{ vinculo ? `${vinculo.cargo} • ${vinculo.area || 'Sin área'}` : 'Vínculo laboral' }}
-                </p>
-              </div>
-            </div>
+  <Modal :is-open="isOpen" :persistent="isSaving" size="xl" @close="emit('close')">
+    <template #title>{{ esModoExistente ? (esEventoFinalizado ? 'Detalles del Evento Laboral' : 'Gestionar Evento Laboral') : 'Registrar Nuevo Evento Laboral' }}</template>
+    <template #subtitle>{{ vinculo ? `${vinculo.cargo} • ${vinculo.area || 'Sin área'}` : 'Vínculo laboral' }}</template>
 
-            <button type="button"
-              class="size-8 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/60 flex items-center justify-center transition-colors cursor-pointer shrink-0"
-              aria-label="Cerrar modal" :disabled="isSaving" @click="emit('close')">
-              <IconX class="size-4" />
-            </button>
-          </div>
-
-          <form id="evento-form" class="p-5 overflow-y-auto min-h-0 flex-1 space-y-4 text-meta"
+          <form id="evento-form" class="p-4 overflow-y-auto min-h-0 flex-1 space-y-4 text-meta"
             @submit.prevent="handleSubmit">
             <div v-if="esModoExistente && evento" class="space-y-3">
               <div class="p-3.5 rounded-xl border border-border bg-muted/20 space-y-2">
@@ -1069,9 +1044,7 @@ const handleSubmit = () => {
               </div>
             </div>
           </form>
-
-          <div
-            class="px-5 py-3.5 border-t border-border flex items-center justify-end gap-2.5 shrink-0 bg-muted/20">
+    <template #footer>
             <Button size="sm" variant="outline" class="cursor-pointer" :disabled="isSaving" @click="emit('close')">
               {{ !debeMostrarBotonGuardar ? 'Cerrar' : 'Cancelar' }}
             </Button>
@@ -1081,7 +1054,6 @@ const handleSubmit = () => {
               <IconCheck class="size-4" />
               <span>{{ textoBotonGuardar }}</span>
             </Button>
-          </div>
-        </div>
+    </template>
   </Modal>
 </template>

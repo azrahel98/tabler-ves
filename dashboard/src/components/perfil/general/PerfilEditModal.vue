@@ -5,7 +5,7 @@ import Button from '@/components/ui/button/Button.vue'
 import SearchSelect, { type SelectOption } from '@/components/ui/form/SearchSelect.vue'
 import { DISTRITOS_LIMA, REGION_FIJA, resolverDistrito } from '@/constants/distritos'
 import type { PersonalPerfil } from '@/services/personal'
-import { IconEdit, IconX, IconCheck } from '@tabler/icons-vue'
+import { IconCheck } from '@tabler/icons-vue'
 
 interface Props {
   isOpen: boolean
@@ -151,8 +151,7 @@ const onSubmit = () => {
 </script>
 
 <template>
-  <Modal :is-open="isOpen" labelledby="modal-edit-profile-title" @close="handleRequestClose">
-    <div class="w-full max-w-xl bg-card border border-border rounded-2xl shadow-xl overflow-hidden text-meta">
+  <Modal :is-open="isOpen" title="Actualizar ficha del servidor" subtitle="Modifique los datos de contacto y residencia. El DNI es un identificador inmutable." size="xl" @close="handleRequestClose">
       <div v-if="showConfirmDiscard"
         class="p-4 bg-amber-500/10 border-b border-amber-500/20 text-meta flex flex-wrap items-center justify-between gap-3">
         <div class="space-y-0.5">
@@ -170,23 +169,8 @@ const onSubmit = () => {
         </div>
       </div>
 
-      <div class="p-4 border-b border-border flex items-center justify-between">
-        <div>
-          <h3 id="modal-edit-profile-title" class="font-bold text-foreground text-xs flex items-center gap-2">
-            <IconEdit class="size-4 text-primary" />
-            <span>Actualizar Ficha del Servidor</span>
-          </h3>
-          <p class="text-micro text-muted-foreground mt-0.5">
-            Modifique los datos de contacto y residencia. El DNI es un identificador inmutable.
-          </p>
-        </div>
-        <button type="button" class="text-muted-foreground hover:text-foreground cursor-pointer"
-          aria-label="Cerrar ventana de edición" @click="handleRequestClose">
-          <IconX class="size-4" />
-        </button>
-      </div>
 
-      <form class="p-5 space-y-4" @submit.prevent="onSubmit">
+      <form id="perfil-edit-form" class="p-4 space-y-4 overflow-y-auto" @submit.prevent="onSubmit">
         <div class="grid grid-cols-[repeat(auto-fit,minmax(14rem,1fr))] gap-4">
           <div class="space-y-1.5">
             <label class="font-semibold text-foreground">Nombre Completo</label>
@@ -254,16 +238,15 @@ const onSubmit = () => {
             class="w-full h-9 px-3 text-meta rounded-lg border border-border bg-background-1 text-foreground focus:outline-hidden focus:border-primary" />
         </div>
 
-        <div class="pt-3 border-t border-border flex items-center justify-end gap-2">
+      </form>
+    <template #footer>
           <Button size="sm" variant="ghost" type="button" @click="handleRequestClose">
             Cancelar
           </Button>
-          <Button size="sm" variant="primary" type="submit" :disabled="isSaving">
+          <Button size="sm" variant="primary" type="submit" form="perfil-edit-form" :disabled="isSaving">
             <IconCheck class="size-3.5" />
             <span>{{ isSaving ? 'Guardando...' : 'Guardar Cambios' }}</span>
           </Button>
-        </div>
-      </form>
-    </div>
+    </template>
   </Modal>
 </template>

@@ -10,8 +10,9 @@ const openStack: string[] = []
  * scroll, foco y animación. Cierre por Esc / clic fuera => emite `close`
  * (salvo `persistent`), el padre decide si cierra.
  */
-import { ref, watch, onMounted, onBeforeUnmount, nextTick, useId } from 'vue'
+import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick, useId } from 'vue'
 import { HSOverlay } from 'preline/non-auto'
+import { IconX } from '@tabler/icons-vue'
 
 interface Props {
   isOpen: boolean
@@ -20,11 +21,16 @@ interface Props {
   /** `center` = modal centrado; `right` = drawer lateral derecho. */
   placement?: 'center' | 'right'
   labelledby?: string
+  /** Si hay título (prop o slot `title`) se dibuja el panel estándar de Preline: cabecera, cuerpo y pie. */
+  title?: string
+  subtitle?: string
+  size?: 'sm' | 'md' | 'lg' | 'xl' | '2xl'
 }
 
 const props = withDefaults(defineProps<Props>(), {
   persistent: false,
   placement: 'center',
+  size: 'md',
 })
 
 const emit = defineEmits<{ (e: 'close'): void }>()
@@ -34,6 +40,11 @@ const el = ref<HTMLElement | null>(null)
 const rendered = ref(props.isOpen)
 let instance: HSOverlay | null = null
 let closeTimer: ReturnType<typeof setTimeout> | undefined
+
+const sizeClass = computed(
+  () => ({ sm: 'max-w-sm', md: 'max-w-md', lg: 'max-w-lg', xl: 'max-w-xl', '2xl': 'max-w-2xl' })[props.size],
+)
+const titleId = `${id}-title`
 
 const requestClose = () => {
   if (!props.persistent) emit('close')
@@ -91,7 +102,7 @@ onBeforeUnmount(() => {
       class="hs-overlay hidden --prevent-on-load-init [--overlay-backdrop:static] size-full fixed top-0 start-0 z-80 overflow-x-hidden overflow-y-auto pointer-events-none"
       role="dialog"
       aria-modal="true"
-      :aria-labelledby="labelledby"
+      :aria-labelledby="labelledby || (title || $slots.title ? titleId : undefined)"
       tabindex="-1"
       data-hs-overlay-keyboard="false"
     >
@@ -100,7 +111,44 @@ onBeforeUnmount(() => {
         class="hs-overlay-open:opacity-100 opacity-0 transition-opacity duration-200 min-h-full flex items-center justify-center p-4 pointer-events-auto"
         @click.self="requestClose"
       >
-        <slot v-if="rendered" />
+        <template v-if="rendered">
+          <div
+            v-if="title || $slots.title"
+            class="w-full flex flex-col max-h-[92vh] bg-card border border-border shadow-2xs rounded-xl pointer-events-auto text-meta"
+            :class="sizeClass"
+            @click.stop
+          >
+            <div class="flex justify-between items-center gap-3 py-3 px-4 border-b border-border shrink-0">
+              <div class="min-w-0">
+                <h3 :id="titleId" class="font-bold text-foreground text-xs truncate">
+                  <slot name="title">{{ title }}</slot>
+                </h3>
+                <p v-if="subtitle || $slots.subtitle" class="text-micro text-muted-foreground truncate">
+                  <slot name="subtitle">{{ subtitle }}</slot>
+                </p>
+              </div>
+              <button
+                type="button"
+                class="size-7 shrink-0 inline-flex justify-center items-center rounded-full border border-transparent bg-muted text-foreground hover:bg-muted-hover focus:outline-hidden focus-visible:ring-2 focus-visible:ring-primary disabled:opacity-50 disabled:pointer-events-none cursor-pointer"
+                aria-label="Cerrar"
+                :disabled="persistent"
+                @click="requestClose"
+              >
+                <IconX class="size-3.5" />
+              </button>
+            </div>
+
+            <slot />
+
+            <div
+              v-if="$slots.footer"
+              class="flex justify-end items-center gap-x-2 py-3 px-4 border-t border-border shrink-0"
+            >
+              <slot name="footer" />
+            </div>
+          </div>
+          <slot v-else />
+        </template>
       </div>
 
       <template v-else>
