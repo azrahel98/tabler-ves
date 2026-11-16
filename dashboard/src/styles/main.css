@@ -330,15 +330,15 @@
 
 :root {
   --background: var(--color-white);
-  --background-1: var(--color-gray-50);
-  --background-2: var(--color-gray-100);
+  --background-1: oklch(94.6% 0.006 264.5);
+  --background-2: var(--color-gray-200);
   --background-plain: var(--color-white);
-  --foreground: var(--color-gray-800);
+  --foreground: var(--color-gray-900);
   --foreground-inverse: var(--color-white);
 
-  --inverse: var(--color-gray-800);
+  --inverse: var(--color-gray-900);
 
-  --border: var(--color-gray-200);
+  --border: var(--color-gray-300);
   --border-line-inverse: var(--color-white);
   --border-line-1: var(--color-gray-100);
   --border-line-2: var(--color-gray-200);
@@ -377,8 +377,8 @@
   --secondary-active: var(--color-gray-800);
 
   --layer: var(--color-white);
-  --layer-line: var(--color-gray-200);
-  --layer-foreground: var(--color-gray-800);
+  --layer-line: var(--color-gray-300);
+  --layer-foreground: var(--color-gray-900);
   --layer-hover: var(--color-gray-50);
   --layer-focus: var(--color-gray-50);
   --layer-active: var(--color-gray-50);
@@ -390,18 +390,18 @@
   --surface-4: var(--color-gray-500);
   --surface-5: var(--color-gray-600);
   --surface-line: transparent;
-  --surface-foreground: var(--color-gray-800);
+  --surface-foreground: var(--color-gray-900);
   --surface-hover: var(--color-gray-200);
   --surface-focus: var(--color-gray-200);
   --surface-active: var(--color-gray-200);
 
-  --muted: var(--color-gray-50);
-  --muted-foreground: var(--color-gray-400);
-  --muted-foreground-1: var(--color-gray-500);
-  --muted-foreground-2: var(--color-gray-600);
-  --muted-hover: var(--color-gray-100);
-  --muted-focus: var(--color-gray-100);
-  --muted-active: var(--color-gray-100);
+  --muted: var(--color-gray-100);
+  --muted-foreground: var(--color-gray-600);
+  --muted-foreground-1: var(--color-gray-700);
+  --muted-foreground-2: var(--color-gray-800);
+  --muted-hover: var(--color-gray-200);
+  --muted-focus: var(--color-gray-200);
+  --muted-active: var(--color-gray-200);
 
   --destructive: var(--color-red-500);
   --destructive-foreground: var(--color-white);
@@ -409,12 +409,12 @@
   --destructive-focus: var(--color-red-600);
 
   --navbar: var(--color-white);
-  --navbar-line: var(--color-gray-200);
-  --navbar-divider: var(--color-gray-200);
-  --navbar-nav-foreground: var(--color-gray-800);
+  --navbar-line: var(--color-gray-300);
+  --navbar-divider: var(--color-gray-300);
+  --navbar-nav-foreground: var(--color-gray-900);
   --navbar-nav-hover: var(--color-gray-100);
   --navbar-nav-focus: var(--color-gray-100);
-  --navbar-nav-active: var(--color-gray-100);
+  --navbar-nav-active: var(--color-gray-200);
   --navbar-nav-list-divider: var(--color-gray-200);
   --navbar-inverse: var(--color-primary-950);
 
@@ -437,12 +437,12 @@
   --navbar-2-nav-list-divider: var(--color-gray-200);
   
   --sidebar: var(--color-white);
-  --sidebar-line: var(--color-gray-200);
-  --sidebar-divider: var(--color-gray-200);
-  --sidebar-nav-foreground: var(--color-gray-800);
+  --sidebar-line: var(--color-gray-300);
+  --sidebar-divider: var(--color-gray-300);
+  --sidebar-nav-foreground: var(--color-gray-900);
   --sidebar-nav-hover: var(--color-gray-100);
   --sidebar-nav-focus: var(--color-gray-100);
-  --sidebar-nav-active: var(--color-gray-100);
+  --sidebar-nav-active: var(--color-gray-200);
   --sidebar-nav-list-divider: var(--color-gray-200);
   --sidebar-inverse: var(--color-primary-950);
   
@@ -465,7 +465,7 @@
   --sidebar-2-nav-list-divider: var(--color-gray-200);
 
   --card: var(--color-white);
-  --card-line: var(--color-gray-200);
+  --card-line: var(--color-gray-300);
   --card-divider: var(--color-gray-200);
   --card-header: var(--color-gray-200);
   --card-footer: var(--color-gray-200);
@@ -473,11 +473,11 @@
 
   --dropdown: var(--color-white);
   --dropdown-1: var(--color-white);
-  --dropdown-line: transparent;
+  --dropdown-line: var(--color-gray-200);
   --dropdown-divider: var(--color-gray-200);
   --dropdown-header: var(--color-gray-200);
   --dropdown-footer: var(--color-gray-200);
-  --dropdown-item-foreground: var(--color-gray-800);
+  --dropdown-item-foreground: var(--color-gray-900);
   --dropdown-item-hover: var(--color-gray-100);
   --dropdown-item-focus: var(--color-gray-100);
   --dropdown-item-active: var(--color-gray-100);
@@ -485,44 +485,44 @@
   
   --select: var(--color-white);
   --select-1: var(--color-white);
-  --select-line: transparent;
-  --select-item-foreground: var(--color-gray-800);
+  --select-line: var(--color-gray-200);
+  --select-item-foreground: var(--color-gray-900);
   --select-item-hover: var(--color-gray-100);
   --select-item-focus: var(--color-gray-100);
   --select-item-active: var(--color-gray-100);
   --select-inverse: var(--color-gray-900);
   
   --overlay: var(--color-white);
-  --overlay-line: transparent;
+  --overlay-line: var(--color-gray-200);
   --overlay-divider: var(--color-gray-200);
   --overlay-header: var(--color-gray-200);
   --overlay-footer: var(--color-gray-200);
   --overlay-inverse: var(--color-gray-900);
 
   --popover: var(--color-white);
-  --popover-line: var(--color-gray-100);
+  --popover-line: var(--color-gray-200);
 
   --tooltip: var(--color-gray-900);
   --tooltip-line: transparent;
   --tooltip-foreground: var(--color-white);
   
-  --table-line: var(--color-gray-200);
+  --table-line: var(--color-gray-300);
   
   --switch: var(--color-white);
 
   --footer: var(--color-white);
-  --footer-line: var(--color-gray-200);
+  --footer-line: var(--color-gray-300);
   --footer-inverse: var(--color-gray-900);
 
   --scrollbar-track: transparent;
-  --scrollbar-thumb: rgba(0, 0, 0, 0.12);
-  --scrollbar-thumb-hover: rgba(0, 0, 0, 0.25);
+  --scrollbar-thumb: rgba(0, 0, 0, 0.22);
+  --scrollbar-thumb-hover: rgba(0, 0, 0, 0.38);
   --scrollbar-track-inverse: transparent;
   --scrollbar-thumb-inverse: rgba(255, 255, 255, 0.2);
 
   --chart-colors-background: var(--color-white);
   --chart-colors-background-inverse: var(--color-neutral-800);
-  --chart-colors-foreground: var(--color-gray-800);
+  --chart-colors-foreground: var(--color-gray-900);
   --chart-colors-foreground-inverse: var(--color-white);
   --chart-primary: var(--color-primary-600);
   --chart-colors-primary: var(--color-primary-600);
@@ -584,13 +584,13 @@
   --chart-colors-candlestick-upward-inverse: var(--color-primary-500);
   --chart-colors-candlestick-downward: var(--color-primary-600);
   --chart-colors-candlestick-downward-inverse: var(--color-primary-500);
-  --chart-colors-labels: var(--color-gray-400);
+  --chart-colors-labels: var(--color-gray-600);
   --chart-colors-labels-inverse: var(--color-neutral-400);
-  --chart-colors-xaxis-labels: var(--color-gray-400);
+  --chart-colors-xaxis-labels: var(--color-gray-600);
   --chart-colors-xaxis-labels-inverse: var(--color-neutral-400);
-  --chart-colors-yaxis-labels: var(--color-gray-400);
+  --chart-colors-yaxis-labels: var(--color-gray-600);
   --chart-colors-yaxis-labels-inverse: var(--color-neutral-400);
-  --chart-colors-grid-border: var(--color-gray-200);
+  --chart-colors-grid-border: var(--color-gray-300);
   --chart-colors-grid-border-inverse: var(--color-neutral-700);
   --chart-colors-bar-ranges: var(--color-gray-200);
   --chart-colors-bar-ranges-inverse: var(--color-white);
@@ -601,7 +601,7 @@
   --map-colors-default-inverse: var(--color-neutral-600);
   --map-colors-highlight: var(--color-primary-300);
   --map-colors-highlight-inverse: var(--color-primary-300);
-  --map-colors-border: var(--color-gray-100);
+  --map-colors-border: var(--color-white);
   --map-colors-border-inverse: var(--color-neutral-800);
 }
 

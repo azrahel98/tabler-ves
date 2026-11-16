@@ -54,7 +54,7 @@ const mayorArea = computed(() => {
   return sortedAreas.value[0] || null
 })
 
-const chartGridColor = computed(() => isDark.value ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.06)')
+const chartGridColor = computed(() => isDark.value ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.1)')
 const chartTextColor = computed(() => isDark.value ? '#a3a3a3' : '#525252')
 const chartBarColor = computed(() => isDark.value ? '#3b82f6' : '#2563eb')
 

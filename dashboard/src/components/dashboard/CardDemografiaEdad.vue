@@ -23,7 +23,7 @@ const { chartFontSize } = useChartScale()
 const themeStore = useThemeStore()
 const isDark = computed(() => themeStore.isDark)
 
-const chartGridColor = computed(() => isDark.value ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.06)')
+const chartGridColor = computed(() => isDark.value ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.1)')
 const chartTextColor = computed(() => isDark.value ? '#94a3b8' : '#475569')
 
 const chartData = computed<ChartData<'bar'>>(() => {
