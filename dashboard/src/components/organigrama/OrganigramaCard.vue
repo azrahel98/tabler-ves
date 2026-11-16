@@ -58,7 +58,7 @@ const variantClasses = computed(() => {
     case 'yellow':
       return 'bg-yellow-200/90 dark:bg-yellow-950/40 text-yellow-950 dark:text-yellow-100 border-yellow-400 dark:border-yellow-700'
     case 'purple':
-      return 'bg-purple-600 text-white border-purple-700 shadow-purple-500/20'
+      return 'bg-sky-600 text-white border-sky-700 shadow-sky-500/20'
     case 'green':
       return 'bg-lime-300/90 dark:bg-lime-950/40 text-lime-950 dark:text-lime-100 border-lime-500 dark:border-lime-700'
     case 'orange':
@@ -95,10 +95,11 @@ const handleProfile = (e: MouseEvent) => {
 
 <template>
   <div
+    :data-node-id="idVal ?? undefined"
     class="relative rounded-xl border text-left transition-all duration-200 select-none shadow-2xs hover:shadow-md cursor-pointer group"
     :class="[
       variantClasses,
-      compact ? 'w-44 sm:w-48 p-2 text-xs' : 'w-56 sm:w-60 p-2.5 text-xs',
+      compact ? 'w-44 sm:w-48 p-2 text-meta' : 'w-56 sm:w-60 p-2.5 text-meta',
       isHighlighted ? 'ring-2 ring-primary border-primary scale-[1.02]' : ''
     ]"
     @click="handleSelect"
@@ -107,7 +108,7 @@ const handleProfile = (e: MouseEvent) => {
       <h4
         class="font-bold uppercase tracking-tight leading-tight line-clamp-2"
         :class="[
-          compact ? 'text-micro' : 'text-xs',
+          compact ? 'text-micro' : 'text-meta',
           isSolidHeader ? 'text-white' : 'text-foreground'
         ]"
         :title="areaName"

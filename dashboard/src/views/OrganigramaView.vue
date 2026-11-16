@@ -24,6 +24,9 @@ import {
   IconChevronUp,
   IconFocus2,
   IconPrinter,
+  IconUserOff,
+  IconArrowNarrowUp,
+  IconArrowNarrowDown,
 } from '@tabler/icons-vue'
 
 const router = useRouter()
@@ -79,9 +82,19 @@ const debouncedFitToScreen = () => {
   })
 }
 
+const onFullscreenChange = () => {
+  isFullscreen.value = !!document.fullscreenElement
+  nextTick(() => {
+    setTimeout(() => {
+      fitToScreen()
+    }, 120)
+  })
+}
+
 onMounted(() => {
   loadData()
   window.addEventListener('resize', debouncedFitToScreen)
+  document.addEventListener('fullscreenchange', onFullscreenChange)
   if (typeof ResizeObserver !== 'undefined') {
     resizeObserver = new ResizeObserver(() => {
       debouncedFitToScreen()
@@ -94,6 +107,7 @@ onMounted(() => {
 
 onUnmounted(() => {
   window.removeEventListener('resize', debouncedFitToScreen)
+  document.removeEventListener('fullscreenchange', onFullscreenChange)
   if (rafId !== null) cancelAnimationFrame(rafId)
   resizeObserver?.disconnect()
 })
@@ -228,6 +242,61 @@ const isSearchMatch = (text?: string | null, jefe?: string | null, dni?: string 
   return matchArea || matchJefe || matchDni
 }
 
+interface FlatNode {
+  node: CardNodeData
+  ancestors: number[]
+}
+
+const flattenTree = (nodes: CardNodeData[], ancestors: number[] = [], out: FlatNode[] = []): FlatNode[] => {
+  for (const n of nodes) {
+    out.push({ node: n, ancestors })
+    if (n.subgerencias && n.subgerencias.length > 0) {
+      flattenTree(n.subgerencias, n.id !== undefined ? [...ancestors, n.id] : ancestors, out)
+    }
+  }
+  return out
+}
+
+const flatNodes = computed<FlatNode[]>(() => flattenTree(organigramaRaw.value))
+
+const treeStats = computed(() => {
+  const all = flatNodes.value
+  const conTitular = all.filter((f) => !!f.node.jefe).length
+  return { total: all.length, conTitular, sinTitular: all.length - conTitular }
+})
+
+const searchMatches = computed<FlatNode[]>(() => {
+  if (!normalizedSearchQuery.value) return []
+  return flatNodes.value.filter((f) => isSearchMatch(f.node.area, f.node.jefe, f.node.dni))
+})
+
+const activeMatchIndex = ref<number>(0)
+
+const scrollToNode = (id: number | undefined) => {
+  if (id === undefined || !organigramaContent.value) return
+  const el = organigramaContent.value.querySelector<HTMLElement>(`[data-node-id="${id}"]`)
+  el?.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' })
+}
+
+const goToMatch = (delta: number) => {
+  const total = searchMatches.value.length
+  if (total === 0) return
+  activeMatchIndex.value = (activeMatchIndex.value + delta + total) % total
+  const match = searchMatches.value[activeMatchIndex.value]
+  if (!match) return
+  const expanded = { ...expandedNodes.value }
+  for (const ancestorId of match.ancestors) expanded[ancestorId] = true
+  expandedNodes.value = expanded
+  nextTick(() => {
+    setTimeout(() => scrollToNode(match.node.id), 60)
+  })
+}
+
+watch(searchMatches, (matches) => {
+  activeMatchIndex.value = -1
+  if (matches.length > 0) goToMatch(1)
+})
+
 const centerScroll = (smooth = true) => {
   nextTick(() => {
     if (!organigramaScrollArea.value) return
@@ -278,6 +347,13 @@ const zoomOut = () => {
 const resetZoom = () => {
   zoomLevel.value = 1
   centerScroll(true)
+}
+
+const onWheel = (e: WheelEvent) => {
+  if (!e.ctrlKey) return
+  e.preventDefault()
+  const step = e.deltaY < 0 ? 0.1 : -0.1
+  zoomLevel.value = Math.min(1.4, Math.max(0.3, Number((zoomLevel.value + step).toFixed(2))))
 }
 
 const toggleFullscreen = () => {
@@ -395,7 +471,7 @@ const getCategoryBadgeClass = (category: string) => {
     case 'Secretaría':
       return 'bg-yellow-50 dark:bg-yellow-950/70 text-yellow-700 dark:text-yellow-300 border-yellow-200 dark:border-yellow-800'
     case 'Apoyo':
-      return 'bg-purple-50 dark:bg-purple-950/70 text-purple-700 dark:text-purple-300 border-purple-200 dark:border-purple-800'
+      return 'bg-sky-50 dark:bg-sky-950/70 text-sky-700 dark:text-sky-300 border-sky-200 dark:border-sky-800'
     case 'Asesoría':
       return 'bg-lime-50 dark:bg-lime-950/70 text-lime-800 dark:text-lime-300 border-lime-200 dark:border-lime-800'
     default:
@@ -488,85 +564,18 @@ const closeNodeDetail = () => {
 </script>
 
 <template>
-  <div class="space-y-6 pb-0">
-    <PageHeader title="Organigrama" subtitle="Estructura orgánica y titulares por dependencia" />
-
-
-
-    <div class="p-3.5 pb-0 sm:p-4 rounded-2xl border border-border bg-card shadow-2xs space-y-3">
-      <div class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3">
-        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 ">
-          <div class="relative w-full sm:w-80">
-            <IconSearch class="absolute inset-s-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-            <input v-model="searchQuery" type="text" placeholder="Buscar gerencia, subgerencia, titular o DNI..."
-              class="w-full h-9 ps-9 pe-3 text-xs rounded-xl border border-border bg-background focus:outline-hidden focus:border-primary focus:ring-1 focus:ring-primary transition" />
-            <button v-if="searchQuery" type="button"
-              class="absolute inset-e-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground p-0.5"
-              @click="searchQuery = ''">
-              <IconX class="size-3.5" />
-            </button>
-          </div>
-
-        </div>
-
-        <div
-          class="flex items-center justify-between sm:justify-end gap-2 pt-2 lg:pt-0 border-t lg:border-t-0 border-border/70 flex-wrap">
-          <Button variant="outline" size="xs"
-            :title="areAllExpanded ? 'Colapsar dependencias subordinadas' : 'Expandir todas las dependencias subordinadas'"
-            @click="toggleAllNodes">
-            <IconChevronUp v-if="areAllExpanded" class="size-3.5" />
-            <IconChevronDown v-else class="size-3.5" />
-            <span>{{ areAllExpanded ? 'Colapsar todo' : 'Expandir todo' }}</span>
-          </Button>
-
-          <Button variant="outline" size="xs" title="Ajustar escala para ver el organigrama completo en la pantalla"
-            @click="fitToScreen">
-            <span>Ajustar vista</span>
-          </Button>
-
-          <Button variant="outline" size="xs" title="Centrar organigrama en el visor"
-            @click="centerScroll(true)">
-            <IconFocus2 class="size-3.5" />
-            <span class="hidden sm:inline">Centrar</span>
-          </Button>
-
-          <div class="flex items-center gap-1 bg-muted/30 p-1 rounded-xl border border-border">
-            <button type="button"
-              class="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-background transition cursor-pointer"
-              title="Alejar organigrama" @click="zoomOut">
-              <IconZoomOut class="size-3.5" />
-            </button>
-            <span class="text-meta font-mono px-1.5 font-semibold text-muted-foreground select-none">
-              {{ Math.round(zoomLevel * 100) }}%
-            </span>
-            <button type="button"
-              class="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-background transition cursor-pointer"
-              title="Acercar organigrama" @click="zoomIn">
-              <IconZoomIn class="size-3.5" />
-            </button>
-            <button type="button"
-              class="px-2 py-1 rounded-lg text-micro font-semibold text-muted-foreground hover:text-foreground hover:bg-background transition border-s border-border cursor-pointer"
-              title="Restablecer zoom a 100%" @click="resetZoom">
-              100%
-            </button>
-          </div>
-
-          <Button variant="outline" size="xs" title="Imprimir organigrama" :disabled="!organigramaContent"
-            @click="printOrganigrama">
-            <IconPrinter class="size-3.5" />
-            <span class="hidden sm:inline">Imprimir</span>
-          </Button>
-
-          <Button variant="outline" size="xs" title="Pantalla completa" @click="toggleFullscreen">
-            <IconMaximize v-if="!isFullscreen" class="size-3.5" />
-            <IconMinimize v-else class="size-3.5" />
-          </Button>
-        </div>
-      </div>
-    </div>
+  <div class="mx-auto w-full max-w-6xl space-y-4 px-4 pb-16">
+    <PageHeader title="Organigrama" subtitle="Estructura orgánica y titulares por dependencia">
+      <template #actions>
+        <Button variant="outline" size="xs" title="Recargar organigrama" :loading="isLoading" @click="loadData">
+          <IconRefresh class="size-3.5" />
+          <span class="hidden sm:inline">Actualizar</span>
+        </Button>
+      </template>
+    </PageHeader>
 
     <div v-if="isLoading" class="space-y-4">
-      <div v-for="i in 3" :key="i" class="h-44 rounded-2xl bg-card border border-border animate-pulse p-6">
+      <div v-for="i in 3" :key="i" class="h-44 rounded-xl bg-card border border-border animate-pulse p-4">
         <div class="h-6 w-52 bg-muted rounded mb-3"></div>
         <div class="h-4 w-80 bg-muted/60 rounded mb-6"></div>
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -578,9 +587,9 @@ const closeNodeDetail = () => {
     </div>
 
     <div v-else-if="errorMessage"
-      class="p-8 rounded-2xl bg-destructive/10 border border-destructive/20 text-center space-y-3">
+      class="p-4 rounded-xl bg-destructive/10 border border-destructive/20 text-center space-y-3">
       <IconAlertCircle class="size-10 text-destructive mx-auto" />
-      <p class="text-sm font-semibold text-destructive">{{ errorMessage }}</p>
+      <p class="text-xs font-semibold text-destructive">{{ errorMessage }}</p>
       <Button variant="outline" size="sm" @click="loadData">
         <IconRefresh class="size-4" />
         <span>Reintentar carga</span>
@@ -588,69 +597,117 @@ const closeNodeDetail = () => {
     </div>
 
     <div v-else-if="organigramaRaw.length === 0"
-      class="p-16 text-center rounded-2xl border border-dashed border-border bg-card">
+      class="p-16 text-center rounded-xl border border-dashed border-border bg-card">
       <IconSitemap class="size-12 text-muted-foreground mx-auto mb-3 opacity-40" />
       <p class="text-title font-bold text-foreground">No se encontraron registros en el organigrama</p>
-      <p class="text-xs text-muted-foreground mt-1 max-w-sm mx-auto">
+      <p class="text-meta text-muted-foreground mt-1 max-w-sm mx-auto">
         No se obtuvo información de áreas o dependencias desde el servidor.
       </p>
     </div>
 
     <div v-else ref="organigramaContainer"
-      class="relative w-full rounded-2xl border border-border bg-card shadow-2xs overflow-hidden flex flex-col"
-      :class="isFullscreen ? 'fixed inset-0 z-50 rounded-none border-0 h-screen w-screen' : 'h-[68vh] sm:h-[74vh] min-h-[500px] max-h-[820px]'">
-      <div v-if="isFullscreen"
-        class="absolute top-4 inset-x-4 z-30 flex items-center justify-between p-3 rounded-xl bg-background/90 backdrop-blur-md border border-border shadow-md">
-        <div class="flex items-center gap-2">
-          <IconSitemap class="size-4 text-primary" />
-          <span class="text-xs font-bold text-foreground">Organigrama Institucional - MDVES</span>
+      class="relative w-full rounded-xl border border-border bg-card shadow-2xs overflow-hidden flex flex-col"
+      :class="isFullscreen ? 'fixed inset-0 z-50 rounded-none border-0 h-screen w-screen' : 'h-[72vh] min-h-[520px] max-h-[860px]'">
+
+      <!-- Barra de herramientas: una sola, compartida con pantalla completa -->
+      <div class="flex flex-col lg:flex-row lg:items-center gap-2 border-b border-border bg-card px-3 py-2 shrink-0">
+        <div class="flex items-center gap-2 min-w-0">
+          <div v-if="isFullscreen" class="hidden sm:flex items-center gap-1.5 pe-2 border-e border-border shrink-0">
+            <IconSitemap class="size-4 text-primary" />
+            <span class="text-meta font-bold text-foreground whitespace-nowrap">Organigrama MDVES</span>
+          </div>
+
+          <div class="relative w-full sm:w-80">
+            <IconSearch class="absolute inset-s-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+            <input v-model="searchQuery" type="text" placeholder="Buscar dependencia, titular o DNI..."
+              class="w-full h-8 ps-9 text-meta rounded-lg border border-border bg-background focus:outline-hidden focus:border-primary focus:ring-1 focus:ring-primary transition"
+              :class="searchQuery ? 'pe-28' : 'pe-3'"
+              @keydown.enter.prevent="goToMatch($event.shiftKey ? -1 : 1)"
+              @keydown.esc="searchQuery = ''" />
+            <div v-if="searchQuery" class="absolute inset-e-1.5 top-1/2 -translate-y-1/2 flex items-center gap-0.5">
+              <span class="text-nano font-mono font-semibold px-1 whitespace-nowrap"
+                :class="searchMatches.length > 0 ? 'text-muted-foreground' : 'text-destructive'">
+                {{ searchMatches.length > 0 ? `${activeMatchIndex + 1} / ${searchMatches.length}` : 'Sin resultados' }}
+              </span>
+              <button type="button"
+                class="p-0.5 rounded text-muted-foreground hover:text-foreground hover:bg-muted disabled:opacity-40"
+                title="Coincidencia anterior (Shift + Enter)" :disabled="searchMatches.length < 2" @click="goToMatch(-1)">
+                <IconArrowNarrowUp class="size-3.5" />
+              </button>
+              <button type="button"
+                class="p-0.5 rounded text-muted-foreground hover:text-foreground hover:bg-muted disabled:opacity-40"
+                title="Siguiente coincidencia (Enter)" :disabled="searchMatches.length < 2" @click="goToMatch(1)">
+                <IconArrowNarrowDown class="size-3.5" />
+              </button>
+              <button type="button" class="p-0.5 rounded text-muted-foreground hover:text-foreground hover:bg-muted"
+                title="Limpiar búsqueda" @click="searchQuery = ''">
+                <IconX class="size-3.5" />
+              </button>
+            </div>
+          </div>
         </div>
-        <div class="flex items-center gap-2">
-          <Button variant="outline" size="xs" @click="toggleAllNodes">
-            <IconChevronUp v-if="areAllExpanded" class="size-3" />
-            <IconChevronDown v-else class="size-3" />
+
+        <div class="flex items-center gap-1.5 flex-wrap lg:ms-auto">
+          <Button variant="outline" size="xs"
+            :title="areAllExpanded ? 'Colapsar dependencias subordinadas' : 'Expandir todas las dependencias subordinadas'"
+            @click="toggleAllNodes">
+            <IconChevronUp v-if="areAllExpanded" class="size-3.5" />
+            <IconChevronDown v-else class="size-3.5" />
             <span>{{ areAllExpanded ? 'Colapsar todo' : 'Expandir todo' }}</span>
           </Button>
-          <Button variant="outline" size="xs" @click="fitToScreen">
+
+          <Button variant="outline" size="xs" title="Ajustar escala para ver el organigrama completo"
+            @click="fitToScreen">
             <span>Ajustar vista</span>
           </Button>
-          <Button variant="outline" size="xs" @click="centerScroll(true)">
-            <IconFocus2 class="size-3" />
-            <span>Centrar</span>
+
+          <Button variant="outline" size="xs" title="Centrar organigrama en el visor" @click="centerScroll(true)">
+            <IconFocus2 class="size-3.5" />
+            <span class="hidden sm:inline">Centrar</span>
           </Button>
-          <Button variant="outline" size="xs" @click="zoomOut">
-            <IconZoomOut class="size-3.5" />
-          </Button>
-          <span class="text-xs font-mono font-semibold text-muted-foreground">
-            {{ Math.round(zoomLevel * 100) }}%
-          </span>
-          <Button variant="outline" size="xs" @click="zoomIn">
-            <IconZoomIn class="size-3.5" />
-          </Button>
-          <Button variant="outline" size="xs" @click="resetZoom">
-            100%
-          </Button>
-          <Button variant="outline" size="xs" title="Imprimir organigrama" @click="printOrganigrama">
+
+          <div class="flex items-center h-7 rounded-lg border border-border bg-background overflow-hidden">
+            <button type="button"
+              class="h-full px-1.5 text-muted-foreground hover:text-foreground hover:bg-muted transition cursor-pointer"
+              title="Alejar (Ctrl + rueda)" @click="zoomOut">
+              <IconZoomOut class="size-3.5" />
+            </button>
+            <button type="button"
+              class="h-full min-w-11 text-meta font-mono font-semibold text-foreground hover:bg-muted transition border-x border-border cursor-pointer tabular-nums"
+              title="Restablecer zoom a 100%" @click="resetZoom">
+              {{ Math.round(zoomLevel * 100) }}%
+            </button>
+            <button type="button"
+              class="h-full px-1.5 text-muted-foreground hover:text-foreground hover:bg-muted transition cursor-pointer"
+              title="Acercar (Ctrl + rueda)" @click="zoomIn">
+              <IconZoomIn class="size-3.5" />
+            </button>
+          </div>
+
+          <Button variant="outline" size="xs" title="Imprimir organigrama" :disabled="!organigramaContent"
+            @click="printOrganigrama">
             <IconPrinter class="size-3.5" />
+            <span class="hidden sm:inline">Imprimir</span>
           </Button>
-          <Button variant="outline" size="xs" @click="toggleFullscreen">
-            <IconMinimize class="size-3.5" />
-            <span>Salir</span>
+
+          <Button variant="outline" size="xs"
+            :title="isFullscreen ? 'Salir de pantalla completa (Esc)' : 'Pantalla completa'" @click="toggleFullscreen">
+            <IconMaximize v-if="!isFullscreen" class="size-3.5" />
+            <IconMinimize v-else class="size-3.5" />
+            <span v-if="isFullscreen">Salir</span>
           </Button>
         </div>
       </div>
 
       <div ref="organigramaScrollArea"
-        class="w-full h-full overflow-auto p-4 sm:p-8 flex select-none transition-colors"
-        :class="[
-          isFullscreen ? 'pt-24' : '',
-          isPanning ? 'cursor-grabbing' : 'cursor-grab'
-        ]"
+        class="w-full flex-1 min-h-0 overflow-auto p-4 flex select-none transition-colors"
+        :class="isPanning ? 'cursor-grabbing' : 'cursor-grab'"
         style="background-image: radial-gradient(var(--color-border) 1px, transparent 1px); background-size: 24px 24px;"
         @mousedown="onPanStart"
         @mousemove="onPanMove"
         @mouseup="onPanEnd"
         @mouseleave="onPanEnd"
+        @wheel="onWheel"
         @dblclick="centerScroll(true)">
         <div class="m-auto flex flex-col items-center min-w-max pb-8">
           <div ref="organigramaContent"
@@ -782,16 +839,38 @@ const closeNodeDetail = () => {
               </div>
             </div>
           </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pie: leyenda de colores y resumen -->
+      <div
+        class="flex items-center justify-between gap-x-4 gap-y-1.5 flex-wrap border-t border-border bg-card px-3 py-1.5 shrink-0 text-nano">
+        <div class="flex items-center gap-x-3 gap-y-1 flex-wrap text-muted-foreground">
+          <span class="flex items-center gap-1"><span class="size-2 rounded-sm bg-blue-600"></span>Alta Dirección</span>
+          <span class="flex items-center gap-1"><span class="size-2 rounded-sm bg-cyan-300 dark:bg-cyan-700"></span>Control</span>
+          <span class="flex items-center gap-1"><span class="size-2 rounded-sm bg-yellow-300 dark:bg-yellow-700"></span>Secretaría</span>
+          <span class="flex items-center gap-1"><span class="size-2 rounded-sm bg-lime-400 dark:bg-lime-700"></span>Asesoría</span>
+          <span class="flex items-center gap-1"><span class="size-2 rounded-sm bg-sky-600"></span>Apoyo</span>
+          <span class="flex items-center gap-1"><span class="size-2 rounded-sm bg-amber-500"></span>Órganos de Línea</span>
+          <span class="flex items-center gap-1"><span class="size-2 rounded-sm bg-amber-200 dark:bg-amber-800"></span>Subgerencia</span>
+        </div>
+        <div class="flex items-center gap-x-3 gap-y-1 flex-wrap">
+          <span class="text-muted-foreground"><b class="font-semibold text-foreground tabular-nums">{{ treeStats.total }}</b> dependencias</span>
+          <span class="text-muted-foreground"><b class="font-semibold text-foreground tabular-nums">{{ treeStats.conTitular }}</b> con titular</span>
+          <span v-if="treeStats.sinTitular > 0" class="flex items-center gap-1 text-amber-700 dark:text-amber-400">
+            <IconUserOff class="size-3" />
+            <b class="font-semibold tabular-nums">{{ treeStats.sinTitular }}</b> sin titular
+          </span>
+          <span class="hidden md:inline text-muted-foreground/70">Arrastra para mover · Ctrl + rueda para zoom · doble clic para centrar</span>
         </div>
       </div>
     </div>
-  </div>
-
     <div v-if="selectedNodeDetail"
       class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-xs"
       @click.self="closeNodeDetail">
       <div
-        class="w-full max-w-md rounded-2xl border border-border bg-card p-6 shadow-xl space-y-5 animate-in fade-in zoom-in-95 duration-150">
+        class="w-full max-w-md rounded-xl border border-border bg-card p-4 shadow-xl space-y-4 animate-in fade-in zoom-in-95 duration-150">
         <div class="flex items-start justify-between gap-3">
           <div class="flex items-center gap-3">
             <div class="size-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
@@ -801,7 +880,7 @@ const closeNodeDetail = () => {
               <span class="text-micro font-mono font-semibold text-primary uppercase tracking-wider">
                 Ficha Institucional
               </span>
-              <h3 class="text-sm font-bold text-foreground leading-snug">
+              <h3 class="text-xs font-bold text-foreground leading-snug">
                 {{ selectedNodeDetail.area }}
               </h3>
             </div>
@@ -814,21 +893,21 @@ const closeNodeDetail = () => {
         </div>
 
         <div class="rounded-xl border border-border/70 p-3.5 bg-muted/20 space-y-2">
-          <div class="flex items-center justify-between text-xs">
+          <div class="flex items-center justify-between text-meta">
             <span class="text-muted-foreground">Código interno:</span>
             <span class="font-mono font-semibold text-foreground">
               {{ selectedNodeDetail.id ? `#${selectedNodeDetail.id}` : 'Institucional' }}
             </span>
           </div>
           <div v-if="selectedNodeDetail.subgerencias && selectedNodeDetail.subgerencias.length > 0"
-            class="flex items-center justify-between text-xs">
+            class="flex items-center justify-between text-meta">
             <span class="text-muted-foreground">Dependencias subordinadas:</span>
             <span class="font-semibold text-foreground">{{ selectedNodeDetail.subgerencias.length }}</span>
           </div>
         </div>
 
         <div class="space-y-3">
-          <h4 class="text-xs font-bold text-foreground uppercase tracking-wider">
+          <h4 class="text-meta font-bold text-foreground uppercase tracking-wider">
             Titular Asignado
           </h4>
           <div v-if="selectedNodeDetail.jefe"
@@ -842,7 +921,7 @@ const closeNodeDetail = () => {
             </div>
 
             <div class="min-w-0 flex-1">
-              <p class="text-xs font-bold text-foreground truncate">
+              <p class="text-meta font-bold text-foreground truncate">
                 {{ selectedNodeDetail.jefe }}
               </p>
               <p class="text-meta text-muted-foreground font-mono mt-0.5">
@@ -857,17 +936,17 @@ const closeNodeDetail = () => {
             </Button>
           </div>
           <div v-else
-            class="p-3.5 rounded-xl border border-dashed border-border text-center text-xs text-muted-foreground">
+            class="p-3.5 rounded-xl border border-dashed border-border text-center text-meta text-muted-foreground">
             No se encuentra registrada una jefatura titular actualmente para esta área.
           </div>
         </div>
 
         <div v-if="selectedNodeDetail.subgerencias && selectedNodeDetail.subgerencias.length > 0" class="space-y-2">
-          <h4 class="text-xs font-bold text-foreground uppercase tracking-wider">
+          <h4 class="text-meta font-bold text-foreground uppercase tracking-wider">
             Dependencias Subordinadas ({{ selectedNodeDetail.subgerencias.length }})
           </h4>
           <div
-            class="max-h-40 overflow-y-auto divide-y divide-border/60 rounded-xl border border-border bg-background text-xs">
+            class="max-h-40 overflow-y-auto divide-y divide-border/60 rounded-xl border border-border bg-background text-meta">
             <div v-for="(sub, idx) in selectedNodeDetail.subgerencias" :key="sub.id || idx"
               class="p-2.5 flex items-center justify-between gap-2 hover:bg-muted/30 transition">
               <span class="truncate font-medium text-foreground">{{ sub.area }}</span>
