@@ -4,11 +4,9 @@ import { useRouter, useRoute } from 'vue-router'
 import Card from '@/components/ui/card/Card.vue'
 import Button from '@/components/ui/button/Button.vue'
 import PageHeader from '@/components/ui/page-header/PageHeader.vue'
-import Badge from '@/components/ui/badge/Badge.vue'
 import DataTable, { type DataTableColumn } from '@/components/ui/datatable/DataTable.vue'
 import SearchSelect, { type SelectOption } from '@/components/ui/form/SearchSelect.vue'
-import CardPersonalPorArea from '@/components/dashboard/CardPersonalPorArea.vue'
-import CardDemografiaEdad from '@/components/dashboard/CardDemografiaEdad.vue'
+import DistritoResumen from '@/components/distrito/DistritoResumen.vue'
 import {
   fetchActivosPorDistrito,
   fetchPersonalPorDistrito,
@@ -16,7 +14,6 @@ import {
   type PersonaDistrito,
 } from '@/services/personal'
 import { resolveAvatarUrl } from '@/components/dashboard/types'
-import { formatDate } from '@/utils/date'
 import {
   IconRefresh,
   IconAlertTriangle,
@@ -57,42 +54,12 @@ const irAlPerfil = (dni: string) => {
 }
 
 const columns: DataTableColumn[] = [
-  {
-    key: 'nombre',
-    label: 'Servidor',
-    sortable: true,
-  },
-  {
-    key: 'dni',
-    label: 'DNI',
-    sortable: true,
-    width: '120px',
-  },
-  {
-    key: 'area',
-    label: 'Área',
-    sortable: true,
-  },
-  {
-    key: 'cargo',
-    label: 'Cargo',
-    sortable: true,
-  },
-  {
-    key: 'regimen',
-    label: 'Régimen',
-    sortable: true,
-    width: '140px',
-  },
-  {
-    key: 'ingreso',
-    label: 'Ingreso',
-    sortable: true,
-    width: '130px',
-  },
+  { key: 'nombre', label: 'Servidor', sortable: true },
+  { key: 'area', label: 'Área', sortable: true },
+  { key: 'direccion', label: 'Dirección', sortable: true },
 ]
 
-const searchKeys = ['nombre', 'dni']
+const searchKeys = ['nombre', 'dni', 'cargo', 'area', 'direccion']
 
 const filasPlanas = computed<FilaDistrito[]>(() => {
   if (!detalle.value?.personas) return []
@@ -111,35 +78,25 @@ const filasPlanas = computed<FilaDistrito[]>(() => {
   }))
 })
 
-const areasParaGrafico = computed(() => {
-  if (!detalle.value?.areas) return []
-  return detalle.value.areas.map((a) => ({
-    nombre: a.nombre,
-    cantidad: a.cantidad,
-  }))
+const regimenes = computed(() => {
+  const conteo = new Map<string, number>()
+  for (const p of detalle.value?.personas ?? []) {
+    const n = p.regimen?.nombre
+    if (n) conteo.set(n, (conteo.get(n) ?? 0) + 1)
+  }
+  return [...conteo].map(([nombre, cantidad]) => ({ nombre, cantidad }))
 })
 
-const areaConMasPersonal = computed(() => {
-  if (!detalle.value?.areas || detalle.value.areas.length === 0) return null
-  return [...detalle.value.areas].sort((a, b) => b.cantidad - a.cantidad)[0] || null
+const sindicatos = computed(() => {
+  const conteo = new Map<string, number>()
+  for (const p of detalle.value?.personas ?? []) {
+    const n = p.sindicato?.trim() || 'No afiliado'
+    conteo.set(n, (conteo.get(n) ?? 0) + 1)
+  }
+  return [...conteo].map(([nombre, cantidad]) => ({ nombre, cantidad }))
 })
 
-const areaConMasPersonalCantidad = computed(() => {
-  if (!areaConMasPersonal.value) return 'Sin registros'
-  const cant = areaConMasPersonal.value.cantidad
-  return `${cant} ${cant === 1 ? 'trabajador' : 'trabajadores'}`
-})
-
-const rangoEdadPredominante = computed(() => {
-  if (!detalle.value?.rangos_edad || detalle.value.rangos_edad.length === 0) return null
-  return [...detalle.value.rangos_edad].sort((a, b) => b.cantidad - a.cantidad)[0] || null
-})
-
-const rangoEdadPredominanteCantidad = computed(() => {
-  if (!rangoEdadPredominante.value) return 'Sin registros'
-  const cant = rangoEdadPredominante.value.cantidad
-  return `${cant} ${cant === 1 ? 'trabajador' : 'trabajadores'}`
-})
+const irAArea = (area: string) => router.push({ path: '/personal/area', query: { area } })
 
 const exportFilename = computed(() => {
   const nombre = selectedDistrito.value
@@ -234,13 +191,13 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="space-y-6 max-w-7xl mx-auto pb-16">
+  <div class="mx-auto w-full max-w-6xl space-y-3 px-4 pb-12">
     <PageHeader title="Trabajadores por Distrito" subtitle="Personal activo según distrito de residencia">
       <template #actions>
         <Button
           variant="ghost"
           size="sm"
-          class="gap-1.5 text-xs text-muted-foreground hover:text-foreground cursor-pointer"
+          class="gap-1.5 text-meta text-muted-foreground hover:text-foreground cursor-pointer"
           :disabled="estaCargando"
           @click="actualizarVista"
         >
@@ -250,28 +207,26 @@ onMounted(async () => {
       </template>
     </PageHeader>
 
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-      <div class="w-full sm:w-96">
-        <SearchSelect
-          :model-value="selectedDistrito"
-          :options="distritosOpciones"
-          placeholder="Seleccionar distrito..."
-          search-placeholder="Buscar distrito..."
-          empty-text="No se encontraron distritos"
-          :allow-clear="true"
-          size="md"
-          @update:model-value="seleccionarDistrito"
-        />
-      </div>
+    <div class="w-full sm:w-80">
+      <SearchSelect
+        :model-value="selectedDistrito"
+        :options="distritosOpciones"
+        placeholder="Seleccionar distrito..."
+        search-placeholder="Buscar distrito..."
+        empty-text="No se encontraron distritos"
+        :allow-clear="true"
+        size="sm"
+        @update:model-value="seleccionarDistrito"
+      />
     </div>
 
-    <Card v-if="!selectedDistrito" class="p-12 text-center">
+    <Card v-if="!selectedDistrito" class="p-8 text-center">
       <div class="max-w-sm mx-auto space-y-3">
-        <div class="size-12 rounded-full bg-primary/10 text-primary mx-auto flex items-center justify-center">
-          <IconMapPin class="size-6" />
+        <div class="size-9 rounded-full bg-primary/10 text-primary mx-auto flex items-center justify-center">
+          <IconMapPin class="size-4" />
         </div>
-        <h3 class="text-sm font-semibold text-foreground">Seleccione un distrito</h3>
-        <p class="text-xs text-muted-foreground">
+        <h3 class="text-meta font-semibold text-foreground">Seleccione un distrito</h3>
+        <p class="text-meta text-muted-foreground">
           Elija un distrito del selector superior para ver el resumen y los trabajadores activos que residen allí.
         </p>
       </div>
@@ -279,16 +234,16 @@ onMounted(async () => {
 
     <div
       v-else-if="errorMessage"
-      class="p-8 text-center rounded-2xl border border-rose-500/20 bg-rose-500/5 space-y-3"
+      class="p-4 text-center rounded-xl border border-rose-500/20 bg-rose-500/5 space-y-3"
       role="alert"
     >
       <IconAlertTriangle class="size-8 mx-auto text-rose-500" />
-      <p class="text-sm font-bold text-rose-600 dark:text-rose-400">Error al cargar los datos</p>
-      <p class="text-xs text-muted-foreground max-w-md mx-auto">{{ errorMessage }}</p>
+      <p class="text-xs font-bold text-rose-600 dark:text-rose-400">Error al cargar los datos</p>
+      <p class="text-meta text-muted-foreground max-w-md mx-auto">{{ errorMessage }}</p>
       <Button
         variant="outline"
         size="sm"
-        class="gap-1.5 text-xs cursor-pointer"
+        class="gap-1.5 text-meta cursor-pointer"
         @click="cargarDetalleDistrito(selectedDistrito)"
       >
         <IconRefresh class="size-3.5" />
@@ -296,79 +251,28 @@ onMounted(async () => {
       </Button>
     </div>
 
-    <div v-else-if="isLoadingDetalle" class="space-y-6 animate-pulse" aria-busy="true">
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div class="h-20 bg-muted/40 rounded-xl"></div>
-        <div class="h-20 bg-muted/40 rounded-xl"></div>
-        <div class="h-20 bg-muted/40 rounded-xl"></div>
-      </div>
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
-        <div class="h-72 bg-muted/40 rounded-xl"></div>
-        <div class="h-72 bg-muted/40 rounded-xl"></div>
-      </div>
+    <div v-else-if="isLoadingDetalle" class="space-y-3 animate-pulse" aria-busy="true">
+      <div class="h-44 bg-muted/40 rounded-xl"></div>
       <div class="h-64 bg-muted/40 rounded-xl"></div>
     </div>
 
     <template v-else-if="detalle">
-      <div class="space-y-4">
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <Card class="p-4 bg-card border border-border shadow-2xs">
-            <p class="text-xs text-muted-foreground">Total trabajadores</p>
-            <div class="text-kpi font-bold font-mono tabular-nums text-foreground mt-1">
-              {{ detalle.total }}
-            </div>
-            <p class="text-meta text-muted-foreground mt-0.5">
-              {{ detalle.total === 1 ? 'servidor activo' : 'servidores activos' }}
-            </p>
-          </Card>
-
-          <Card class="p-4 bg-card border border-border shadow-2xs">
-            <p class="text-xs text-muted-foreground">Área con más personal</p>
-            <div
-              class="text-kpi font-bold font-mono tabular-nums text-foreground mt-1 truncate"
-              :title="areaConMasPersonal?.nombre || '—'"
-            >
-              {{ areaConMasPersonal?.nombre || '—' }}
-            </div>
-            <p class="text-meta text-muted-foreground mt-0.5 truncate">
-              {{ areaConMasPersonalCantidad }}
-            </p>
-          </Card>
-
-          <Card class="p-4 bg-card border border-border shadow-2xs">
-            <p class="text-xs text-muted-foreground">Rango de edad predominante</p>
-            <div
-              class="text-kpi font-bold font-mono tabular-nums text-foreground mt-1 truncate"
-              :title="rangoEdadPredominante?.nombre || '—'"
-            >
-              {{ rangoEdadPredominante?.nombre || '—' }}
-            </div>
-            <p class="text-meta text-muted-foreground mt-0.5 truncate">
-              {{ rangoEdadPredominanteCantidad }}
-            </p>
-          </Card>
-        </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
-          <CardPersonalPorArea
-            :areas="areasParaGrafico"
-            :is-loading="isLoadingDetalle"
-            chart-height="h-60"
-          />
-          <CardDemografiaEdad
-            :rangos="detalle.rangos_edad || []"
-            :is-loading="isLoadingDetalle"
-            chart-height="h-60"
-          />
-        </div>
-      </div>
+      <DistritoResumen
+        :distrito="selectedDistrito"
+        :total="detalle.total"
+        :areas="detalle.areas"
+        :rangos="detalle.rangos_edad"
+        :regimenes="regimenes"
+        :sindicatos="sindicatos"
+        @select-area="irAArea"
+      />
 
       <DataTable
         :columns="columns"
         :data="filasPlanas"
         row-key="dni"
         searchable
-        search-placeholder="Buscar por nombre o DNI..."
+        search-placeholder="Buscar por nombre, DNI, área o dirección..."
         :search-keys="searchKeys"
         paginated
         :page-size="10"
@@ -380,10 +284,8 @@ onMounted(async () => {
         @row-click="(row) => irAlPerfil(row.dni)"
       >
         <template #cell-nombre="{ row }">
-          <div class="flex items-center gap-3">
-            <div
-              class="size-8 rounded-full bg-primary/10 border border-border overflow-hidden shrink-0 flex items-center justify-center font-bold text-xs text-primary"
-            >
+          <div class="flex items-center gap-2.5 min-w-0">
+            <div class="size-8 rounded-full bg-muted overflow-hidden shrink-0">
               <img
                 v-if="row.avatar || row.dni"
                 v-auth-src="resolveAvatarUrl(row.dni)!"
@@ -391,53 +293,37 @@ onMounted(async () => {
                 class="size-full object-cover"
               />
             </div>
-            <router-link
-              :to="`/perfil/${row.dni}`"
-              class="font-semibold text-foreground hover:text-primary transition-colors text-xs truncate max-w-xs"
-              :title="row.nombre"
-              @click.stop
-            >
-              {{ row.nombre }}
-            </router-link>
+            <div class="min-w-0">
+              <router-link
+                :to="`/perfil/${row.dni}`"
+                class="block font-semibold text-foreground hover:text-primary transition-colors text-meta truncate max-w-xs"
+                :title="row.nombre"
+                @click.stop
+              >
+                {{ row.nombre }}
+              </router-link>
+              <p class="text-micro text-muted-foreground truncate max-w-xs">
+                {{ row.cargo }} · <span class="font-mono">{{ row.dni }}</span>
+              </p>
+            </div>
           </div>
         </template>
 
-        <template #cell-dni="{ row }">
-          <span class="font-mono text-xs text-muted-foreground">
-            {{ row.dni }}
-          </span>
-        </template>
-
         <template #cell-area="{ row }">
-          <span class="text-xs text-muted-foreground truncate block max-w-50" :title="row.area">
-            {{ row.area }}
-          </span>
+          <span class="text-meta text-muted-foreground truncate block max-w-56" :title="row.area">{{ row.area }}</span>
         </template>
 
-        <template #cell-cargo="{ row }">
-          <span class="text-xs text-muted-foreground truncate block max-w-45" :title="row.cargo">
-            {{ row.cargo }}
-          </span>
-        </template>
-
-        <template #cell-regimen="{ row }">
-          <Badge v-if="row.regimen" variant="secondary" size="xs">
-            {{ row.regimen }}
-          </Badge>
-          <span v-else class="text-muted-foreground text-xs">—</span>
-        </template>
-
-        <template #cell-ingreso="{ row }">
-          <span class="text-xs font-mono text-muted-foreground whitespace-nowrap">
-            {{ row.ingreso ? formatDate(row.ingreso) : '—' }}
+        <template #cell-direccion="{ row }">
+          <span class="text-meta text-muted-foreground line-clamp-2 max-w-64" :title="row.direccion || undefined">
+            {{ row.direccion || '—' }}
           </span>
         </template>
 
         <template #empty>
           <div class="p-10 text-center space-y-2">
             <IconUsers class="size-8 mx-auto text-muted-foreground/60" />
-            <h3 class="text-sm font-semibold text-foreground">No se encontraron trabajadores</h3>
-            <p class="text-xs text-muted-foreground">
+            <h3 class="text-xs font-semibold text-foreground">No se encontraron trabajadores</h3>
+            <p class="text-meta text-muted-foreground">
               No hay servidores activos registrados para este distrito con los criterios seleccionados.
             </p>
           </div>

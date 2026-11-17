@@ -1,24 +1,21 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import Card from '@/components/ui/card/Card.vue'
-import Badge from '@/components/ui/badge/Badge.vue'
 import Button from '@/components/ui/button/Button.vue'
 import PageHeader from '@/components/ui/page-header/PageHeader.vue'
-import DataTable, { type DataTableColumn } from '@/components/ui/datatable/DataTable.vue'
-import {
-  fetchAlerta70,
-  type Alerta70Servidor,
-  type Alerta70Estado,
-} from '@/services/personal'
+import FilterDropdown from '@/components/ui/form/FilterDropdown.vue'
+import { fetchAlerta70, type Alerta70Servidor } from '@/services/personal'
 import { resolveAvatarUrl } from '@/components/dashboard/types'
 import { formatDate, parseDateSafe } from '@/utils/date'
 import {
   IconAlertTriangle,
   IconRefresh,
-  IconCalendar,
-  IconFilter,
-  IconUserCheck,
+  IconSearch,
+  IconChevronLeft,
+  IconChevronRight,
+  IconCake,
+  IconCalendarMonth,
+  IconListDetails,
 } from '@tabler/icons-vue'
 
 const router = useRouter()
@@ -27,74 +24,38 @@ const servidores = ref<Alerta70Servidor[]>([])
 const isLoading = ref<boolean>(true)
 const errorMessage = ref<string | null>(null)
 
-const filtroEstado = ref<string>('todos')
+const hoy = new Date()
+const hoyKey = `${hoy.getFullYear()}-${hoy.getMonth()}-${hoy.getDate()}`
+const cursor = ref<Date>(new Date(hoy.getFullYear(), hoy.getMonth(), 1))
+const diaSeleccionado = ref<Date | null>(null)
+const vista = ref<'mes' | 'agenda'>('mes')
+
+const busqueda = ref<string>('')
 const filtroRegimen = ref<string>('todos')
+const estadosActivos = ref<string[]>(['excedido', 'allimite', 'atiempo', 'excepcional'])
 
-const obtenerMesNacimiento = (nacimiento: string | null | undefined): number => {
-  const d = parseDateSafe(nacimiento)
-  return d ? d.getMonth() + 1 : 0
+const MAX_CHIPS = 3
+const DIAS_SEMANA = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom']
+
+const ESTADOS = [
+  { id: 'excedido', label: 'Excedido', hint: '70+ o cese inminente', dot: 'bg-rose-500', chip: 'bg-rose-500/15 text-rose-700 dark:text-rose-300 border-rose-500', text: 'text-rose-600 dark:text-rose-400' },
+  { id: 'allimite', label: 'Al límite', hint: '6 a 15 días', dot: 'bg-amber-500', chip: 'bg-amber-500/15 text-amber-700 dark:text-amber-300 border-amber-500', text: 'text-amber-600 dark:text-amber-400' },
+  { id: 'atiempo', label: 'A tiempo', hint: 'Más de 15 días', dot: 'bg-primary', chip: 'bg-primary/10 text-primary border-primary', text: 'text-primary' },
+  { id: 'excepcional', label: 'CAS excepcional', hint: '70+ bajo D.L. 1057', dot: 'bg-sky-500', chip: 'bg-sky-500/15 text-sky-700 dark:text-sky-300 border-sky-500', text: 'text-sky-600 dark:text-sky-400' },
+] as const
+
+const configEstado = (estado: string | null | undefined) => {
+  const e = (estado || '').toLowerCase()
+  return (
+    ESTADOS.find((x) => x.id === e) ?? {
+      id: 'otro', label: estado || 'Evaluación', hint: '', dot: 'bg-muted-foreground',
+      chip: 'bg-muted text-muted-foreground border-border', text: 'text-muted-foreground',
+    }
+  )
 }
 
-const obtenerDiaNacimiento = (nacimiento: string | null | undefined): number => {
-  const d = parseDateSafe(nacimiento)
-  return d ? d.getDate() : 0
-}
-
-const compararPorEdadYMes = (a: Alerta70Servidor, b: Alerta70Servidor, direction: 'asc' | 'desc'): number => {
-  const factor = direction === 'asc' ? 1 : -1
-  const edadA = a.edad_actual ?? 0
-  const edadB = b.edad_actual ?? 0
-
-  if (edadA !== edadB) {
-    return (edadA - edadB) * factor
-  }
-
-  const mesA = obtenerMesNacimiento(a.nacimiento)
-  const mesB = obtenerMesNacimiento(b.nacimiento)
-
-  if (mesA !== mesB) {
-    return (mesA - mesB) * factor
-  }
-
-  const diaA = obtenerDiaNacimiento(a.nacimiento)
-  const diaB = obtenerDiaNacimiento(b.nacimiento)
-
-  return (diaA - diaB) * factor
-}
-
-const columns: DataTableColumn[] = [
-  {
-    key: 'nombre',
-    label: 'Servidor Público',
-    sortable: true,
-  },
-  {
-    key: 'edad_actual',
-    label: 'Edad / Nacimiento',
-    sortable: true,
-    width: '160px',
-    sortFn: (a: unknown, b: unknown, direction: 'asc' | 'desc') => {
-      return compararPorEdadYMes(a as Alerta70Servidor, b as Alerta70Servidor, direction)
-    },
-  },
-  {
-    key: 'regimen',
-    label: 'Régimen y Plaza',
-    sortable: true,
-  },
-  {
-    key: 'cargo',
-    label: 'Cargo y Área',
-    sortable: true,
-  },
-  {
-    key: 'estado',
-    label: 'Estado de Alerta',
-    sortable: true,
-  },
-]
-
-const searchKeys = ['nombre', 'dni', 'area', 'cargo', 'plaza', 'regimen']
+const normalizar = (t: string | null | undefined) =>
+  (t || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
 
 const cargarDatos = async () => {
   isLoading.value = true
@@ -102,424 +63,464 @@ const cargarDatos = async () => {
   try {
     servidores.value = await fetchAlerta70()
   } catch (err: unknown) {
-    if (err instanceof Error) {
-      errorMessage.value = err.message
-    } else {
-      errorMessage.value = 'Error al obtener la lista de servidores en alerta de edad.'
-    }
+    errorMessage.value =
+      err instanceof Error ? err.message : 'Error al obtener la lista de servidores en alerta de edad.'
   } finally {
     isLoading.value = false
   }
 }
 
-onMounted(() => {
-  cargarDatos()
-})
+onMounted(cargarDatos)
 
-const regímenesDisponibles = computed<string[]>(() => {
-  const map = new Set<string>()
+const regimenOptions = computed(() => [
+  { value: 'todos', label: 'Todos los regímenes' },
+  ...Array.from(new Set(servidores.value.map((s) => s.regimen).filter(Boolean)))
+    .sort()
+    .map((r) => ({ value: r, label: r })),
+])
+
+const conteos = computed(() => {
+  const c: Record<string, number> = {}
   for (const s of servidores.value) {
-    if (s.regimen) map.add(s.regimen)
+    const k = (s.estado || '').toLowerCase()
+    c[k] = (c[k] || 0) + 1
   }
-  return Array.from(map).sort()
+  return c
 })
 
-const conteoPorEstado = computed(() => {
-  const totales = {
-    total: servidores.value.length,
-    excedido: 0,
-    alLimite: 0,
-    atiempo: 0,
-    excepcional: 0,
-    otros: 0,
-  }
-
-  for (const s of servidores.value) {
-    const st = s.estado?.toLowerCase() || ''
-    if (st === 'excedido') totales.excedido++
-    else if (st === 'allimite') totales.alLimite++
-    else if (st === 'atiempo') totales.atiempo++
-    else if (st === 'excepcional') totales.excepcional++
-    else totales.otros++
-  }
-
-  return totales
-})
-
-const servidoresFiltrados = computed<Alerta70Servidor[]>(() => {
-  const est = filtroEstado.value.toLowerCase()
-  const reg = filtroRegimen.value
-
-  const lista = servidores.value.filter((s) => {
-    if (est !== 'todos') {
-      const sEstado = (s.estado || '').toLowerCase()
-      if (sEstado !== est) return false
-    }
-
-    if (reg !== 'todos') {
-      if (s.regimen !== reg) return false
-    }
-
-    return true
-  })
-
-  return [...lista].sort((a, b) => {
-    const edadDiff = (b.edad_actual ?? 0) - (a.edad_actual ?? 0)
-    if (edadDiff !== 0) return edadDiff
-
-    const mesDiff = obtenerMesNacimiento(a.nacimiento) - obtenerMesNacimiento(b.nacimiento)
-    if (mesDiff !== 0) return mesDiff
-
-    return obtenerDiaNacimiento(a.nacimiento) - obtenerDiaNacimiento(b.nacimiento)
-  })
-})
-
-const seleccionarEstado = (estado: string) => {
-  filtroEstado.value = filtroEstado.value === estado ? 'todos' : estado
-}
+const hayFiltros = computed(
+  () => busqueda.value !== '' || filtroRegimen.value !== 'todos' || estadosActivos.value.length !== 4,
+)
 
 const limpiarFiltros = () => {
-  filtroEstado.value = 'todos'
+  busqueda.value = ''
   filtroRegimen.value = 'todos'
+  estadosActivos.value = ESTADOS.map((e) => e.id)
 }
 
-const obtenerConfigEstado = (estado: Alerta70Estado) => {
-  const normalizado = (estado || '').toLowerCase()
+const filtrados = computed(() => {
+  const q = normalizar(busqueda.value.trim())
+  return servidores.value.filter((s) => {
+    const est = (s.estado || '').toLowerCase()
+    const esConocido = ESTADOS.some((e) => e.id === est)
+    if (esConocido && !estadosActivos.value.includes(est)) return false
+    if (filtroRegimen.value !== 'todos' && s.regimen !== filtroRegimen.value) return false
+    if (q && !normalizar([s.nombre, s.dni, s.area, s.cargo, s.plaza, s.regimen].join(' ')).includes(q)) return false
+    return true
+  })
+})
 
-  switch (normalizado) {
-    case 'excedido':
-      return {
-        label: 'Excedido / Cese Inmediato',
-        badgeVariant: 'danger' as const,
-        dotClass: 'bg-rose-500',
-        bgClass: 'bg-rose-500/10 text-rose-700 dark:text-rose-400 border-rose-500/20',
-        desc: '70 años o más en régimen ordinario / 5 días o menos para cumplir',
-      }
-    case 'allimite':
-      return {
-        label: 'Al Límite (6 a 15 días)',
-        badgeVariant: 'warning' as const,
-        dotClass: 'bg-amber-500',
-        bgClass: 'bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/20',
-        desc: 'Mes de cumpleaños 70 con pocos días restantes',
-      }
-    case 'atiempo':
-      return {
-        label: 'A Tiempo / Preventivo',
-        badgeVariant: 'primary' as const,
-        dotClass: 'bg-primary',
-        bgClass: 'bg-primary/10 text-primary border-primary/20',
-        desc: 'Cumple 70 este año, con más de 15 días restantes',
-      }
-    case 'excepcional':
-      return {
-        label: 'CAS Excepcional',
-        badgeVariant: 'secondary' as const,
-        dotClass: 'bg-purple-500',
-        bgClass: 'bg-purple-500/10 text-purple-700 dark:text-purple-400 border-purple-500/20',
-        desc: 'Servidor con 70 años o más bajo régimen D.L. 1057 (CAS)',
-      }
-    case 'diciembre':
-      return {
-        label: 'Cierre Diciembre',
-        badgeVariant: 'outline' as const,
-        dotClass: 'bg-teal-500',
-        bgClass: 'bg-teal-500/10 text-teal-700 dark:text-teal-400 border-teal-500/20',
-        desc: 'Extensión o corte proyectado al cierre anual',
-      }
-    default:
-      return {
-        label: estado || 'Evaluación',
-        badgeVariant: 'outline' as const,
-        dotClass: 'bg-muted-foreground',
-        bgClass: 'bg-muted text-muted-foreground border-border',
-        desc: 'Sin clasificación específica',
-      }
+interface Cumple {
+  s: Alerta70Servidor
+  fecha: Date
+  edad: number
+}
+
+const diasDelMes = (y: number, m: number) => new Date(y, m + 1, 0).getDate()
+
+// Cumpleaños de un servidor dentro de un año dado (29 feb → 28 feb en años no bisiestos).
+const cumpleEnAnio = (s: Alerta70Servidor, anio: number): Cumple | null => {
+  const n = parseDateSafe(s.nacimiento)
+  if (!n) return null
+  const mes = n.getMonth()
+  const dia = Math.min(n.getDate(), diasDelMes(anio, mes))
+  return { s, fecha: new Date(anio, mes, dia), edad: anio - n.getFullYear() }
+}
+
+const claveDia = (d: Date) => `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`
+
+const cumplesDelMes = computed(() => {
+  const mapa = new Map<string, Cumple[]>()
+  const anio = cursor.value.getFullYear()
+  const mes = cursor.value.getMonth()
+  for (const s of filtrados.value) {
+    const c = cumpleEnAnio(s, anio)
+    if (!c || c.fecha.getMonth() !== mes) continue
+    const k = claveDia(c.fecha)
+    if (!mapa.has(k)) mapa.set(k, [])
+    mapa.get(k)!.push(c)
   }
+  for (const lista of mapa.values()) lista.sort((a, b) => b.edad - a.edad)
+  return mapa
+})
+
+const totalDelMes = computed(() => {
+  let n = 0
+  for (const l of cumplesDelMes.value.values()) n += l.length
+  return n
+})
+
+interface Celda {
+  fecha: Date
+  key: string
+  fueraDeMes: boolean
+  esHoy: boolean
+  items: Cumple[]
+}
+
+const celdas = computed<Celda[]>(() => {
+  const y = cursor.value.getFullYear()
+  const m = cursor.value.getMonth()
+  const offset = (new Date(y, m, 1).getDay() + 6) % 7 // lunes = 0
+  const inicio = new Date(y, m, 1 - offset)
+  const filas = Math.ceil((offset + diasDelMes(y, m)) / 7)
+  return Array.from({ length: filas * 7 }, (_, i) => {
+    const fecha = new Date(inicio.getFullYear(), inicio.getMonth(), inicio.getDate() + i)
+    const key = claveDia(fecha)
+    const fueraDeMes = fecha.getMonth() !== m
+    return { fecha, key, fueraDeMes, esHoy: key === hoyKey, items: fueraDeMes ? [] : (cumplesDelMes.value.get(key) ?? []) }
+  })
+})
+
+const agenda = computed(() =>
+  celdas.value.filter((c) => c.items.length > 0),
+)
+
+const tituloMes = computed(() => {
+  const t = cursor.value.toLocaleDateString('es-PE', { month: 'long', year: 'numeric' })
+  return t.charAt(0).toUpperCase() + t.slice(1)
+})
+
+const esMesActual = computed(
+  () => cursor.value.getFullYear() === hoy.getFullYear() && cursor.value.getMonth() === hoy.getMonth(),
+)
+
+const moverMes = (delta: number) => {
+  cursor.value = new Date(cursor.value.getFullYear(), cursor.value.getMonth() + delta, 1)
+  diaSeleccionado.value = null
+}
+const irAHoy = () => {
+  cursor.value = new Date(hoy.getFullYear(), hoy.getMonth(), 1)
+  diaSeleccionado.value = null
+}
+
+const seleccionarDia = (c: Celda) => {
+  if (c.fueraDeMes) return
+  diaSeleccionado.value = diaSeleccionado.value && claveDia(diaSeleccionado.value) === c.key ? null : c.fecha
+}
+
+const itemsDiaSeleccionado = computed(() =>
+  diaSeleccionado.value ? (cumplesDelMes.value.get(claveDia(diaSeleccionado.value)) ?? []) : [],
+)
+
+const tituloDia = computed(() =>
+  diaSeleccionado.value
+    ? diaSeleccionado.value.toLocaleDateString('es-PE', { weekday: 'long', day: 'numeric', month: 'long' })
+    : '',
+)
+
+// Próximos cumpleaños (30 días) de los servidores filtrados.
+const proximos = computed(() => {
+  const base = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate())
+  const limite = new Date(base.getFullYear(), base.getMonth(), base.getDate() + 30)
+  const out: Cumple[] = []
+  for (const s of filtrados.value) {
+    for (const anio of [base.getFullYear(), base.getFullYear() + 1]) {
+      const c = cumpleEnAnio(s, anio)
+      if (c && c.fecha >= base && c.fecha <= limite) {
+        out.push(c)
+        break
+      }
+    }
+  }
+  return out.sort((a, b) => a.fecha.getTime() - b.fecha.getTime()).slice(0, 8)
+})
+
+// CAS excepcional: ya superaron los 70, se listan todos por su próximo cumpleaños.
+const casExcepcionales = computed(() => {
+  const base = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate())
+  const out: Cumple[] = []
+  for (const s of filtrados.value) {
+    if ((s.estado || '').toLowerCase() !== 'excepcional') continue
+    let c = cumpleEnAnio(s, base.getFullYear())
+    if (c && c.fecha < base) c = cumpleEnAnio(s, base.getFullYear() + 1)
+    if (c) out.push(c)
+  }
+  return out.sort((a, b) => a.fecha.getTime() - b.fecha.getTime())
+})
+
+const diasHasta = (f: Date) => {
+  const base = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate())
+  const d = Math.round((f.getTime() - base.getTime()) / 86400000)
+  return d === 0 ? 'Hoy' : d === 1 ? 'Mañana' : `En ${d} días`
+}
+
+const alternarEstado = (id: string) => {
+  estadosActivos.value = estadosActivos.value.includes(id)
+    ? estadosActivos.value.filter((e) => e !== id)
+    : [...estadosActivos.value, id]
 }
 
 const obtenerIniciales = (nombre: string): string => {
   if (!nombre) return 'SP'
-  const partes = nombre.trim().split(/\s+/)
-  if (partes.length >= 2) {
-    return (partes[0][0] + partes[1][0]).toUpperCase()
-  }
-  return nombre.slice(0, 2).toUpperCase()
+  const p = nombre.trim().split(/\s+/)
+  return p.length >= 2 ? (p[0][0] + p[1][0]).toUpperCase() : nombre.slice(0, 2).toUpperCase()
 }
 
 const ocultarAvatarErroneo = (event: Event) => {
-  const target = event.target as HTMLElement | null
-  if (target) {
-    target.style.display = 'none'
-  }
+  const t = event.target as HTMLElement | null
+  if (t) t.style.display = 'none'
 }
 
 const irAlPerfil = (dni: string) => {
-  if (!dni) return
-  router.push({ name: 'perfil', params: { dni } })
+  if (dni) router.push({ name: 'perfil', params: { dni } })
 }
 </script>
 
 <template>
-  <div class="space-y-6 max-w-7xl mx-auto pb-16">
-    <PageHeader title="Alerta 70 Años" subtitle="Servidores que alcanzan la edad límite de cese" />
-    <div class="grid grid-cols-[repeat(auto-fit,minmax(11rem,1fr))] gap-4">
-      <Card
-        class="p-4 cursor-pointer transition-all hover:border-primary/40"
-        :class="filtroEstado === 'todos' ? 'ring-2 ring-primary/20 border-primary/40' : ''"
-        @click="seleccionarEstado('todos')"
-      >
-        <div class="flex items-center justify-between gap-2">
-          <span class="text-xs font-medium text-muted-foreground">Total en Alerta</span>
-          <span class="size-2 rounded-full bg-primary"></span>
-        </div>
-        <div class="mt-2 flex items-baseline justify-between">
-          <span class="text-kpi font-bold tracking-tight text-foreground font-mono">
-            {{ conteoPorEstado.total }}
-          </span>
-          <span class="text-meta text-muted-foreground">Servidores</span>
-        </div>
-        <p class="text-micro text-muted-foreground mt-1 truncate">Cumplen 70 este año o ya los cumplieron</p>
-      </Card>
+  <div class="mx-auto w-full max-w-7xl space-y-3 px-4 pb-12">
+    <PageHeader title="Alerta 70 Años" subtitle="Calendario de cumpleaños de servidores en edad límite de cese">
+      <template #actions>
+        <Button variant="ghost" size="sm" class="gap-1.5 text-meta text-muted-foreground hover:text-foreground cursor-pointer"
+          :disabled="isLoading" @click="cargarDatos">
+          <IconRefresh class="size-3.5" :class="isLoading ? 'animate-spin' : ''" />
+          <span>Actualizar</span>
+        </Button>
+      </template>
+    </PageHeader>
 
-      <Card
-        class="p-4 cursor-pointer transition-all hover:border-rose-500/40"
-        :class="filtroEstado === 'excedido' ? 'ring-2 ring-rose-500/20 border-rose-500/40 bg-rose-500/5' : ''"
-        @click="seleccionarEstado('excedido')"
-      >
-        <div class="flex items-center justify-between gap-2">
-          <span class="text-xs font-semibold text-rose-600 dark:text-rose-400">Excedido</span>
-          <span class="size-2 rounded-full bg-rose-500 animate-pulse"></span>
-        </div>
-        <div class="mt-2 flex items-baseline justify-between">
-          <span class="text-kpi font-bold tracking-tight text-rose-600 dark:text-rose-400 font-mono">
-            {{ conteoPorEstado.excedido }}
-          </span>
-          <span class="text-meta text-rose-600/70 dark:text-rose-400/70">Urgente</span>
-        </div>
-        <p class="text-micro text-muted-foreground mt-1 truncate">70+ o cese inminente</p>
-      </Card>
-
-      <Card
-        class="p-4 cursor-pointer transition-all hover:border-amber-500/40"
-        :class="filtroEstado === 'allimite' ? 'ring-2 ring-amber-500/20 border-amber-500/40 bg-amber-500/5' : ''"
-        @click="seleccionarEstado('allimite')"
-      >
-        <div class="flex items-center justify-between gap-2">
-          <span class="text-xs font-semibold text-amber-600 dark:text-amber-400">Al Límite</span>
-          <span class="size-2 rounded-full bg-amber-500"></span>
-        </div>
-        <div class="mt-2 flex items-baseline justify-between">
-          <span class="text-kpi font-bold tracking-tight text-amber-600 dark:text-amber-400 font-mono">
-            {{ conteoPorEstado.alLimite }}
-          </span>
-          <span class="text-meta text-amber-600/70 dark:text-amber-400/70">6 a 15 días</span>
-        </div>
-        <p class="text-micro text-muted-foreground mt-1 truncate">Mes de cumpleaños</p>
-      </Card>
-
-      <Card
-        class="p-4 cursor-pointer transition-all hover:border-primary/40"
-        :class="filtroEstado === 'atiempo' ? 'ring-2 ring-primary/20 border-primary/40 bg-primary/5' : ''"
-        @click="seleccionarEstado('atiempo')"
-      >
-        <div class="flex items-center justify-between gap-2">
-          <span class="text-xs font-semibold text-primary">A Tiempo</span>
-          <span class="size-2 rounded-full bg-sky-500"></span>
-        </div>
-        <div class="mt-2 flex items-baseline justify-between">
-          <span class="text-kpi font-bold tracking-tight text-primary font-mono">
-            {{ conteoPorEstado.atiempo }}
-          </span>
-          <span class="text-meta text-muted-foreground">Preventivo</span>
-        </div>
-        <p class="text-micro text-muted-foreground mt-1 truncate">Más de 15 días</p>
-      </Card>
-
-      <Card
-        class="p-4 cursor-pointer transition-all hover:border-purple-500/40 col-span-2 sm:col-span-1"
-        :class="filtroEstado === 'excepcional' ? 'ring-2 ring-purple-500/20 border-purple-500/40 bg-purple-500/5' : ''"
-        @click="seleccionarEstado('excepcional')"
-      >
-        <div class="flex items-center justify-between gap-2">
-          <span class="text-xs font-semibold text-purple-600 dark:text-purple-400">CAS Excepcional</span>
-          <span class="size-2 rounded-full bg-purple-500"></span>
-        </div>
-        <div class="mt-2 flex items-baseline justify-between">
-          <span class="text-kpi font-bold tracking-tight text-purple-600 dark:text-purple-400 font-mono">
-            {{ conteoPorEstado.excepcional }}
-          </span>
-          <span class="text-meta text-purple-600/70 dark:text-purple-400/70">D.L. 1057</span>
-        </div>
-        <p class="text-micro text-muted-foreground mt-1 truncate">70+ bajo CAS</p>
-      </Card>
-    </div>
-
-    <div v-if="errorMessage" class="p-8 text-center rounded-2xl border border-rose-500/20 bg-rose-500/5 space-y-3">
-      <IconAlertTriangle class="size-8 mx-auto text-rose-500" />
-      <p class="text-sm font-bold text-rose-600 dark:text-rose-400">Error al cargar la alerta</p>
-      <p class="text-xs text-muted-foreground max-w-md mx-auto">{{ errorMessage }}</p>
-      <Button variant="outline" size="sm" class="gap-1.5 text-xs cursor-pointer" @click="cargarDatos">
+    <div v-if="errorMessage" class="p-4 text-center rounded-xl border border-rose-500/20 bg-rose-500/5 space-y-3" role="alert">
+      <IconAlertTriangle class="size-6 mx-auto text-rose-500" />
+      <p class="text-meta font-bold text-rose-600 dark:text-rose-400">Error al cargar la alerta</p>
+      <p class="text-meta text-muted-foreground max-w-md mx-auto">{{ errorMessage }}</p>
+      <Button variant="outline" size="sm" class="gap-1.5 text-meta cursor-pointer" @click="cargarDatos">
         <IconRefresh class="size-3.5" />
         <span>Reintentar</span>
       </Button>
     </div>
 
-    <DataTable
-      v-else
-      :columns="columns"
-      :data="servidoresFiltrados"
-      row-key="dni"
-      default-sort-column="edad_actual"
-      default-sort-direction="desc"
-      searchable
-      search-placeholder="Buscar por servidor, DNI, área, cargo o plaza..."
-      :search-keys="searchKeys"
-      show-column-visibility
-      exportable
-      export-filename="alerta_servidores_70_anios"
-      :page-size="10"
-      :page-size-options="[10, 25, 50, 100]"
-      :loading="isLoading"
-      empty-message="No se encontraron servidores en alerta de edad"
-      @row-click="(row) => irAlPerfil(row.dni)"
-    >
-      <template #toolbar>
-        <div class="flex items-center gap-2 flex-wrap">
-          <div class="flex items-center gap-1.5">
-            <IconFilter class="size-3.5 text-muted-foreground shrink-0" />
-            <select
-              v-model="filtroRegimen"
-              class="bg-card border border-border rounded-lg px-2.5 py-1.5 text-xs text-foreground outline-hidden focus:border-primary cursor-pointer"
-            >
-              <option value="todos">Todos los regímenes</option>
-              <option v-for="r in regímenesDisponibles" :key="r" :value="r">
-                {{ r }}
-              </option>
-            </select>
+    <div v-else class="grid grid-cols-1 lg:grid-cols-[15rem_minmax(0,1fr)] gap-3 items-start">
+      <!-- Barra lateral -->
+      <aside class="space-y-3">
+        <section class="bg-card border border-border shadow-2xs rounded-xl p-3 space-y-2.5" aria-label="Filtros">
+          <div class="flex items-center gap-2.5">
+            <span class="size-8 rounded-lg bg-rose-500/10 text-rose-600 dark:text-rose-400 flex items-center justify-center">
+              <IconAlertTriangle class="size-4" />
+            </span>
+            <div>
+              <p class="text-micro text-muted-foreground">Total en alerta</p>
+              <p class="text-kpi font-bold font-mono tabular-nums text-foreground leading-none">{{ servidores.length }}</p>
+            </div>
           </div>
 
-          <Button
-            v-if="filtroEstado !== 'todos' || filtroRegimen !== 'todos'"
-            variant="ghost"
-            size="xs"
-            class="text-xs text-muted-foreground hover:text-foreground cursor-pointer"
-            @click="limpiarFiltros"
-          >
+          <label class="relative block">
+            <IconSearch class="size-3 absolute start-2.5 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+            <input v-model="busqueda" type="search" placeholder="Buscar servidor, DNI, área…"
+              class="w-full ps-7 pe-2 h-control-sm py-0 rounded-md bg-card border border-border text-micro text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-primary" />
+          </label>
+
+          <FilterDropdown v-model="filtroRegimen" :options="regimenOptions" aria-label="Filtrar por régimen" />
+
+          <div>
+            <p class="text-micro font-semibold uppercase tracking-wider text-muted-foreground mb-1">Estados</p>
+            <ul class="space-y-0.5">
+              <li v-for="e in ESTADOS" :key="e.id">
+                <label class="flex items-center gap-2 rounded-md px-1.5 py-1 cursor-pointer hover:bg-muted/60 select-none">
+                  <input type="checkbox" class="size-3.5 rounded border-border text-primary focus:ring-primary/30"
+                    :checked="estadosActivos.includes(e.id)" @change="alternarEstado(e.id)" />
+                  <span class="size-2 rounded-full shrink-0" :class="e.dot"></span>
+                  <span class="text-meta text-foreground flex-1 truncate">{{ e.label }}</span>
+                  <span class="text-micro font-mono tabular-nums" :class="e.text">{{ conteos[e.id] || 0 }}</span>
+                </label>
+              </li>
+            </ul>
+          </div>
+
+          <Button v-if="hayFiltros" variant="ghost" size="xs"
+            class="w-full text-micro text-muted-foreground hover:text-foreground cursor-pointer" @click="limpiarFiltros">
             Limpiar filtros
           </Button>
+        </section>
 
-          <Button
-            variant="outline"
-            size="xs"
-            class="gap-1.5 text-xs cursor-pointer"
-            :disabled="isLoading"
-            @click="cargarDatos"
-          >
-            <IconRefresh class="size-3.5" :class="isLoading ? 'animate-spin' : ''" />
-            <span class="hidden sm:inline">Actualizar</span>
-          </Button>
-        </div>
-      </template>
+        <section class="bg-card border border-border shadow-2xs rounded-xl p-3" aria-live="polite">
+          <template v-if="diaSeleccionado">
+            <div class="flex items-center justify-between gap-2 mb-1.5">
+              <p class="text-meta font-semibold text-foreground capitalize">{{ tituloDia }}</p>
+              <button type="button" class="text-micro text-muted-foreground hover:text-foreground cursor-pointer" @click="diaSeleccionado = null">Cerrar</button>
+            </div>
+            <p v-if="itemsDiaSeleccionado.length === 0" class="text-micro text-muted-foreground">Sin cumpleaños este día.</p>
+          </template>
+          <p v-else class="text-micro font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">Próximos 30 días</p>
 
-      <template #empty>
-        <div class="p-10 text-center space-y-3">
-          <IconUserCheck class="size-10 mx-auto text-muted-foreground/60" />
-          <h3 class="text-sm font-bold text-foreground">Sin servidores coincidentes</h3>
-          <p class="text-xs text-muted-foreground max-w-sm mx-auto">
-            No se encontraron servidores que coincidan con los filtros aplicados o no hay personal en el rango de alerta en este momento.
-          </p>
-          <Button
-            v-if="filtroEstado !== 'todos' || filtroRegimen !== 'todos'"
-            variant="outline"
-            size="xs"
-            class="text-xs cursor-pointer"
-            @click="limpiarFiltros"
-          >
-            Restablecer filtros
-          </Button>
-        </div>
-      </template>
+          <ul class="space-y-1">
+            <li v-for="c in (diaSeleccionado ? itemsDiaSeleccionado : proximos)" :key="c.s.dni">
+              <button type="button" class="w-full flex items-center gap-2 rounded-md px-1.5 py-1.5 text-left hover:bg-muted/60 cursor-pointer"
+                @click="irAlPerfil(c.s.dni)">
+                <span class="relative shrink-0">
+                  <span class="size-7 rounded-full bg-primary/10 border border-border overflow-hidden flex items-center justify-center font-bold text-micro text-primary">
+                    <img v-if="c.s.avatar" v-auth-src="resolveAvatarUrl(c.s.dni)!" :alt="c.s.nombre" class="size-full object-cover" @error="ocultarAvatarErroneo" />
+                    <span v-else>{{ obtenerIniciales(c.s.nombre) }}</span>
+                  </span>
+                  <span class="absolute -bottom-0.5 -end-0.5 size-2.5 rounded-full border-2 border-card" :class="configEstado(c.s.estado).dot"></span>
+                </span>
+                <span class="min-w-0 flex-1">
+                  <span class="block text-meta font-medium text-foreground truncate">{{ c.s.nombre }}</span>
+                  <span class="block text-micro text-muted-foreground truncate">
+                    Cumple {{ c.edad }} · {{ diaSeleccionado ? c.s.cargo : diasHasta(c.fecha) }}
+                  </span>
+                </span>
+              </button>
+            </li>
+            <li v-if="!diaSeleccionado && proximos.length === 0" class="text-micro text-muted-foreground">
+              Sin cumpleaños en los próximos 30 días.
+            </li>
+          </ul>
 
-      <template #cell-nombre="{ row }">
-        <div class="flex items-center gap-3">
-          <div
-            class="size-9 rounded-full bg-primary/10 border border-border overflow-hidden shrink-0 flex items-center justify-center font-bold text-xs text-primary"
-          >
-            <img
-              v-if="row.avatar"
-              v-auth-src="resolveAvatarUrl(row.dni)!"
-              :alt="row.nombre"
-              class="size-full object-cover"
-              @error="ocultarAvatarErroneo"
-            />
-            <span v-else>{{ obtenerIniciales(row.nombre) }}</span>
-          </div>
-          <div class="min-w-0">
-            <p
-              class="font-semibold text-foreground truncate group-hover:text-primary transition-colors text-xs"
-              :title="row.nombre"
-            >
-              {{ row.nombre }}
+          <template v-if="!diaSeleccionado">
+            <p class="text-micro font-semibold uppercase tracking-wider text-muted-foreground mt-3 mb-1.5 pt-2.5 border-t border-border/70">
+              CAS excepcional · {{ casExcepcionales.length }}
             </p>
-            <span class="font-mono text-meta text-muted-foreground">
-              DNI: {{ row.dni }}
-            </span>
+            <ul class="space-y-1 max-h-64 overflow-y-auto pe-0.5">
+              <li v-for="c in casExcepcionales" :key="c.s.dni">
+                <button type="button" class="w-full flex items-center gap-2 rounded-md px-1.5 py-1.5 text-left hover:bg-muted/60 cursor-pointer"
+                  @click="irAlPerfil(c.s.dni)">
+                  <span class="relative shrink-0">
+                    <span class="size-7 rounded-full bg-primary/10 border border-border overflow-hidden flex items-center justify-center font-bold text-micro text-primary">
+                      <img v-if="c.s.avatar" v-auth-src="resolveAvatarUrl(c.s.dni)!" :alt="c.s.nombre" class="size-full object-cover" @error="ocultarAvatarErroneo" />
+                      <span v-else>{{ obtenerIniciales(c.s.nombre) }}</span>
+                    </span>
+                    <span class="absolute -bottom-0.5 -end-0.5 size-2.5 rounded-full border-2 border-card bg-sky-500"></span>
+                  </span>
+                  <span class="min-w-0 flex-1">
+                    <span class="block text-meta font-medium text-foreground truncate">{{ c.s.nombre }}</span>
+                    <span class="block text-micro text-muted-foreground truncate">
+                      Cumple {{ c.edad }} · {{ diasHasta(c.fecha) }}
+                    </span>
+                  </span>
+                </button>
+              </li>
+              <li v-if="casExcepcionales.length === 0" class="text-micro text-muted-foreground">Sin servidores CAS excepcional.</li>
+            </ul>
+          </template>
+        </section>
+      </aside>
+
+      <!-- Calendario -->
+      <section class="bg-card border border-border shadow-2xs rounded-xl overflow-hidden min-w-0" aria-label="Calendario mensual">
+        <div class="flex flex-wrap items-center justify-between gap-2 px-3 py-2 border-b border-border">
+          <div class="flex items-center gap-2">
+            <Button variant="outline" size="xs" class="text-micro cursor-pointer" :disabled="esMesActual" @click="irAHoy">Hoy</Button>
+            <div class="flex items-center">
+              <button type="button" class="size-7 inline-flex items-center justify-center rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground cursor-pointer"
+                aria-label="Mes anterior" @click="moverMes(-1)">
+                <IconChevronLeft class="size-3.5" />
+              </button>
+              <button type="button" class="size-7 inline-flex items-center justify-center rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground cursor-pointer"
+                aria-label="Mes siguiente" @click="moverMes(1)">
+                <IconChevronRight class="size-3.5" />
+              </button>
+            </div>
+            <h2 class="text-title font-semibold text-foreground">{{ tituloMes }}</h2>
+            <span class="text-micro text-muted-foreground">{{ totalDelMes }} {{ totalDelMes === 1 ? 'cumpleaños' : 'cumpleaños' }}</span>
+          </div>
+
+          <div class="inline-flex rounded-lg border border-border p-0.5" role="group" aria-label="Tipo de vista">
+            <button type="button" class="inline-flex items-center gap-1 px-2 h-6 rounded-md text-micro cursor-pointer transition"
+              :class="vista === 'mes' ? 'bg-muted text-foreground font-medium' : 'text-muted-foreground hover:text-foreground'"
+              @click="vista = 'mes'">
+              <IconCalendarMonth class="size-3.5" />Mes
+            </button>
+            <button type="button" class="inline-flex items-center gap-1 px-2 h-6 rounded-md text-micro cursor-pointer transition"
+              :class="vista === 'agenda' ? 'bg-muted text-foreground font-medium' : 'text-muted-foreground hover:text-foreground'"
+              @click="vista = 'agenda'">
+              <IconListDetails class="size-3.5" />Agenda
+            </button>
           </div>
         </div>
-      </template>
 
-      <template #cell-edad_actual="{ row }">
-        <div class="space-y-0.5">
-          <div class="flex items-center gap-1.5">
-            <span class="font-bold text-sm text-foreground font-mono">
-              {{ row.edad_actual }}
-            </span>
-            <span class="text-xs text-muted-foreground">años</span>
+        <div v-if="isLoading" class="h-96 animate-pulse bg-muted/30" aria-busy="true"></div>
+
+        <template v-else>
+          <!-- Vista mensual -->
+          <div v-if="vista === 'mes'" class="hidden md:block">
+            <div class="grid grid-cols-7 border-b border-border bg-muted/20">
+              <div v-for="d in DIAS_SEMANA" :key="d" class="px-2 py-1.5 text-micro font-semibold uppercase tracking-wider text-muted-foreground text-center">
+                {{ d }}
+              </div>
+            </div>
+            <div class="grid grid-cols-7">
+              <div v-for="(c, i) in celdas" :key="c.key"
+                class="min-h-24 p-1 border-border min-w-0 transition"
+                :class="[
+                  i % 7 !== 6 ? 'border-e' : '',
+                  i < celdas.length - 7 ? 'border-b' : '',
+                  c.fueraDeMes ? 'bg-muted/20' : 'cursor-pointer hover:bg-muted/30',
+                  diaSeleccionado && claveDia(diaSeleccionado) === c.key ? 'bg-primary/5 ring-1 ring-inset ring-primary/40' : '',
+                ]"
+                @click="seleccionarDia(c)">
+                <div class="flex justify-end">
+                  <span class="size-5 inline-flex items-center justify-center rounded-full text-micro tabular-nums"
+                    :class="c.esHoy ? 'bg-primary text-primary-foreground font-bold' : c.fueraDeMes ? 'text-muted-foreground/40' : 'text-foreground'">
+                    {{ c.fecha.getDate() }}
+                  </span>
+                </div>
+                <ul class="mt-0.5 space-y-0.5">
+                  <li v-for="it in c.items.slice(0, MAX_CHIPS)" :key="it.s.dni">
+                    <button type="button"
+                      class="w-full flex items-center gap-1 rounded-sm border-s-2 px-1 py-0.5 text-left text-micro leading-tight cursor-pointer hover:brightness-110 transition"
+                      :class="configEstado(it.s.estado).chip"
+                      :title="`${it.s.nombre} · cumple ${it.edad} · ${configEstado(it.s.estado).label}`"
+                      @click.stop="irAlPerfil(it.s.dni)">
+                      <span class="font-mono font-bold tabular-nums shrink-0">{{ it.edad }}</span>
+                      <span class="truncate">{{ it.s.nombre }}</span>
+                    </button>
+                  </li>
+                  <li v-if="c.items.length > MAX_CHIPS">
+                    <button type="button" class="px-1 text-micro text-muted-foreground hover:text-foreground cursor-pointer"
+                      @click.stop="seleccionarDia(c)">
+                      {{ c.items.length - MAX_CHIPS }} más
+                    </button>
+                  </li>
+                </ul>
+              </div>
+            </div>
           </div>
-          <div class="flex items-center gap-1 text-meta text-muted-foreground font-mono">
-            <IconCalendar class="size-3 shrink-0" />
-            <span>{{ row.nacimiento ? formatDate(row.nacimiento) : '-' }}</span>
+
+          <!-- Agenda (también en móvil) -->
+          <div :class="vista === 'agenda' ? '' : 'md:hidden'">
+            <p v-if="agenda.length === 0" class="p-8 text-center text-meta text-muted-foreground">
+              <IconCake class="size-6 mx-auto mb-2 text-muted-foreground/50" />
+              Sin cumpleaños en {{ tituloMes }} con los filtros actuales.
+            </p>
+            <ul v-else class="divide-y divide-border">
+              <li v-for="c in agenda" :key="c.key" class="flex gap-3 px-3 py-2.5">
+                <div class="w-10 shrink-0 text-center">
+                  <p class="text-micro uppercase text-muted-foreground">{{ DIAS_SEMANA[(c.fecha.getDay() + 6) % 7] }}</p>
+                  <p class="text-title font-bold font-mono tabular-nums leading-tight"
+                    :class="c.esHoy ? 'text-primary' : 'text-foreground'">{{ c.fecha.getDate() }}</p>
+                </div>
+                <ul class="flex-1 min-w-0 space-y-1">
+                  <li v-for="it in c.items" :key="it.s.dni">
+                    <button type="button"
+                      class="w-full flex items-center gap-2 rounded-md border-s-2 px-2 py-1.5 text-left cursor-pointer hover:brightness-110 transition"
+                      :class="configEstado(it.s.estado).chip" @click="irAlPerfil(it.s.dni)">
+                      <span class="size-7 shrink-0 rounded-full bg-card border border-border overflow-hidden flex items-center justify-center font-bold text-micro text-primary">
+                        <img v-if="it.s.avatar" v-auth-src="resolveAvatarUrl(it.s.dni)!" :alt="it.s.nombre" class="size-full object-cover" @error="ocultarAvatarErroneo" />
+                        <span v-else>{{ obtenerIniciales(it.s.nombre) }}</span>
+                      </span>
+                      <span class="min-w-0 flex-1">
+                        <span class="block text-meta font-semibold text-foreground truncate">{{ it.s.nombre }}</span>
+                        <span class="block text-micro text-muted-foreground truncate">{{ it.s.cargo || 'Sin cargo' }} · {{ it.s.regimen || 'Sin régimen' }}</span>
+                      </span>
+                      <span class="text-end shrink-0">
+                        <span class="block text-meta font-bold font-mono tabular-nums text-foreground">{{ it.edad }} años</span>
+                        <span class="block text-micro" :class="configEstado(it.s.estado).text">{{ configEstado(it.s.estado).label }}</span>
+                      </span>
+                    </button>
+                  </li>
+                </ul>
+              </li>
+            </ul>
           </div>
-        </div>
-      </template>
+        </template>
 
-      <template #cell-regimen="{ row }">
-        <div class="space-y-1">
-          <Badge variant="secondary" size="xs" class="font-medium truncate max-w-42.5">
-            {{ row.regimen || 'Sin régimen' }}
-          </Badge>
-          <div v-if="row.plaza" class="text-meta font-mono text-muted-foreground">
-            Plaza: <strong class="text-foreground">{{ row.plaza }}</strong>
-          </div>
-        </div>
-      </template>
-
-      <template #cell-cargo="{ row }">
-        <div class="space-y-0.5 min-w-50 max-w-sm">
-          <p class="font-medium text-foreground text-xs whitespace-normal text-wrap wrap-break-word" :title="row.cargo">
-            {{ row.cargo || 'Sin cargo' }}
-          </p>
-          <p class="text-meta text-muted-foreground whitespace-normal text-wrap wrap-break-word" :title="row.area">
-            {{ row.area || 'Sin área' }}
-          </p>
-        </div>
-      </template>
-
-      <template #cell-estado="{ row }">
-        <div class="space-y-1">
-          <span
-            class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-meta font-medium border"
-            :class="obtenerConfigEstado(row.estado).bgClass"
-          >
-            <span class="size-1.5 rounded-full" :class="obtenerConfigEstado(row.estado).dotClass"></span>
-            <span>{{ obtenerConfigEstado(row.estado).label }}</span>
+        <div class="flex flex-wrap items-center gap-x-3 gap-y-1 px-3 py-2 border-t border-border text-micro text-muted-foreground">
+          <span v-for="e in ESTADOS" :key="e.id" class="inline-flex items-center gap-1.5">
+            <span class="size-1.5 rounded-full" :class="e.dot"></span>{{ e.label }}
           </span>
-          <p class="text-micro text-muted-foreground max-w-47.5 leading-tight">
-            {{ obtenerConfigEstado(row.estado).desc }}
-          </p>
+          <span class="ms-auto">El número indica la edad que cumple · {{ formatDate(hoy.toISOString()) }}</span>
         </div>
-      </template>
-    </DataTable>
+      </section>
+    </div>
   </div>
 </template>

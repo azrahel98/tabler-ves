@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { api } from '@/services/api'
 import { isTokenValid } from '@/utils/jwt'
+import { esSuperAdmin } from '@/constants/superadmin'
 
 export interface AuthUser {
   id: number
@@ -41,6 +42,9 @@ export const useAuthStore = defineStore('auth', () => {
   const isAuthenticated = computed(() => {
     return !!token.value && isTokenValid(token.value)
   })
+
+  /** Solo el correo del superadministrador puede gestionar usuarios. */
+  const isSuperAdmin = computed(() => isAuthenticated.value && esSuperAdmin(user.value?.email))
 
   function logout() {
     token.value = null
@@ -97,6 +101,7 @@ export const useAuthStore = defineStore('auth', () => {
     token,
     user,
     isAuthenticated,
+    isSuperAdmin,
     checkAuth,
     setAuth,
     loginWithGoogle,

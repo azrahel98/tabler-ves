@@ -463,12 +463,36 @@ pub async fn eliminar_vinculo(
     let dni: String = vinculo_full.dni.clone();
     let _doc_ingreso_id: Option<i64> = vinculo_full.doc_ingreso_id.map(|id| id as i64);
     let _doc_salida_id: Option<i64> = vinculo_full.doc_salida_id.map(|id| id as i64);
-    let _plaza_id: Option<String> = vinculo_full.plaza_id.clone();
     sqlx::query("DELETE FROM vinculo_sindicato WHERE vinculo_id = ?")
         .bind(id)
         .execute(&mut *tx)
         .await
         .map_err(|e| db_error("la afiliación sindical", e))?;
+    // `cambio_area` tiene FK hacia vinculo: sin esto el DELETE falla si hubo cambios de área.
+    sqlx::query("DELETE FROM cambio_area WHERE vinculo_id = ?")
+        .bind(id)
+        .execute(&mut *tx)
+        .await
+        .map_err(|e| db_error("los cambios de área del vínculo", e))?;
+    // `eventovinculo` no tiene FK: se borra a mano para no dejar filas huérfanas.
+    sqlx::query("DELETE FROM eventovinculo WHERE vinculo_id = ?")
+        .bind(id)
+        .execute(&mut *tx)
+        .await
+        .map_err(|e| db_error("los eventos del vínculo", e))?;
+    // Un vínculo ya cesado no ocupa la plaza (puede estar asignada a otra persona).
+    sqlx::query(
+        r#"
+        UPDATE plaza p
+        JOIN vinculo v ON p.codigo = v.plaza_id
+        SET p.estado = 'vacante'
+        WHERE v.id = ? AND v.estado <> 'inactivo'
+        "#,
+    )
+    .bind(id)
+    .execute(&mut *tx)
+    .await
+    .map_err(|e| db_error("la plaza del vínculo", e))?;
     sqlx::query("DELETE FROM vinculo WHERE id = ?")
         .bind(id)
         .execute(&mut *tx)

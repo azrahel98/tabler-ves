@@ -28,6 +28,7 @@ import {
   IconFileCheck,
   IconFileCertificate,
   IconFileX,
+  IconTrash,
   IconFileCode,
   IconId,
   IconShieldCheck,
@@ -38,6 +39,7 @@ const props = withDefaults(defineProps<{ vinculo: PersonalVinculo; modo?: 'info'
 
 const emit = defineEmits<{
   (e: 'registrarRenuncia', vinculo: PersonalVinculo): void
+  (e: 'eliminarVinculo', vinculo: PersonalVinculo): void
   (e: 'verDocumento', payload: { tipo: 'ingreso' | 'salida' | 'evento'; vinculo: PersonalVinculo; evento?: EventoVinculoDetalle; doc?: 'inicio' | 'salida' }): void
   (e: 'verEventos', vinculo: PersonalVinculo): void
   (e: 'crearEvento', vinculo: PersonalVinculo): void
@@ -84,34 +86,28 @@ const puedeRenunciar = computed(() => v.value.estado.toLowerCase() !== 'inactivo
       <IconInfoCircle v-if="modo === 'info'" class="size-3.5" />
       <span v-else-if="modo === 'eventos'" class="relative inline-flex">
         <IconFileCode class="size-3.5" />
-        <span class="absolute -top-1.5 -right-2 min-w-3.5 h-3.5 px-0.5 rounded-full bg-purple-500 text-white text-nano font-bold flex items-center justify-center">{{ v.eventos?.length || 0 }}</span>
+        <span class="absolute -top-1.5 -right-2 min-w-3.5 h-3.5 px-0.5 rounded-full bg-sky-500 text-white text-nano font-bold flex items-center justify-center">{{ v.eventos?.length || 0 }}</span>
       </span>
       <IconDotsVertical v-else class="size-3.5" />
     </button>
 
     <!-- Popover de información: solo muestra los datos que existen -->
     <div v-if="modo === 'info'"
-      class="hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible hidden invisible opacity-0 transition-opacity z-50 w-[min(24rem,calc(100vw-2rem))] text-meta"
+      @mousedown.prevent
+      class="hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible hidden invisible opacity-0 transition-opacity z-50 w-[min(20rem,calc(100vw-2rem))] text-meta"
       role="dialog" aria-label="Información del vínculo laboral">
       <div class="bg-card border border-border rounded-2xl shadow-xl overflow-hidden text-left">
-        <div class="p-4 flex items-start gap-3">
-          <div class="size-8 rounded-full bg-primary/10 text-primary border border-primary/20 flex items-center justify-center shrink-0">
-            <IconBriefcase class="size-3.5" />
+        <div class="px-3 py-2 flex items-center justify-between gap-2">
+          <div class="min-w-0">
+            <h4 class="font-semibold text-foreground text-micro leading-snug truncate" :title="v.cargo || ''">
+              {{ v.cargo || 'Vínculo laboral' }}
+            </h4>
+            <p v-if="v.codigo" class="text-muted-foreground font-mono text-nano">Plaza AIRHSP: {{ v.codigo }}</p>
           </div>
-          <div class="min-w-0 flex-1">
-            <div class="flex items-start justify-between gap-2">
-              <h4 class="font-semibold text-foreground text-meta leading-snug wrap-break-word min-w-0">
-                {{ v.cargo || 'Vínculo laboral' }}
-              </h4>
-              <Badge :variant="badgeVariant" size="xs" class="shrink-0 rounded-full">{{ estadoLabel }}</Badge>
-            </div>
-            <p v-if="v.codigo" class="text-muted-foreground mt-0.5 font-mono text-micro">
-              Plaza AIRHSP: {{ v.codigo }}
-            </p>
-          </div>
+          <Badge :variant="badgeVariant" size="xs" class="shrink-0 rounded-full">{{ estadoLabel }}</Badge>
         </div>
 
-        <div class="px-4 py-3 border-t border-border space-y-2.5 max-h-80 overflow-y-auto">
+        <div class="px-3 py-2 border-t border-border space-y-1.5 text-micro max-h-72 overflow-y-auto">
           <div v-if="v.area" class="flex items-start gap-3" title="Área">
             <IconBuildingSkyscraper class="size-3.5 text-muted-foreground shrink-0 mt-0.5" />
             <span class="text-foreground wrap-break-word min-w-0">{{ v.area }}</span>
@@ -169,6 +165,7 @@ const puedeRenunciar = computed(() => v.value.estado.toLowerCase() !== 'inactivo
 
     <!-- Popover de eventos -->
     <div v-else-if="modo === 'eventos'"
+      @mousedown.prevent
       class="hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible hidden invisible opacity-0 transition-opacity z-50 w-[min(24rem,calc(100vw-2rem))] text-meta"
       role="dialog" aria-label="Eventos del vínculo laboral">
       <div class="bg-card border border-border rounded-2xl shadow-xl overflow-hidden text-left">
@@ -220,27 +217,29 @@ const puedeRenunciar = computed(() => v.value.estado.toLowerCase() !== 'inactivo
 
     <!-- Popover de acciones -->
     <div v-else
-      class="hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible hidden invisible opacity-0 transition-opacity z-50 w-60 text-meta"
+      @mousedown.prevent
+      class="hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible hidden invisible opacity-0 transition-opacity z-50 w-44 text-meta"
       role="menu" aria-label="Acciones del vínculo laboral">
-      <div class="bg-card border border-border rounded-2xl shadow-xl overflow-hidden text-left">
-        <div class="px-4 py-3 border-b border-border">
-          <p class="font-semibold text-foreground text-meta">Acciones</p>
-          <p class="text-muted-foreground truncate" :title="v.cargo || ''">{{ v.cargo || 'Vínculo laboral' }}</p>
-        </div>
-        <div class="p-1.5">
+      <div class="bg-card border border-border rounded-lg shadow-lg overflow-hidden text-left p-1">
           <button type="button" role="menuitem"
-            class="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-foreground hover:bg-muted transition cursor-pointer text-left"
+            class="w-full flex items-center gap-2 px-2 py-1 rounded-md text-foreground hover:bg-muted transition cursor-pointer text-left"
             @click="run(() => emit('crearEvento', v))">
             <IconCalendarPlus class="size-3.5 text-muted-foreground" />
             Agregar evento
           </button>
           <button v-if="puedeRenunciar" type="button" role="menuitem"
-            class="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-rose-600 dark:text-rose-400 hover:bg-rose-500/10 transition cursor-pointer text-left"
+            class="w-full flex items-center gap-2 px-2 py-1 rounded-md text-rose-600 dark:text-rose-400 hover:bg-rose-500/10 transition cursor-pointer text-left"
             @click="run(() => emit('registrarRenuncia', v))">
             <IconFileX class="size-3.5" />
             Registrar renuncia
           </button>
-        </div>
+          <div class="my-1 border-t border-border" role="separator"></div>
+          <button type="button" role="menuitem"
+            class="w-full flex items-center gap-2 px-2 py-1 rounded-md text-rose-600 dark:text-rose-400 hover:bg-rose-500/10 transition cursor-pointer text-left"
+            @click="run(() => emit('eliminarVinculo', v))">
+            <IconTrash class="size-3.5" />
+            Eliminar vínculo
+          </button>
       </div>
     </div>
   </div>

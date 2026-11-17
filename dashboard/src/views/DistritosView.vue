@@ -520,10 +520,10 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="space-y-6 max-w-7xl mx-auto pb-16">
+  <div class="mx-auto w-full max-w-6xl space-y-4 px-4 pb-16">
     <PageHeader title="Mapa de Distritos" subtitle="Residencia del personal activo en Lima Metropolitana y Callao">
       <template #actions>
-        <Button variant="ghost" size="sm" class="gap-1.5 text-xs text-muted-foreground hover:text-foreground cursor-pointer" :disabled="isLoading" @click="cargarTodo">
+        <Button variant="ghost" size="sm" class="gap-1.5 text-meta text-muted-foreground hover:text-foreground cursor-pointer" :disabled="isLoading" @click="cargarTodo">
           <IconRefresh class="size-3.5" :class="isLoading ? 'animate-spin' : ''" />
           <span>Actualizar</span>
         </Button>
@@ -532,20 +532,20 @@ onBeforeUnmount(() => {
 
         <div
       v-if="errorMessage"
-      class="p-8 text-center rounded-2xl border border-rose-500/20 bg-rose-500/5 space-y-3"
+      class="p-4 text-center rounded-xl border border-rose-500/20 bg-rose-500/5 space-y-3"
       role="alert"
     >
       <IconAlertTriangle class="size-8 mx-auto text-rose-500" />
-      <p class="text-sm font-bold text-rose-600 dark:text-rose-400">
+      <p class="text-xs font-bold text-rose-600 dark:text-rose-400">
         Error al cargar los datos
       </p>
-      <p class="text-xs text-muted-foreground max-w-md mx-auto">
+      <p class="text-meta text-muted-foreground max-w-md mx-auto">
         {{ errorMessage }}
       </p>
       <Button
         variant="outline"
         size="sm"
-        class="gap-1.5 text-xs cursor-pointer"
+        class="gap-1.5 text-meta cursor-pointer"
         @click="cargarTodo"
       >
         <IconRefresh class="size-3.5" />
@@ -553,7 +553,7 @@ onBeforeUnmount(() => {
       </Button>
     </div>
 
-        <div v-else-if="isLoading" class="space-y-6 animate-pulse" aria-busy="true">
+        <div v-else-if="isLoading" class="space-y-4 animate-pulse" aria-busy="true">
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
         <Card class="p-4 space-y-2">
           <div class="h-3 w-32 bg-muted rounded"></div>
@@ -569,52 +569,52 @@ onBeforeUnmount(() => {
         </Card>
       </div>
 
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <div class="lg:col-span-2 h-[420px] lg:h-[560px] bg-muted/40 rounded-xl border border-border"></div>
         <div class="lg:col-span-1 h-[560px] bg-muted/30 rounded-xl border border-border"></div>
       </div>
     </div>
 
-        <div v-else class="space-y-6">
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+        <div v-else class="space-y-4">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
         <Card class="p-4">
           <div class="flex items-center justify-between gap-2">
-            <span class="text-xs font-medium text-muted-foreground">Trabajadores en Lima y Callao</span>
-            <span class="size-2 rounded-full bg-primary"></span>
+            <span class="text-micro font-semibold uppercase tracking-wider text-muted-foreground">Trabajadores en Lima y Callao</span>
+            <span class="size-2 rounded-full bg-primary shrink-0"></span>
           </div>
           <div class="mt-2 flex items-baseline justify-between">
-            <span class="text-kpi font-bold tracking-tight text-foreground font-mono">
+            <span class="text-kpi font-bold tracking-tight text-foreground font-mono tabular-nums">
               {{ kpis.totalLimaCallao }}
             </span>
-            <span class="text-meta text-muted-foreground">En mapa</span>
+            <span class="text-micro text-muted-foreground">En mapa</span>
           </div>
           <p class="text-micro text-muted-foreground mt-1 truncate">Total de activos geolocalizados</p>
         </Card>
 
         <Card class="p-4">
           <div class="flex items-center justify-between gap-2">
-            <span class="text-xs font-semibold text-primary">Distritos con presencia</span>
-            <span class="size-2 rounded-full bg-sky-500"></span>
+            <span class="text-micro font-semibold uppercase tracking-wider text-primary">Distritos con presencia</span>
+            <span class="size-2 rounded-full bg-sky-500 shrink-0"></span>
           </div>
           <div class="mt-2 flex items-baseline justify-between">
-            <span class="text-kpi font-bold tracking-tight text-primary font-mono">
-              {{ kpis.distritosConPresencia }} <span class="text-sm font-normal text-muted-foreground">/ {{ distritosRanking.length || 50 }}</span>
+            <span class="text-kpi font-bold tracking-tight text-primary font-mono tabular-nums">
+              {{ kpis.distritosConPresencia }} <span class="text-meta font-normal text-muted-foreground">/ {{ distritosRanking.length || 50 }}</span>
             </span>
-            <span class="text-meta text-muted-foreground">Distritos</span>
+            <span class="text-micro text-muted-foreground">Distritos</span>
           </div>
           <p class="text-micro text-muted-foreground mt-1 truncate">Distritos con al menos 1 trabajador</p>
         </Card>
 
         <Card class="p-4">
           <div class="flex items-center justify-between gap-2">
-            <span class="text-xs font-semibold text-emerald-600 dark:text-emerald-400">Distrito con más trabajadores</span>
-            <span class="size-2 rounded-full bg-emerald-500"></span>
+            <span class="text-micro font-semibold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">Distrito con más trabajadores</span>
+            <span class="size-2 rounded-full bg-emerald-500 shrink-0"></span>
           </div>
-          <div class="mt-2 flex items-baseline justify-between">
-            <span class="text-kpi font-bold tracking-tight text-foreground truncate max-w-[70%]">
+          <div class="mt-2 flex items-baseline justify-between gap-2">
+            <span class="text-kpi font-bold tracking-tight text-foreground truncate">
               {{ kpis.topDistritoNombre }}
             </span>
-            <span class="text-kpi font-bold text-emerald-600 dark:text-emerald-400 font-mono">
+            <span class="text-kpi font-bold text-emerald-600 dark:text-emerald-400 font-mono tabular-nums shrink-0">
               {{ kpis.topDistritoCantidad }}
             </span>
           </div>
@@ -622,15 +622,15 @@ onBeforeUnmount(() => {
         </Card>
       </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 items-start">
                 <div class="lg:col-span-2 space-y-3">
           <div
             ref="mapContainer"
             class="distritos-map h-[34rem] max-h-[75vh] w-full rounded-xl overflow-hidden border border-border shadow-2xs z-0 bg-card"
           ></div>
 
-                    <div class="p-3 bg-card border border-border rounded-xl shadow-2xs flex flex-wrap items-center justify-between gap-3 text-xs">
-            <div class="font-medium text-foreground text-meta">Concentración de personal:</div>
+                    <div class="p-3 bg-card border border-border rounded-xl shadow-2xs flex flex-wrap items-center justify-between gap-3 text-micro">
+            <div class="font-semibold text-foreground text-meta">Concentración de personal:</div>
             <div class="flex flex-wrap items-center gap-3">
               <div
                 v-for="(item, idx) in legendRanges"
@@ -638,14 +638,14 @@ onBeforeUnmount(() => {
                 class="flex items-center gap-1.5"
               >
                 <span
-                  class="size-3.5 rounded-xs border border-black/10 shrink-0"
+                  class="size-3 rounded-xs border border-black/10 shrink-0"
                   :style="{ backgroundColor: item.color }"
                 ></span>
-                <span class="text-meta font-mono text-muted-foreground tabular-nums">{{ item.label }}</span>
+                <span class="text-micro font-mono text-muted-foreground tabular-nums">{{ item.label }}</span>
               </div>
               <div class="flex items-center gap-1.5">
-                <span class="size-3.5 rounded-xs border border-border bg-[#94a3b8]/20 shrink-0"></span>
-                <span class="text-meta text-muted-foreground">Sin trabajadores</span>
+                <span class="size-3 rounded-xs border border-border bg-[#94a3b8]/20 shrink-0"></span>
+                <span class="text-micro text-muted-foreground">Sin trabajadores</span>
               </div>
             </div>
           </div>
@@ -653,10 +653,10 @@ onBeforeUnmount(() => {
 
                 <Card class="lg:col-span-1 p-4 space-y-4 shadow-2xs">
           <div>
-            <h2 class="text-sm font-bold text-foreground tracking-tight">
+            <h2 class="text-xs font-semibold text-foreground tracking-tight">
               Distritos con más trabajadores
             </h2>
-            <p class="text-xs text-muted-foreground">
+            <p class="text-micro text-muted-foreground">
               Ranking de residencia por distrito
             </p>
           </div>
@@ -676,7 +676,7 @@ onBeforeUnmount(() => {
               @mouseleave="onHoverRankingItem(null)"
               @click="irADistrito(normalizar(item.nombdist))"
             >
-              <div class="flex items-center justify-between gap-2 text-xs mb-1.5">
+              <div class="flex items-center justify-between gap-2 text-meta mb-1.5">
                 <div class="flex items-center gap-2 min-w-0">
                   <span class="size-5 rounded-full bg-muted flex items-center justify-center font-mono text-micro text-muted-foreground font-semibold shrink-0">
                     {{ index + 1 }}
@@ -685,7 +685,7 @@ onBeforeUnmount(() => {
                     {{ item.nombreDisplay }}
                   </span>
                 </div>
-                <span class="font-mono tabular-nums font-semibold text-foreground text-xs shrink-0">
+                <span class="font-mono tabular-nums font-semibold text-foreground text-meta shrink-0">
                   {{ item.cantidad }}
                 </span>
               </div>
@@ -703,7 +703,7 @@ onBeforeUnmount(() => {
             v-if="distritosRanking.length > 10"
             variant="ghost"
             size="sm"
-            class="w-full text-xs text-muted-foreground hover:text-foreground cursor-pointer"
+            class="w-full text-meta text-muted-foreground hover:text-foreground cursor-pointer"
             @click="isExpandedRanking = !isExpandedRanking"
           >
             <span>{{ isExpandedRanking ? 'Mostrar top 10' : `Ver todos (${distritosRanking.length})` }}</span>
@@ -715,7 +715,7 @@ onBeforeUnmount(() => {
                         <div class="rounded-lg border border-border/70 bg-muted/20 overflow-hidden">
               <button
                 type="button"
-                class="w-full px-3 py-2 text-xs flex items-center justify-between font-medium text-foreground hover:bg-muted/40 transition-colors cursor-pointer"
+                class="w-full px-3 py-2 text-meta flex items-center justify-between font-medium text-foreground hover:bg-muted/40 transition-colors cursor-pointer"
                 @click="isExpandedNoReconocidos = !isExpandedNoReconocidos"
               >
                 <span>Fuera de Lima / no reconocidos ({{ totalNoReconocidos }})</span>
@@ -739,7 +739,7 @@ onBeforeUnmount(() => {
             </div>
 
             <div
-              class="px-3 py-2 rounded-lg bg-muted/20 border border-border/70 flex items-center justify-between text-xs transition-colors"
+              class="px-3 py-2 rounded-lg bg-muted/20 border border-border/70 flex items-center justify-between text-meta transition-colors"
               :class="sinAsignarCantidad > 0 ? 'hover:bg-muted/50 cursor-pointer' : ''"
               @click="sinAsignarCantidad > 0 && router.push({ path: '/personal/distrito', query: { distrito: 'SIN ASIGNAR' } })"
             >

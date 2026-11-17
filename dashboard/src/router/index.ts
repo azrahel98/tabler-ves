@@ -9,10 +9,12 @@ const OrganigramaView = () => import('@/views/OrganigramaView.vue')
 const LoginView = () => import('@/views/LoginView.vue')
 const NuevoTrabajadorView = () => import('@/views/NuevoTrabajadorView.vue')
 const Alerta70View = () => import('@/views/Alerta70View.vue')
+const CalendarioView = () => import('@/views/CalendarioView.vue')
 const DistritosView = () => import('@/views/DistritosView.vue')
 const PersonalDistritoView = () => import('@/views/PersonalDistritoView.vue')
 const PersonalAreaView = () => import('@/views/PersonalAreaView.vue')
 const ComparacionAirhspView = () => import('@/views/ComparacionAirhspView.vue')
+const UsuariosView = () => import('@/views/UsuariosView.vue')
 
 const routes: RouteRecordRaw[] = [
   {
@@ -76,6 +78,12 @@ const routes: RouteRecordRaw[] = [
         meta: { requiresAuth: true },
       },
       {
+        path: 'calendario',
+        name: 'calendario',
+        component: CalendarioView,
+        meta: { requiresAuth: true },
+      },
+      {
         path: 'distritos',
         name: 'distritos',
         component: DistritosView,
@@ -87,6 +95,13 @@ const routes: RouteRecordRaw[] = [
         name: 'comparar-airhsp',
         component: ComparacionAirhspView,
         meta: { requiresAuth: true },
+      },
+      {
+        path: 'usuarios',
+        alias: 'admin/usuarios',
+        name: 'usuarios',
+        component: UsuariosView,
+        meta: { requiresAuth: true, requiresSuperAdmin: true },
       },
     ],
   },
@@ -109,6 +124,10 @@ router.beforeEach((to, _from, next) => {
   if (to.meta.requiresAuth) {
     if (!authStore.checkAuth()) {
       next({ name: 'iniciar-sesion' })
+      return
+    }
+    if (to.meta.requiresSuperAdmin && !authStore.isSuperAdmin) {
+      next({ name: 'panel' })
       return
     }
     next()

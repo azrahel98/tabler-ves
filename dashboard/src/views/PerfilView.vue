@@ -6,7 +6,10 @@ import PerfilHeader from '@/components/perfil/general/PerfilHeader.vue'
 import PerfilInfoContacto from '@/components/perfil/general/PerfilInfoContacto.vue'
 import PerfilSearchModal from '@/components/perfil/general/PerfilSearchModal.vue'
 import PerfilEditModal from '@/components/perfil/general/PerfilEditModal.vue'
+import PerfilContactoEmergenciaModal, { type ContactoEmergenciaForm } from '@/components/perfil/general/PerfilContactoEmergenciaModal.vue'
 import PerfilVinculoActualCard from '@/components/perfil/vinculos/PerfilVinculoActualCard.vue'
+import { useAuthStore } from '@/stores/auth'
+import PerfilHistorialCard from '@/components/perfil/historial/PerfilHistorialCard.vue'
 import PerfilHistorialVinculosCard from '@/components/perfil/vinculos/PerfilHistorialVinculosCard.vue'
 import PerfilEventoModal from '@/components/perfil/vinculos/PerfilEventoModal.vue'
 import PerfilLegajoCard from '@/components/perfil/legajo/PerfilLegajoCard.vue'
@@ -20,6 +23,7 @@ const PerfilDocumentoDrawer = defineAsyncComponent(() => import('@/components/pe
 const PerfilDocumentoVisorModal = defineAsyncComponent(() => import('@/components/perfil/legajo/PerfilDocumentoVisorModal.vue'))
 const PerfilSubirArchivoModal = defineAsyncComponent(() => import('@/components/perfil/legajo/PerfilSubirArchivoModal.vue'))
 const PerfilVincularUrlModal = defineAsyncComponent(() => import('@/components/perfil/legajo/PerfilVincularUrlModal.vue'))
+const PerfilEliminarVinculoModal = defineAsyncComponent(() => import('@/components/perfil/vinculos/PerfilEliminarVinculoModal.vue'))
 const PerfilEliminarArchivoModal = defineAsyncComponent(() => import('@/components/perfil/legajo/PerfilEliminarArchivoModal.vue'))
 import {
   fetchPersonalPerfil,
@@ -33,6 +37,9 @@ import {
   upsertEventoVinculo,
   updatePersonalPerfil,
   registrarRenunciaPorVinculo,
+  guardarContactoEmergencia,
+  eliminarContactoEmergencia,
+  eliminarVinculo,
   crearDocumento,
   registrarUrlArchivo,
   uploadArchivoLegajo,
@@ -70,7 +77,9 @@ const toast = useToastStore()
 const currentDni = ref<string>('45892134')
 const isLoading = ref<boolean>(true)
 const loadError = ref<string | null>(null)
-const activeTab = ref<'perfil' | 'vinculos' | 'legajo' | 'grados' | 'banco'>('perfil')
+const authStore = useAuthStore()
+const esAdmin = computed(() => authStore.user?.role?.toUpperCase() === 'ADMIN')
+const activeTab = ref<'perfil' | 'vinculos' | 'legajo' | 'grados' | 'banco' | 'historial'>('perfil')
 
 const perfil = ref<PersonalPerfil | null>(null)
 const banco = ref<PersonalBanco | null>(null)
@@ -82,6 +91,9 @@ const documentos = ref<PersonalDocumento[]>([])
 
 const isSearchModalOpen = ref<boolean>(false)
 const isEditModalOpen = ref<boolean>(false)
+const isContactoModalOpen = ref<boolean>(false)
+const isSavingContacto = ref<boolean>(false)
+const isDeletingContacto = ref<boolean>(false)
 const isRenunciaModalOpen = ref<boolean>(false)
 const isDocumentoModalOpen = ref<boolean>(false)
 const isVincularUrlModalOpen = ref<boolean>(false)
@@ -90,6 +102,9 @@ const isEliminarArchivoModalOpen = ref<boolean>(false)
 const archivoAEliminar = ref<PersonalArchivo | null>(null)
 const documentoAVincular = ref<PersonalDocumento | null>(null)
 const vinculoARenunciar = ref<PersonalVinculo | null>(null)
+const vinculoAEliminar = ref<PersonalVinculo | null>(null)
+const isEliminarVinculoModalOpen = ref<boolean>(false)
+const isDeletingVinculo = ref<boolean>(false)
 const isSaving = ref<boolean>(false)
 const isSavingRenuncia = ref<boolean>(false)
 const isSavingDocumento = ref<boolean>(false)
@@ -186,6 +201,39 @@ const selectWorker = (dni: string) => {
   loadWorkerData(dni)
 }
 
+const onGuardarContacto = async (form: ContactoEmergenciaForm) => {
+  isSavingContacto.value = true
+  try {
+    await guardarContactoEmergencia({
+      persona_dni: currentDni.value,
+      nombre: form.nombre,
+      relacion: form.relacion,
+      telefono: form.telefono || null,
+    })
+    contacto.value = await fetchPersonalContacto(currentDni.value)
+    isContactoModalOpen.value = false
+    toast.success('Contacto de emergencia guardado.')
+  } catch (err) {
+    toast.error(err instanceof Error ? err.message : 'No se pudo guardar el contacto de emergencia.')
+  } finally {
+    isSavingContacto.value = false
+  }
+}
+
+const onEliminarContacto = async () => {
+  isDeletingContacto.value = true
+  try {
+    await eliminarContactoEmergencia(currentDni.value)
+    contacto.value = null
+    isContactoModalOpen.value = false
+    toast.success('Contacto de emergencia eliminado.')
+  } catch (err) {
+    toast.error(err instanceof Error ? err.message : 'No se pudo eliminar el contacto de emergencia.')
+  } finally {
+    isDeletingContacto.value = false
+  }
+}
+
 const onSavePerfil = async (form: PersonalPerfil) => {
   isSaving.value = true
   try {
@@ -207,6 +255,26 @@ const onSavePerfil = async (form: PersonalPerfil) => {
 const abrirModalRenuncia = (vinculo: PersonalVinculo) => {
   vinculoARenunciar.value = vinculo
   isRenunciaModalOpen.value = true
+}
+
+const abrirModalEliminarVinculo = (vinculo: PersonalVinculo) => {
+  vinculoAEliminar.value = vinculo
+  isEliminarVinculoModalOpen.value = true
+}
+
+const onConfirmarEliminarVinculo = async () => {
+  if (!vinculoAEliminar.value) return
+  isDeletingVinculo.value = true
+  try {
+    await eliminarVinculo(vinculoAEliminar.value.id)
+    isEliminarVinculoModalOpen.value = false
+    toast.success('Vínculo laboral eliminado correctamente.')
+    await loadWorkerData(currentDni.value)
+  } catch (err) {
+    toast.error(err instanceof Error ? err.message : 'Error al eliminar el vínculo.')
+  } finally {
+    isDeletingVinculo.value = false
+  }
 }
 
 const onSaveRenuncia = async (payload: RenunciaPayload) => {
@@ -399,6 +467,28 @@ const onEliminarEvento = async (eventoId: number) => {
     toast.error(err instanceof Error ? err.message : 'Error al eliminar el evento de vínculo.')
   } finally {
     isDeletingEvento.value = false
+  }
+}
+
+const onDocumentoActualizado = async (actualizado: {
+  documentoId: number
+  tipoDocumentoNombre: string
+  numeroDocumento: string
+  fecha: string
+  descripcion: string
+}) => {
+  if (documentoDrawerInfo.value && documentoDrawerInfo.value.documentoId === actualizado.documentoId) {
+    documentoDrawerInfo.value = {
+      ...documentoDrawerInfo.value,
+      tipoDocumentoNombre: actualizado.tipoDocumentoNombre,
+      numeroDocumento: actualizado.numeroDocumento,
+      fecha: actualizado.fecha,
+      descripcion: actualizado.descripcion,
+    }
+  }
+  await loadWorkerData(currentDni.value)
+  if (isEventosDrawerOpen.value && vinculoParaEventos.value?.id) {
+    eventosVinculoSeleccionado.value = await fetchEventosVinculo(vinculoParaEventos.value.id)
   }
 }
 
@@ -634,6 +724,7 @@ watch(
             :contacto="contacto"
             :copied-field="copiedField"
             @open-edit-modal="isEditModalOpen = true"
+            @open-contacto-modal="isContactoModalOpen = true"
             @copy-to-clipboard="copyToClipboard"
           />
         </aside>
@@ -655,6 +746,7 @@ watch(
             v-else-if="activeTab === 'vinculos'"
             :vinculos="vinculos"
             @registrar-renuncia="abrirModalRenuncia"
+            @eliminar-vinculo="abrirModalEliminarVinculo"
             @ver-documento="abrirDocumentoDrawer"
             @ver-eventos="onAbrirEventosDrawer"
             @crear-evento="onAbrirCrearEvento"
@@ -682,6 +774,11 @@ watch(
             :copied-field="copiedField"
             @copy-to-clipboard="copyToClipboard"
           />
+
+          <PerfilHistorialCard
+            v-else-if="activeTab === 'historial' && esAdmin"
+            :dni="currentDni"
+          />
         </div>
       </div>
     </div>
@@ -690,6 +787,16 @@ watch(
       :is-open="isSearchModalOpen"
       @close="isSearchModalOpen = false"
       @select-worker="selectWorker"
+    />
+
+    <PerfilContactoEmergenciaModal
+      :is-open="isContactoModalOpen"
+      :contacto="contacto"
+      :is-saving="isSavingContacto"
+      :is-deleting="isDeletingContacto"
+      @close="isContactoModalOpen = false"
+      @save="onGuardarContacto"
+      @delete="onEliminarContacto"
     />
 
     <PerfilEditModal
@@ -739,6 +846,14 @@ watch(
       @upload-url="onUploadUrlFromModal"
     />
 
+    <PerfilEliminarVinculoModal
+      :is-open="isEliminarVinculoModalOpen"
+      :vinculo="vinculoAEliminar"
+      :is-deleting="isDeletingVinculo"
+      @close="isEliminarVinculoModalOpen = false"
+      @confirm="onConfirmarEliminarVinculo"
+    />
+
     <PerfilEliminarArchivoModal
       :is-open="isEliminarArchivoModalOpen"
       :archivo="archivoAEliminar"
@@ -752,9 +867,12 @@ watch(
       :documento="documentoDrawerInfo"
       :archivo="archivoAsociadoAlDrawer"
       :is-deleting="isDeletingEvento"
+      :dni="currentDni"
       @close="isDocumentoDrawerOpen = false"
       @eliminar-evento="onEliminarEvento"
       @abrir-visor="abrirVisorArchivo"
+      @subir-archivo="isSubirArchivoModalOpen = true"
+      @documento-actualizado="onDocumentoActualizado"
     />
 
     <PerfilEventosDrawer
@@ -767,6 +885,7 @@ watch(
       @crear-evento="onAbrirCrearEvento"
       @editar-evento="onAbrirEditarEvento"
       @eliminar-evento="onEliminarEventoFromList"
+      @ver-documento="abrirDocumentoDrawer"
     />
 
     <PerfilEventoModal

@@ -6,7 +6,6 @@ import {
   formatMoneda,
   getVinculoStatusType,
   type PersonalVinculo,
-  type VinculoStatusType,
   type EventoVinculoDetalle,
 } from '@/services/personal'
 import { formatDate, parseDateSafe } from '@/utils/date'
@@ -27,6 +26,7 @@ const props = defineProps<Props>()
 
 const emit = defineEmits<{
   (e: 'registrarRenuncia', vinculo: PersonalVinculo): void
+  (e: 'eliminarVinculo', vinculo: PersonalVinculo): void
   (e: 'verDocumento', payload: { tipo: 'ingreso' | 'salida' | 'evento'; vinculo: PersonalVinculo; evento?: EventoVinculoDetalle; doc?: 'inicio' | 'salida' }): void
   (e: 'verEventos', vinculo: PersonalVinculo): void
   (e: 'crearEvento', vinculo: PersonalVinculo): void
@@ -35,18 +35,12 @@ const emit = defineEmits<{
 type FiltroVinculo = 'todos' | 'vigentes' | 'concluidos'
 type SortKey = 'cargo' | 'area' | 'ingreso' | 'cese' | 'sueldo'
 
-const PAGE_SIZE = 8
+const PAGE_SIZE = 3
 const filtro = ref<FiltroVinculo>('todos')
 const busqueda = ref('')
 const sortKey = ref<SortKey>('ingreso')
 const sortDir = ref<'desc' | 'asc'>('desc')
 const page = ref(1)
-
-const getBadgeVariant = (type: VinculoStatusType): 'success' | 'warning' | 'secondary' => {
-  if (type === 'success') return 'success'
-  if (type === 'warning') return 'warning'
-  return 'secondary'
-}
 
 const esVigente = (v: PersonalVinculo) => getVinculoStatusType(v) === 'success'
 
@@ -113,11 +107,6 @@ const setFiltro = (f: FiltroVinculo) => {
 
 const ariaSort = (key: SortKey) =>
   sortKey.value === key ? (sortDir.value === 'asc' ? 'ascending' : 'descending') : 'none'
-
-const estadoLabel = (v: PersonalVinculo) => {
-  const t = getVinculoStatusType(v)
-  return t === 'success' ? 'Vigente' : t === 'warning' ? 'Sin doc. salida' : 'Concluido'
-}
 </script>
 
 <template>
@@ -179,7 +168,6 @@ const estadoLabel = (v: PersonalVinculo) => {
                   <IconArrowsSort v-else class="size-3 opacity-60" />
                 </button>
               </th>
-              <th scope="col" class="px-3 py-3 font-medium">Estado</th>
               <th scope="col" :aria-sort="ariaSort('sueldo')" class="px-3 py-3 font-medium text-right">
                 <button type="button" class="inline-flex items-center gap-1.5 cursor-pointer hover:text-foreground transition" @click="setSort('sueldo')">
                   Sueldo
@@ -242,10 +230,6 @@ const estadoLabel = (v: PersonalVinculo) => {
                   </span>
                 </td>
 
-                <td class="px-3 py-2.5 whitespace-nowrap">
-                  <Badge :variant="getBadgeVariant(getVinculoStatusType(v))" size="xs">{{ estadoLabel(v) }}</Badge>
-                </td>
-
                 <td
                   class="px-3 py-2.5 text-right font-mono font-medium text-foreground tabular-nums text-meta whitespace-nowrap">
                   {{ v.origen === 'SUNAT' ? '-' : formatMoneda(v.sueldo) }}
@@ -255,14 +239,17 @@ const estadoLabel = (v: PersonalVinculo) => {
                   <div class="inline-flex items-center gap-0.5">
                     <PerfilVinculoPopover v-if="v.origen !== 'SUNAT'" modo="info" :vinculo="v"
                       @registrar-renuncia="emit('registrarRenuncia', $event)"
+                      @eliminar-vinculo="emit('eliminarVinculo', $event)"
                       @ver-documento="emit('verDocumento', $event)" @ver-eventos="emit('verEventos', $event)"
                       @crear-evento="emit('crearEvento', $event)" />
                     <PerfilVinculoPopover v-if="v.origen !== 'SUNAT' && v.eventos && v.eventos.length > 0" modo="eventos" :vinculo="v"
                       @registrar-renuncia="emit('registrarRenuncia', $event)"
+                      @eliminar-vinculo="emit('eliminarVinculo', $event)"
                       @ver-documento="emit('verDocumento', $event)" @ver-eventos="emit('verEventos', $event)"
                       @crear-evento="emit('crearEvento', $event)" />
                     <PerfilVinculoPopover v-if="v.origen !== 'SUNAT'" modo="acciones" :vinculo="v"
                       @registrar-renuncia="emit('registrarRenuncia', $event)"
+                      @eliminar-vinculo="emit('eliminarVinculo', $event)"
                       @ver-documento="emit('verDocumento', $event)" @ver-eventos="emit('verEventos', $event)"
                       @crear-evento="emit('crearEvento', $event)" />
                   </div>

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import { useAuthStore } from '@/stores/auth'
 import {
   getPersonalAvatarUrl,
   type PersonalPerfil,
@@ -12,16 +13,16 @@ import {
   IconBuildingBank,
   IconSchool,
   IconFileText,
+  IconHistory,
   IconCheck,
   IconCopy,
-  IconEdit,
 } from '@tabler/icons-vue'
 
 interface Props {
   perfil: PersonalPerfil | null
   vinculoActivo: PersonalVinculo | null
   currentDni: string
-  activeTab: 'perfil' | 'vinculos' | 'legajo' | 'grados' | 'banco'
+  activeTab: 'perfil' | 'vinculos' | 'legajo' | 'grados' | 'banco' | 'historial'
   vinculosCount: number
   archivosCount: number
   gradosCount: number
@@ -29,9 +30,11 @@ interface Props {
 }
 
 const props = defineProps<Props>()
+const authStore = useAuthStore()
+const esAdmin = computed(() => authStore.user?.role?.toUpperCase() === 'ADMIN')
 
 const emit = defineEmits<{
-  (e: 'update:activeTab', tab: 'perfil' | 'vinculos' | 'legajo' | 'grados' | 'banco'): void
+  (e: 'update:activeTab', tab: 'perfil' | 'vinculos' | 'legajo' | 'grados' | 'banco' | 'historial'): void
   (e: 'openEditModal'): void
   (e: 'copyToClipboard', text: string, fieldId: string): void
   (e: 'registrarRenuncia', vinculo: PersonalVinculo): void
@@ -54,13 +57,17 @@ const userInitials = computed(() => {
   return (parts[0][0] + (parts[1]?.[0] || '')).toUpperCase()
 })
 
-const tabs = computed(() => [
+const todosLosTabs = computed(() => [
   { id: 'perfil' as const, label: 'Datos Generales', icon: IconUser, count: undefined as number | undefined },
   { id: 'vinculos' as const, label: 'Vínculos Laborales', icon: IconBriefcase, count: props.vinculosCount },
   { id: 'legajo' as const, label: 'Legajo Digital', icon: IconFileText, count: props.archivosCount },
   { id: 'grados' as const, label: 'Grados Académicos', icon: IconSchool, count: props.gradosCount },
   { id: 'banco' as const, label: 'Datos Bancarios', icon: IconBuildingBank, count: undefined as number | undefined },
+  { id: 'historial' as const, label: 'Historial', icon: IconHistory, count: undefined as number | undefined },
 ])
+
+// El historial de auditoría solo lo ve un administrador.
+const tabs = computed(() => todosLosTabs.value.filter((t) => t.id !== 'historial' || esAdmin.value))
 
 const handleTabKeyDown = (event: KeyboardEvent) => {
   const tabList = tabs.value
@@ -80,35 +87,21 @@ const handleTabKeyDown = (event: KeyboardEvent) => {
 </script>
 
 <template>
-  <div class="bg-card border border-border rounded-xl shadow-xs p-3 sm:p-4">
-    <figure class="m-0 h-20 sm:h-28 rounded-lg overflow-hidden" aria-hidden="true">
-      <svg class="w-full h-full" preserveAspectRatio="none" viewBox="0 0 1113 161" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <g clip-path="url(#perfil-banner-clip)">
-          <rect x="1" width="1112" height="348" fill="#B2E7FE" />
-          <rect width="185.209" height="704.432" transform="matrix(0.50392 0.86375 -0.860909 0.508759 435.452 -177.87)" fill="#FF8F5D" />
-          <rect width="184.653" height="378.667" transform="matrix(0.849839 -0.527043 0.522157 0.852849 -10.4556 -16.4521)" fill="#3ECEED" />
-          <rect width="184.653" height="189.175" transform="matrix(0.849839 -0.527043 0.522157 0.852849 35.4456 58.5195)" fill="#4C48FF" />
-        </g>
-        <defs>
-          <clipPath id="perfil-banner-clip"><rect x="0.5" width="1112" height="161" rx="12" fill="white" /></clipPath>
-        </defs>
-      </svg>
-    </figure>
-
-    <div class="-mt-8 sm:-mt-10 flex flex-col items-center text-center px-2">
+  <div class="mt-10 sm:mt-12 bg-card border border-border rounded-xl shadow-xs p-3 sm:p-4">
+    <div class="-mt-12 sm:-mt-14 flex flex-col items-center text-center px-2">
       <div class="relative">
         <div
-          class="size-16 sm:size-20 rounded-full bg-primary/10 text-primary ring-4 ring-card border border-border flex items-center justify-center overflow-hidden shadow-xs">
+          class="size-20 sm:size-24 rounded-full bg-card text-primary ring-4 ring-card border border-border flex items-center justify-center overflow-hidden shadow-sm">
           <img v-if="!avatarError && avatarUrl" v-auth-src="avatarUrl" :alt="perfil?.nombre || 'Foto del servidor'"
             class="size-full object-cover" @error="avatarError = true" />
-          <span v-else class="text-kpi font-bold tracking-tight select-none">{{ userInitials }}</span>
+          <span v-else class="size-full bg-primary/10 flex items-center justify-center text-kpi font-bold tracking-tight select-none">{{ userInitials }}</span>
         </div>
         <span
-          class="absolute bottom-0 -right-0.5 size-5 rounded-full ring-2 ring-card flex items-center justify-center text-white"
+          class="absolute bottom-0.5 right-0.5 size-4.5 rounded-full ring-2 ring-card flex items-center justify-center text-white"
           :class="vinculoActivo ? 'bg-emerald-500' : 'bg-muted-foreground'"
           :title="vinculoActivo ? 'Vínculo laboral activo' : 'Sin vínculo activo'">
-          <IconCheck v-if="vinculoActivo" class="size-3" :stroke-width="3" />
-          <IconUser v-else class="size-3" />
+          <IconCheck v-if="vinculoActivo" class="size-2.5" :stroke-width="3" />
+          <IconUser v-else class="size-2.5" />
         </span>
       </div>
 
@@ -136,7 +129,7 @@ const handleTabKeyDown = (event: KeyboardEvent) => {
       </div>
     </div>
 
-    <div class="mt-3 flex flex-wrap items-center justify-between gap-2">
+    <div class="mt-3 flex justify-center">
       <div class="overflow-x-auto -mx-1 px-1 max-w-full">
         <nav class="flex gap-1 min-w-max" role="tablist" aria-label="Pestañas del legajo" @keydown="handleTabKeyDown">
           <button v-for="t in tabs" :key="t.id" type="button" role="tab" :aria-selected="activeTab === t.id"
@@ -146,19 +139,12 @@ const handleTabKeyDown = (event: KeyboardEvent) => {
             @click="emit('update:activeTab', t.id)">
             <component :is="t.icon" class="size-3.5" />
             <span>{{ t.label }}</span>
-            <span v-if="t.count !== undefined" class="px-1.5 py-0.5 text-micro rounded-full bg-card border border-border text-foreground">
+            <span v-if="t.count !== undefined" class="px-1.5 py-0.5 text-nano leading-none rounded-full bg-card border border-border text-foreground">
               {{ t.count }}
             </span>
           </button>
         </nav>
       </div>
-
-      <button type="button"
-        class="inline-flex items-center gap-1.5 px-2.5 h-control-sm rounded-md border border-border bg-card text-micro font-semibold text-foreground shadow-xs hover:bg-muted transition cursor-pointer"
-        @click="emit('openEditModal')">
-        <IconEdit class="size-3.5" />
-        <span>Editar ficha</span>
-      </button>
     </div>
   </div>
 </template>

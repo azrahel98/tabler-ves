@@ -67,6 +67,16 @@ pub struct Cumpleaños {
     pub regimen: Option<String>,
 }
 
+/// Cumpleaños del personal activo en un mes (para la vista de calendario).
+#[derive(Debug, Serialize, sqlx::FromRow)]
+pub struct CumpleanosMes {
+    pub dni: String,
+    pub nombre: Option<String>,
+    pub nacimiento: NaiveDate,
+    pub avatar: Option<String>,
+    pub regimen: Option<String>,
+}
+
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct HistorialPaginado {
     pub items: Vec<serde_json::Value>,

@@ -16,7 +16,7 @@ const alignClasses: Record<'left' | 'center' | 'right', string> = {
 }
 
 const computedClasses = computed(() => [
-  'px-4 sm:px-5 py-3.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground whitespace-nowrap',
+  'px-3 py-3 text-micro font-medium text-muted-foreground whitespace-nowrap',
   alignClasses[props.align],
 ])
 </script>

@@ -112,7 +112,7 @@ export function getEstadoVigenciaLabel(estado: EstadoVigenciaEvento | string | n
     case 'cerrado':
       return 'Finalizado'
     case 'sin_fechas':
-      return 'Activo (sin periodo)'
+      return 'Activo'
     case 'futuro':
       return 'Programado'
     case 'vencido':
@@ -419,6 +419,34 @@ export async function crearDocumento(payload: CrearDocumentoPayload): Promise<Cr
   })
 }
 
+export interface DocumentoDetalle {
+  id: number
+  tipoDocumento: string | null
+  areaId: number | null
+  numeroDocumento: number | null
+  añoDocumento: number | null
+  fecha: string
+  fechaDocumento?: string | null
+  conv?: number | null
+  descripcion: string
+}
+
+export interface EditarDocumentoPayload {
+  dni: string
+  documento: DocumentoData & { id: number }
+}
+
+export async function obtenerDocumentoPorId(id: number): Promise<DocumentoDetalle> {
+  return await api<DocumentoDetalle>(`/personal/documento/${id}`)
+}
+
+export async function editarDocumento(payload: EditarDocumentoPayload): Promise<string> {
+  return await api<string>('/personal/editar_documento', {
+    method: 'PUT',
+    body: payload,
+  })
+}
+
 export interface RegistrarUrlPayload {
   dni_asociado: string
   original_name: string
@@ -453,6 +481,54 @@ export async function uploadArchivoLegajo(formData: FormData): Promise<UploadArc
     method: 'POST',
     body: formData,
   })
+}
+
+export interface HistorialEntrada {
+  dni: string
+  operacion: string
+  fecha: string
+  nombre: string
+  detalle:
+    | {
+        data?: unknown
+        metadata?: { ip?: string; user_agent?: string }
+      }
+    | string
+    | null
+}
+
+export interface HistorialPaginado {
+  items: HistorialEntrada[]
+  total: number
+  page: number
+  limit: number
+  total_pages: number
+}
+
+export async function fetchHistorialPersona(dni: string, page = 1, limit = 8): Promise<HistorialPaginado> {
+  return await api<HistorialPaginado>(
+    `/api/dash/historial?dni=${encodeURIComponent(dni)}&page=${page}&limit=${limit}`,
+  )
+}
+
+export interface ContactoEmergenciaPayload {
+  persona_dni: string
+  nombre: string
+  relacion: string
+  telefono: string | null
+}
+
+/** Alta y edición: el backend hace upsert (un contacto por persona). */
+export async function guardarContactoEmergencia(payload: ContactoEmergenciaPayload): Promise<void> {
+  await api('/personal/agregar_contacto', { method: 'POST', body: payload })
+}
+
+export async function eliminarContactoEmergencia(dni: string): Promise<void> {
+  await api(`/personal/eliminar_contacto/${encodeURIComponent(dni)}`, { method: 'DELETE' })
+}
+
+export async function eliminarVinculo(id: number): Promise<void> {
+  await api(`/personal/eliminar_vinculo/${id}`, { method: 'DELETE' })
 }
 
 export async function eliminarArchivoLegajo(id: number): Promise<boolean> {

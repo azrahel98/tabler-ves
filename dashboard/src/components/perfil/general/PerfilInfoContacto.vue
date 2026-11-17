@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import Badge from '@/components/ui/badge/Badge.vue'
 import type { PersonalPerfil, PersonalContacto } from '@/services/personal'
 import { formatDate, calculateAge } from '@/utils/date'
 import {
@@ -27,6 +26,7 @@ const props = defineProps<Props>()
 
 const emit = defineEmits<{
   (e: 'openEditModal'): void
+  (e: 'openContactoModal'): void
   (e: 'copyToClipboard', text: string, fieldId: string): void
 }>()
 
@@ -34,7 +34,7 @@ const calcularEdad = calculateAge
 </script>
 
 <template>
-  <div class="space-y-4 text-micro">
+  <div class="space-y-4 text-meta">
     <section class="space-y-3">
       <div class="flex items-center justify-between">
         <h3 class="font-semibold text-foreground text-meta">Acerca del servidor</h3>
@@ -101,7 +101,10 @@ const calcularEdad = calculateAge
     <section class="space-y-3">
       <div class="flex items-center justify-between">
         <h3 class="font-semibold text-foreground text-meta">Contacto de emergencia</h3>
-        <Badge v-if="contacto" variant="outline" size="sm">Registrado</Badge>
+        <button type="button" class="text-primary hover:underline font-medium inline-flex items-center gap-1 cursor-pointer"
+          @click="emit('openContactoModal')">
+          <IconEdit class="size-3.5" /> {{ contacto ? 'Editar' : 'Agregar' }}
+        </button>
       </div>
 
       <ul v-if="contacto" class="space-y-2.5">
@@ -118,7 +121,12 @@ const calcularEdad = calculateAge
           <a :href="'tel:' + contacto.telefono" class="font-semibold text-primary hover:underline">{{ contacto.telefono }}</a>
         </li>
       </ul>
-      <p v-else class="text-muted-foreground">No se encontró contacto de emergencia registrado para este servidor.</p>
+      <div v-else class="space-y-2">
+        <p class="text-muted-foreground">No se encontró contacto de emergencia registrado para este servidor.</p>
+        <button type="button" class="text-primary hover:underline font-medium cursor-pointer" @click="emit('openContactoModal')">
+          + Agregar contacto
+        </button>
+      </div>
     </section>
   </div>
 </template>

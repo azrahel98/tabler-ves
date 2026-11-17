@@ -9,6 +9,8 @@ pub async fn obtener_documento_por_id(
         r#"
         SELECT
             d.id,
+            CAST(d.tipo_documento_id AS CHAR) as tipo_documento_id,
+            d.area_id,
             tp.nombre,
             ar.sigla,
             d.numero,
@@ -19,8 +21,8 @@ pub async fn obtener_documento_por_id(
             d.descripcion
         FROM
             documento d
-            inner join tipo_documento tp on d.tipo_documento_id = tp.id
-            inner join area ar on d.area_id = ar.id
+            LEFT JOIN tipo_documento tp on d.tipo_documento_id = tp.id
+            LEFT JOIN area ar on d.area_id = ar.id
         WHERE d.id = ?
         "#,
     )
@@ -30,8 +32,12 @@ pub async fn obtener_documento_por_id(
 
     let doc = row.map(|r| Documento {
         id: Some(r.get("id")),
-        tipo: r.try_get("nombre").ok().or_else(|| r.try_get("tipo").ok()),
-        area_id: r.try_get("area_id").ok(),
+        tipo: r
+            .try_get("tipo_documento_id")
+            .ok()
+            .or_else(|| r.try_get("nombre").ok())
+            .or_else(|| r.try_get("tipo").ok()),
+        area_id: r.try_get::<Option<i32>, _>("area_id").ok().flatten(),
         numero: r.try_get("numero").ok(),
         año: r.try_get("año").ok(),
         fecha: r.try_get::<String, _>("fecha").unwrap_or_default(),

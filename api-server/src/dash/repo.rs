@@ -8,6 +8,35 @@ use chrono::{Datelike, NaiveDate, NaiveDateTime};
 use serde_json::{Value, json};
 use sqlx::{MySqlPool, Row};
 
+pub async fn get_cumpleanos_mes(
+    pool: &MySqlPool,
+    mes: u32,
+) -> Result<Vec<crate::dash::models::CumpleanosMes>, ApiError> {
+    sqlx::query_as::<_, crate::dash::models::CumpleanosMes>(
+        r#"
+        SELECT
+            p.dni,
+            CONCAT_WS(' ', p.apaterno, p.amaterno, p.nombre) AS nombre,
+            p.fecha_nacimiento AS nacimiento,
+            p.avatar,
+            MIN(r.decreto) AS regimen
+        FROM persona p
+        INNER JOIN vinculo v ON p.dni = v.dni
+        LEFT JOIN regimen r ON v.regimen = r.id
+        WHERE v.estado = 'activo' AND MONTH(p.fecha_nacimiento) = ?
+        GROUP BY p.dni, nombre, p.fecha_nacimiento, p.avatar
+        ORDER BY DAY(p.fecha_nacimiento), nombre
+        "#,
+    )
+    .bind(mes)
+    .fetch_all(pool)
+    .await
+    .map_err(|e| {
+        eprintln!("Database error al consultar cumpleaños del mes: {:?}", e);
+        ApiError::InternalError("Error al consultar los cumpleaños".into())
+    })
+}
+
 pub async fn get_cumpleanos(pool: &MySqlPool) -> Result<Vec<Cumpleaños>, ApiError> {
     sqlx::query_as!(
         Cumpleaños,

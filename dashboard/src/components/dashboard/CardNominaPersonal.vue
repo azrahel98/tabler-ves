@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import Card from '@/components/ui/card/Card.vue'
 import Badge from '@/components/ui/badge/Badge.vue'
 import Button from '@/components/ui/button/Button.vue'
 import {
@@ -8,17 +7,16 @@ import {
   type TrabajadorNuevo,
   type TrabajadorRenuncia,
 } from './types'
-import { formatDate } from '@/utils/date'
+import { formatMoneda } from '@/services/personal'
+import { formatDate, parseDateSafe } from '@/utils/date'
 import {
   IconUsers,
-  IconUserPlus,
-  IconUserMinus,
-  IconSearch,
   IconX,
   IconUserOff,
   IconChevronLeft,
   IconChevronRight,
-  IconFileText,
+  IconChevronUp,
+  IconArrowsSort,
 } from '@tabler/icons-vue'
 
 interface Props {
@@ -44,28 +42,65 @@ const activeTab = ref<'ingresos' | 'salidas'>('ingresos')
 const searchQuery = ref('')
 const currentPage = ref(1)
 const pageSize = ref(8)
+const avatarErrors = ref<Record<string, boolean>>({})
+
+type SortKey = 'nombre' | 'area' | 'cargo' | 'detalle' | 'sueldo' | 'fecha'
+const sortKey = ref<SortKey>('fecha')
+const sortDir = ref<'asc' | 'desc'>('desc')
+
+const tabs = computed(() => [
+  { id: 'ingresos' as const, label: 'Ingresos recientes', count: props.nuevos.length, dot: 'bg-emerald-500' },
+  { id: 'salidas' as const, label: 'Salidas y renuncias', count: props.renuncias.length, dot: 'bg-rose-500' },
+])
 
 const changeTab = (tab: 'ingresos' | 'salidas') => {
   activeTab.value = tab
+  sortKey.value = 'fecha'
+  sortDir.value = 'desc'
   currentPage.value = 1
+}
+
+const setSort = (key: SortKey) => {
+  if (sortKey.value === key) {
+    sortDir.value = sortDir.value === 'asc' ? 'desc' : 'asc'
+  } else {
+    sortKey.value = key
+    sortDir.value = key === 'fecha' || key === 'sueldo' ? 'desc' : 'asc'
+  }
+  currentPage.value = 1
+}
+
+const ariaSort = (key: SortKey) =>
+  sortKey.value === key ? (sortDir.value === 'asc' ? 'ascending' : 'descending') : 'none'
+
+const getInitials = (nombre: string): string => {
+  const parts = (nombre || '').trim().split(/\s+/).filter(Boolean)
+  if (parts.length === 0) return 'SP'
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase()
+  return (parts[0][0] + (parts[1]?.[0] || '')).toUpperCase()
+}
+
+const normalizar = (t: string | null | undefined) =>
+  (t || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase()
+
+const isIngreso = (item: TrabajadorNuevo | TrabajadorRenuncia): item is TrabajadorNuevo => {
+  return 'ingreso' in item
 }
 
 const filteredIngresos = computed(() => {
   let list = props.nuevos
   if (props.selectedArea) {
-    list = list.filter((t) => t.area.toLowerCase().includes(props.selectedArea!.toLowerCase()))
+    const areaNorm = normalizar(props.selectedArea)
+    list = list.filter((t) => normalizar(t.area).includes(areaNorm))
   }
   if (props.selectedRegimen) {
-    list = list.filter((t) => t.regimen.toLowerCase().includes(props.selectedRegimen!.toLowerCase()))
+    const regNorm = normalizar(props.selectedRegimen)
+    list = list.filter((t) => normalizar(t.regimen).includes(regNorm))
   }
   if (searchQuery.value.trim()) {
-    const q = searchQuery.value.trim().toLowerCase()
+    const q = normalizar(searchQuery.value.trim())
     list = list.filter((t) =>
-      t.nombre.toLowerCase().includes(q) ||
-      t.dni.includes(q) ||
-      t.cargo.toLowerCase().includes(q) ||
-      t.area.toLowerCase().includes(q) ||
-      t.plaza.toLowerCase().includes(q)
+      normalizar([t.nombre, t.dni, t.cargo, t.area, t.plaza, t.regimen, t.documento].join(' ')).includes(q)
     )
   }
   return list
@@ -74,16 +109,13 @@ const filteredIngresos = computed(() => {
 const filteredSalidas = computed(() => {
   let list = props.renuncias
   if (props.selectedArea) {
-    list = list.filter((t) => t.area.toLowerCase().includes(props.selectedArea!.toLowerCase()))
+    const areaNorm = normalizar(props.selectedArea)
+    list = list.filter((t) => normalizar(t.area).includes(areaNorm))
   }
   if (searchQuery.value.trim()) {
-    const q = searchQuery.value.trim().toLowerCase()
+    const q = normalizar(searchQuery.value.trim())
     list = list.filter((t) =>
-      t.nombre.toLowerCase().includes(q) ||
-      t.dni.includes(q) ||
-      t.cargo.toLowerCase().includes(q) ||
-      t.area.toLowerCase().includes(q) ||
-      t.codigo.toLowerCase().includes(q)
+      normalizar([t.nombre, t.dni, t.cargo, t.area, t.codigo].join(' ')).includes(q)
     )
   }
   return list
@@ -96,278 +128,364 @@ const activeList = computed<Array<TrabajadorNuevo | TrabajadorRenuncia>>(() => {
 const totalItems = computed(() => activeList.value.length)
 const totalPages = computed(() => Math.max(1, Math.ceil(totalItems.value / pageSize.value)))
 
-const paginatedList = computed(() => {
-  const start = (currentPage.value - 1) * pageSize.value
-  return activeList.value.slice(start, start + pageSize.value)
-})
-
-const startRecord = computed(() => {
-  if (totalItems.value === 0) return 0
-  return (currentPage.value - 1) * pageSize.value + 1
-})
-
-const endRecord = computed(() => {
-  return Math.min(currentPage.value * pageSize.value, totalItems.value)
-})
-
-const onSearchChange = () => {
-  currentPage.value = 1
+const sortValue = (t: TrabajadorNuevo | TrabajadorRenuncia, key: SortKey): number | string => {
+  switch (key) {
+    case 'nombre':
+      return normalizar(t.nombre)
+    case 'area':
+      return normalizar(t.area)
+    case 'cargo':
+      return normalizar(t.cargo)
+    case 'detalle':
+      return isIngreso(t) ? normalizar(t.regimen) : normalizar(t.codigo)
+    case 'sueldo':
+      return isIngreso(t) ? Number(t.sueldo) || 0 : 0
+    case 'fecha': {
+      const rawDate = isIngreso(t) ? t.ingreso : t.fecha
+      return parseDateSafe(rawDate)?.getTime() || 0
+    }
+  }
 }
+
+const sortedList = computed(() => {
+  const key = sortKey.value
+  const dir = sortDir.value === 'asc' ? 1 : -1
+  return [...activeList.value].sort((a, b) => {
+    const A = sortValue(a, key)
+    const B = sortValue(b, key)
+    return (A < B ? -1 : A > B ? 1 : 0) * dir
+  })
+})
+
+const paginatedList = computed(() => {
+  const p = Math.min(currentPage.value, totalPages.value)
+  const start = (p - 1) * pageSize.value
+  return sortedList.value.slice(start, start + pageSize.value)
+})
 
 const clearSearch = () => {
   searchQuery.value = ''
   currentPage.value = 1
 }
 
-const prevPage = () => {
-  if (currentPage.value > 1) {
-    currentPage.value--
-  }
-}
-
-const nextPage = () => {
-  if (currentPage.value < totalPages.value) {
-    currentPage.value++
-  }
-}
-
-const isIngreso = (item: TrabajadorNuevo | TrabajadorRenuncia): item is TrabajadorNuevo => {
-  return 'ingreso' in item
-}
-
 const regimenBadgeVariant = (regimen: string): 'primary' | 'success' | 'warning' | 'secondary' | 'neutral' => {
-  if (regimen.includes('276')) return 'primary'
-  if (regimen.includes('1057')) return 'success'
-  if (regimen.includes('728')) return 'warning'
+  if ((regimen || '').includes('276')) return 'primary'
+  if ((regimen || '').includes('1057')) return 'success'
+  if ((regimen || '').includes('728')) return 'warning'
   return 'secondary'
 }
 </script>
 
 <template>
-  <Card :no-padding="true" class="shadow-2xs w-full overflow-hidden border border-border bg-card">
+  <div class="rounded-xl border border-border bg-card overflow-hidden">
+    <div class="px-4 py-2.5 border-b border-border flex flex-wrap items-center justify-between gap-2">
+      <div class="min-w-0">
+        <h3 class="text-meta font-semibold text-foreground tracking-tight flex items-center gap-1.5">
+          <IconUsers class="size-3.5 text-primary shrink-0" aria-hidden="true" />
+          <span>Movimientos de Personal</span>
+        </h3>
+        <p class="text-micro text-muted-foreground">
+          Altas y renuncias registradas en los últimos 120 días
+        </p>
+      </div>
+
+      <div v-if="selectedArea || (activeTab === 'ingresos' && selectedRegimen)" class="flex items-center gap-1.5">
+        <button
+          type="button"
+          class="inline-flex items-center gap-1 px-2 h-control-xs rounded-md bg-primary/10 text-primary border border-primary/20 text-nano font-semibold hover:bg-primary/15 transition cursor-pointer"
+          title="Quitar filtro activo"
+          @click="emit('clear-filter')"
+        >
+          <span>Filtro: {{ selectedArea || selectedRegimen }}</span>
+          <IconX class="size-3" aria-hidden="true" />
+        </button>
+      </div>
+    </div>
+
     <div
-      class="flex flex-col gap-3.5 border-b border-border p-4 sm:px-5 lg:flex-row lg:items-center lg:justify-between">
-      <div class="flex flex-col sm:flex-row sm:items-center gap-3">
-        <div class="flex items-center gap-2.5">
-          <div class="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
-            <IconUsers class="size-4.5" aria-hidden="true" />
-          </div>
-          <div>
-            <h3 class="font-semibold text-foreground tracking-tight text-sm">Movimientos de Personal</h3>
-            <p class="text-xs text-muted-foreground">
-              Altas y renuncias registradas en los últimos 120 días
-            </p>
-          </div>
-        </div>
-
-        <div class="flex items-center gap-1 p-1 bg-muted/60 rounded-xl border border-border/60 self-start sm:self-auto">
-          <button type="button"
-            class="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer"
-            :class="activeTab === 'ingresos' ? 'bg-card text-foreground shadow-2xs' : 'text-muted-foreground hover:text-foreground'"
-            @click="changeTab('ingresos')">
-            <IconUserPlus class="size-3.5 text-emerald-600 dark:text-emerald-400" />
-            <span>Ingresos</span>
-            <Badge :variant="activeTab === 'ingresos' ? 'primary' : 'secondary'" size="xs">
-              {{ nuevos.length }}
-            </Badge>
-          </button>
-
-          <button type="button"
-            class="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer"
-            :class="activeTab === 'salidas' ? 'bg-card text-foreground shadow-2xs' : 'text-muted-foreground hover:text-foreground'"
-            @click="changeTab('salidas')">
-            <IconUserMinus class="size-3.5 text-rose-500" />
-            <span>Salidas / Renuncias</span>
-            <Badge :variant="activeTab === 'salidas' ? 'danger' : 'secondary'" size="xs">
-              {{ renuncias.length }}
-            </Badge>
-          </button>
-        </div>
-      </div>
-
-      <div class="flex flex-wrap items-center gap-2.5">
-        <div class="relative w-full sm:w-64 lg:w-72">
-          <IconSearch
-            class="pointer-events-none absolute left-3 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground"
-            aria-hidden="true" />
-          <input v-model="searchQuery" type="text" placeholder="Buscar por DNI, nombre, área..."
-            class="h-8.5 w-full rounded-lg border border-border bg-muted/30 pl-8.5 pr-8 text-xs text-foreground placeholder:text-muted-foreground transition-colors focus:border-primary focus:outline-hidden focus:ring-1 focus:ring-primary"
-            @input="onSearchChange" />
-          <button v-if="searchQuery" type="button"
-            class="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-hidden"
-            aria-label="Limpiar búsqueda" @click="clearSearch">
-            <IconX class="size-3.5" aria-hidden="true" />
-          </button>
-        </div>
-
-        <div v-if="selectedArea || (activeTab === 'ingresos' && selectedRegimen)" class="flex items-center gap-1">
-          <Badge variant="primary" size="xs">
-            Filtro: {{ selectedArea || selectedRegimen }}
-          </Badge>
-          <button type="button"
-            class="flex size-6 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-hidden"
-            title="Quitar filtro" aria-label="Quitar filtro activo" @click="emit('clear-filter')">
-            <IconX class="size-3.5" aria-hidden="true" />
-          </button>
-        </div>
-
-        <Badge :variant="activeTab === 'ingresos' ? 'success' : 'danger'" size="xs" dot>
-          {{ totalItems }} {{ activeTab === 'ingresos' ? (totalItems === 1 ? 'Ingreso' : 'Ingresos') : (totalItems === 1
-            ? 'Salida' : 'Salidas') }}
-        </Badge>
-      </div>
+      class="flex items-center gap-1 px-3 border-b border-border overflow-x-auto"
+      role="tablist"
+      aria-label="Filtrar movimientos de personal"
+    >
+      <button
+        v-for="t in tabs"
+        :key="t.id"
+        type="button"
+        role="tab"
+        :aria-selected="activeTab === t.id"
+        class="relative inline-flex items-center gap-2 px-3 py-2.5 text-micro whitespace-nowrap cursor-pointer transition focus:outline-hidden focus-visible:ring-2 focus-visible:ring-primary rounded-md"
+        :class="
+          activeTab === t.id
+            ? 'text-foreground font-semibold after:absolute after:inset-x-2 after:-bottom-px after:h-0.5 after:bg-foreground'
+            : 'text-muted-foreground hover:text-foreground font-medium'
+        "
+        @click="changeTab(t.id)"
+      >
+        <span class="size-2 rounded-full shrink-0" :class="t.dot"></span>
+        <span>{{ t.label }}</span>
+        <span class="text-micro text-muted-foreground font-mono">{{ t.count }}</span>
+      </button>
     </div>
 
-    <div v-if="isLoading" class="space-y-3.5 p-5 animate-pulse" aria-busy="true">
-      <div v-for="i in 5" :key="i" class="h-11 rounded-lg bg-muted/60"></div>
+    <div v-if="isLoading" class="p-3.5 space-y-2.5 border-t border-border animate-pulse" aria-busy="true">
+      <div v-for="i in 5" :key="i" class="h-9 rounded-md bg-muted/60"></div>
     </div>
 
-    <div v-else-if="totalItems === 0" class="flex flex-col items-center justify-center px-4 py-14 text-center">
-      <div class="flex size-11 items-center justify-center rounded-full bg-muted/60 text-muted-foreground mb-3">
-        <IconUserOff class="size-5.5" aria-hidden="true" />
-      </div>
-      <p class="text-sm font-semibold text-foreground">
-        {{ activeTab === 'ingresos' ? 'No se encontraron trabajadores ingresados' : 'No se encontraron renuncias oceses'
+    <div
+      v-else-if="totalItems === 0"
+      class="border-t border-border text-meta text-muted-foreground py-10 text-center space-y-2 px-4"
+    >
+      <IconUserOff class="size-7 mx-auto text-muted-foreground/40" aria-hidden="true" />
+      <p class="font-semibold text-foreground text-xs">
+        {{ activeTab === 'ingresos' ? 'Sin ingresos registrados' : 'Sin salidas o renuncias registradas' }}
+      </p>
+      <p class="text-micro max-w-sm mx-auto">
+        {{
+          selectedArea || selectedRegimen || searchQuery
+            ? 'Ningún registro coincide con el filtro o la búsqueda actual.'
+            : activeTab === 'ingresos'
+              ? 'No constan altas de personal en los últimos 120 días.'
+              : 'No constan ceses o renuncias en los últimos 120 días.'
         }}
       </p>
-      <p class="mt-1 max-w-sm text-xs text-muted-foreground leading-relaxed">
-        {{ (selectedArea || selectedRegimen || searchQuery) ?
-          'No existen registros' : (activeTab === 'ingresos' ? 'No se registran altas de personal'
-            :
-            'No se registran renuncias en los últimos 120 días.') }}
-      </p>
-      <div v-if="selectedArea || selectedRegimen || searchQuery" class="mt-4">
-        <Button variant="outline" size="sm" class="gap-1.5 text-xs" @click="clearSearch(); emit('clear-filter')">
-          <IconX class="size-3.5" aria-hidden="true" />
-          Restablecer listado
+      <div v-if="selectedArea || selectedRegimen || searchQuery" class="pt-1">
+        <Button
+          variant="outline"
+          size="xs"
+          class="gap-1.5 text-micro cursor-pointer"
+          @click="
+            clearSearch();
+            emit('clear-filter')
+          "
+        >
+          <IconX class="size-3" aria-hidden="true" />
+          Restablecer filtros
         </Button>
       </div>
     </div>
 
-    <div v-else class="overflow-x-auto">
-      <table class="w-full text-left text-xs text-muted-foreground" aria-label="Tabla de movimientos de personal">
-        <thead
-          class="border-b border-border bg-muted/30 text-meta font-semibold uppercase tracking-wider text-muted-foreground">
-          <tr v-if="activeTab === 'ingresos'">
-            <th scope="col" class="px-5 py-3 font-semibold">Servidor</th>
-            <th scope="col" class="px-5 py-3 font-semibold">Área / Gerencia</th>
-            <th scope="col" class="px-5 py-3 font-semibold">Cargo Funcional</th>
-            <th scope="col" class="px-5 py-3 font-semibold">Régimen & Plaza</th>
-            <th scope="col" class="px-5 py-3 font-semibold">Documento</th>
-            <th scope="col" class="px-5 py-3 text-right font-semibold">Fecha Ingreso</th>
-          </tr>
-          <tr v-else>
-            <th scope="col" class="px-5 py-3 font-semibold">Servidor</th>
-            <th scope="col" class="px-5 py-3 font-semibold">Área / Gerencia</th>
-            <th scope="col" class="px-5 py-3 font-semibold">Cargo Funcional</th>
-            <th scope="col" class="px-5 py-3 font-semibold">Plaza AIRHSP</th>
-
-            <th scope="col" class="px-5 py-3 text-right font-semibold">Fecha Cese</th>
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-border">
-          <tr v-for="t in paginatedList" :key="t.id" tabindex="0"
-            class="transition-colors hover:bg-muted/30 focus-visible:bg-muted/40 focus-visible:outline-hidden">
-            <td class="px-5 py-3.5">
-              <router-link :to="{ name: 'perfil', params: { dni: t.dni } }"
-                class="flex items-center gap-3 group cursor-pointer">
-                <img v-if="t.avatar" v-auth-src="resolveAvatarUrl(t.dni)!" :alt="t.nombre"
-                  class="size-8.5 rounded-full border border-border object-cover shrink-0 shadow-2xs group-hover:border-primary transition-colors" />
-                <div v-else
-                  class="flex size-8.5 shrink-0 items-center justify-center rounded-full font-bold text-xs border transition-colors"
-                  :class="activeTab === 'ingresos' ? 'bg-primary/10 text-primary border-primary/20 group-hover:border-primary' : 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20 group-hover:border-rose-500'">
-                  {{ t.nombre.charAt(0) }}
-                </div>
-                <div class="min-w-0">
-                  <div
-                    class="text-xs font-medium text-foreground group-hover:text-primary transition-colors wrap-break-word">
-                    {{ t.nombre }}
-                  </div>
-                  <div class="font-mono text-meta text-muted-foreground">
-                    DNI: {{ t.dni }}
-                  </div>
-                </div>
-              </router-link>
-            </td>
-
-            <td class="px-5 py-3.5">
-              <router-link
-                :to="{ path: '/personal/area', query: { area: t.area } }"
-                class="text-xs font-medium text-foreground wrap-break-word hover:underline"
-                :title="t.area"
+    <div v-else class="border-t border-border">
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-meta" aria-label="Tabla de movimientos de personal">
+          <thead class="border-b border-border text-micro text-muted-foreground select-none">
+            <tr>
+              <th scope="col" :aria-sort="ariaSort('nombre')" class="px-3 py-2.5 font-medium">
+                <button
+                  type="button"
+                  class="inline-flex items-center gap-1.5 cursor-pointer hover:text-foreground transition"
+                  @click="setSort('nombre')"
+                >
+                  Servidor
+                  <IconChevronUp
+                    v-if="sortKey === 'nombre'"
+                    class="size-3 transition-transform"
+                    :class="sortDir === 'desc' ? 'rotate-180' : ''"
+                  />
+                  <IconArrowsSort v-else class="size-3 opacity-60" />
+                </button>
+              </th>
+              <th scope="col" :aria-sort="ariaSort('cargo')" class="px-3 py-2.5 font-medium">
+                <button
+                  type="button"
+                  class="inline-flex items-center gap-1.5 cursor-pointer hover:text-foreground transition"
+                  @click="setSort('cargo')"
+                >
+                  Cargo
+                  <IconChevronUp
+                    v-if="sortKey === 'cargo'"
+                    class="size-3 transition-transform"
+                    :class="sortDir === 'desc' ? 'rotate-180' : ''"
+                  />
+                  <IconArrowsSort v-else class="size-3 opacity-60" />
+                </button>
+              </th>
+              <th scope="col" :aria-sort="ariaSort('area')" class="px-3 py-2.5 font-medium">
+                <button
+                  type="button"
+                  class="inline-flex items-center gap-1.5 cursor-pointer hover:text-foreground transition"
+                  @click="setSort('area')"
+                >
+                  Área
+                  <IconChevronUp
+                    v-if="sortKey === 'area'"
+                    class="size-3 transition-transform"
+                    :class="sortDir === 'desc' ? 'rotate-180' : ''"
+                  />
+                  <IconArrowsSort v-else class="size-3 opacity-60" />
+                </button>
+              </th>
+              <th scope="col" :aria-sort="ariaSort('detalle')" class="px-3 py-2.5 font-medium">
+                <button
+                  type="button"
+                  class="inline-flex items-center gap-1.5 cursor-pointer hover:text-foreground transition"
+                  @click="setSort('detalle')"
+                >
+                  {{ activeTab === 'ingresos' ? 'Régimen' : 'Plaza AIRHSP' }}
+                  <IconChevronUp
+                    v-if="sortKey === 'detalle'"
+                    class="size-3 transition-transform"
+                    :class="sortDir === 'desc' ? 'rotate-180' : ''"
+                  />
+                  <IconArrowsSort v-else class="size-3 opacity-60" />
+                </button>
+              </th>
+              <th
+                v-if="activeTab === 'ingresos'"
+                scope="col"
+                :aria-sort="ariaSort('sueldo')"
+                class="px-3 py-2.5 font-medium text-right"
               >
-                {{ t.area }}
-              </router-link>
-            </td>
+                <button
+                  type="button"
+                  class="inline-flex items-center gap-1.5 cursor-pointer hover:text-foreground transition"
+                  @click="setSort('sueldo')"
+                >
+                  Sueldo
+                  <IconChevronUp
+                    v-if="sortKey === 'sueldo'"
+                    class="size-3 transition-transform"
+                    :class="sortDir === 'desc' ? 'rotate-180' : ''"
+                  />
+                  <IconArrowsSort v-else class="size-3 opacity-60" />
+                </button>
+              </th>
+              <th scope="col" :aria-sort="ariaSort('fecha')" class="px-3 py-2.5 font-medium text-right">
+                <button
+                  type="button"
+                  class="inline-flex items-center gap-1.5 cursor-pointer hover:text-foreground transition"
+                  @click="setSort('fecha')"
+                >
+                  {{ activeTab === 'ingresos' ? 'Ingreso' : 'Cese' }}
+                  <IconChevronUp
+                    v-if="sortKey === 'fecha'"
+                    class="size-3 transition-transform"
+                    :class="sortDir === 'desc' ? 'rotate-180' : ''"
+                  />
+                  <IconArrowsSort v-else class="size-3 opacity-60" />
+                </button>
+              </th>
+            </tr>
+          </thead>
 
-            <td class="px-5 py-3.5">
-              <div class="text-xs text-muted-foreground wrap-break-word" :title="t.cargo">
-                {{ t.cargo }}
-              </div>
-            </td>
+          <tbody class="divide-y divide-border">
+            <tr
+              v-for="t in paginatedList"
+              :key="`${activeTab}-${t.id}`"
+              class="transition-colors hover:bg-muted/40"
+            >
+              <td class="px-3 py-2.5 min-w-0">
+                <router-link
+                  :to="{ name: 'perfil', params: { dni: t.dni } }"
+                  class="flex items-center gap-2.5 group cursor-pointer"
+                >
+                  <img
+                    v-if="t.avatar && !avatarErrors[t.dni]"
+                    v-auth-src="resolveAvatarUrl(t.dni)!"
+                    :alt="t.nombre"
+                    class="size-7 rounded-full border border-border object-cover shrink-0 group-hover:border-primary transition-colors"
+                    @error="avatarErrors[t.dni] = true"
+                  />
+                  <div
+                    v-else
+                    class="flex size-7 shrink-0 items-center justify-center rounded-full font-semibold text-nano border transition-colors select-none"
+                    :class="
+                      activeTab === 'ingresos'
+                        ? 'bg-primary/10 text-primary border-primary/20'
+                        : 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20'
+                    "
+                  >
+                    {{ getInitials(t.nombre) }}
+                  </div>
 
-            <template v-if="isIngreso(t)">
-              <td class="px-5 py-3.5">
-                <div class="flex flex-col items-start gap-1">
+                  <div class="min-w-0">
+                    <span
+                      class="text-micro font-medium text-foreground group-hover:text-primary transition-colors block wrap-break-word"
+                    >
+                      {{ t.nombre }}
+                    </span>
+                    <span class="font-mono text-nano text-muted-foreground">
+                      DNI {{ t.dni }}<template v-if="isIngreso(t) && t.plaza"> · Plaza {{ t.plaza }}</template>
+                    </span>
+                  </div>
+                </router-link>
+              </td>
+
+              <td class="px-3 py-2.5 text-micro text-foreground max-w-52">
+                <span class="line-clamp-2" :title="t.cargo">{{ t.cargo || '-' }}</span>
+              </td>
+
+              <td class="px-3 py-2.5 text-micro max-w-56">
+                <router-link
+                  v-if="t.area"
+                  :to="{ path: '/personal/area', query: { area: t.area } }"
+                  class="text-foreground hover:text-primary hover:underline line-clamp-2 transition-colors"
+                  :title="t.area"
+                >
+                  {{ t.area }}
+                </router-link>
+                <span v-else class="text-muted-foreground">-</span>
+              </td>
+
+              <template v-if="isIngreso(t)">
+                <td class="px-3 py-2.5 whitespace-nowrap">
                   <Badge :variant="regimenBadgeVariant(t.regimen)" size="xs">
                     {{ t.regimen }}
                   </Badge>
-                  <span class="font-mono text-meta text-muted-foreground">{{ t.plaza || '-' }}</span>
-                </div>
-              </td>
-              <td class="px-5 py-3.5">
-                <Badge variant="outline" size="xs" class="font-mono gap-1">
-                  <IconFileText class="size-3" aria-hidden="true" />
-                  {{ t.documento }}
-                </Badge>
-              </td>
-              <td class="px-5 py-3.5 text-right font-mono text-xs font-semibold text-foreground tabular-nums">
-                {{ formatDate(t.ingreso) }}
-              </td>
-            </template>
+                </td>
+                <td class="px-3 py-2.5 text-right font-mono font-medium text-foreground tabular-nums text-micro whitespace-nowrap">
+                  {{ t.sueldo ? formatMoneda(t.sueldo) : '-' }}
+                </td>
+                <td class="px-3 py-2.5 text-right font-mono text-micro text-muted-foreground tabular-nums whitespace-nowrap">
+                  {{ formatDate(t.ingreso) }}
+                </td>
+              </template>
 
-            <template v-else>
-              <td class="px-5 py-3.5">
-                <span class="font-mono text-meta text-muted-foreground">
-                  {{ t.codigo || '-' }}
-                </span>
-              </td>
-
-              <td
-                class="px-5 py-3.5 text-right font-mono text-xs font-semibold text-rose-600 dark:text-rose-400 tabular-nums">
-                {{ formatDate(t.fecha) }}
-              </td>
-            </template>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <div v-if="!isLoading && totalItems > 0"
-      class="flex flex-col items-center justify-between gap-3 border-t border-border bg-muted/15 px-5 py-3 sm:flex-row text-xs text-muted-foreground">
-      <div>
-        Mostrando <span class="font-semibold text-foreground font-mono">{{ startRecord }}</span> a <span
-          class="font-semibold text-foreground font-mono">{{ endRecord }}</span> de <span
-          class="font-semibold text-foreground font-mono">{{ totalItems }}</span> registros
+              <template v-else>
+                <td class="px-3 py-2.5 whitespace-nowrap">
+                  <span class="font-mono text-micro text-muted-foreground">
+                    {{ t.codigo || '-' }}
+                  </span>
+                </td>
+                <td class="px-3 py-2.5 text-right font-mono text-micro font-medium text-rose-600 dark:text-rose-400 tabular-nums whitespace-nowrap">
+                  {{ formatDate(t.fecha) }}
+                </td>
+              </template>
+            </tr>
+          </tbody>
+        </table>
       </div>
 
-      <div v-if="totalPages > 1" class="flex items-center gap-1.5">
-        <Button variant="outline" size="xs" :disabled="currentPage === 1" aria-label="Página anterior"
-          @click="prevPage">
-          <IconChevronLeft class="size-3.5" aria-hidden="true" />
-          Anterior
-        </Button>
-
-        <span class="px-2 text-xs font-medium text-foreground font-mono">
-          {{ currentPage }} / {{ totalPages }}
+      <div class="px-4 py-2.5 border-t border-border flex flex-wrap items-center justify-between gap-3 text-micro">
+        <span class="text-muted-foreground">
+          <span class="font-semibold text-foreground font-mono">{{ totalItems }}</span>
+          {{ totalItems === 1 ? 'resultado' : 'resultados' }}
         </span>
 
-        <Button variant="outline" size="xs" :disabled="currentPage === totalPages" aria-label="Página siguiente"
-          @click="nextPage">
-          Siguiente
-          <IconChevronRight class="size-3.5" aria-hidden="true" />
-        </Button>
+        <nav v-if="totalPages > 1" class="flex items-center gap-1.5 text-muted-foreground" aria-label="Paginación">
+          <button
+            type="button"
+            class="size-7 inline-flex items-center justify-center rounded-lg hover:bg-muted disabled:opacity-40 disabled:pointer-events-none cursor-pointer"
+            :disabled="currentPage <= 1"
+            aria-label="Página anterior"
+            @click="currentPage--"
+          >
+            <IconChevronLeft class="size-3.5" />
+          </button>
+          <span class="min-w-7 h-7 px-2 inline-flex items-center justify-center rounded-lg bg-muted text-foreground font-mono font-medium">
+            {{ Math.min(currentPage, totalPages) }}
+          </span>
+          <span>de <span class="font-mono">{{ totalPages }}</span></span>
+          <button
+            type="button"
+            class="size-7 inline-flex items-center justify-center rounded-lg hover:bg-muted disabled:opacity-40 disabled:pointer-events-none cursor-pointer"
+            :disabled="currentPage >= totalPages"
+            aria-label="Página siguiente"
+            @click="currentPage++"
+          >
+            <IconChevronRight class="size-3.5" />
+          </button>
+        </nav>
       </div>
     </div>
-  </Card>
+  </div>
 </template>

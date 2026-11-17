@@ -160,7 +160,7 @@ const emit = defineEmits<{
           </span>
           <div class="flex items-center gap-2 min-w-0">
             <span
-              class="size-4 rounded-full bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center text-micro font-bold shrink-0">
+              class="size-4 rounded-full bg-sky-500/10 text-sky-600 dark:text-sky-400 flex items-center justify-center text-micro font-bold shrink-0">
               {{ (vinculoEfectivo.sindicato || 'N')[0] }}
             </span>
             <span class="font-medium text-foreground truncate">{{ vinculoEfectivo.sindicato || 'No Afiliado' }}</span>
@@ -229,7 +229,7 @@ const emit = defineEmits<{
           </span>
           <div class="flex items-center gap-2 flex-wrap">
             <button type="button"
-              class="text-left font-medium text-purple-600 dark:text-purple-400 hover:underline truncate inline-flex items-center gap-1 cursor-pointer transition-colors"
+              class="text-left font-medium text-sky-600 dark:text-sky-400 hover:underline truncate inline-flex items-center gap-1 cursor-pointer transition-colors"
               @click="emit('verEventos', vinculoEfectivo)">
               <span class="truncate">
                 {{ totalEventos > 0 ? `${totalEventos} ${totalEventos === 1 ? 'evento registrado' :
@@ -238,7 +238,7 @@ const emit = defineEmits<{
               <IconExternalLink class="size-3 shrink-0 opacity-70" />
             </button>
             <button v-if="vinculoEfectivo.origen !== 'SUNAT'" type="button"
-              class="text-micro font-semibold text-purple-600 dark:text-purple-400 hover:text-purple-700 inline-flex items-center gap-1 hover:underline cursor-pointer"
+              class="text-micro font-semibold text-sky-600 dark:text-sky-400 hover:text-sky-700 inline-flex items-center gap-1 hover:underline cursor-pointer"
               @click="emit('crearEvento', vinculoEfectivo)">
               <IconCalendarPlus class="size-3 shrink-0" />
               <span>+ Agregar Evento</span>
@@ -252,7 +252,7 @@ const emit = defineEmits<{
             <IconFileCode class="size-3.5 text-muted-foreground shrink-0" /> Doc. Evento:
           </span>
           <button type="button"
-            class="text-left font-medium text-meta text-purple-600 dark:text-purple-400 hover:underline truncate inline-flex items-center gap-1 cursor-pointer transition-colors"
+            class="text-left font-medium text-meta text-sky-600 dark:text-sky-400 hover:underline truncate inline-flex items-center gap-1 cursor-pointer transition-colors"
             :title="[vinculoEfectivo.doc_evento_tipo, vinculoEfectivo.numero_doc_evento].filter(Boolean).join(' N° ')"
             @click="emit('verDocumento', { tipo: 'evento', vinculo: vinculoEfectivo })">
             <span class="truncate">{{ [vinculoEfectivo.doc_evento_tipo,
@@ -287,18 +287,18 @@ const emit = defineEmits<{
       class="pt-2 border-t border-border/70 space-y-1.5">
       <div class="flex items-center justify-between">
         <span class="text-meta font-semibold text-foreground flex items-center gap-1.5">
-          <IconFileCode class="size-3 text-purple-600 dark:text-purple-400 shrink-0" />
+          <IconFileCode class="size-3 text-sky-600 dark:text-sky-400 shrink-0" />
           Eventos ({{ vinculoEfectivo.eventos?.length || 0 }})
         </span>
         <div class="flex items-center gap-2">
           <Button v-if="vinculoEfectivo.origen !== 'SUNAT'" size="xs" variant="outline"
-            class="text-purple-600 hover:text-purple-700 hover:bg-purple-500/10 border-purple-500/30 gap-1 cursor-pointer text-micro h-6.5 px-2"
+            class="text-sky-600 hover:text-sky-700 hover:bg-sky-500/10 border-sky-500/30 gap-1 cursor-pointer text-micro h-6.5 px-2"
             @click="emit('crearEvento', vinculoEfectivo)">
             <IconCalendarPlus class="size-3" />
             <span>Agregar Evento</span>
           </Button>
           <button v-if="vinculoEfectivo.eventos && vinculoEfectivo.eventos.length > 0" type="button"
-            class="text-meta text-purple-600 dark:text-purple-400 hover:underline font-medium cursor-pointer"
+            class="text-meta text-sky-600 dark:text-sky-400 hover:underline font-medium cursor-pointer"
             @click="emit('verEventos', vinculoEfectivo)">
             Ver panel de eventos
           </button>
@@ -308,8 +308,8 @@ const emit = defineEmits<{
         <div v-for="ev in vinculoEfectivo.eventos" :key="ev.id"
           class="flex flex-wrap items-center justify-between gap-2 px-2.5 py-1.5 rounded-lg bg-muted/30 border border-border/60 text-meta">
           <div class="flex items-center gap-2 flex-wrap min-w-0">
-            <Badge variant="outline" size="xs"
-              class="font-semibold border-purple-500/30 text-purple-600 dark:text-purple-400 uppercase text-micro">
+            <Badge variant="outline" size="nano"
+              class="font-semibold border-sky-500/30 text-sky-600 dark:text-sky-400 uppercase">
               {{ getTipoEventoLabel(ev.tipo_evento) }}
             </Badge>
             <span v-if="getEstadoVigencia(ev) === 'cerrado'"

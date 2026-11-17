@@ -319,13 +319,13 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="space-y-6 max-w-7xl mx-auto pb-16">
+  <div class="mx-auto w-full max-w-6xl space-y-4 px-4 pb-16">
     <PageHeader title="Trabajadores por Área" subtitle="Personal activo asignado a cada área">
       <template #actions>
         <Button
           variant="ghost"
           size="sm"
-          class="gap-1.5 text-xs text-muted-foreground hover:text-foreground cursor-pointer"
+          class="gap-1.5 text-meta text-muted-foreground hover:text-foreground cursor-pointer"
           :disabled="estaCargando"
           @click="actualizarVista"
         >
@@ -355,8 +355,8 @@ onMounted(async () => {
         <div class="size-12 rounded-full bg-primary/10 text-primary mx-auto flex items-center justify-center">
           <IconBuildingCommunity class="size-6" />
         </div>
-        <h3 class="text-sm font-semibold text-foreground">Seleccione un área</h3>
-        <p class="text-xs text-muted-foreground">
+        <h3 class="text-xs font-semibold text-foreground">Seleccione un área</h3>
+        <p class="text-meta text-muted-foreground">
           Elija un área institucional para visualizar el personal asignado, su régimen y cargos.
         </p>
       </div>
@@ -364,16 +364,16 @@ onMounted(async () => {
 
     <div
       v-else-if="errorMessage"
-      class="p-8 text-center rounded-2xl border border-rose-500/20 bg-rose-500/5 space-y-3"
+      class="p-4 text-center rounded-xl border border-rose-500/20 bg-rose-500/5 space-y-3"
       role="alert"
     >
       <IconAlertTriangle class="size-8 mx-auto text-rose-500" />
-      <p class="text-sm font-bold text-rose-600 dark:text-rose-400">Error al cargar los datos</p>
-      <p class="text-xs text-muted-foreground max-w-md mx-auto">{{ errorMessage }}</p>
+      <p class="text-xs font-bold text-rose-600 dark:text-rose-400">Error al cargar los datos</p>
+      <p class="text-meta text-muted-foreground max-w-md mx-auto">{{ errorMessage }}</p>
       <Button
         variant="outline"
         size="sm"
-        class="gap-1.5 text-xs cursor-pointer"
+        class="gap-1.5 text-meta cursor-pointer"
         @click="reintentarCarga"
       >
         <IconRefresh class="size-3.5" />
@@ -381,13 +381,13 @@ onMounted(async () => {
       </Button>
     </div>
 
-    <div v-else-if="isLoadingPersonal" class="space-y-6 animate-pulse" aria-busy="true">
+    <div v-else-if="isLoadingPersonal" class="space-y-4 animate-pulse" aria-busy="true">
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div class="h-20 bg-muted/40 rounded-xl"></div>
         <div class="h-20 bg-muted/40 rounded-xl"></div>
         <div class="h-20 bg-muted/40 rounded-xl"></div>
       </div>
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <div class="h-72 bg-muted/40 rounded-xl"></div>
         <div class="h-72 bg-muted/40 rounded-xl"></div>
       </div>
@@ -398,7 +398,7 @@ onMounted(async () => {
       <div class="space-y-4">
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <Card class="p-4 bg-card border border-border shadow-2xs">
-            <p class="text-xs text-muted-foreground">Total trabajadores</p>
+            <p class="text-meta text-muted-foreground">Total trabajadores</p>
             <div class="text-kpi font-bold font-mono tabular-nums text-foreground mt-1">
               {{ personal.length }}
             </div>
@@ -408,7 +408,7 @@ onMounted(async () => {
           </Card>
 
           <Card class="p-4 bg-card border border-border shadow-2xs">
-            <p class="text-xs text-muted-foreground">Régimen predominante</p>
+            <p class="text-meta text-muted-foreground">Régimen predominante</p>
             <div
               class="text-kpi font-bold font-mono tabular-nums text-foreground mt-1 truncate"
               :title="regimenPredominante?.nombre || '—'"
@@ -421,7 +421,7 @@ onMounted(async () => {
           </Card>
 
           <Card class="p-4 bg-card border border-border shadow-2xs">
-            <p class="text-xs text-muted-foreground">Sindicalizados</p>
+            <p class="text-meta text-muted-foreground">Sindicalizados</p>
             <div class="text-kpi font-bold font-mono tabular-nums text-foreground mt-1">
               {{ totalSindicalizados }}
             </div>
@@ -431,7 +431,7 @@ onMounted(async () => {
           </Card>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <CardDemografiaRegimen
             :resumen="resumenPersonalCliente"
             :is-loading="isLoadingPersonal"
@@ -467,7 +467,7 @@ onMounted(async () => {
         <template #cell-nombre="{ row }">
           <div class="flex items-center gap-3">
             <div
-              class="size-8 rounded-full bg-primary/10 border border-border overflow-hidden shrink-0 flex items-center justify-center font-bold text-xs text-primary"
+              class="size-8 rounded-full bg-primary/10 border border-border overflow-hidden shrink-0 flex items-center justify-center font-bold text-meta text-primary"
             >
               <img
                 v-if="row.avatar || row.dni"
@@ -478,7 +478,7 @@ onMounted(async () => {
             </div>
             <router-link
               :to="`/perfil/${row.dni}`"
-              class="font-semibold text-foreground hover:text-primary transition-colors text-xs truncate max-w-xs"
+              class="font-semibold text-foreground hover:text-primary transition-colors text-meta truncate max-w-xs"
               :title="row.nombre"
               @click.stop
             >
@@ -488,13 +488,13 @@ onMounted(async () => {
         </template>
 
         <template #cell-dni="{ row }">
-          <span class="font-mono text-xs text-muted-foreground">
+          <span class="font-mono text-meta text-muted-foreground">
             {{ row.dni }}
           </span>
         </template>
 
         <template #cell-cargo="{ row }">
-          <span class="text-xs text-muted-foreground truncate block max-w-50" :title="row.cargo">
+          <span class="text-meta text-muted-foreground truncate block max-w-50" :title="row.cargo">
             {{ row.cargo }}
           </span>
         </template>
@@ -503,18 +503,18 @@ onMounted(async () => {
           <Badge v-if="row.regimen" variant="secondary" size="xs">
             {{ row.regimen }}
           </Badge>
-          <span v-else class="text-muted-foreground text-xs">—</span>
+          <span v-else class="text-muted-foreground text-meta">—</span>
         </template>
 
         <template #cell-sindicato="{ row }">
           <Badge v-if="row.sindicato" variant="neutral" size="xs">
             {{ row.sindicato }}
           </Badge>
-          <span v-else class="text-muted-foreground text-xs">—</span>
+          <span v-else class="text-muted-foreground text-meta">—</span>
         </template>
 
         <template #cell-ingreso="{ row }">
-          <span class="text-xs font-mono text-muted-foreground whitespace-nowrap">
+          <span class="text-meta font-mono text-muted-foreground whitespace-nowrap">
             {{ row.ingreso ? formatDate(row.ingreso) : '—' }}
           </span>
         </template>
@@ -522,8 +522,8 @@ onMounted(async () => {
         <template #empty>
           <div class="p-10 text-center space-y-2">
             <IconUsers class="size-8 mx-auto text-muted-foreground/60" />
-            <h3 class="text-sm font-semibold text-foreground">No se encontraron trabajadores</h3>
-            <p class="text-xs text-muted-foreground">
+            <h3 class="text-xs font-semibold text-foreground">No se encontraron trabajadores</h3>
+            <p class="text-meta text-muted-foreground">
               Esta área no tiene trabajadores asignados actualmente o no hay coincidencias con la búsqueda.
             </p>
           </div>

@@ -51,8 +51,8 @@ const toggleSort = () => {
 // Color por nivel (punto de estado y avatar)
 const nivelTone = (nivel: string) => {
   const n = norm(nivel)
-  if (n.includes('doctor')) return { dot: 'bg-violet-500', avatar: 'bg-violet-500' }
-  if (n.includes('maest') || n.includes('magister')) return { dot: 'bg-indigo-500', avatar: 'bg-indigo-500' }
+  if (n.includes('doctor')) return { dot: 'bg-sky-600', avatar: 'bg-sky-600' }
+  if (n.includes('maest') || n.includes('magister')) return { dot: 'bg-sky-600', avatar: 'bg-sky-600' }
   if (n.includes('titul') || n.includes('licenc') || n.includes('bachiller') || n.includes('univers'))
     return { dot: 'bg-emerald-500', avatar: 'bg-emerald-500' }
   if (n.includes('tecn') || n.includes('instit')) return { dot: 'bg-amber-500', avatar: 'bg-amber-500' }

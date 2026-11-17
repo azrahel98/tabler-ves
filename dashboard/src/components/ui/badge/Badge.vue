@@ -11,7 +11,7 @@ type BadgeVariant =
   | 'outline'
   | 'neutral'
 
-type BadgeSize = 'xs' | 'sm' | 'md'
+type BadgeSize = 'nano' | 'xs' | 'sm' | 'md'
 
 interface Props {
   variant?: BadgeVariant
@@ -48,6 +48,7 @@ const dotColors: Record<BadgeVariant, string> = {
 }
 
 const sizeClasses: Record<BadgeSize, string> = {
+  nano: 'px-1.5 py-0.5 text-nano gap-0.5',
   xs: 'px-1.5 py-0.5 text-micro gap-1',
   sm: 'px-2 py-0.5 text-xs gap-1.5',
   md: 'px-2.5 py-1 text-xs gap-1.5 font-semibold',

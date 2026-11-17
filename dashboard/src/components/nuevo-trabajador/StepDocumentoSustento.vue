@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import Card from '@/components/ui/card/Card.vue'
 import Button from '@/components/ui/button/Button.vue'
 import type { DocumentoFormState } from './types'
 import type { TipoDocumentoOption } from '@/services/personal'
@@ -26,23 +25,23 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <Card class="space-y-4">
-    <div class="flex items-center justify-between border-b border-border pb-3">
-      <span class="text-sm font-bold text-foreground flex items-center gap-2">
-        <IconFileText class="size-4 text-primary shrink-0" aria-hidden="true" />
-        Documento de Sustento del Ingreso
-      </span>
-      <span class="text-meta text-muted-foreground">Paso 3 de 3</span>
-    </div>
+  <div class="space-y-5">
+    <header class="flex items-start justify-between gap-3">
+      <div>
+        <h2 class="text-sm font-semibold text-foreground">Documento de sustento</h2>
+        <p class="text-micro text-muted-foreground">Resolución o contrato que respalda el ingreso</p>
+      </div>
+      <span class="text-micro text-muted-foreground shrink-0">Paso 3 de 3</span>
+    </header>
 
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
-      <div class="space-y-1">
-        <label for="doc-tipo" class="text-xs font-semibold text-foreground">Tipo de Documento *</label>
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div class="space-y-0">
+        <label for="doc-tipo" class="hs-label">Tipo de Documento *</label>
         <select
           id="doc-tipo"
           v-model="documento.tipoDocumento"
           required
-          class="w-full px-3 py-2.5 sm:py-2 text-base sm:text-xs rounded-lg border border-border bg-card text-foreground focus:outline-hidden focus:border-primary"
+          class="hs-input"
         >
           <option v-for="t in tiposDocumento" :key="t.id" :value="String(t.id)">
             {{ t.nombre }}
@@ -50,8 +49,8 @@ const emit = defineEmits<{
         </select>
       </div>
 
-      <div class="space-y-1">
-        <label for="doc-numero" class="text-xs font-semibold text-foreground">Número de Documento *</label>
+      <div class="space-y-0">
+        <label for="doc-numero" class="hs-label">Número de Documento *</label>
         <input
           id="doc-numero"
           v-model.number="documento.numeroDocumento"
@@ -59,12 +58,12 @@ const emit = defineEmits<{
           min="1"
           placeholder="105"
           required
-          class="w-full px-3 py-2.5 sm:py-2 text-base sm:text-xs font-mono font-medium rounded-lg border border-border bg-card text-foreground focus:outline-hidden focus:border-primary"
+          class="hs-input font-mono"
         />
       </div>
 
-      <div class="space-y-1">
-        <label for="doc-anio" class="text-xs font-semibold text-foreground">Año *</label>
+      <div class="space-y-0">
+        <label for="doc-anio" class="hs-label">Año *</label>
         <input
           id="doc-anio"
           v-model.number="documento.añoDocumento"
@@ -72,14 +71,14 @@ const emit = defineEmits<{
           min="1990"
           max="2050"
           required
-          class="w-full px-3 py-2.5 sm:py-2 text-base sm:text-xs font-mono font-medium rounded-lg border border-border bg-card text-foreground focus:outline-hidden focus:border-primary"
+          class="hs-input font-mono"
         />
       </div>
     </div>
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-      <div class="space-y-1">
-        <label for="doc-fecha-emision" class="text-xs font-semibold text-foreground flex items-center gap-1.5">
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div class="space-y-0">
+        <label for="doc-fecha-emision" class="hs-label flex items-center gap-1.5">
           <IconCalendar class="size-3.5 text-muted-foreground" aria-hidden="true" /> Fecha de Emisión *
         </label>
         <input
@@ -87,25 +86,25 @@ const emit = defineEmits<{
           v-model="documento.fecha"
           type="date"
           required
-          class="w-full px-3 py-2.5 sm:py-2 text-base sm:text-xs font-mono rounded-lg border border-border bg-card text-foreground focus:outline-hidden focus:border-primary"
+          class="hs-input font-mono"
         />
       </div>
 
-      <div class="space-y-1">
-        <label for="doc-fecha-valida" class="text-xs font-semibold text-foreground flex items-center gap-1.5">
+      <div class="space-y-0">
+        <label for="doc-fecha-valida" class="hs-label flex items-center gap-1.5">
           <IconCalendar class="size-3.5 text-muted-foreground" aria-hidden="true" /> Fecha de Vigencia / Inicio de Labores
         </label>
         <input
           id="doc-fecha-valida"
           v-model="documento.fechaValida"
           type="date"
-          class="w-full px-3 py-2.5 sm:py-2 text-base sm:text-xs font-mono rounded-lg border border-border bg-card text-foreground focus:outline-hidden focus:border-primary"
+          class="hs-input font-mono"
         />
       </div>
     </div>
 
-    <div class="space-y-1">
-      <label for="doc-descripcion" class="text-xs font-semibold text-foreground flex items-center gap-1.5">
+    <div class="space-y-0">
+      <label for="doc-descripcion" class="hs-label flex items-center gap-1.5">
         <IconFileDescription class="size-3.5 text-muted-foreground" aria-hidden="true" /> Descripción / Asunto del Documento *
       </label>
       <textarea
@@ -114,15 +113,15 @@ const emit = defineEmits<{
         rows="3"
         required
         placeholder="Ej. Contratación bajo régimen CAS según Resolución de Gerencia Municipal N° 105-2026-MDS..."
-        class="w-full px-3 py-2.5 sm:py-2 text-base sm:text-xs rounded-lg border border-border bg-card text-foreground focus:outline-hidden focus:border-primary resize-none"
+        class="hs-input resize-none"
       ></textarea>
     </div>
 
-    <div class="flex items-center justify-between gap-3 pt-3 border-t border-border">
+    <div class="flex items-center justify-between gap-3 pt-4 border-t border-border">
       <Button
         variant="outline"
         size="sm"
-        class="gap-1.5 text-xs cursor-pointer min-h-[42px] sm:min-h-[36px] flex-1 sm:flex-none justify-center"
+        class="gap-1.5 text-meta cursor-pointer flex-1 sm:flex-none justify-center"
         @click="emit('anterior')"
       >
         <IconArrowLeft class="size-3.5" aria-hidden="true" />
@@ -131,7 +130,7 @@ const emit = defineEmits<{
       <Button
         variant="primary"
         size="sm"
-        class="gap-1.5 text-xs cursor-pointer min-h-[42px] sm:min-h-[36px] flex-1 sm:flex-none justify-center"
+        class="gap-1.5 text-meta cursor-pointer flex-1 sm:flex-none justify-center"
         :disabled="isSubmitting || !canSubmit"
         @click="emit('submit')"
       >
@@ -140,5 +139,5 @@ const emit = defineEmits<{
         <span>{{ isSubmitting ? 'Registrando...' : 'Confirmar y Registrar Servidor' }}</span>
       </Button>
     </div>
-  </Card>
+  </div>
 </template>

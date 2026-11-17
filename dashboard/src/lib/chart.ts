@@ -44,8 +44,8 @@ export function useChartScale() {
   }
   onMounted(() => window.addEventListener('resize', update))
   onUnmounted(() => window.removeEventListener('resize', update))
-  // tamaño de fuente de ejes y leyendas: equivalente a text-meta (0.75rem)
-  const chartFontSize = computed(() => Math.round(rootFontSize.value * 0.75))
+  // tamaño de fuente de ejes y leyendas: equivalente a text-micro (~0.65rem)
+  const chartFontSize = computed(() => Math.max(9, Math.round(rootFontSize.value * 0.65)))
   return { rootFontSize, chartFontSize }
 }
 

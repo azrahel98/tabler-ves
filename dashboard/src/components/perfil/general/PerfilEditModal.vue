@@ -5,7 +5,7 @@ import Button from '@/components/ui/button/Button.vue'
 import SearchSelect, { type SelectOption } from '@/components/ui/form/SearchSelect.vue'
 import { DISTRITOS_LIMA, REGION_FIJA, resolverDistrito } from '@/constants/distritos'
 import type { PersonalPerfil } from '@/services/personal'
-import { IconCheck } from '@tabler/icons-vue'
+import { IconCheck, IconAlertTriangle } from '@tabler/icons-vue'
 
 interface Props {
   isOpen: boolean
@@ -152,23 +152,27 @@ const onSubmit = () => {
 
 <template>
   <Modal :is-open="isOpen" title="Actualizar ficha del servidor" subtitle="Modifique los datos de contacto y residencia. El DNI es un identificador inmutable." size="xl" @close="handleRequestClose">
-      <div v-if="showConfirmDiscard"
-        class="p-4 bg-amber-500/10 border-b border-amber-500/20 text-meta flex flex-wrap items-center justify-between gap-3">
-        <div class="space-y-0.5">
-          <p class="font-bold text-amber-700 dark:text-amber-400">¿Desea descartar los cambios no guardados?</p>
-          <p class="text-muted-foreground text-micro">Si cierra ahora, perderá las modificaciones realizadas en la
-            ficha.</p>
-        </div>
-        <div class="flex items-center gap-2 shrink-0">
-          <Button size="sm" variant="outline" type="button" @click="showConfirmDiscard = false">
-            Continuar editando
-          </Button>
-          <Button size="sm" variant="danger" type="button" @click="confirmDiscardChanges">
-            Descartar cambios
-          </Button>
+      <div v-if="showConfirmDiscard" role="alertdialog" aria-labelledby="perfil-discard-title"
+        class="mx-4 mt-4 flex items-start gap-3 rounded-lg border border-amber-500/30 bg-amber-500/10 p-3 text-meta">
+        <span
+          class="size-7 shrink-0 rounded-full bg-amber-500/15 text-amber-600 dark:text-amber-400 flex items-center justify-center">
+          <IconAlertTriangle class="size-4" />
+        </span>
+        <div class="min-w-0 flex-1">
+          <p id="perfil-discard-title" class="font-semibold text-foreground">¿Descartar los cambios no guardados?</p>
+          <p class="mt-0.5 text-micro text-muted-foreground">
+            Si cierras ahora, se perderán las modificaciones hechas en la ficha.
+          </p>
+          <div class="mt-2.5 flex items-center gap-2">
+            <Button size="sm" variant="danger" type="button" class="cursor-pointer" @click="confirmDiscardChanges">
+              Descartar cambios
+            </Button>
+            <Button size="sm" variant="outline" type="button" class="cursor-pointer" @click="showConfirmDiscard = false">
+              Seguir editando
+            </Button>
+          </div>
         </div>
       </div>
-
 
       <form id="perfil-edit-form" class="p-4 space-y-4 overflow-y-auto" @submit.prevent="onSubmit">
         <div class="grid grid-cols-[repeat(auto-fit,minmax(14rem,1fr))] gap-4">

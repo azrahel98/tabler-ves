@@ -423,7 +423,7 @@ const obtenerBadgeResultado = (resultado: ResultadoComparacion) => {
         texto: 'Solo en AIRHSP',
         variant: 'outline' as const,
         customClass:
-          'bg-purple-500/10 text-purple-700 dark:text-purple-300 border-purple-500/30 font-medium',
+          'bg-sky-500/10 text-sky-700 dark:text-sky-300 border-sky-500/30 font-medium',
       }
     default:
       return {
@@ -444,7 +444,7 @@ const restablecerFiltros = () => {
 </script>
 
 <template>
-  <div class="space-y-6 max-w-7xl mx-auto pb-16">
+  <div class="mx-auto w-full max-w-6xl space-y-4 px-4 pb-16">
     <!-- Encabezado -->
     <PageHeader title="Comparación AIRHSP" subtitle="AIRHSP es la fuente oficial para nombres, apellidos y fecha de nacimiento.">
       <template #actions>
@@ -452,7 +452,7 @@ const restablecerFiltros = () => {
           v-if="comparaciones.length > 0"
           variant="outline"
           size="sm"
-          class="gap-1.5 text-xs font-semibold"
+          class="gap-1.5 text-meta font-semibold"
           :loading="isExporting"
           @click="descargarExcel"
         >
@@ -463,14 +463,14 @@ const restablecerFiltros = () => {
     </PageHeader>
 
     <!-- Sección de carga de archivos -->
-    <Card class="p-4 sm:p-6">
+    <Card class="p-4 sm:p-4">
       <div class="space-y-4">
         <div class="flex items-center justify-between">
           <div>
-            <h2 class="text-sm font-semibold text-foreground">
+            <h2 class="text-xs font-semibold text-foreground">
               Carga de Planillas AIRHSP
             </h2>
-            <p class="text-xs text-muted-foreground">
+            <p class="text-meta text-muted-foreground">
               Selecciona los archivos Excel (.xlsx) proporcionados por el MEF. Puedes cargar uno o ambos regímenes.
             </p>
           </div>
@@ -503,13 +503,13 @@ const restablecerFiltros = () => {
                 </div>
                 <div class="min-w-0">
                   <div class="flex items-center gap-2">
-                    <span class="text-xs font-bold text-foreground">Planilla CAS</span>
+                    <span class="text-meta font-bold text-foreground">Planilla CAS</span>
                     <Badge variant="secondary" size="xs">D.L. 1057</Badge>
                   </div>
-                  <p v-if="fileCas" class="text-xs text-foreground font-medium truncate mt-0.5" :title="fileCas.name">
+                  <p v-if="fileCas" class="text-meta text-foreground font-medium truncate mt-0.5" :title="fileCas.name">
                     {{ fileCas.name }}
                   </p>
-                  <p v-else class="text-xs text-muted-foreground mt-0.5">
+                  <p v-else class="text-meta text-muted-foreground mt-0.5">
                     No se ha seleccionado archivo
                   </p>
                   <span v-if="fileCas" class="text-micro text-muted-foreground">
@@ -532,7 +532,7 @@ const restablecerFiltros = () => {
                 <Button
                   variant="outline"
                   size="xs"
-                  class="text-xs gap-1"
+                  class="text-meta gap-1"
                   @click="inputCasRef?.click()"
                 >
                   <IconUpload class="size-3.5" />
@@ -568,13 +568,13 @@ const restablecerFiltros = () => {
                 </div>
                 <div class="min-w-0">
                   <div class="flex items-center gap-2">
-                    <span class="text-xs font-bold text-foreground">Planilla 276 / 728</span>
+                    <span class="text-meta font-bold text-foreground">Planilla 276 / 728</span>
                     <Badge variant="secondary" size="xs">Otros Regímenes</Badge>
                   </div>
-                  <p v-if="fileOtros" class="text-xs text-foreground font-medium truncate mt-0.5" :title="fileOtros.name">
+                  <p v-if="fileOtros" class="text-meta text-foreground font-medium truncate mt-0.5" :title="fileOtros.name">
                     {{ fileOtros.name }}
                   </p>
-                  <p v-else class="text-xs text-muted-foreground mt-0.5">
+                  <p v-else class="text-meta text-muted-foreground mt-0.5">
                     No se ha seleccionado archivo
                   </p>
                   <span v-if="fileOtros" class="text-micro text-muted-foreground">
@@ -597,7 +597,7 @@ const restablecerFiltros = () => {
                 <Button
                   variant="outline"
                   size="xs"
-                  class="text-xs gap-1"
+                  class="text-meta gap-1"
                   @click="inputOtrosRef?.click()"
                 >
                   <IconUpload class="size-3.5" />
@@ -609,9 +609,9 @@ const restablecerFiltros = () => {
         </div>
 
         <!-- Regla de negocio en una línea -->
-        <div class="rounded-xl border border-primary/20 bg-primary/5 p-3 sm:p-4 text-xs flex items-start gap-3">
+        <div class="rounded-xl border border-primary/20 bg-primary/5 p-3 sm:p-4 text-meta flex items-start gap-3">
           <IconInfoCircle class="size-4.5 text-primary shrink-0 mt-0.5" />
-          <p class="leading-relaxed text-muted-foreground text-meta sm:text-xs">
+          <p class="leading-relaxed text-muted-foreground text-meta sm:text-meta">
             <strong class="text-foreground font-semibold">Regla de actualización:</strong>
             Solo se actualiza a quien coincide en DNI y fecha de ingreso con AIRHSP. Se actualizan nombres, apellidos, fecha de nacimiento, código AIRHSP (plaza), cargo estructural, grupo ocupacional y datos bancarios. Un dato vacío en AIRHSP no borra el nuestro.
           </p>
@@ -622,7 +622,7 @@ const restablecerFiltros = () => {
           <Button
             variant="outline"
             size="md"
-            class="gap-2 text-xs font-semibold cursor-pointer"
+            class="gap-2 text-meta font-semibold cursor-pointer"
             :disabled="(!fileCas && !fileOtros) || isComparing || isPreviewing || isApplying"
             :loading="isComparing"
             @click="ejecutarComparacion"
@@ -634,7 +634,7 @@ const restablecerFiltros = () => {
           <Button
             variant="primary"
             size="md"
-            class="gap-2 text-xs font-semibold cursor-pointer"
+            class="gap-2 text-meta font-semibold cursor-pointer"
             :disabled="(!fileCas && !fileOtros) || isComparing || isPreviewing || isApplying"
             :loading="isPreviewing"
             @click="ejecutarVistaPrevia"
@@ -649,14 +649,14 @@ const restablecerFiltros = () => {
     <!-- Error de comparación del backend -->
     <div
       v-if="errorMessage"
-      class="p-4 sm:p-5 text-left rounded-xl border border-destructive/20 bg-destructive/5 flex items-start gap-3.5"
+      class="p-4 sm:p-4 text-left rounded-xl border border-destructive/20 bg-destructive/5 flex items-start gap-3.5"
     >
       <IconAlertTriangle class="size-5 text-destructive shrink-0 mt-0.5" />
       <div class="space-y-1 flex-1">
-        <h3 class="text-xs sm:text-sm font-bold text-destructive">
+        <h3 class="text-meta sm:text-xs font-bold text-destructive">
           Error en la comparación
         </h3>
-        <p class="text-xs text-muted-foreground">
+        <p class="text-meta text-muted-foreground">
           {{ errorMessage }}
         </p>
       </div>
@@ -673,14 +673,14 @@ const restablecerFiltros = () => {
     <!-- Error de actualización del backend (incluido 403) -->
     <div
       v-if="errorActualizar"
-      class="p-4 sm:p-5 text-left rounded-xl border border-destructive/20 bg-destructive/5 flex items-start gap-3.5"
+      class="p-4 sm:p-4 text-left rounded-xl border border-destructive/20 bg-destructive/5 flex items-start gap-3.5"
     >
       <IconAlertTriangle class="size-5 text-destructive shrink-0 mt-0.5" />
       <div class="space-y-1 flex-1">
-        <h3 class="text-xs sm:text-sm font-bold text-destructive">
+        <h3 class="text-meta sm:text-xs font-bold text-destructive">
           Error en la actualización con AIRHSP
         </h3>
-        <p class="text-xs text-muted-foreground">
+        <p class="text-meta text-muted-foreground">
           {{ errorActualizar }}
         </p>
       </div>
@@ -697,14 +697,14 @@ const restablecerFiltros = () => {
     <!-- Mensaje de éxito tras aplicar -->
     <div
       v-if="mensajeExito"
-      class="p-4 sm:p-5 text-left rounded-xl border border-emerald-500/20 bg-emerald-500/5 flex items-start gap-3.5"
+      class="p-4 sm:p-4 text-left rounded-xl border border-emerald-500/20 bg-emerald-500/5 flex items-start gap-3.5"
     >
       <IconCheck class="size-5 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
       <div class="space-y-1 flex-1">
-        <h3 class="text-xs sm:text-sm font-bold text-emerald-600 dark:text-emerald-400">
+        <h3 class="text-meta sm:text-xs font-bold text-emerald-600 dark:text-emerald-400">
           Actualización completada exitosamente
         </h3>
-        <p class="text-xs text-muted-foreground">
+        <p class="text-meta text-muted-foreground">
           {{ mensajeExito }}
         </p>
       </div>
@@ -720,7 +720,7 @@ const restablecerFiltros = () => {
 
     <!-- Sección de Vista Previa / Aplicación de Actualizaciones -->
     <template v-if="previewData">
-      <Card class="p-4 sm:p-6 space-y-6">
+      <Card class="p-4 sm:p-4 space-y-4">
         <!-- Encabezado de la sección -->
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border pb-4">
           <div class="space-y-1">
@@ -743,7 +743,7 @@ const restablecerFiltros = () => {
                 Modo Simulación
               </Badge>
             </div>
-            <p class="text-xs text-muted-foreground">
+            <p class="text-meta text-muted-foreground">
               {{
                 previewData.aplicado
                   ? 'Las modificaciones han sido aplicadas en la base de datos de nuestro sistema.'
@@ -759,7 +759,7 @@ const restablecerFiltros = () => {
                 v-if="!previewData.aplicado && previewData.resumen.con_cambios > 0"
                 variant="primary"
                 size="md"
-                class="gap-2 text-xs font-semibold cursor-pointer shadow-sm"
+                class="gap-2 text-meta font-semibold cursor-pointer shadow-sm"
                 :loading="isApplying"
                 :disabled="isApplying"
                 @click="mostrarModalConfirmacion = true"
@@ -870,10 +870,10 @@ const restablecerFiltros = () => {
         <div class="space-y-3">
           <div class="flex items-center justify-between">
             <div>
-              <h3 class="text-sm font-semibold text-foreground">
+              <h3 class="text-xs font-semibold text-foreground">
                 Personas con Modificaciones
               </h3>
-              <p class="text-xs text-muted-foreground">
+              <p class="text-meta text-muted-foreground">
                 Detalle de campos antes y después por servidor público.
               </p>
             </div>
@@ -899,18 +899,18 @@ const restablecerFiltros = () => {
               <RouterLink
                 v-if="row.dni"
                 :to="{ name: 'perfil', params: { dni: row.dni } }"
-                class="font-mono font-semibold text-xs text-primary hover:underline underline-offset-2"
+                class="font-mono font-semibold text-meta text-primary hover:underline underline-offset-2"
                 :title="`Ver perfil de ${row.nombre}`"
               >
                 {{ row.dni }}
               </RouterLink>
-              <span v-else class="font-mono text-xs text-muted-foreground">-</span>
+              <span v-else class="font-mono text-meta text-muted-foreground">-</span>
             </template>
 
             <!-- Slot Nombre -->
             <template #cell-nombre="{ row }">
               <div class="space-y-1">
-                <p class="font-semibold text-foreground text-xs" :title="row.nombre">
+                <p class="font-semibold text-foreground text-meta" :title="row.nombre">
                   {{ row.nombre || '-' }}
                 </p>
                 <div
@@ -929,7 +929,7 @@ const restablecerFiltros = () => {
                 <div
                   v-for="(c, cIdx) in row.campos"
                   :key="cIdx"
-                  class="p-2.5 rounded-lg text-xs transition-colors"
+                  class="p-2.5 rounded-lg text-meta transition-colors"
                   :class="
                     c.error
                       ? 'bg-destructive/5 border border-destructive/25'
@@ -945,7 +945,7 @@ const restablecerFiltros = () => {
                     </Badge>
                   </div>
 
-                  <div class="flex items-center gap-2 flex-wrap font-mono text-xs">
+                  <div class="flex items-center gap-2 flex-wrap font-mono text-meta">
                     <div class="flex items-center gap-1.5 text-muted-foreground">
                       <span class="text-micro uppercase font-sans tracking-wider text-muted-foreground/70">Antes:</span>
                       <span class="line-through decoration-muted-foreground/50 bg-muted/60 px-1.5 py-0.5 rounded">
@@ -1017,21 +1017,21 @@ const restablecerFiltros = () => {
               </div>
               <div>
                 <div class="flex items-center gap-2">
-                  <h3 class="text-sm font-semibold text-foreground">
+                  <h3 class="text-xs font-semibold text-foreground">
                     Omitidos por fecha de ingreso distinta
                   </h3>
                   <Badge variant="secondary" size="xs">
                     {{ previewData.omitidos.length }}
                   </Badge>
                 </div>
-                <p class="text-xs text-muted-foreground mt-0.5">
+                <p class="text-meta text-muted-foreground mt-0.5">
                   Personas cuya fecha de ingreso en nuestro sistema difiere de la registrada en AIRHSP.
                 </p>
               </div>
             </div>
 
             <div class="flex items-center gap-2 shrink-0 ml-2">
-              <span class="text-xs text-muted-foreground hidden sm:inline">
+              <span class="text-meta text-muted-foreground hidden sm:inline">
                 {{ omitidosColapsado ? 'Ver detalle' : 'Ocultar' }}
               </span>
               <IconChevronDown
@@ -1056,26 +1056,26 @@ const restablecerFiltros = () => {
                 <RouterLink
                   v-if="row.dni"
                   :to="{ name: 'perfil', params: { dni: row.dni } }"
-                  class="font-mono font-semibold text-xs text-primary hover:underline underline-offset-2"
+                  class="font-mono font-semibold text-meta text-primary hover:underline underline-offset-2"
                   :title="`Ver perfil de ${row.nombre}`"
                 >
                   {{ row.dni }}
                 </RouterLink>
-                <span v-else class="font-mono text-xs text-muted-foreground">-</span>
+                <span v-else class="font-mono text-meta text-muted-foreground">-</span>
               </template>
 
               <template #cell-nombre="{ row }">
-                <span class="font-medium text-foreground text-xs">{{ row.nombre || '-' }}</span>
+                <span class="font-medium text-foreground text-meta">{{ row.nombre || '-' }}</span>
               </template>
 
               <template #cell-fecha_ingreso_sistema="{ row }">
-                <span class="font-mono text-xs text-muted-foreground">
+                <span class="font-mono text-meta text-muted-foreground">
                   {{ row.fecha_ingreso_sistema || '(sin fecha)' }}
                 </span>
               </template>
 
               <template #cell-fecha_ingreso_airhsp="{ row }">
-                <span class="font-mono text-xs font-semibold text-amber-600 dark:text-amber-400">
+                <span class="font-mono text-meta font-semibold text-amber-600 dark:text-amber-400">
                   {{ row.fecha_ingreso_airhsp || '(sin fecha)' }}
                 </span>
               </template>
@@ -1094,7 +1094,7 @@ const restablecerFiltros = () => {
     <!-- Resultados y Resumen -->
     <template v-if="resumen">
       <!-- Tarjeta destacada de identidad -->
-      <Card class="p-4 sm:p-5 border-amber-500/30 bg-amber-500/5">
+      <Card class="p-4 sm:p-4 border-amber-500/30 bg-amber-500/5">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div class="flex items-start gap-3.5">
             <div class="p-2.5 rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 shrink-0">
@@ -1102,12 +1102,12 @@ const restablecerFiltros = () => {
             </div>
             <div>
               <div class="flex items-center gap-2">
-                <h3 class="text-sm font-bold text-foreground">
+                <h3 class="text-xs font-bold text-foreground">
                   Datos personales con diferencia
                 </h3>
                 <Badge variant="warning" size="xs">Identidad Crítica</Badge>
               </div>
-              <p class="text-xs text-muted-foreground mt-0.5 max-w-2xl">
+              <p class="text-meta text-muted-foreground mt-0.5 max-w-2xl">
                 Número de personas (DNI únicos) que presentan discrepancias en nombres, apellidos o fecha de nacimiento
                 frente a la fuente oficial de AIRHSP.
               </p>
@@ -1118,7 +1118,7 @@ const restablecerFiltros = () => {
             <span class="text-kpi font-extrabold text-amber-600 dark:text-amber-400 font-mono">
               {{ personasConDiferenciaPersonal }}
             </span>
-            <span class="text-xs font-medium text-muted-foreground">
+            <span class="text-meta font-medium text-muted-foreground">
               {{ personasConDiferenciaPersonal === 1 ? 'servidor' : 'servidores' }}
             </span>
           </div>
@@ -1200,11 +1200,11 @@ const restablecerFiltros = () => {
         <!-- Solo en AIRHSP -->
         <Card class="p-3.5">
           <div class="flex items-center justify-between gap-2">
-            <span class="text-meta font-semibold text-purple-600 dark:text-purple-400 truncate">Solo en AIRHSP</span>
-            <span class="size-2 rounded-full bg-purple-500 shrink-0"></span>
+            <span class="text-meta font-semibold text-sky-600 dark:text-sky-400 truncate">Solo en AIRHSP</span>
+            <span class="size-2 rounded-full bg-sky-500 shrink-0"></span>
           </div>
           <div class="mt-2 flex items-baseline justify-between">
-            <span class="text-kpi font-bold tracking-tight text-purple-600 dark:text-purple-400 font-mono">
+            <span class="text-kpi font-bold tracking-tight text-sky-600 dark:text-sky-400 font-mono">
               {{ resumen.no_en_sistema }}
             </span>
           </div>
@@ -1213,7 +1213,7 @@ const restablecerFiltros = () => {
       </div>
 
       <!-- Barra de fecha e información de la comparación -->
-      <div class="flex items-center justify-between text-xs text-muted-foreground px-1">
+      <div class="flex items-center justify-between text-meta text-muted-foreground px-1">
         <div class="flex items-center gap-1.5">
           <IconCalendar class="size-3.5 text-muted-foreground" />
           <span>Fecha de comparación: <strong class="text-foreground font-mono">{{ resumen.fecha_comparacion }}</strong></span>
@@ -1244,7 +1244,7 @@ const restablecerFiltros = () => {
                 v-model="busquedaTexto"
                 type="text"
                 placeholder="Buscar DNI o nombre..."
-                class="w-full bg-card border border-border text-foreground placeholder:text-muted-foreground/70 px-2.5 py-1.5 text-xs rounded-lg outline-none focus:border-primary focus:ring-1 focus:ring-primary"
+                class="w-full bg-card border border-border text-foreground placeholder:text-muted-foreground/70 px-2.5 py-1.5 text-meta rounded-lg outline-none focus:border-primary focus:ring-1 focus:ring-primary"
               />
               <button
                 v-if="busquedaTexto"
@@ -1261,7 +1261,7 @@ const restablecerFiltros = () => {
               <IconFilter class="size-3.5 text-muted-foreground shrink-0" />
               <select
                 v-model="filtroResultado"
-                class="bg-card border border-border rounded-lg px-2 py-1.5 text-xs text-foreground outline-none focus:border-primary cursor-pointer"
+                class="bg-card border border-border rounded-lg px-2 py-1.5 text-meta text-foreground outline-none focus:border-primary cursor-pointer"
               >
                 <option value="DIFERENCIA">Solo Diferencias</option>
                 <option value="TODOS">Todos los resultados</option>
@@ -1273,7 +1273,7 @@ const restablecerFiltros = () => {
 
             <!-- Conmutador: Solo datos personales -->
             <label
-              class="inline-flex items-center gap-2 px-2.5 py-1.5 rounded-lg border text-xs cursor-pointer select-none transition-colors"
+              class="inline-flex items-center gap-2 px-2.5 py-1.5 rounded-lg border text-meta cursor-pointer select-none transition-colors"
               :class="
                 soloDatosPersonales
                   ? 'bg-amber-500/10 border-amber-500/30 text-amber-700 dark:text-amber-400 font-semibold'
@@ -1291,7 +1291,7 @@ const restablecerFiltros = () => {
             <!-- Selector de Campo -->
             <select
               v-model="filtroCampo"
-              class="bg-card border border-border rounded-lg px-2 py-1.5 text-xs text-foreground outline-none focus:border-primary cursor-pointer max-w-48"
+              class="bg-card border border-border rounded-lg px-2 py-1.5 text-meta text-foreground outline-none focus:border-primary cursor-pointer max-w-48"
             >
               <option value="todos">Todos los campos</option>
               <option v-for="c in camposDisponibles" :key="c" :value="c">
@@ -1300,7 +1300,7 @@ const restablecerFiltros = () => {
             </select>
 
             <!-- Contador de filas visibles -->
-            <div class="text-xs text-muted-foreground font-mono ml-auto sm:ml-0">
+            <div class="text-meta text-muted-foreground font-mono ml-auto sm:ml-0">
               <span class="text-foreground font-semibold">{{ comparacionesFiltradas.length }}</span> / {{ comparaciones.length }}
             </div>
 
@@ -1314,7 +1314,7 @@ const restablecerFiltros = () => {
               "
               variant="ghost"
               size="xs"
-              class="text-xs text-muted-foreground hover:text-foreground cursor-pointer"
+              class="text-meta text-muted-foreground hover:text-foreground cursor-pointer"
               @click="restablecerFiltros"
             >
               <IconRefresh class="size-3" />
@@ -1328,12 +1328,12 @@ const restablecerFiltros = () => {
           <RouterLink
             v-if="row.dni && row.resultado !== 'NO_EXISTE_EN_SISTEMA'"
             :to="{ name: 'perfil', params: { dni: row.dni } }"
-            class="font-mono font-semibold text-xs text-primary hover:underline underline-offset-2"
+            class="font-mono font-semibold text-meta text-primary hover:underline underline-offset-2"
             :title="`Ver perfil de ${row.nombre}`"
           >
             {{ row.dni }}
           </RouterLink>
-          <span v-else class="font-mono text-xs text-muted-foreground">
+          <span v-else class="font-mono text-meta text-muted-foreground">
             {{ row.dni || '-' }}
           </span>
         </template>
@@ -1341,7 +1341,7 @@ const restablecerFiltros = () => {
         <!-- Slot celda Nombre -->
         <template #cell-nombre="{ row }">
           <div class="min-w-44 max-w-sm">
-            <p class="font-semibold text-foreground text-xs truncate" :title="row.nombre">
+            <p class="font-semibold text-foreground text-meta truncate" :title="row.nombre">
               {{ row.nombre || '-' }}
             </p>
             <span
@@ -1373,7 +1373,7 @@ const restablecerFiltros = () => {
         <!-- Slot celda Campo -->
         <template #cell-campo="{ row }">
           <div class="space-y-0.5">
-            <span class="text-xs font-medium text-foreground">
+            <span class="text-meta font-medium text-foreground">
               {{ obtenerEtiquetaCampo(row.campo) }}
             </span>
             <div v-if="esDatoPersonal(row.campo)" class="flex items-center gap-1">
@@ -1385,7 +1385,7 @@ const restablecerFiltros = () => {
 
         <!-- Slot celda Nuestro Dato -->
         <template #cell-valor_propio="{ row }">
-          <div class="text-xs font-mono break-all max-w-xs">
+          <div class="text-meta font-mono break-all max-w-xs">
             <span v-if="row.valor_propio" class="text-foreground">
               {{ row.valor_propio }}
             </span>
@@ -1397,7 +1397,7 @@ const restablecerFiltros = () => {
 
         <!-- Slot celda AIRHSP (resaltado si es diferencia) -->
         <template #cell-valor_mef="{ row }">
-          <div class="text-xs font-mono break-all max-w-xs">
+          <div class="text-meta font-mono break-all max-w-xs">
             <template v-if="row.resultado === 'DIFERENCIA'">
               <span
                 class="inline-block px-1.5 py-0.5 rounded font-semibold text-amber-700 dark:text-amber-300 bg-amber-500/15 border border-amber-500/30"
@@ -1431,18 +1431,18 @@ const restablecerFiltros = () => {
 
         <!-- Estado vacío de la tabla -->
         <template #empty>
-          <div class="p-8 text-center space-y-2">
+          <div class="p-4 text-center space-y-2">
             <IconInfoCircle class="size-8 mx-auto text-muted-foreground/60" />
-            <h4 class="text-xs sm:text-sm font-semibold text-foreground">
+            <h4 class="text-meta sm:text-xs font-semibold text-foreground">
               Sin registros para mostrar
             </h4>
-            <p class="text-xs text-muted-foreground max-w-sm mx-auto">
+            <p class="text-meta text-muted-foreground max-w-sm mx-auto">
               No hay comparaciones que coincidan con los filtros aplicados.
             </p>
             <Button
               variant="outline"
               size="xs"
-              class="mt-2 text-xs"
+              class="mt-2 text-meta"
               @click="restablecerFiltros"
             >
               Restablecer filtros
@@ -1464,7 +1464,7 @@ const restablecerFiltros = () => {
       @keydown.esc="!isApplying && (mostrarModalConfirmacion = false)"
     >
       <div
-        class="w-full max-w-md bg-card border border-border rounded-2xl shadow-2xl overflow-hidden text-xs flex flex-col"
+        class="w-full max-w-md bg-card border border-border rounded-xl shadow-2xl overflow-hidden text-meta flex flex-col"
       >
         <!-- Encabezado del modal -->
         <div class="p-4 border-b border-border flex items-center justify-between bg-primary/5 shrink-0">
@@ -1475,7 +1475,7 @@ const restablecerFiltros = () => {
               <IconRefresh class="size-4.5" />
             </div>
             <div class="min-w-0">
-              <h3 id="modal-confirmar-actualizacion-title" class="font-bold text-foreground text-sm tracking-tight truncate">
+              <h3 id="modal-confirmar-actualizacion-title" class="font-bold text-foreground text-xs tracking-tight truncate">
                 Confirmar Actualización con AIRHSP
               </h3>
               <p class="text-meta text-muted-foreground truncate">
@@ -1496,21 +1496,21 @@ const restablecerFiltros = () => {
         </div>
 
         <!-- Cuerpo del modal -->
-        <div class="p-5 space-y-4">
+        <div class="p-3 sm:p-4 space-y-4">
           <div class="p-3.5 rounded-xl border border-border bg-muted/20 space-y-2">
-            <div class="flex items-center justify-between text-xs">
+            <div class="flex items-center justify-between text-meta">
               <span class="text-muted-foreground">Personas a actualizar:</span>
-              <span class="font-mono font-bold text-foreground text-sm">
+              <span class="font-mono font-bold text-foreground text-xs">
                 {{ previewData?.resumen.con_cambios ?? 0 }}
               </span>
             </div>
-            <div class="flex items-center justify-between text-xs">
+            <div class="flex items-center justify-between text-meta">
               <span class="text-muted-foreground">Coincidencias en planilla:</span>
               <span class="font-mono text-muted-foreground">
                 {{ previewData?.resumen.coincidencias ?? 0 }}
               </span>
             </div>
-            <div class="flex items-center justify-between text-xs">
+            <div class="flex items-center justify-between text-meta">
               <span class="text-muted-foreground">Omitidos por fecha distinta:</span>
               <span class="font-mono text-amber-600 dark:text-amber-400">
                 {{ previewData?.resumen.omitidos_fecha_ingreso ?? 0 }}

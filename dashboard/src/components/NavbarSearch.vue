@@ -267,41 +267,41 @@ onUnmounted(() => {
           mobileOpen
             ? 'fixed top-13 inset-x-2 w-auto sm:absolute sm:top-full sm:start-0 sm:mt-1.5 sm:w-96 sm:inset-x-auto'
             : 'absolute top-full start-0 mt-1.5 w-full sm:w-96',
-          'max-w-[calc(100vw-2rem)] bg-card border border-border rounded-xl shadow-xl z-50 overflow-hidden text-xs'
+          'perfil-scope max-w-[calc(100vw-2rem)] bg-card border border-border rounded-xl shadow-xl z-50 overflow-hidden text-meta'
         ]">
         <div
-          class="px-3.5 py-2 border-b border-border/80 bg-muted/20 flex items-center justify-between text-meta text-muted-foreground">
+          class="px-3 py-1.5 border-b border-border/80 bg-muted/20 flex items-center justify-between text-micro text-muted-foreground">
           <span class="font-medium">
             {{ isLoading ? 'Buscando servidores...' : results.length > 0 ? `${results.length} coincidencias encontradas`
               : 'Búsqueda de personal' }}
           </span>
-          <span class="text-micro font-mono">Presiona Esc para salir</span>
+          <span class="text-nano font-mono">Presiona Esc para salir</span>
         </div>
 
         <div v-if="isLoading" class="p-6 text-center text-muted-foreground space-y-2">
           <IconLoader2 class="size-5 mx-auto animate-spin text-primary" />
-          <p class="text-xs">Consultando base de datos de personal...</p>
+          <p class="text-meta">Consultando base de datos de personal...</p>
         </div>
 
         <div v-else-if="results.length > 0" class="max-h-72 overflow-y-auto divide-y divide-border/60">
           <router-link v-for="(item, idx) in results" :key="item.dni"
             :to="{ name: 'perfil', params: { dni: item.dni } }"
-            class="w-full p-3 flex items-center justify-between gap-3 text-left transition cursor-pointer"
+            class="w-full px-3 py-2 flex items-center justify-between gap-2.5 text-left transition cursor-pointer"
             :class="highlightedIndex === idx ? 'bg-muted/70 text-foreground' : 'hover:bg-muted/40 text-foreground'"
             @click="handleSelect(item.dni)">
             <div class="flex items-center gap-2.5 min-w-0 flex-1">
               <div
-                class="size-9 rounded-full bg-primary/10 border border-primary/20 text-primary flex items-center justify-center shrink-0 text-xs font-bold overflow-hidden shadow-2xs">
+                class="size-7 rounded-full bg-primary/10 border border-primary/20 text-primary flex items-center justify-center shrink-0 text-micro font-bold overflow-hidden shadow-2xs">
                 <img v-auth-src="getPersonalAvatarUrl(item.dni)" :alt="item.nombre" class="size-full object-cover"
                   @error="($event.target as HTMLElement).style.display = 'none'" />
 
               </div>
 
               <div class="min-w-0 flex-1">
-                <p class="font-semibold text-foreground truncate text-xs">
+                <p class="font-semibold text-foreground truncate text-meta">
                   {{ item.nombre }}
                 </p>
-                <p class="font-mono text-muted-foreground text-meta">
+                <p class="font-mono text-muted-foreground text-micro">
                   DNI: {{ item.dni }}
                 </p>
               </div>

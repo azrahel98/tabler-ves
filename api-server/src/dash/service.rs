@@ -9,6 +9,13 @@ use crate::dash::repo as dash_repo;
 use serde_json::{Value, json};
 use sqlx::MySqlPool;
 
+pub async fn cumpleanos_mes(
+    pool: &MySqlPool,
+    mes: u32,
+) -> Result<Vec<crate::dash::models::CumpleanosMes>, ApiError> {
+    dash_repo::get_cumpleanos_mes(pool, mes).await
+}
+
 pub async fn cumpleaños(pool: &MySqlPool) -> Result<Vec<Cumpleaños>, ApiError> {
     dash_repo::get_cumpleanos(pool).await
 }

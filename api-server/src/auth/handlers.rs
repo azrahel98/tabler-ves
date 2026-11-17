@@ -8,16 +8,37 @@ use crate::common::errors::{validar, ApiError};
 use crate::common::jwt::{generate_token, Claims};
 use actix_web::{web, HttpMessage, HttpRequest, HttpResponse, Responder};
 use serde_json::{json, Value};
+use std::sync::OnceLock;
 
-fn verificar_admin(req: &HttpRequest) -> Result<(), ApiError> {
-    let role = req
+/// Correo del único usuario autorizado a gestionar cuentas.
+/// Se puede sobrescribir con la variable de entorno `SUPER_ADMIN_EMAIL`.
+pub const SUPER_ADMIN_EMAIL: &str = "azraelraul@gmail.com";
+
+static SUPER_ADMIN: OnceLock<String> = OnceLock::new();
+
+pub fn super_admin_email() -> &'static str {
+    SUPER_ADMIN.get_or_init(|| {
+        std::env::var("SUPER_ADMIN_EMAIL")
+            .ok()
+            .map(|s| s.trim().to_string())
+            .filter(|s| !s.is_empty())
+            .unwrap_or_else(|| SUPER_ADMIN_EMAIL.to_string())
+    })
+}
+
+pub fn es_super_admin(email: &str) -> bool {
+    email.trim().eq_ignore_ascii_case(super_admin_email())
+}
+
+fn verificar_super_admin(req: &HttpRequest) -> Result<(), ApiError> {
+    let email = req
         .extensions()
         .get::<Claims>()
-        .map(|c| c.role.clone())
+        .map(|c| c.email.clone())
         .unwrap_or_default();
-    if role.to_uppercase() != "ADMIN" {
+    if !es_super_admin(&email) {
         return Err(ApiError::Forbidden(
-            "Acceso restringido a administradores".into(),
+            "Acceso restringido al administrador del sistema".into(),
         ));
     }
     Ok(())
@@ -124,7 +145,7 @@ pub async fn listar_usuarios(
     data: web::Data<AppState>,
     req: HttpRequest,
 ) -> Result<impl Responder, ApiError> {
-    verificar_admin(&req)?;
+    verificar_super_admin(&req)?;
     let usuarios = repo::list_all(&data.db)
         .await
         .map_err(|e| ApiError::InternalError(format!("Error al listar usuarios: {}", e)))?;
@@ -136,7 +157,7 @@ pub async fn crear_usuario(
     body: web::Json<CrearUsuarioBody>,
     req: HttpRequest,
 ) -> Result<impl Responder, ApiError> {
-    verificar_admin(&req)?;
+    verificar_super_admin(&req)?;
     validar(&body.0)?;
 
     let user_id = repo::create_user(
@@ -171,7 +192,7 @@ pub async fn editar_usuario(
     body: web::Json<EditarUsuarioBody>,
     req: HttpRequest,
 ) -> Result<impl Responder, ApiError> {
-    verificar_admin(&req)?;
+    verificar_super_admin(&req)?;
     validar(&body.0)?;
 
     let actual = repo::find_by_id(&data.db, body.id)
@@ -246,7 +267,7 @@ pub async fn eliminar_usuario(
     path: web::Path<i32>,
     req: HttpRequest,
 ) -> Result<impl Responder, ApiError> {
-    verificar_admin(&req)?;
+    verificar_super_admin(&req)?;
     let id = path.into_inner();
     let usuario_full = repo::find_by_id(&data.db, id)
         .await

@@ -1,7 +1,13 @@
 @import "tailwindcss";
 @import "preline/variants.css";
 @source "../../node_modules/preline/dist/*.js";
+@import "preline/datepicker-styles.css";
 @plugin "@tailwindcss/forms";
+
+/* El calendario del datepicker debe quedar por encima de los modales */
+.vc[data-vc-input] {
+  z-index: 1000;
+}
 
 @custom-variant hover (&:hover);
 @layer base {
@@ -57,14 +63,14 @@
   --font-custom-serif: "Domine", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
   --font-custom-mono: "Kode Mono", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
 
-  --text-nano: 0.625rem;
-  --text-micro: 0.6875rem;
-  --text-meta: 0.75rem;
-  --text-xs: 0.8125rem;
-  --text-sm: 0.9375rem;
-  --text-title: 1rem;
+  --text-nano: 0.5625rem;
+  --text-micro: 0.625rem;
+  --text-meta: 0.6875rem;
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-title: 0.9375rem;
   --text-title--line-height: 1.3;
-  --text-kpi: 1.25rem;
+  --text-kpi: 1.125rem;
   --text-kpi--line-height: 1.2;
 
   --spacing-control-xs: 1.5rem;
@@ -349,17 +355,17 @@
   --border-line-7: var(--color-gray-700);
   --border-line-8: var(--color-gray-800);
 
-  --primary-50: var(--color-blue-50);
-  --primary-100: var(--color-blue-100);
-  --primary-200: var(--color-blue-200);
-  --primary-300: var(--color-blue-300);
-  --primary-400: var(--color-blue-400);
-  --primary-500: var(--color-blue-500);
-  --primary-600: var(--color-blue-600);
-  --primary-700: var(--color-blue-700);
-  --primary-800: var(--color-blue-800);
-  --primary-900: var(--color-blue-900);
-  --primary-950: var(--color-blue-950);
+  --primary-50: var(--color-neutral-50);
+  --primary-100: var(--color-neutral-100);
+  --primary-200: var(--color-neutral-200);
+  --primary-300: var(--color-neutral-300);
+  --primary-400: var(--color-neutral-400);
+  --primary-500: var(--color-neutral-500);
+  --primary-600: var(--color-neutral-700);
+  --primary-700: var(--color-neutral-800);
+  --primary-800: var(--color-neutral-900);
+  --primary-900: var(--color-neutral-900);
+  --primary-950: var(--color-neutral-950);
 
   --primary: var(--color-primary-600);
   --primary-line: transparent;
@@ -550,11 +556,11 @@
   --chart-colors-chart-4-inverse: var(--color-primary-800);
   --chart-colors-chart-4-hex: var(--color-primary-800);
   --chart-colors-chart-4-hex-inverse: var(--color-primary-800);
-  --chart-5: var(--color-purple-600);
-  --chart-colors-chart-5: var(--color-purple-600);
-  --chart-colors-chart-5-inverse: var(--color-purple-500);
-  --chart-colors-chart-5-hex: var(--color-purple-600);
-  --chart-colors-chart-5-hex-inverse: var(--color-purple-500);
+  --chart-5: var(--color-sky-600);
+  --chart-colors-chart-5: var(--color-sky-600);
+  --chart-colors-chart-5-inverse: var(--color-sky-500);
+  --chart-colors-chart-5-hex: var(--color-sky-600);
+  --chart-colors-chart-5-hex-inverse: var(--color-sky-500);
   --chart-6: var(--color-cyan-400);
   --chart-colors-chart-6: var(--color-cyan-400);
   --chart-colors-chart-6-inverse: var(--color-cyan-400);

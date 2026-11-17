@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import { IconCheck } from '@tabler/icons-vue'
 
 const props = defineProps<{
@@ -12,106 +13,69 @@ const emit = defineEmits<{
   (e: 'selectStep', step: 1 | 2 | 3): void
 }>()
 
-const canNavigateTo = (step: 1 | 2 | 3): boolean => {
+type Paso = 1 | 2 | 3
+
+const canNavigateTo = (step: Paso): boolean => {
   if (step === 1) return true
   if (step === 2) return props.isStep1Valid
-  if (step === 3) return props.isStep1Valid && props.isStep2Valid
-  return false
+  return props.isStep1Valid && props.isStep2Valid
 }
 
-const handleSelect = (step: 1 | 2 | 3) => {
-  if (canNavigateTo(step)) {
-    emit('selectStep', step)
-  }
+const pasos = computed(() => [
+  { n: 1 as Paso, titulo: 'Identidad y contacto', detalle: 'DNI, nombres y datos personales', ok: props.isStep1Valid },
+  { n: 2 as Paso, titulo: 'Vínculo laboral', detalle: 'Régimen, cargo, área y sueldo', ok: props.isStep2Valid },
+  { n: 3 as Paso, titulo: 'Documento de sustento', detalle: 'Resolución o contrato de inicio', ok: props.isStep3Valid },
+])
+
+const handleSelect = (step: Paso) => {
+  if (canNavigateTo(step)) emit('selectStep', step)
 }
 </script>
 
 <template>
-  <nav class="grid grid-cols-3 gap-2 sm:gap-4 select-none" aria-label="Etapas de registro del trabajador">
-    <button
-      type="button"
-      class="flex items-center gap-2 sm:gap-3 p-2.5 sm:p-3 rounded-xl border text-left transition-all"
-      :class="[
-        currentStep === 1
-          ? 'border-primary bg-primary/5 text-primary shadow-xs'
-          : isStep1Valid
-            ? 'border-border bg-card text-foreground cursor-pointer'
-            : 'border-border/60 bg-muted/20 text-muted-foreground',
-        !canNavigateTo(1) ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'
-      ]"
-      :aria-current="currentStep === 1 ? 'step' : undefined"
-      :disabled="!canNavigateTo(1)"
-      @click="handleSelect(1)"
-    >
-      <div
-        class="size-7 rounded-lg flex items-center justify-center font-bold text-xs shrink-0"
-        :class="currentStep === 1 ? 'bg-primary text-primary-foreground' : isStep1Valid ? 'bg-emerald-500/10 text-emerald-600 border border-emerald-500/20' : 'bg-muted text-muted-foreground'"
-      >
-        <IconCheck v-if="isStep1Valid && currentStep !== 1" class="size-4" aria-hidden="true" />
-        <span v-else>1</span>
-      </div>
-      <div class="min-w-0 flex-1">
-        <p class="text-xs font-semibold truncate">1. Identidad y Contacto</p>
-        <p class="text-micro text-muted-foreground truncate hidden sm:block">DNI, nombres y datos personales</p>
-      </div>
-    </button>
-
-    <button
-      type="button"
-      class="flex items-center gap-2 sm:gap-3 p-2.5 sm:p-3 rounded-xl border text-left transition-all"
-      :class="[
-        currentStep === 2
-          ? 'border-primary bg-primary/5 text-primary shadow-xs'
-          : isStep2Valid
-            ? 'border-border bg-card text-foreground'
-            : 'border-border/60 bg-muted/20 text-muted-foreground',
-        !canNavigateTo(2) ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'
-      ]"
-      :aria-current="currentStep === 2 ? 'step' : undefined"
-      :aria-disabled="!canNavigateTo(2)"
-      :disabled="!canNavigateTo(2)"
-      @click="handleSelect(2)"
-    >
-      <div
-        class="size-7 rounded-lg flex items-center justify-center font-bold text-xs shrink-0"
-        :class="currentStep === 2 ? 'bg-primary text-primary-foreground' : isStep2Valid ? 'bg-emerald-500/10 text-emerald-600 border border-emerald-500/20' : 'bg-muted text-muted-foreground'"
-      >
-        <IconCheck v-if="isStep2Valid && currentStep !== 2" class="size-4" aria-hidden="true" />
-        <span v-else>2</span>
-      </div>
-      <div class="min-w-0 flex-1">
-        <p class="text-xs font-semibold truncate">2. Vínculo Laboral</p>
-        <p class="text-micro text-muted-foreground truncate hidden sm:block">Régimen, cargo, área y remuneración</p>
-      </div>
-    </button>
-
-    <button
-      type="button"
-      class="flex items-center gap-2 sm:gap-3 p-2.5 sm:p-3 rounded-xl border text-left transition-all"
-      :class="[
-        currentStep === 3
-          ? 'border-primary bg-primary/5 text-primary shadow-xs'
-          : isStep3Valid
-            ? 'border-border bg-card text-foreground'
-            : 'border-border/60 bg-muted/20 text-muted-foreground',
-        !canNavigateTo(3) ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'
-      ]"
-      :aria-current="currentStep === 3 ? 'step' : undefined"
-      :aria-disabled="!canNavigateTo(3)"
-      :disabled="!canNavigateTo(3)"
-      @click="handleSelect(3)"
-    >
-      <div
-        class="size-7 rounded-lg flex items-center justify-center font-bold text-xs shrink-0"
-        :class="currentStep === 3 ? 'bg-primary text-primary-foreground' : isStep3Valid ? 'bg-emerald-500/10 text-emerald-600 border border-emerald-500/20' : 'bg-muted text-muted-foreground'"
-      >
-        <IconCheck v-if="isStep3Valid && currentStep !== 3" class="size-4" aria-hidden="true" />
-        <span v-else>3</span>
-      </div>
-      <div class="min-w-0 flex-1">
-        <p class="text-xs font-semibold truncate">3. Documento de Sustento</p>
-        <p class="text-micro text-muted-foreground truncate hidden sm:block">Resolución o contrato de inicio</p>
-      </div>
-    </button>
+  <nav class="px-5 py-4 border-b border-border select-none" aria-label="Etapas de registro del trabajador">
+    <ol class="flex items-center gap-3">
+      <template v-for="(p, i) in pasos" :key="p.n">
+        <li class="flex items-center gap-3 min-w-0" :class="i < pasos.length - 1 ? 'flex-1' : ''">
+          <button
+            type="button"
+            class="flex items-center gap-2.5 min-w-0 text-left rounded-md focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary"
+            :class="canNavigateTo(p.n) ? 'cursor-pointer' : 'cursor-not-allowed opacity-60'"
+            :aria-current="currentStep === p.n ? 'step' : undefined"
+            :disabled="!canNavigateTo(p.n)"
+            @click="handleSelect(p.n)"
+          >
+            <span
+              class="size-7 rounded-full inline-flex items-center justify-center text-meta font-semibold shrink-0 transition-colors"
+              :class="
+                currentStep === p.n
+                  ? 'bg-primary text-primary-foreground'
+                  : p.ok
+                    ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400'
+                    : 'bg-muted text-muted-foreground'
+              "
+            >
+              <IconCheck v-if="p.ok && currentStep !== p.n" class="size-3.5" aria-hidden="true" />
+              <span v-else>{{ p.n }}</span>
+            </span>
+            <span class="min-w-0 hidden sm:block">
+              <span
+                class="block text-meta font-semibold truncate"
+                :class="currentStep === p.n ? 'text-foreground' : 'text-muted-foreground'"
+              >
+                {{ p.titulo }}
+              </span>
+              <span class="block text-micro text-muted-foreground truncate">{{ p.detalle }}</span>
+            </span>
+          </button>
+          <span
+            v-if="i < pasos.length - 1"
+            class="h-px flex-1 min-w-4 transition-colors"
+            :class="p.ok ? 'bg-emerald-500/50' : 'bg-border'"
+            aria-hidden="true"
+          />
+        </li>
+      </template>
+    </ol>
   </nav>
 </template>

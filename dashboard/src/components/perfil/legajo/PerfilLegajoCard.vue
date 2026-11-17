@@ -1,11 +1,10 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, watch, onUnmounted } from 'vue'
 import { format } from 'date-fns'
 import { es } from 'date-fns/locale'
-import Badge from '@/components/ui/badge/Badge.vue'
 import FilterDropdown from '@/components/ui/form/FilterDropdown.vue'
-import { type PersonalArchivo, type PersonalDocumento } from '@/services/personal'
-import { getApiBaseUrl } from '@/services/api'
+import { type PersonalArchivo, type PersonalDocumento, getFileDownloadUrl } from '@/services/personal'
+import { getApiBaseUrl, fetchAuthBlob } from '@/services/api'
 import { parseDateSafe } from '@/utils/date'
 import {
   IconLayoutGrid,
@@ -35,7 +34,7 @@ const emit = defineEmits<{
   (e: 'abrirVisor', archivo: PersonalArchivo): void
 }>()
 
-const viewMode = ref<'list' | 'grid'>('list')
+const viewMode = ref<'list' | 'grid'>('grid')
 const searchQuery = ref('')
 const filtroTipo = ref('todos')
 const filtroFecha = ref('todas')
@@ -138,6 +137,82 @@ const filteredAndSortedArchivos = computed(() => {
 })
 
 const total = computed(() => filteredAndSortedArchivos.value.length)
+
+const previewUrls = ref<Record<number, string>>({})
+const previewLoading = ref<Record<number, boolean>>({})
+const previewErrors = ref<Record<number, boolean>>({})
+const createdBlobUrls = new Set<string>()
+
+const esEnlaceExternoArchivo = (archivo: PersonalArchivo): boolean => {
+  if (!archivo.external_url) return false
+  const baseUrl = getApiBaseUrl()
+  return !archivo.external_url.startsWith(baseUrl) && !archivo.external_url.startsWith('/')
+}
+
+const esImagenArchivo = (archivo: PersonalArchivo): boolean => {
+  const name = archivo.original_name?.toLowerCase() || ''
+  const ext = archivo.extension?.toLowerCase() || ''
+  return /\.(png|jpe?g|webp|gif)$/.test(name) || ['png', 'jpg', 'jpeg', 'webp', 'gif'].includes(ext)
+}
+
+const getIframePreviewUrl = (archivo: PersonalArchivo): string => {
+  const url = previewUrls.value[archivo.id]
+  if (!url) return ''
+  if (esEnlaceExternoArchivo(archivo)) return url
+  return url.includes('#') ? url : `${url}#toolbar=0&navpanes=0&scrollbar=0&view=FitH`
+}
+
+const cargarPreviewArchivo = async (archivo: PersonalArchivo) => {
+  if (previewUrls.value[archivo.id] || previewLoading.value[archivo.id] || previewErrors.value[archivo.id]) {
+    return
+  }
+
+  if (esEnlaceExternoArchivo(archivo) && archivo.external_url) {
+    previewUrls.value[archivo.id] = archivo.external_url
+    return
+  }
+
+  const fileUrl = archivo.external_url || getFileDownloadUrl(archivo.file_hash)
+  previewLoading.value[archivo.id] = true
+  try {
+    const rawBlob = await fetchAuthBlob(fileUrl)
+    const isPdf =
+      archivo.original_name.toLowerCase().endsWith('.pdf') ||
+      !rawBlob.type ||
+      rawBlob.type === 'application/octet-stream'
+
+    const finalBlob =
+      isPdf && rawBlob.type !== 'application/pdf' && !esImagenArchivo(archivo)
+        ? new Blob([rawBlob], { type: 'application/pdf' })
+        : rawBlob
+
+    const objectUrl = URL.createObjectURL(finalBlob)
+    createdBlobUrls.add(objectUrl)
+    previewUrls.value[archivo.id] = objectUrl
+  } catch {
+    previewErrors.value[archivo.id] = true
+  } finally {
+    previewLoading.value[archivo.id] = false
+  }
+}
+
+watch(
+  () => [viewMode.value, filteredAndSortedArchivos.value] as const,
+  ([mode, lista]) => {
+    if (mode !== 'grid') return
+    for (const archivo of lista) {
+      cargarPreviewArchivo(archivo)
+    }
+  },
+  { immediate: true }
+)
+
+onUnmounted(() => {
+  for (const url of createdBlobUrls) {
+    URL.revokeObjectURL(url)
+  }
+  createdBlobUrls.clear()
+})
 </script>
 
 <template>
@@ -209,10 +284,6 @@ const total = computed(() => filteredAndSortedArchivos.value.length)
                 <p class="text-micro text-muted-foreground truncate">{{ subtitulo(archivo) }}</p>
               </div>
 
-              <Badge v-if="archivo.documento_id" variant="outline" size="xs" class="hidden sm:inline-flex shrink-0">
-                Documento formal
-              </Badge>
-
               <div class="flex items-center gap-1 shrink-0 opacity-100 sm:opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition">
                 <button type="button"
                   class="size-7 inline-flex items-center justify-center rounded-lg border border-border text-muted-foreground hover:text-primary hover:bg-muted transition cursor-pointer"
@@ -235,14 +306,40 @@ const total = computed(() => filteredAndSortedArchivos.value.length)
           <ul v-else class="grid grid-cols-[repeat(auto-fill,minmax(15rem,1fr))] gap-3">
             <li v-for="archivo in filteredAndSortedArchivos" :key="archivo.id"
               class="group relative rounded-xl border border-border bg-card overflow-hidden hover:border-primary/40 transition">
-              <button type="button"
-                class="w-full h-24 sm:h-28 flex items-center justify-center bg-muted/40 cursor-pointer"
-                :aria-label="`Abrir ${archivo.original_name}`" @click="handleAbrirArchivo(archivo)">
-                <IconLink v-if="archivo.external_url" class="size-10 text-primary/50" :stroke-width="1.25" />
-                <IconFileTypePdf v-else class="size-10 text-rose-400/70" :stroke-width="1.25" />
-              </button>
+              <div class="relative w-full h-32 sm:h-36 bg-muted/40 overflow-hidden flex items-center justify-center">
+                <img
+                  v-if="previewUrls[archivo.id] && esImagenArchivo(archivo)"
+                  :src="previewUrls[archivo.id]"
+                  :alt="archivo.original_name"
+                  class="w-full h-full object-cover"
+                />
+                <iframe
+                  v-else-if="previewUrls[archivo.id]"
+                  :src="getIframePreviewUrl(archivo)"
+                  scrolling="no"
+                  class="absolute top-0 left-0 w-[calc(100%+18px)] h-[calc(100%+18px)] border-0 pointer-events-none overflow-hidden"
+                  tabindex="-1"
+                  loading="lazy"
+                  :title="`Vista previa de ${archivo.original_name}`"
+                ></iframe>
+                <div
+                  v-else-if="previewLoading[archivo.id]"
+                  class="flex flex-col items-center justify-center gap-1.5 text-muted-foreground"
+                >
+                  <div class="size-5 rounded-full border-2 border-primary/20 border-t-primary animate-spin"></div>
+                  <span class="text-nano">Cargando vista previa...</span>
+                </div>
+                <template v-else>
+                  <IconLink v-if="archivo.external_url" class="size-10 text-primary/50" :stroke-width="1.25" />
+                  <IconFileTypePdf v-else class="size-10 text-rose-400/70" :stroke-width="1.25" />
+                </template>
 
-              <div class="absolute top-2.5 right-2.5 flex items-center rounded-xl bg-card border border-border shadow-md p-1 opacity-100 sm:opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition">
+                <button type="button"
+                  class="absolute inset-0 w-full h-full cursor-pointer bg-transparent hover:bg-foreground/5 transition-colors"
+                  :aria-label="`Abrir ${archivo.original_name}`" @click="handleAbrirArchivo(archivo)"></button>
+              </div>
+
+              <div class="absolute top-2.5 right-2.5 z-10 flex items-center rounded-xl bg-card border border-border shadow-md p-1 opacity-100 sm:opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition">
                 <button type="button"
                   class="size-7 inline-flex items-center justify-center rounded-lg text-muted-foreground hover:text-primary hover:bg-muted transition cursor-pointer"
                   :title="archivo.external_url ? 'Abrir enlace externo' : 'Visualizar documento'"

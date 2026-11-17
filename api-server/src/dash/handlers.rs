@@ -3,6 +3,7 @@ use actix_web::{get, post, web, HttpMessage, HttpRequest, HttpResponse};
 use futures_util::TryStreamExt;
 
 use crate::common::errors::ApiError;
+use crate::common::jwt::Claims;
 use crate::dash::service as dash_service;
 use crate::AppState;
 use serde::Deserialize;
@@ -37,6 +38,24 @@ pub struct RegimenQuery {
 #[get("/cumpleanos")]
 pub async fn cumpleanos(data: web::Data<AppState>) -> Result<HttpResponse, ApiError> {
     let list = dash_service::cumpleaños(&data.db).await?;
+    Ok(HttpResponse::Ok().json(list))
+}
+
+#[derive(Deserialize)]
+pub struct CumpleanosMesQuery {
+    pub mes: u32,
+}
+
+/// Cumpleaños del personal activo en un mes (1-12). El calendario lo pide al navegar.
+#[get("/cumpleanos_mes")]
+pub async fn cumpleanos_mes(
+    data: web::Data<AppState>,
+    query: web::Query<CumpleanosMesQuery>,
+) -> Result<HttpResponse, ApiError> {
+    if !(1..=12).contains(&query.mes) {
+        return Err(ApiError::BadRequest("El mes debe estar entre 1 y 12".to_string()));
+    }
+    let list = dash_service::cumpleanos_mes(&data.db, query.mes).await?;
     Ok(HttpResponse::Ok().json(list))
 }
 
@@ -108,7 +127,19 @@ pub async fn personal_activo_regimen(
 pub async fn reporte_historial(
     data: web::Data<AppState>,
     query: web::Query<HistorialQuery>,
+    req: HttpRequest,
 ) -> Result<HttpResponse, ApiError> {
+    // El historial de auditoría es información sensible: solo lo consulta un ADMIN.
+    let es_admin = req
+        .extensions()
+        .get::<Claims>()
+        .map(|c| c.role.eq_ignore_ascii_case("ADMIN"))
+        .unwrap_or(false);
+    if !es_admin {
+        return Err(ApiError::Forbidden(
+            "Solo un administrador puede consultar el historial".to_string(),
+        ));
+    }
     let dni_filter = query.dni.as_deref().filter(|d| !d.trim().is_empty());
     let result =
         dash_service::reporte_historial(&data.db, dni_filter, query.page, query.limit, query.offset)
@@ -162,6 +193,20 @@ pub async fn activos_por_distrito(data: web::Data<AppState>) -> Result<HttpRespo
 pub async fn nuevos_trabajadores(data: web::Data<AppState>) -> Result<HttpResponse, ApiError> {
     let result = dash_service::nuevos_trabajadores(&data.db).await?;
     Ok(HttpResponse::Ok().json(result))
+}
+
+#[derive(Deserialize)]
+pub struct DiasHabilesQuery {
+    anio: Option<i32>,
+}
+
+/// Feriados, dias no laborables y cantidad de dias habiles por mes (sector publico).
+#[get("/dias_habiles")]
+pub async fn dias_habiles(query: web::Query<DiasHabilesQuery>) -> Result<HttpResponse, ApiError> {
+    use chrono::Datelike;
+    let anio = query.anio.unwrap_or_else(|| chrono::Local::now().year());
+    let calendario = crate::dash::calendario::calcular(anio).unwrap_or_default();
+    Ok(HttpResponse::Ok().json(calendario))
 }
 
 #[get("/rangos_edad")]

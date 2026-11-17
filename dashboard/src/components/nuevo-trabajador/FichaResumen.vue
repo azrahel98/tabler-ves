@@ -1,10 +1,7 @@
 <script setup lang="ts">
-import Card from '@/components/ui/card/Card.vue'
-import Badge from '@/components/ui/badge/Badge.vue'
 import type { PersonalFormState, PlazaFormState, DocumentoFormState } from './types'
 import { formatMoneda } from '@/services/personal'
 import { formatDate } from '@/utils/date'
-import { IconId } from '@tabler/icons-vue'
 
 defineProps<{
   personal: PersonalFormState
@@ -19,87 +16,57 @@ defineProps<{
 </script>
 
 <template>
-  <Card class="space-y-3.5 border-primary/20 bg-primary/5">
-    <div class="flex items-center justify-between border-b border-border pb-2.5">
-      <span class="text-xs font-bold uppercase tracking-wider text-foreground flex items-center gap-1.5">
-        <IconId class="size-3.5 text-primary" aria-hidden="true" />
-        Ficha Previa del Servidor
+  <div class="space-y-4">
+    <div class="flex items-center justify-between gap-2">
+      <h3 class="text-meta font-semibold text-foreground">Ficha previa</h3>
+      <span class="text-nano font-mono text-muted-foreground bg-muted rounded-md px-1.5 py-0.5">
+        {{ personal.dni || 'Sin DNI' }}
       </span>
-      <Badge variant="outline" size="xs" class="font-mono text-micro uppercase">
-        {{ personal.dni || 'DNI no registrado' }}
-      </Badge>
     </div>
 
-    <div class="space-y-2 text-xs">
-      <div>
-        <span class="text-micro uppercase font-bold text-muted-foreground tracking-wider block">Servidor</span>
-        <p class="font-semibold text-foreground text-sm truncate" :title="nombreCompleto">
-          {{ nombreCompleto }}
-        </p>
-      </div>
+    <div class="min-w-0">
+      <p class="text-meta font-semibold text-foreground truncate" :title="nombreCompleto">{{ nombreCompleto }}</p>
+      <p class="text-micro text-muted-foreground">
+        {{ personal.nacimiento ? formatDate(personal.nacimiento) : 'Sin fecha de nacimiento' }}
+        · {{ personal.sexo === 'M' ? 'Masculino' : 'Femenino' }}
+      </p>
+    </div>
 
-      <div class="grid grid-cols-2 gap-2 border-y border-border/60 py-2">
-        <div>
-          <span class="text-micro text-muted-foreground uppercase font-bold block">Nacimiento</span>
-          <span class="font-mono text-foreground">
-            {{ personal.nacimiento ? formatDate(personal.nacimiento) : '-' }}
-          </span>
-        </div>
-        <div>
-          <span class="text-micro text-muted-foreground uppercase font-bold block">Sexo</span>
-          <span class="text-foreground">
-            {{ personal.sexo === 'M' ? 'Masculino' : 'Femenino' }}
-          </span>
-        </div>
-      </div>
-
+    <dl class="space-y-3 border-t border-border pt-3 text-micro">
       <div class="min-w-0">
-        <span class="text-micro uppercase font-bold text-muted-foreground tracking-wider block">Cargo Asignado</span>
-        <p class="font-semibold text-foreground truncate">{{ cargoNombre }}</p>
-        <p class="text-meta text-primary truncate">{{ areaNombre }}</p>
+        <dt class="text-muted-foreground">Cargo</dt>
+        <dd class="font-medium text-foreground truncate">{{ cargoNombre }}</dd>
+        <dd class="text-muted-foreground truncate">{{ areaNombre }}</dd>
       </div>
-
-      <div class="grid grid-cols-2 gap-2 border-y border-border/60 py-2">
+      <div class="grid grid-cols-2 gap-2">
         <div class="min-w-0">
-          <span class="text-micro text-muted-foreground uppercase font-bold block">Régimen</span>
-          <span class="font-medium text-foreground truncate block">
-            {{ plaza.regimenNombre || '-' }}
-          </span>
+          <dt class="text-muted-foreground">Régimen</dt>
+          <dd class="font-medium text-foreground truncate">{{ plaza.regimenNombre || '—' }}</dd>
         </div>
         <div class="min-w-0">
-          <span class="text-micro text-muted-foreground uppercase font-bold block">Sueldo</span>
-          <span class="font-mono font-bold text-foreground truncate block">
-            {{ formatMoneda(plaza.sueldo) }}
-          </span>
+          <dt class="text-muted-foreground">Sueldo</dt>
+          <dd class="font-mono font-semibold text-foreground truncate">{{ formatMoneda(plaza.sueldo) }}</dd>
         </div>
       </div>
-
       <div class="min-w-0">
-        <span class="text-micro uppercase font-bold text-muted-foreground tracking-wider block">
-          Documento de Sustento
-        </span>
-        <p class="font-medium text-foreground truncate">
+        <dt class="text-muted-foreground">Documento de sustento</dt>
+        <dd class="font-medium text-foreground truncate">
           {{ tipoDocNombre }} N° {{ documento.numeroDocumento }}-{{ documento.añoDocumento }}
-        </p>
-        <p class="text-meta text-muted-foreground font-mono truncate">
-          Fecha: {{ documento.fecha ? formatDate(documento.fecha) : '-' }}
-        </p>
+        </dd>
+        <dd class="font-mono text-muted-foreground">{{ documento.fecha ? formatDate(documento.fecha) : '—' }}</dd>
       </div>
-    </div>
+    </dl>
 
-    <div class="pt-2 border-t border-border">
-      <div class="flex items-center gap-2">
-        <span
-          class="size-2 rounded-full shrink-0"
-          :class="isFormValid ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'"
-        ></span>
-        <span
-          class="text-meta font-medium"
-          :class="isFormValid ? 'text-emerald-600 dark:text-emerald-400' : 'text-amber-600 dark:text-amber-400'"
-        >
-          {{ isFormValid ? 'Formulario completo y listo para registrar' : 'Complete todos los campos obligatorios (*)' }}
-        </span>
-      </div>
+    <div
+      class="flex items-start gap-2 rounded-lg px-2.5 py-2 text-micro font-medium"
+      :class="
+        isFormValid
+          ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
+          : 'bg-amber-500/10 text-amber-600 dark:text-amber-400'
+      "
+    >
+      <span class="size-1.5 rounded-full mt-1 shrink-0" :class="isFormValid ? 'bg-emerald-500' : 'bg-amber-500'" />
+      {{ isFormValid ? 'Listo para registrar' : 'Complete los campos obligatorios (*)' }}
     </div>
-  </Card>
+  </div>
 </template>

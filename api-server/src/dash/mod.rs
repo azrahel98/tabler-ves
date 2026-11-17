@@ -1,3 +1,4 @@
+pub mod calendario;
 pub mod handlers;
 pub mod models;
 pub mod repo;
@@ -11,6 +12,7 @@ pub fn configure(cfg: &mut web::ServiceConfig) {
         web::scope("/api/dash")
             .wrap(JWT)
             .service(handlers::cumpleanos)
+            .service(handlers::cumpleanos_mes)
             .service(handlers::info)
             .service(handlers::personal_area_report)
             .service(handlers::renuncias_ano)
@@ -33,6 +35,7 @@ pub fn configure(cfg: &mut web::ServiceConfig) {
             .service(handlers::comparar_mef)
             .service(handlers::generar_mef)
             .service(handlers::alerta_70_anos)
-            .service(handlers::aplicar_airhsp),
+            .service(handlers::aplicar_airhsp)
+            .service(handlers::dias_habiles),
     );
 }

@@ -65,16 +65,13 @@ const handleLogout = () => {
 
       <div class="hs-dropdown [--placement:bottom-right] relative inline-flex">
         <button id="user-menu-btn" type="button" aria-haspopup="menu" aria-expanded="false" aria-label="Menú de usuario"
-          class="hs-dropdown-toggle flex items-center gap-2 p-1 rounded-lg hover:bg-muted focus:outline-hidden transition cursor-pointer"
+          class="hs-dropdown-toggle flex items-center gap-1.5 p-1 rounded-lg hover:bg-muted focus:outline-hidden transition cursor-pointer"
           >
-          <img
-            :src="authStore.user?.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=256&auto=format&fit=crop'"
-            alt="Avatar de usuario" class="size-7 sm:size-8 rounded-full object-cover border border-border" />
-          <div class="hidden md:flex flex-col text-left">
-            <span class="text-xs font-semibold text-foreground leading-tight">
-              {{ authStore.user?.name || 'Administrador' }}
-            </span>
-            <span class="text-micro text-muted-foreground leading-tight">
+          <div class="flex flex-col items-center">
+            <img
+              :src="authStore.user?.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=256&auto=format&fit=crop'"
+              alt="Avatar de usuario" class="size-7 rounded-full object-cover border border-border" />
+            <span class="text-nano font-semibold uppercase tracking-wider text-muted-foreground leading-none mt-0.5">
               {{ authStore.user?.role || 'Super Admin' }}
             </span>
           </div>
@@ -82,26 +79,25 @@ const handleLogout = () => {
         </button>
 
         <div role="menu" aria-orientation="vertical" aria-labelledby="user-menu-btn"
-          class="hs-dropdown-menu hs-dropdown-open:opacity-100 transition-[opacity,margin] duration hidden opacity-0 w-56 bg-card border border-border rounded-xl shadow-lg py-1.5 z-50 text-xs" >
-          <div class="px-4 py-2 border-b border-border">
-            <p class="font-semibold text-foreground">{{ authStore.user?.name || 'Administrador' }}</p>
-            <p class="text-muted-foreground truncate">{{ authStore.user?.email || 'admin@crmpulse.com' }}</p>
+          class="hs-dropdown-menu hs-dropdown-open:opacity-100 transition-[opacity,margin] duration hidden opacity-0 w-48 bg-card border border-border rounded-xl shadow-lg py-1 z-50 text-meta" >
+          <div class="px-3 py-1.5 border-b border-border">
+            <p class="font-semibold text-foreground truncate" :title="authStore.user?.name || 'Administrador'">{{ authStore.user?.name || 'Administrador' }}</p>
+            <p class="text-micro text-muted-foreground truncate">{{ authStore.user?.email || 'admin@crmpulse.com' }}</p>
           </div>
 
-          <div class="py-1">
-
+          <div class="py-0.5">
             <router-link to="/panel"
-              class="flex items-center gap-2.5 px-4 py-2 text-foreground hover:bg-muted transition">
-              <IconLayoutDashboard class="size-4 text-muted-foreground" :stroke-width="2" />
+              class="flex items-center gap-2 px-3 py-1.5 text-foreground hover:bg-muted transition">
+              <IconLayoutDashboard class="size-3.5 text-muted-foreground shrink-0" :stroke-width="2" />
               <span>Panel Principal</span>
             </router-link>
           </div>
 
-          <div class="border-t border-border pt-1">
+          <div class="border-t border-border pt-0.5">
             <button type="button"
-              class="w-full flex items-center gap-2.5 px-4 py-2 text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition text-left cursor-pointer"
+              class="w-full flex items-center gap-2 px-3 py-1.5 text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition text-left cursor-pointer"
               @click="handleLogout">
-              <IconLogout class="size-4" :stroke-width="2" />
+              <IconLogout class="size-3.5 shrink-0" :stroke-width="2" />
               <span>Cerrar sesión</span>
             </button>
           </div>

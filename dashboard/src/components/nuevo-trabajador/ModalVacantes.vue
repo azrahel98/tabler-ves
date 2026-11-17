@@ -40,20 +40,20 @@ const onSeleccionar = (vacante: VacanteOption) => {
 
 <template>
   <Modal :is-open="isOpen" labelledby="modal-vacantes-title" @close="cerrarModal">
-      <div class="relative w-full max-w-2xl rounded-2xl bg-card border border-border shadow-2xl p-5 space-y-4">
+      <div class="relative w-full max-w-2xl rounded-xl bg-card border border-border shadow-2xl p-3 sm:p-4 space-y-4">
         <div class="flex items-center justify-between border-b border-border pb-3">
           <div class="space-y-0.5">
-            <h3 id="modal-vacantes-title" class="font-bold text-foreground text-sm tracking-tight flex items-center gap-2">
+            <h3 id="modal-vacantes-title" class="font-bold text-foreground text-xs tracking-tight flex items-center gap-2">
               <IconBriefcase class="size-4 text-primary shrink-0" aria-hidden="true" />
               Plazas Vacantes Disponibles
             </h3>
-            <p id="modal-vacantes-desc" class="text-xs text-muted-foreground">
+            <p id="modal-vacantes-desc" class="text-meta text-muted-foreground">
               Selecciona una plaza vacante para autocompletar el vínculo laboral.
             </p>
           </div>
           <button
             type="button"
-            class="text-muted-foreground hover:text-foreground text-xs p-2 rounded-lg hover:bg-muted transition-colors cursor-pointer min-h-[38px] min-w-[38px] flex items-center justify-center"
+            class="text-muted-foreground hover:text-foreground text-meta p-2 rounded-lg hover:bg-muted transition-colors cursor-pointer min-h-[38px] min-w-[38px] flex items-center justify-center"
             aria-label="Cerrar modal de vacantes"
             @click="cerrarModal"
           >
@@ -72,7 +72,7 @@ const onSeleccionar = (vacante: VacanteOption) => {
             type="text"
             placeholder="Buscar por código de plaza, unidad orgánica o cargo..."
             aria-label="Buscar plazas vacantes por código, unidad orgánica o cargo"
-            class="w-full pl-9 pr-3 py-2.5 sm:py-2 text-base sm:text-xs rounded-xl border border-border bg-card text-foreground focus:outline-hidden focus:border-primary"
+            class="w-full pl-9 pr-3 py-2.5 sm:py-2 text-sm sm:text-meta rounded-xl border border-border bg-card text-foreground focus:outline-hidden focus:border-primary"
           />
         </div>
 
@@ -87,15 +87,15 @@ const onSeleccionar = (vacante: VacanteOption) => {
             >
               <div class="min-w-0 flex-1 space-y-0.5">
                 <div class="flex items-center gap-2 flex-wrap">
-                  <span class="font-mono font-bold text-xs text-foreground">{{ v.codigo }}</span>
+                  <span class="font-mono font-bold text-meta text-foreground">{{ v.codigo }}</span>
                   <Badge variant="success" size="xs">Vacante</Badge>
                 </div>
-                <p class="text-xs font-semibold text-foreground truncate">{{ v.cargo || 'Sin cargo asignado' }}</p>
+                <p class="text-meta font-semibold text-foreground truncate">{{ v.cargo || 'Sin cargo asignado' }}</p>
                 <p class="text-meta text-muted-foreground truncate">{{ v.area || 'Sin unidad orgánica asignada' }}</p>
               </div>
 
               <div class="text-right shrink-0 pl-2">
-                <span class="font-mono font-bold text-foreground text-xs block">
+                <span class="font-mono font-bold text-foreground text-meta block">
                   {{ formatMoneda(v.sueldo) }}
                 </span>
                 <Button size="xs" variant="primary" class="mt-1 text-micro min-h-[32px] sm:min-h-[28px] px-2.5">
@@ -104,7 +104,7 @@ const onSeleccionar = (vacante: VacanteOption) => {
               </div>
             </div>
           </template>
-          <div v-else class="text-center py-8 text-xs text-muted-foreground">
+          <div v-else class="text-center py-8 text-meta text-muted-foreground">
             No se encontraron plazas vacantes que coincidan con los criterios de búsqueda.
           </div>
         </div>

@@ -2,7 +2,6 @@
 import { useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import {
-  IconStack2,
   IconX,
   IconLayoutDashboard,
   IconLayoutSidebarLeftCollapse,
@@ -11,8 +10,10 @@ import {
   IconUserPlus,
   IconSitemap,
   IconAlertTriangle,
+  IconCalendarEvent,
   IconMap,
   IconFileSpreadsheet,
+  IconUsersGroup,
 } from '@tabler/icons-vue'
 
 withDefaults(
@@ -49,12 +50,17 @@ const authStore = useAuthStore()
       <router-link to="/panel" class="flex items-center gap-3 overflow-hidden"
         :class="isCollapsed ? 'lg:justify-center' : ''" @click="emit('close')">
         <div
-          class="size-9 rounded-xl bg-primary text-primary-foreground flex items-center justify-center font-black shrink-0 transition-opacity hover:opacity-90">
-          <IconStack2 class="size-5" :stroke-width="2.2" />
+          class="size-9 rounded-xl bg-primary text-primary-foreground flex items-center justify-center font-black shrink-0 shadow-xs transition-opacity hover:opacity-90">
+          <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="9" cy="7.5" r="2.75" />
+            <path d="M3.75 18.5a5.25 5.25 0 0 1 10.5 0" />
+            <path d="M16.5 18.5v-5" />
+            <path d="M19.75 18.5v-8.5" />
+          </svg>
         </div>
         <div v-if="!isCollapsed" class="flex flex-col min-w-0">
-          <span class="text-sm font-bold tracking-tight text-foreground">CRM Pulse</span>
-          <span class="text-micro font-medium text-muted-foreground -mt-0.5 tracking-wider uppercase">Admin Suite</span>
+          <span class="text-sm font-bold tracking-tight text-foreground">RH DASH</span>
+          <span class="text-micro font-medium text-muted-foreground -mt-0.5 tracking-wider uppercase">Recursos Humanos</span>
         </div>
       </router-link>
 
@@ -76,65 +82,81 @@ const authStore = useAuthStore()
         <button type="button"
           class="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition"
           title="Expandir barra lateral" aria-label="Expandir barra lateral" @click="emit('toggleCollapse')">
-          <IconLayoutSidebarLeftExpand class="size-4" :stroke-width="2" />
+          <IconLayoutSidebarLeftExpand class="size-5" :stroke-width="1.8" />
         </button>
       </div>
 
-      <nav class="space-y-1">
+      <nav class="space-y-0.5">
         <router-link to="/panel"
-          class="flex items-center rounded-lg text-sm transition-colors text-sidebar-nav-foreground hover:bg-sidebar-nav-hover"
-          :class="isCollapsed ? 'lg:justify-center lg:px-0 px-3 py-2.5' : 'px-3 py-2 gap-3'"
+          class="flex items-center rounded-lg text-meta font-medium transition-colors text-sidebar-nav-foreground hover:bg-sidebar-nav-hover"
+          :class="isCollapsed ? 'lg:justify-center lg:px-0 px-3 py-2' : 'px-2.5 py-1.5 gap-2'"
           :title="isCollapsed ? 'Dashboard' : undefined" @click="emit('close')">
-          <IconLayoutDashboard class="size-5 shrink-0" :stroke-width="1.3" />
+          <IconLayoutDashboard class="shrink-0" :class="isCollapsed ? 'lg:size-5 size-3.5' : 'size-3.5'" :stroke-width="1.6" />
           <span :class="isCollapsed ? 'lg:hidden truncate' : 'truncate'">Dashboard</span>
         </router-link>
 
         <router-link to="/organigrama"
-          class="flex items-center rounded-lg text-sm transition-colors text-sidebar-nav-foreground hover:bg-sidebar-nav-hover"
-          :class="isCollapsed ? 'lg:justify-center lg:px-0 px-3 py-2.5' : 'px-3 py-2 gap-3'"
+          class="flex items-center rounded-lg text-meta font-medium transition-colors text-sidebar-nav-foreground hover:bg-sidebar-nav-hover"
+          :class="isCollapsed ? 'lg:justify-center lg:px-0 px-3 py-2' : 'px-2.5 py-1.5 gap-2'"
           :title="isCollapsed ? 'Organigrama' : undefined" @click="emit('close')">
-          <IconSitemap class="size-5 shrink-0" :stroke-width="1.3" />
+          <IconSitemap class="shrink-0" :class="isCollapsed ? 'lg:size-5 size-3.5' : 'size-3.5'" :stroke-width="1.6" />
           <span :class="isCollapsed ? 'lg:hidden truncate' : 'truncate'">Organigrama</span>
         </router-link>
 
         <router-link to="/distritos"
-          class="flex items-center rounded-lg text-sm transition-colors text-sidebar-nav-foreground hover:bg-sidebar-nav-hover"
-          :class="isCollapsed ? 'lg:justify-center lg:px-0 px-3 py-2.5' : 'px-3 py-2 gap-3'"
+          class="flex items-center rounded-lg text-meta font-medium transition-colors text-sidebar-nav-foreground hover:bg-sidebar-nav-hover"
+          :class="isCollapsed ? 'lg:justify-center lg:px-0 px-3 py-2' : 'px-2.5 py-1.5 gap-2'"
           :title="isCollapsed ? 'Mapa de Distritos' : undefined" @click="emit('close')">
-          <IconMap class="size-5 shrink-0" :stroke-width="1.3" />
+          <IconMap class="shrink-0" :class="isCollapsed ? 'lg:size-5 size-3.5' : 'size-3.5'" :stroke-width="1.6" />
           <span :class="isCollapsed ? 'lg:hidden truncate' : 'truncate'">Mapa de Distritos</span>
         </router-link>
 
 
         <router-link to="/personal/nuevo"
-          class="flex items-center rounded-lg text-sm transition-colors text-sidebar-nav-foreground hover:bg-sidebar-nav-hover"
-          :class="isCollapsed ? 'lg:justify-center lg:px-0 px-3 py-2.5' : 'px-3 py-2 gap-3'"
+          class="flex items-center rounded-lg text-meta font-medium transition-colors text-sidebar-nav-foreground hover:bg-sidebar-nav-hover"
+          :class="isCollapsed ? 'lg:justify-center lg:px-0 px-3 py-2' : 'px-2.5 py-1.5 gap-2'"
           :title="isCollapsed ? 'Nuevo Registro' : undefined" @click="emit('close')">
-          <IconUserPlus class="size-5 shrink-0" :stroke-width="1.3" />
+          <IconUserPlus class="shrink-0" :class="isCollapsed ? 'lg:size-5 size-3.5' : 'size-3.5'" :stroke-width="1.6" />
           <span :class="isCollapsed ? 'lg:hidden truncate' : 'truncate'">Nuevo Servidor</span>
         </router-link>
 
+        <router-link to="/calendario"
+          class="flex items-center rounded-lg text-meta font-medium transition-colors text-sidebar-nav-foreground hover:bg-sidebar-nav-hover"
+          :class="isCollapsed ? 'lg:justify-center lg:px-0 px-3 py-2' : 'px-2.5 py-1.5 gap-2'"
+          :title="isCollapsed ? 'Calendario' : undefined" @click="emit('close')">
+          <IconCalendarEvent class="shrink-0" :class="isCollapsed ? 'lg:size-5 size-3.5' : 'size-3.5'" :stroke-width="1.6" />
+          <span :class="isCollapsed ? 'lg:hidden truncate' : 'truncate'">Calendario</span>
+        </router-link>
+
         <router-link to="/alerta-70"
-          class="flex items-center rounded-lg text-sm transition-colors text-sidebar-nav-foreground hover:bg-sidebar-nav-hover"
-          :class="isCollapsed ? 'lg:justify-center lg:px-0 px-3 py-2.5' : 'px-3 py-2 gap-3'"
+          class="flex items-center rounded-lg text-meta font-medium transition-colors text-sidebar-nav-foreground hover:bg-sidebar-nav-hover"
+          :class="isCollapsed ? 'lg:justify-center lg:px-0 px-3 py-2' : 'px-2.5 py-1.5 gap-2'"
           :title="isCollapsed ? 'Alerta 70 Años' : undefined" @click="emit('close')">
-          <IconAlertTriangle class="size-5 shrink-0 text-amber-500" :stroke-width="1.3" />
+          <IconAlertTriangle class="shrink-0 text-amber-500" :class="isCollapsed ? 'lg:size-5 size-3.5' : 'size-3.5'" :stroke-width="1.6" />
           <span :class="isCollapsed ? 'lg:hidden truncate' : 'truncate'">Alerta 70 Años</span>
         </router-link>
 
         <router-link to="/airhsp"
-          class="flex items-center rounded-lg text-sm transition-colors text-sidebar-nav-foreground hover:bg-sidebar-nav-hover"
-          :class="isCollapsed ? 'lg:justify-center lg:px-0 px-3 py-2.5' : 'px-3 py-2 gap-3'"
+          class="flex items-center rounded-lg text-meta font-medium transition-colors text-sidebar-nav-foreground hover:bg-sidebar-nav-hover"
+          :class="isCollapsed ? 'lg:justify-center lg:px-0 px-3 py-2' : 'px-2.5 py-1.5 gap-2'"
           :title="isCollapsed ? 'Comparar AIRHSP' : undefined" @click="emit('close')">
-          <IconFileSpreadsheet class="size-5 shrink-0" :stroke-width="1.3" />
+          <IconFileSpreadsheet class="shrink-0" :class="isCollapsed ? 'lg:size-5 size-3.5' : 'size-3.5'" :stroke-width="1.6" />
           <span :class="isCollapsed ? 'lg:hidden truncate' : 'truncate'">Comparar AIRHSP</span>
         </router-link>
 
+        <router-link v-if="authStore.isSuperAdmin" to="/usuarios"
+          class="flex items-center rounded-lg text-meta font-medium transition-colors text-sidebar-nav-foreground hover:bg-sidebar-nav-hover"
+          :class="isCollapsed ? 'lg:justify-center lg:px-0 px-3 py-2' : 'px-2.5 py-1.5 gap-2'"
+          :title="isCollapsed ? 'Usuarios' : undefined" @click="emit('close')">
+          <IconUsersGroup class="shrink-0" :class="isCollapsed ? 'lg:size-5 size-3.5' : 'size-3.5'" :stroke-width="1.6" />
+          <span :class="isCollapsed ? 'lg:hidden truncate' : 'truncate'">Usuarios</span>
+        </router-link>
+
         <router-link :to="route.fullPath" v-if="route.path.startsWith('/perfil')"
-          class="flex items-center rounded-lg text-sm transition-colors text-sidebar-nav-foreground hover:bg-sidebar-nav-hover"
-          :class="isCollapsed ? 'lg:justify-center lg:px-0 px-3 py-2.5' : 'px-3 py-2 gap-3'"
+          class="flex items-center rounded-lg text-meta font-medium transition-colors text-sidebar-nav-foreground hover:bg-sidebar-nav-hover"
+          :class="isCollapsed ? 'lg:justify-center lg:px-0 px-3 py-2' : 'px-2.5 py-1.5 gap-2'"
           :title="isCollapsed ? 'Perfil' : undefined" @click="emit('close')">
-          <IconUser class="size-5 shrink-0" :stroke-width="1.3" />
+          <IconUser class="shrink-0" :class="isCollapsed ? 'lg:size-5 size-3.5' : 'size-3.5'" :stroke-width="1.6" />
           <span :class="isCollapsed ? 'lg:hidden truncate' : 'truncate'">Perfil</span>
         </router-link>
       </nav>

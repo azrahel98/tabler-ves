@@ -329,16 +329,16 @@ const totalColumnsCount = computed(() => {
 </script>
 
 <template>
-  <div class="space-y-3 w-full">
+  <div class="w-full bg-card rounded-xl border border-border overflow-hidden">
     <div v-if="searchable || showColumnVisibility || exportable || $slots.toolbar"
-      class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-      <div class="flex items-center gap-2 flex-1 max-w-sm">
+      class="p-2.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div class="flex items-center gap-2 flex-1 max-w-xl">
         <div v-if="searchable" class="relative w-full">
           <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-muted-foreground">
-            <IconSearch class="size-4" :stroke-width="2" />
+            <IconSearch class="size-3" :stroke-width="2" />
           </div>
           <input v-model="searchQuery" type="text" :placeholder="searchPlaceholder"
-            class="w-full bg-card border border-border text-foreground placeholder:text-muted-foreground/70 pl-9 pr-8 py-1.5 text-xs sm:text-sm rounded-lg outline-none focus:border-primary focus:ring-1 focus:ring-primary transition" />
+            class="w-full ps-8 pe-8 h-control-sm py-0 rounded-md bg-muted border border-transparent text-micro text-foreground placeholder:text-muted-foreground outline-none focus:bg-card focus:border-primary focus:ring-1 focus:ring-primary transition" />
           <button v-if="searchQuery" type="button"
             class="absolute inset-y-0 right-0 pr-2.5 flex items-center text-muted-foreground hover:text-foreground cursor-pointer"
             @click="searchQuery = ''">
@@ -350,7 +350,7 @@ const totalColumnsCount = computed(() => {
       <div class="flex items-center gap-2 self-end sm:self-auto shrink-0">
         <div v-if="showColumnVisibility" class="relative">
           <button type="button"
-            class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-foreground bg-card border border-border rounded-lg hover:bg-muted focus:outline-hidden transition cursor-pointer"
+            class="inline-flex items-center gap-1.5 px-2.5 py-1 text-meta font-medium text-foreground bg-card border border-border rounded-lg hover:bg-muted focus:outline-hidden transition cursor-pointer"
             @click="isColumnsMenuOpen = !isColumnsMenuOpen">
             <IconColumns class="size-3.5 text-muted-foreground" :stroke-width="2" />
             <span>Columnas</span>
@@ -386,7 +386,7 @@ const totalColumnsCount = computed(() => {
     </div>
 
     <div v-if="selectable && selectedKeys.length > 0"
-      class="flex items-center justify-between px-3 py-2 bg-primary/5 border border-primary/20 rounded-lg text-xs">
+      class="flex items-center justify-between px-3 py-2 bg-primary/5 border-t border-primary/20 text-xs">
       <span class="font-medium text-primary">
         {{ selectedKeys.length }} {{ selectedKeys.length === 1 ? 'registro seleccionado' : 'registros seleccionados' }}
       </span>
@@ -395,7 +395,7 @@ const totalColumnsCount = computed(() => {
       </div>
     </div>
 
-    <div class="bg-card rounded-xl border border-border overflow-hidden" :class="maxHeight ? 'overflow-y-auto' : ''"
+    <div class="border-t border-border" :class="maxHeight ? 'overflow-y-auto' : ''"
       :style="maxHeight ? { maxHeight: maxHeight } : undefined">
       <Table>
         <TableHeader :class="stickyHeader ? 'sticky top-0 z-10 bg-card shadow-xs' : ''">
@@ -441,7 +441,7 @@ const totalColumnsCount = computed(() => {
           <TableEmpty v-if="loading" :colspan="totalColumnsCount">
             <div class="flex items-center justify-center gap-2 py-6">
               <IconLoader2 class="animate-spin size-5 text-primary" :stroke-width="2" />
-              <span class="text-sm font-medium text-foreground">Cargando registros...</span>
+              <span class="text-meta font-medium text-foreground">Cargando registros...</span>
             </div>
           </TableEmpty>
 
@@ -469,7 +469,7 @@ const totalColumnsCount = computed(() => {
       </Table>
 
       <div v-if="paginated && sortedData.length > 0"
-        class="p-3 sm:p-4 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-3 bg-muted/10 text-xs text-muted-foreground">
+        class="px-4 py-3 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-3 text-meta text-muted-foreground">
         <div class="flex items-center gap-3">
           <span>
             Mostrando <strong class="text-foreground font-semibold">{{ startRecord }}</strong> a <strong
@@ -489,14 +489,14 @@ const totalColumnsCount = computed(() => {
 
         <div v-if="paginationVariant === 'numbered'" class="flex items-center gap-1">
           <button type="button"
-            class="p-1.5 rounded-lg border border-border bg-card text-foreground hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed transition"
+            class="p-1 rounded-lg border border-border bg-card text-foreground hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed transition"
             :disabled="currentPage <= 1" aria-label="Página anterior" @click="prevPage">
             <IconChevronLeft class="size-4" :stroke-width="2" />
           </button>
 
           <template v-for="(p, i) in visiblePages" :key="i">
             <span v-if="p === '...'" class="px-2 text-muted-foreground">...</span>
-            <button v-else type="button" class="min-w-8 h-8 px-2 rounded-lg text-xs font-semibold transition"
+            <button v-else type="button" class="min-w-7 h-7 px-2 rounded-lg text-meta font-semibold transition"
               :class="currentPage === p ? 'bg-primary text-primary-foreground' : 'bg-card border border-border text-foreground hover:bg-muted'"
               @click="goToPage(Number(p))">
               {{ p }}
@@ -504,7 +504,7 @@ const totalColumnsCount = computed(() => {
           </template>
 
           <button type="button"
-            class="p-1.5 rounded-lg border border-border bg-card text-foreground hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed transition"
+            class="p-1 rounded-lg border border-border bg-card text-foreground hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed transition"
             :disabled="currentPage >= totalPages" aria-label="Página siguiente" @click="nextPage">
             <IconChevronRight class="size-4" :stroke-width="2" />
           </button>

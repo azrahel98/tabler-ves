@@ -379,13 +379,13 @@ const onSubmitRegistro = async () => {
 </script>
 
 <template>
-  <div class="space-y-6 max-w-7xl mx-auto pb-[calc(4rem+env(safe-area-inset-bottom))]">
+  <div class="mx-auto w-full max-w-6xl space-y-3 px-4 pb-[calc(4rem+env(safe-area-inset-bottom))]">
     <PageHeader title="Alta de Nuevo Servidor Público" subtitle="Registro de identidad, vínculo laboral y sustento">
       <template #actions>
         <Button
           variant="ghost"
           size="sm"
-          class="text-xs text-muted-foreground hover:text-foreground cursor-pointer"
+          class="text-meta text-muted-foreground hover:text-foreground cursor-pointer"
           @click="router.push('/panel')"
         >
           Cancelar
@@ -393,29 +393,31 @@ const onSubmitRegistro = async () => {
       </template>
     </PageHeader>
 
-    <NuevoTrabajadorStepper :current-step="currentStep" :is-step1-valid="isStep1Valid" :is-step2-valid="isStep2Valid"
-      :is-step3-valid="isStep3Valid" @select-step="onSelectStep" />
+    <div class="rounded-xl border border-border bg-card shadow-2xs overflow-hidden">
+      <NuevoTrabajadorStepper :current-step="currentStep" :is-step1-valid="isStep1Valid" :is-step2-valid="isStep2Valid"
+        :is-step3-valid="isStep3Valid" @select-step="onSelectStep" />
 
-    <div class="grid grid-cols-1 xl:grid-cols-12 gap-6 items-start">
-      <div class="xl:col-span-8 space-y-6">
-        <StepIdentidad v-show="currentStep === 1" :personal="formData.personal"
-          :is-consultando-reniec="isConsultandoReniec" :reniec-success="reniecSuccess" :reniec-error="reniecError"
-          :is-valid="isStep1Valid" @consultar-reniec="onConsultarReniec" @siguiente="avanzarPaso" />
+      <div class="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_17rem]">
+        <div class="p-5 min-w-0">
+          <StepIdentidad v-show="currentStep === 1" :personal="formData.personal"
+            :is-consultando-reniec="isConsultandoReniec" :reniec-success="reniecSuccess" :reniec-error="reniecError"
+            :is-valid="isStep1Valid" @consultar-reniec="onConsultarReniec" @siguiente="avanzarPaso" />
 
-        <StepVinculoLaboral v-show="currentStep === 2" :plaza="formData.plaza" :areas="areas" :cargos="cargos"
-          :regimenes="regimenesDisponibles" :total-vacantes="plazasVacantes.length" :is-valid="isStep2Valid"
-          @abrir-vacantes="isVacantesModalOpen = true" @cambio-codigo-plaza="onCambioCodigoPlazaManual"
-          @regimen-change="onRegimenChange" @anterior="retrocederPaso" @siguiente="avanzarPaso" />
+          <StepVinculoLaboral v-show="currentStep === 2" :plaza="formData.plaza" :areas="areas" :cargos="cargos"
+            :regimenes="regimenesDisponibles" :total-vacantes="plazasVacantes.length" :is-valid="isStep2Valid"
+            @abrir-vacantes="isVacantesModalOpen = true" @cambio-codigo-plaza="onCambioCodigoPlazaManual"
+            @regimen-change="onRegimenChange" @anterior="retrocederPaso" @siguiente="avanzarPaso" />
 
-        <StepDocumentoSustento v-show="currentStep === 3" :documento="formData.documento"
-          :tipos-documento="tiposDocumento" :is-submitting="isSubmitting" :can-submit="isFormValid"
-          @anterior="retrocederPaso" @submit="onSubmitRegistro" />
-      </div>
+          <StepDocumentoSustento v-show="currentStep === 3" :documento="formData.documento"
+            :tipos-documento="tiposDocumento" :is-submitting="isSubmitting" :can-submit="isFormValid"
+            @anterior="retrocederPaso" @submit="onSubmitRegistro" />
+        </div>
 
-      <div class="xl:col-span-4 space-y-4 sticky top-6">
-        <FichaResumen :personal="formData.personal" :plaza="formData.plaza" :documento="formData.documento"
-          :cargo-nombre="cargoSeleccionadoNombre" :area-nombre="areaSeleccionadaNombre"
-          :tipo-doc-nombre="tipoDocSeleccionadoNombre" :nombre-completo="nombreCompleto" :is-form-valid="isFormValid" />
+        <aside class="p-5 border-t lg:border-t-0 lg:border-l border-border bg-muted/20">
+          <FichaResumen :personal="formData.personal" :plaza="formData.plaza" :documento="formData.documento"
+            :cargo-nombre="cargoSeleccionadoNombre" :area-nombre="areaSeleccionadaNombre"
+            :tipo-doc-nombre="tipoDocSeleccionadoNombre" :nombre-completo="nombreCompleto" :is-form-valid="isFormValid" />
+        </aside>
       </div>
     </div>
 

@@ -3,6 +3,11 @@ import Modal from '@/components/ui/modal/Modal.vue'
 import { ref, watch, computed } from 'vue'
 import Button from '@/components/ui/button/Button.vue'
 import Badge from '@/components/ui/badge/Badge.vue'
+import Stepper from '@/components/ui/stepper/Stepper.vue'
+import EventoTipoMovimiento from './EventoTipoMovimiento.vue'
+import AdvancedSelect, { type AdvancedOption } from '@/components/ui/form/AdvancedSelect.vue'
+import NumberInput from '@/components/ui/form/NumberInput.vue'
+import DatePicker from '@/components/ui/form/DatePicker.vue'
 import SearchSelect, { type SelectOption } from '@/components/ui/form/SearchSelect.vue'
 import { useToastStore } from '@/stores/toast'
 import {
@@ -241,6 +246,10 @@ const cargoOptions = computed<SelectOption<number>[]>(() => {
   }))
 })
 
+const tipoDocumentoOptions = computed<AdvancedOption[]>(() =>
+  tiposDocumento.value.map((td) => ({ value: td.id, label: td.sigla ? `${td.nombre} (${td.sigla})` : td.nombre })),
+)
+
 const textoBotonGuardar = computed(() => {
   if (props.isSaving) return 'Guardando...'
   if (!esModoExistente.value) return 'Guardar Evento'
@@ -401,9 +410,7 @@ watch(
   }
 )
 
-const validarFormulario = (): boolean => {
-  const errors: Record<string, string> = {}
-
+const erroresVigencia = (errors: Record<string, string>) => {
   if (requiereVigencia.value) {
     if (!fechaDesde.value) {
       errors.fechaDesde = esVacaciones.value
@@ -421,29 +428,60 @@ const validarFormulario = (): boolean => {
       errors.fechaHasta = 'La fecha hasta no puede ser anterior a la fecha desde.'
     }
   }
+}
+
+const erroresTipoEvento = (errors: Record<string, string>) => {
+  if (!tipoEvento.value) errors.tipoEvento = 'Seleccione el tipo de evento.'
+}
+
+const erroresDocInicio = (errors: Record<string, string>) => {
+  if (!docInicio.value.tipoDocumento) {
+    errors.tipoDocumentoInicio = 'El tipo de documento es requerido.'
+  }
+  if (!docInicio.value.numeroDocumento || Number(docInicio.value.numeroDocumento) <= 0) {
+    errors.numeroDocumentoInicio = 'Ingrese un número válido.'
+  }
+  if (!docInicio.value.añoDocumento || Number(docInicio.value.añoDocumento) < 1900) {
+    errors.añoDocumentoInicio = 'Ingrese un año válido.'
+  }
+  if (!docInicio.value.fecha) {
+    errors.fechaInicio = 'La fecha del documento es requerida.'
+  }
+  if (necesitaAreaInicio.value && !docInicio.value.areaId) {
+    errors.areaInicio = 'Debe seleccionar el área emisora del documento.'
+  }
+  if (!docInicio.value.descripcion.trim()) {
+    errors.descripcionInicio = 'Ingrese una descripción o referencia.'
+  }
+}
+
+// Validación por paso del asistente de registro (1 evento, 2 vigencia, 3 documento).
+const validarPaso = (paso: number): boolean => {
+  const errors: Record<string, string> = {}
+  if (paso === 1) erroresTipoEvento(errors)
+  else if (paso === 2) erroresVigencia(errors)
+  else erroresDocInicio(errors)
+  formErrors.value = { ...formErrors.value, ...errors }
+  // Limpia los errores previos del propio paso cuando ya es válido.
+  const claves: Record<number, string[]> = {
+    1: ['tipoEvento'],
+    2: ['fechaDesde', 'fechaHasta'],
+    3: ['tipoDocumentoInicio', 'numeroDocumentoInicio', 'añoDocumentoInicio', 'fechaInicio', 'areaInicio', 'descripcionInicio'],
+  }
+  const limpio = { ...formErrors.value }
+  for (const k of claves[paso] ?? []) if (!errors[k]) delete limpio[k]
+  formErrors.value = limpio
+  return Object.keys(errors).length === 0
+}
+
+const validarFormulario = (): boolean => {
+  const errors: Record<string, string> = {}
+
+  erroresVigencia(errors)
 
   if (!esModoExistente.value) {
-    if (!tipoEvento.value) {
-      errors.tipoEvento = 'Seleccione el tipo de evento.'
-    }
-    if (!docInicio.value.tipoDocumento) {
-      errors.tipoDocumentoInicio = 'El tipo de documento es requerido.'
-    }
-    if (!docInicio.value.numeroDocumento || Number(docInicio.value.numeroDocumento) <= 0) {
-      errors.numeroDocumentoInicio = 'Ingrese un número válido.'
-    }
-    if (!docInicio.value.añoDocumento || Number(docInicio.value.añoDocumento) < 1900) {
-      errors.añoDocumentoInicio = 'Ingrese un año válido.'
-    }
-    if (!docInicio.value.fecha) {
-      errors.fechaInicio = 'La fecha del documento es requerida.'
-    }
-    if (necesitaAreaInicio.value && !docInicio.value.areaId) {
-      errors.areaInicio = 'Debe seleccionar el área emisora del documento.'
-    }
-    if (!docInicio.value.descripcion.trim()) {
-      errors.descripcionInicio = 'Ingrese una descripción o referencia.'
-    }
+    erroresTipoEvento(errors)
+    erroresDocInicio(errors)
   } else {
     if (tabModoEvento.value === 'cierre' && !esEventoFinalizado.value) {
       if (accionCierre.value === 'salida') {
@@ -552,9 +590,8 @@ const handleSubmit = () => {
 <template>
   <Modal :is-open="isOpen" :persistent="isSaving" size="xl" @close="emit('close')">
     <template #title>{{ esModoExistente ? (esEventoFinalizado ? 'Detalles del Evento Laboral' : 'Gestionar Evento Laboral') : 'Registrar Nuevo Evento Laboral' }}</template>
-    <template #subtitle>{{ vinculo ? `${vinculo.cargo} • ${vinculo.area || 'Sin área'}` : 'Vínculo laboral' }}</template>
 
-          <form id="evento-form" class="p-3 overflow-y-auto min-h-0 flex-1 space-y-2.5 text-meta"
+          <form v-if="esModoExistente" id="evento-form" class="p-3 overflow-y-auto min-h-0 flex-1 space-y-2.5 text-meta"
             @submit.prevent="handleSubmit">
             <div v-if="esModoExistente && evento" class="space-y-2">
               <div class="p-2.5 rounded-lg border border-border bg-muted/20 space-y-2">
@@ -674,14 +711,8 @@ const handleSubmit = () => {
                       <label class="hs-label mb-1">
                         Tipo de Documento <span class="text-rose-500">*</span>
                       </label>
-                      <select v-model="docSalida.tipoDocumento"
-                        class="hs-input py-1 px-3 cursor-pointer"
-                        :class="formErrors.tipoDocumentoSalida ? 'border-rose-500 ring-rose-500' : ''">
-                        <option value="" disabled>Seleccione tipo de documento</option>
-                        <option v-for="td in tiposDocumento" :key="td.id" :value="td.id">
-                          {{ td.nombre }} {{ td.sigla ? `(${td.sigla})` : '' }}
-                        </option>
-                      </select>
+                      <AdvancedSelect v-model="docSalida.tipoDocumento" :options="tipoDocumentoOptions" placeholder="Seleccione tipo de documento"
+                      has-search search-placeholder="Buscar tipo..." :invalid="Boolean(formErrors.tipoDocumentoSalida)" />
                       <p v-if="formErrors.tipoDocumentoSalida" class="text-rose-500 text-micro mt-1">
                         {{ formErrors.tipoDocumentoSalida }}
                       </p>
@@ -691,9 +722,7 @@ const handleSubmit = () => {
                       <label class="hs-label mb-1">
                         Año <span class="text-rose-500">*</span>
                       </label>
-                      <input v-model.number="docSalida.añoDocumento" type="number" min="1950" max="2099"
-                        class="hs-input py-1 px-3 font-mono"
-                        :class="formErrors.añoDocumentoSalida ? 'border-rose-500 ring-rose-500' : ''" />
+                      <NumberInput v-model="docSalida.añoDocumento" :min="0" :max="2099" :invalid="Boolean(formErrors.añoDocumentoSalida)" />
                     </div>
                   </div>
 
@@ -702,9 +731,7 @@ const handleSubmit = () => {
                       <label class="hs-label mb-1">
                         Número de Documento <span class="text-rose-500">*</span>
                       </label>
-                      <input v-model.number="docSalida.numeroDocumento" type="number" min="1" placeholder="Ej. 189"
-                        class="hs-input py-1 px-3 font-mono"
-                        :class="formErrors.numeroDocumentoSalida ? 'border-rose-500 ring-rose-500' : ''" />
+                      <NumberInput v-model="docSalida.numeroDocumento" :min="1" placeholder="Ej. 124" :invalid="Boolean(formErrors.numeroDocumentoSalida)" />
                       <p v-if="formErrors.numeroDocumentoSalida" class="text-rose-500 text-micro mt-1">
                         {{ formErrors.numeroDocumentoSalida }}
                       </p>
@@ -769,282 +796,187 @@ const handleSubmit = () => {
               </div>
 
               <div v-if="tabModoEvento === 'editar'" class="space-y-2 pt-0.5">
-                <div>
-                  <label class="hs-label mb-1">
-                    Tipo de Evento o Movimiento <span class="text-rose-500">*</span>
-                  </label>
-                  <select v-model="tipoEvento"
-                    class="hs-input py-1 px-3 cursor-pointer"
-                    :class="formErrors.tipoEvento ? 'border-rose-500 ring-rose-500' : ''">
-                    <option v-for="t in tiposEvento" :key="t.value" :value="t.value">
-                      {{ t.label }}
-                    </option>
-                  </select>
-                  <p v-if="formErrors.tipoEvento" class="text-rose-500 text-micro mt-1">
-                    {{ formErrors.tipoEvento }}
-                  </p>
-                </div>
-
-                <div v-if="requiereMovimiento"
-                  class="grid grid-cols-[repeat(auto-fit,minmax(9.5rem,1fr))] gap-2 p-2.5 rounded-lg border border-border/80 bg-muted/10">
-                  <div>
-                    <SearchSelect v-model="nuevaAreaId" label="Nueva Área Asignada"
-                      placeholder="Mantener área actual"
-                      search-placeholder="Buscar por nombre o sigla (ej. Gerencia, OGA, etc.)..." :options="areaOptions"
-                      :disabled="isLoadingCatalogos || isSaving" />
-                  </div>
-
-                  <div>
-                    <SearchSelect v-model="nuevoCargoId" label="Nuevo Cargo" placeholder="Mantener cargo actual"
-                      search-placeholder="Buscar cargo por nombre..." :options="cargoOptions"
-                      :disabled="isLoadingCatalogos || isSaving" />
-                  </div>
-                </div>
+                <p class="text-micro text-muted-foreground">Rectifica el tipo de evento y, si aplica, el área o el cargo asignados.</p>
               </div>
             </div>
 
-            <div v-if="!esModoExistente" class="space-y-2">
+            <EventoTipoMovimiento v-if="tabModoEvento === 'editar'" v-model:tipo-evento="tipoEvento"
+              v-model:area-id="nuevaAreaId" v-model:cargo-id="nuevoCargoId" :tipos="tiposEvento"
+              :requiere-movimiento="requiereMovimiento" :error="formErrors.tipoEvento" :area-options="areaOptions"
+              :cargo-options="cargoOptions" :disabled="isLoadingCatalogos || isSaving" />
+          </form>
+    <Stepper v-else :steps="['Evento', 'Vigencia', 'Documento']" :validate="validarPaso" :busy="isSaving"
+      :finish-label="textoBotonGuardar" @cancel="emit('close')" @finish="handleSubmit">
+      <template #step-1>
+        <EventoTipoMovimiento v-model:tipo-evento="tipoEvento" v-model:area-id="nuevaAreaId" v-model:cargo-id="nuevoCargoId"
+          :tipos="tiposEvento" :requiere-movimiento="requiereMovimiento" :error="formErrors.tipoEvento"
+          :area-options="areaOptions" :cargo-options="cargoOptions" :disabled="isLoadingCatalogos || isSaving" />
+      </template>
+
+      <template #step-2>
+        <div class="space-y-3">
+          <section class="space-y-2">
+            <div class="flex items-center gap-2">
+              <span class="text-meta font-semibold text-foreground">
+                {{ esVacaciones ? 'Periodo de vacaciones' : esEncargo ? 'Vigencia de la encargatura' : 'Vigencia del evento' }}
+              </span>
+              <span v-if="!requiereVigencia" class="text-micro text-muted-foreground">(opcional)</span>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2">
               <div>
                 <label class="hs-label mb-1">
-                  Tipo de Evento o Movimiento <span class="text-rose-500">*</span>
+                  {{ esVacaciones ? 'Fecha de inicio' : 'Vigencia desde' }} <span v-if="requiereVigencia" class="text-rose-500">*</span>
                 </label>
-                <select v-model="tipoEvento"
-                  class="hs-input py-1 px-3 cursor-pointer"
-                  :class="formErrors.tipoEvento ? 'border-rose-500 ring-rose-500' : ''">
-                  <option v-for="t in tiposEvento" :key="t.value" :value="t.value">
-                    {{ t.label }}
-                  </option>
-                </select>
-                <p v-if="formErrors.tipoEvento" class="text-rose-500 text-micro mt-1">
-                  {{ formErrors.tipoEvento }}
-                </p>
+                <DatePicker v-model="fechaDesde" :invalid="Boolean(formErrors.fechaDesde)" />
+                <p v-if="formErrors.fechaDesde" class="text-rose-500 text-micro mt-1">{{ formErrors.fechaDesde }}</p>
               </div>
-
-              <div v-if="requiereMovimiento"
-                class="grid grid-cols-[repeat(auto-fit,minmax(9.5rem,1fr))] gap-2 p-2.5 rounded-lg border border-border/80 bg-muted/10">
-                <div>
-                  <SearchSelect v-model="nuevaAreaId" label="Nueva Área Asignada"
-                    placeholder="Mantener área actual"
-                    search-placeholder="Buscar por nombre o sigla (ej. Gerencia, OGA, etc.)..." :options="areaOptions"
-                    :disabled="isLoadingCatalogos || isSaving" />
-                </div>
-
-                <div>
-                  <SearchSelect v-model="nuevoCargoId" label="Nuevo Cargo" placeholder="Mantener cargo actual"
-                    search-placeholder="Buscar cargo por nombre..." :options="cargoOptions"
-                    :disabled="isLoadingCatalogos || isSaving" />
-                </div>
-              </div>
-
-              <!-- Campos específicos para vigencia (encargaturas y vacaciones) -->
-              <div class="p-2.5 rounded-lg border border-amber-500/30 bg-amber-500/5 space-y-3">
-                <div class="flex items-center gap-2 text-amber-600 dark:text-amber-400 font-semibold text-meta">
-                  <IconUser class="size-4" />
-                  <span>{{ esVacaciones ? 'Periodo de Vacaciones' : esEncargo ? 'Datos de la Encargatura' : 'Vigencia del Evento' }}</span>
-                </div>
-
-                <div class="grid grid-cols-[repeat(auto-fit,minmax(9.5rem,1fr))] gap-2">
-                  <div>
-                    <label class="hs-label mb-1">
-                      {{ esVacaciones ? 'Fecha de inicio' : 'Vigencia desde' }} <span v-if="requiereVigencia" class="text-rose-500">*</span>
-                    </label>
-                    <input v-model="fechaDesde" type="date"
-                      class="hs-input py-1 px-3 font-mono"
-                      :class="formErrors.fechaDesde ? 'border-rose-500 ring-rose-500' : ''" />
-                    <p v-if="formErrors.fechaDesde" class="text-rose-500 text-micro mt-1">
-                      {{ formErrors.fechaDesde }}
-                    </p>
-                  </div>
-
-                  <div>
-                    <label class="hs-label mb-1">
-                      {{ esVacaciones ? 'Fecha de fin' : 'Vigencia hasta' }} <span v-if="esVacaciones" class="text-rose-500">*</span>
-                    </label>
-                    <input v-model="fechaHasta" type="date"
-                      class="hs-input py-1 px-3 font-mono"
-                      :class="formErrors.fechaHasta ? 'border-rose-500 ring-rose-500' : ''" />
-                    <p v-if="formErrors.fechaHasta" class="text-rose-500 text-micro mt-1">
-                      {{ formErrors.fechaHasta }}
-                    </p>
-                  </div>
-                </div>
-
-                <p v-if="!requiereVigencia" class="text-micro text-muted-foreground">
-                  Opcional. Si la resolución fija el inicio y el término del evento, completa ambas fechas y marca la casilla de documento único más abajo.
-                </p>
-              </div>
-
-              <!-- Encargo temporal del puesto (opcional) -->
-              <div v-if="esVacaciones && !esModoExistente"
-                class="p-2.5 rounded-lg border border-sky-500/30 bg-sky-500/5 space-y-3">
-                <div class="flex items-center gap-2 text-sky-600 dark:text-sky-400 font-semibold text-meta">
-                  <IconUser class="size-4" />
-                  <span>Encargo temporal del puesto (opcional)</span>
-                </div>
-
-                <!-- Si ya hay encargado seleccionado: mostrar como chip -->
-                <div v-if="encargadoSeleccionado"
-                  class="flex items-center justify-between p-2.5 rounded-lg bg-card border border-border">
-                  <div class="flex items-center gap-2">
-                    <div class="size-7 rounded-md bg-primary/10 text-primary flex items-center justify-center font-bold text-meta">
-                      <IconUser class="size-4" />
-                    </div>
-                    <div>
-                      <p class="font-semibold text-foreground text-meta">{{ encargadoSeleccionado.nombre }}</p>
-                      <p class="text-micro font-mono text-muted-foreground">DNI: {{ encargadoSeleccionado.dni }}</p>
-                    </div>
-                  </div>
-                  <button type="button"
-                    class="p-1 text-muted-foreground hover:text-rose-500 rounded-md transition-colors cursor-pointer"
-                    title="Quitar encargado" @click="limpiarEncargado">
-                    <IconX class="size-4" />
-                  </button>
-                </div>
-
-                <!-- Si no hay encargado seleccionado: buscador -->
-                <div v-else class="space-y-2">
-                  <div class="relative">
-                    <input v-model="encargadoSearchQuery" type="text"
-                      placeholder="Buscar trabajador por nombres o apellidos..."
-                      class="hs-input py-1 px-3 pl-8"
-                      @input="onSearchEncargadoInput" />
-                    <IconSearch class="size-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
-                    <span v-if="isSearchingEncargado" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-micro text-muted-foreground">
-                      Buscando...
-                    </span>
-                  </div>
-
-                  <!-- Error inline si intenta elegir al propio titular u otro error -->
-                  <p v-if="encargadoError" class="text-rose-500 text-micro">
-                    {{ encargadoError }}
-                  </p>
-
-                  <!-- Lista de resultados -->
-                  <div v-if="encargadoSearchResults.length > 0"
-                    class="max-h-40 overflow-y-auto divide-y divide-border border border-border rounded-lg bg-card shadow-xs">
-                    <button v-for="res in encargadoSearchResults" :key="res.dni" type="button"
-                      class="w-full p-2 text-left hover:bg-muted/50 flex items-center justify-between cursor-pointer transition text-meta"
-                      @click="seleccionarEncargado(res)">
-                      <div>
-                        <p class="font-medium text-foreground">{{ res.nombre }}</p>
-                        <p class="text-micro font-mono text-muted-foreground">DNI: {{ res.dni }}</p>
-                      </div>
-                      <Badge :variant="res.estado === 'activo' ? 'success' : 'secondary'" size="xs">
-                        {{ res.estado }}
-                      </Badge>
-                    </button>
-                  </div>
-                  <div v-else-if="encargadoSearchQuery.trim().length >= 3 && !isSearchingEncargado"
-                    class="py-2 text-center text-micro text-muted-foreground">
-                    No se encontraron trabajadores.
-                  </div>
-                </div>
-
-                <p class="text-micro text-muted-foreground">
-                  Se registrará un encargo de puesto con el mismo documento y el mismo periodo, heredando el área y el cargo del titular.
-                </p>
-              </div>
-
-              <div class="space-y-2 pt-2 border-t border-border/70">
-                <div class="flex items-center gap-2">
-                  <IconFileText class="size-4 text-primary shrink-0" />
-                  <span class="font-semibold text-foreground text-meta uppercase tracking-wider">
-                    Documento Sustentatorio de Inicio
-                  </span>
-                </div>
-
-                <div class="grid grid-cols-3 gap-2">
-                  <div class="col-span-2">
-                    <label class="hs-label mb-1">
-                      Tipo de Documento <span class="text-rose-500">*</span>
-                    </label>
-                    <select v-model="docInicio.tipoDocumento"
-                      class="hs-input py-1 px-3 cursor-pointer"
-                      :class="formErrors.tipoDocumentoInicio ? 'border-rose-500 ring-rose-500' : ''">
-                      <option value="" disabled>Seleccione tipo de documento</option>
-                      <option v-for="td in tiposDocumento" :key="td.id" :value="td.id">
-                        {{ td.nombre }} {{ td.sigla ? `(${td.sigla})` : '' }}
-                      </option>
-                    </select>
-                    <p v-if="formErrors.tipoDocumentoInicio" class="text-rose-500 text-micro mt-1">
-                      {{ formErrors.tipoDocumentoInicio }}
-                    </p>
-                  </div>
-
-                  <div>
-                    <label class="hs-label mb-1">
-                      Año <span class="text-rose-500">*</span>
-                    </label>
-                    <input v-model.number="docInicio.añoDocumento" type="number" min="1950" max="2099"
-                      class="hs-input py-1 px-3 font-mono"
-                      :class="formErrors.añoDocumentoInicio ? 'border-rose-500 ring-rose-500' : ''" />
-                  </div>
-                </div>
-
-                <div class="grid grid-cols-3 gap-2">
-                  <div>
-                    <label class="hs-label mb-1">
-                      Número de Documento <span class="text-rose-500">*</span>
-                    </label>
-                    <input v-model.number="docInicio.numeroDocumento" type="number" min="1" placeholder="Ej. 124"
-                      class="hs-input py-1 px-3 font-mono"
-                      :class="formErrors.numeroDocumentoInicio ? 'border-rose-500 ring-rose-500' : ''" />
-                    <p v-if="formErrors.numeroDocumentoInicio" class="text-rose-500 text-micro mt-1">
-                      {{ formErrors.numeroDocumentoInicio }}
-                    </p>
-                  </div>
-
-                  <div>
-                    <label class="hs-label mb-1">
-                      Fecha de Documento <span class="text-rose-500">*</span>
-                    </label>
-                    <input v-model="docInicio.fecha" type="date"
-                      class="hs-input py-1 px-3 font-mono"
-                      :class="formErrors.fechaInicio ? 'border-rose-500 ring-rose-500' : ''" />
-                    <p v-if="formErrors.fechaInicio" class="text-rose-500 text-micro mt-1">
-                      {{ formErrors.fechaInicio }}
-                    </p>
-                  </div>
-
-                  <div>
-                    <label class="hs-label mb-1">
-                      Fecha Válida <span class="text-muted-foreground font-normal">(opc.)</span>
-                    </label>
-                    <input v-model="docInicio.fechaValida" type="date"
-                      class="hs-input py-1 px-3 font-mono" />
-                  </div>
-                </div>
-
-                <div v-if="necesitaAreaInicio">
-                  <SearchSelect v-model="docInicio.areaId" label="Área Emisora del Documento"
-                    placeholder="Seleccione área emisora..."
-                    search-placeholder="Buscar área por nombre o sigla..." :options="areaOptions" :required="true"
-                    :disabled="isLoadingCatalogos || isSaving" :error-message="formErrors.areaInicio" />
-                </div>
-
-                <div>
-                  <label class="hs-label mb-1">
-                    Descripción / Asunto del Documento <span class="text-rose-500">*</span>
-                  </label>
-                  <textarea v-model="docInicio.descripcion" rows="2" placeholder="Motivo o detalle del evento..."
-                    class="hs-input py-1"
-                    :class="formErrors.descripcionInicio ? 'border-rose-500 ring-rose-500' : ''"></textarea>
-                  <p v-if="formErrors.descripcionInicio" class="text-rose-500 text-micro mt-1">
-                    {{ formErrors.descripcionInicio }}
-                  </p>
-                </div>
-
-                <div class="flex items-center gap-2.5 pt-1">
-                  <input id="check-mismo-doc" v-model="mismoDocumento" type="checkbox"
-                    class="size-4 rounded border-border text-primary focus:ring-primary cursor-pointer" />
-                  <label for="check-mismo-doc" class="text-meta text-foreground cursor-pointer select-none">
-                    El documento define el inicio y término del evento simultáneamente (mismo documento)
-                  </label>
-                </div>
+              <div>
+                <label class="hs-label mb-1">
+                  {{ esVacaciones ? 'Fecha de fin' : 'Vigencia hasta' }} <span v-if="esVacaciones" class="text-rose-500">*</span>
+                </label>
+                <DatePicker v-model="fechaHasta" :invalid="Boolean(formErrors.fechaHasta)" />
+                <p v-if="formErrors.fechaHasta" class="text-rose-500 text-micro mt-1">{{ formErrors.fechaHasta }}</p>
               </div>
             </div>
-          </form>
-    <template #footer>
+
+            <p v-if="!requiereVigencia" class="text-micro text-muted-foreground">
+              Si la resolución fija el inicio y el término del evento, completa ambas fechas y marca la casilla de documento único.
+            </p>
+          </section>
+
+          <section v-if="esVacaciones" class="space-y-2 p-2.5 rounded-lg border border-sky-500/30 bg-sky-500/5">
+            <div class="flex items-center gap-2 text-sky-600 dark:text-sky-400 font-semibold text-meta">
+              <IconUser class="size-4" />
+              <span>Encargo temporal del puesto <span class="font-normal">(opcional)</span></span>
+            </div>
+
+            <div v-if="encargadoSeleccionado"
+              class="flex items-center justify-between p-2 rounded-lg bg-card border border-border">
+              <div class="flex items-center gap-2">
+                <div class="size-7 rounded-md bg-primary/10 text-primary flex items-center justify-center">
+                  <IconUser class="size-4" />
+                </div>
+                <div>
+                  <p class="font-semibold text-foreground text-meta">{{ encargadoSeleccionado.nombre }}</p>
+                  <p class="text-micro font-mono text-muted-foreground">DNI: {{ encargadoSeleccionado.dni }}</p>
+                </div>
+              </div>
+              <button type="button"
+                class="p-1 text-muted-foreground hover:text-rose-500 rounded-md transition-colors cursor-pointer"
+                title="Quitar encargado" @click="limpiarEncargado">
+                <IconX class="size-4" />
+              </button>
+            </div>
+
+            <div v-else class="space-y-2">
+              <div class="relative">
+                <input v-model="encargadoSearchQuery" type="text"
+                  placeholder="Buscar trabajador por nombres o apellidos..." class="hs-input py-1 px-3 pl-8"
+                  @input="onSearchEncargadoInput" />
+                <IconSearch class="size-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                <span v-if="isSearchingEncargado" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-micro text-muted-foreground">
+                  Buscando...
+                </span>
+              </div>
+
+              <p v-if="encargadoError" class="text-rose-500 text-micro">{{ encargadoError }}</p>
+
+              <div v-if="encargadoSearchResults.length > 0"
+                class="max-h-40 overflow-y-auto divide-y divide-border border border-border rounded-lg bg-card shadow-xs">
+                <button v-for="res in encargadoSearchResults" :key="res.dni" type="button"
+                  class="w-full p-2 text-left hover:bg-muted/50 flex items-center justify-between cursor-pointer transition text-meta"
+                  @click="seleccionarEncargado(res)">
+                  <div>
+                    <p class="font-medium text-foreground">{{ res.nombre }}</p>
+                    <p class="text-micro font-mono text-muted-foreground">DNI: {{ res.dni }}</p>
+                  </div>
+                  <Badge :variant="res.estado === 'activo' ? 'success' : 'secondary'" size="xs">
+                    {{ res.estado }}
+                  </Badge>
+                </button>
+              </div>
+              <div v-else-if="encargadoSearchQuery.trim().length >= 3 && !isSearchingEncargado"
+                class="py-2 text-center text-micro text-muted-foreground">
+                No se encontraron trabajadores.
+              </div>
+            </div>
+
+            <p class="text-micro text-muted-foreground">
+              Se registrará un encargo de puesto con el mismo documento y periodo, heredando el área y el cargo del titular.
+            </p>
+          </section>
+        </div>
+      </template>
+
+      <template #step-3>
+        <section class="space-y-2">
+          <div class="flex items-center gap-2">
+            <span class="text-meta font-semibold text-foreground">Documento sustentatorio de inicio</span>
+            <IconFileText class="size-3.5 text-muted-foreground" />
+          </div>
+
+          <div class="grid grid-cols-6 gap-2">
+            <div class="col-span-6">
+              <label class="hs-label mb-1">Tipo de documento <span class="text-rose-500">*</span></label>
+              <AdvancedSelect v-model="docInicio.tipoDocumento" :options="tipoDocumentoOptions" placeholder="Seleccione tipo de documento"
+                      has-search search-placeholder="Buscar tipo..." :invalid="Boolean(formErrors.tipoDocumentoInicio)" />
+              <p v-if="formErrors.tipoDocumentoInicio" class="text-rose-500 text-micro mt-1">{{ formErrors.tipoDocumentoInicio }}</p>
+            </div>
+
+            <div class="col-span-3">
+              <label class="hs-label mb-1">N° <span class="text-rose-500">*</span></label>
+              <NumberInput v-model="docInicio.numeroDocumento" :min="1" placeholder="Ej. 124" :invalid="Boolean(formErrors.numeroDocumentoInicio)" />
+              <p v-if="formErrors.numeroDocumentoInicio" class="text-rose-500 text-micro mt-1">{{ formErrors.numeroDocumentoInicio }}</p>
+            </div>
+
+            <div class="col-span-3">
+              <label class="hs-label mb-1">Año <span class="text-rose-500">*</span></label>
+              <NumberInput v-model="docInicio.añoDocumento" :min="0" :max="2099" :invalid="Boolean(formErrors.añoDocumentoInicio)" />
+            </div>
+
+            <div class="col-span-3">
+              <label class="hs-label mb-1">Fecha del documento <span class="text-rose-500">*</span></label>
+              <DatePicker v-model="docInicio.fecha" :invalid="Boolean(formErrors.fechaInicio)" />
+              <p v-if="formErrors.fechaInicio" class="text-rose-500 text-micro mt-1">{{ formErrors.fechaInicio }}</p>
+            </div>
+
+            <div class="col-span-3">
+              <label class="hs-label mb-1">
+                Fecha válida <span class="text-muted-foreground font-normal">(opc.)</span>
+              </label>
+              <DatePicker v-model="docInicio.fechaValida" />
+            </div>
+          </div>
+
+          <div v-if="necesitaAreaInicio">
+            <SearchSelect v-model="docInicio.areaId" label="Área emisora del documento"
+              placeholder="Seleccione área emisora..." search-placeholder="Buscar área por nombre o sigla..."
+              :options="areaOptions" :required="true" :disabled="isLoadingCatalogos || isSaving"
+              :error-message="formErrors.areaInicio" />
+          </div>
+
+          <div>
+            <label class="hs-label mb-1">Descripción / asunto <span class="text-rose-500">*</span></label>
+            <textarea v-model="docInicio.descripcion" rows="2" placeholder="Motivo o detalle del evento..."
+              class="hs-input py-1"
+              :class="formErrors.descripcionInicio ? 'border-rose-500 ring-rose-500' : ''"></textarea>
+            <p v-if="formErrors.descripcionInicio" class="text-rose-500 text-micro mt-1">{{ formErrors.descripcionInicio }}</p>
+          </div>
+
+          <label for="check-mismo-doc"
+            class="flex items-center gap-2 p-2 rounded-lg border cursor-pointer select-none transition-colors"
+            :class="mismoDocumento ? 'border-primary bg-primary/5' : 'border-border bg-muted/20'">
+            <input id="check-mismo-doc" v-model="mismoDocumento" type="checkbox"
+              class="size-4 rounded border-border text-primary focus:ring-primary cursor-pointer" />
+            <span class="text-micro text-foreground">
+              El documento define el inicio y término del evento a la vez (mismo documento)
+            </span>
+          </label>
+        </section>
+      </template>
+    </Stepper>
+    <template v-if="esModoExistente" #footer>
             <Button size="sm" variant="outline" class="cursor-pointer" :disabled="isSaving" @click="emit('close')">
               {{ !debeMostrarBotonGuardar ? 'Cerrar' : 'Cancelar' }}
             </Button>
