@@ -3,7 +3,6 @@ import Button from '@/components/ui/button/Button.vue'
 import type { DocumentoFormState } from './types'
 import type { TipoDocumentoOption } from '@/services/personal'
 import {
-  IconFileText,
   IconCalendar,
   IconFileDescription,
   IconArrowLeft,
